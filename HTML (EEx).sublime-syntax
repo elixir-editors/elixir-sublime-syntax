@@ -1,0 +1,17 @@
+%YAML 1.2
+---
+# http://www.sublimetext.com/docs/3/syntax.html
+name: HTML (EEx)
+file_extensions:
+  - html.eex
+scope: text.html.elixir
+contexts:
+  main:
+    - match: <%+[-=]?
+      scope: punctuation.section.embedded.elixir region.bluish
+      embed: scope:source.elixir
+      embed_scope: source.elixir.embedded.html
+      escape: \%>
+      escape_captures:
+        0: punctuation.section.embedded.elixir region.bluish
+    - include: scope:text.html.basic
