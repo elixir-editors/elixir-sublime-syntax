@@ -1,6 +1,6 @@
 %YAML 1.2
 ---
-name: HTML
+name: HTML (EEx)
 file_extensions:
   - html.eex
 first_line_match: (?i)<(!DOCTYPE\s*)?html
@@ -347,6 +347,7 @@ contexts:
           scope: punctuation.definition.string.end.html
           pop: true
         - include: attribute-entities
+        - include: interpolation
     - match: "'"
       scope: punctuation.definition.string.begin.html
       set:
@@ -356,6 +357,7 @@ contexts:
           scope: punctuation.definition.string.end.html
           pop: true
         - include: attribute-entities
+        - include: interpolation
     - match: '{{unquoted_attribute_value}}'
       scope: string.unquoted.html meta.class-name.html
     - include: else-pop
@@ -492,3 +494,4 @@ contexts:
     - include: tag-style-attribute
     - include: tag-event-attribute
     - include: tag-generic-attribute
+
