@@ -451,6 +451,10 @@ contexts:
       scope: variable.other.capture.elixir
       captures:
         1: keyword.operator.capture.elixir
+    - match: (&)\w+(?=\/\d|\()
+      scope: variable.other.capture.elixir
+      captures:
+        1: keyword.operator.capture.elixir
     - match: '(\^)[a-z]\w*'
       scope: variable.other.pin.elixir
       captures:
