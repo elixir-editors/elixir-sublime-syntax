@@ -7,6 +7,7 @@ file_extensions:
   - exs
 first_line_match: ^#!/.*\belixir
 scope: source.elixir
+
 contexts:
   main:
     - match: \b(fn)\b(?!.*->)
@@ -331,13 +332,13 @@ contexts:
           pop: true
         - match: '\b[A-Z]\w*\b'
           scope: entity.name.protocol.elixir
-    - match: '^\s*(def|defmacro)\s+([a-zA-Z_]\w*)(?:(\()|\s*)'
+    - match: '^\s*(def|defmacro)\s+([a-zA-Z_]\w*(?:!|\?)?)(?:(\()|\s*)'
       captures:
         1: keyword.control.module.elixir
         2: entity.name.function.public.elixir
         3: punctuation.definition.parameters.elixir
       push: function_body
-    - match: '^\s*(defp|defmacrop)\s+([a-zA-Z_]\w*)(?:(\()|\s*)'
+    - match: '^\s*(defp|defmacrop)\s+([a-zA-Z_]\w*(?:!|\?)?)(?:(\()|\s*)'
       captures:
         1: keyword.control.module.elixir
         2: entity.name.function.private.elixir
@@ -431,7 +432,7 @@ contexts:
     - include: docs
     - include: punctuations
 
-    - match: '(?<!\.)\b(do|end|case|for|if|cond|unless|try|receive|fn|defmodule|defp?|defprotocol|defimpl|defrecord|defstruct|defmacrop?|defdelegate|defexception|defoverridable|exit|after|rescue|catch|else|raise|throw|import|require|alias|use|quote|unquote|super|with)\b(?![?!:])'
+    - match: '(?<!\.)\b(do|end|case|for|if|cond|unless|try|receive|fn|defmodule|defp?|defprotocol|defimpl|defrecord|defstruct|defmacrop?|defdelegate|defexception|defoverridable|defguardp?|exit|after|rescue|catch|else|raise|reraise|throw|import|require|alias|use|quote|unquote|super|with)\b(?![?!:])'
       scope: keyword.control.elixir
     - match: (?<!\.)\b(and|not|or|when|xor|in)\b
       comment: as above, just doesn't need a 'end' and does a logic operation
@@ -442,18 +443,18 @@ contexts:
       scope: constant.language.elixir
     - match: '\b(__(CALLER|ENV|MODULE|DIR)__)\b(?![?!])'
       scope: variable.language.elixir
-    - match: '(@)[a-zA-Z_]\w*'
-      scope: variable.other.readwrite.module.elixir
+    - match: '(@)[a-z]\w*'
+      scope: variable.other.module.elixir
       captures:
-        1: punctuation.definition.variable.elixir
+        1: keyword.operator.definition.constant.elixir
     - match: (&)\d+
-      scope: variable.other.anonymous.elixir
-      captures:
-        1: punctuation.definition.variable.elixir
-    - match: '\^[a-z_]\w*'
       scope: variable.other.capture.elixir
       captures:
-        1: punctuation.definition.variable.elixir
+        1: keyword.operator.capture.elixir
+    - match: '(\^)[a-z]\w*'
+      scope: variable.other.pin.elixir
+      captures:
+        1: keyword.operator.pin.elixir
     - match: ":'"
       scope: punctuation.definition.constant.elixir
       push:
