@@ -398,7 +398,7 @@ contexts:
       scope: keyword.operator.range.elixir
     - match: =>
       scope: keyword.operator.map-pair.elixir
-    - match: (\|\|\||&&&|^^^|<<<|>>>|~~~)
+    - match: (\|\|\||&&&|\^\^\^|<<<|>>>|~~~)
       scope: keyword.operator.bitwise.elixir
     - match: \||\*\*|\\\\|~
       scope: keyword.operator.other.elixir
