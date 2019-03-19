@@ -335,13 +335,13 @@ contexts:
           pop: true
         - match: '{{module_name}}'
           scope: entity.name.protocol.elixir
-    - match: '^\s*(def|defmacro)\s+([a-zA-Z_]\w*(?:!|\?)?)(?:(\()|\s*)'
+    - match: '^\s*(def|defmacro)\s+(\w+(?:!|\?)?)(?:(\()|\s*)'
       captures:
         1: keyword.control.module.elixir
         2: entity.name.function.public.elixir
         3: punctuation.definition.parameters.elixir
       push: function_body
-    - match: '^\s*(defp|defmacrop)\s+([a-zA-Z_]\w*(?:!|\?)?)(?:(\()|\s*)'
+    - match: '^\s*(defp|defmacrop)\s+(\w+(?:!|\?)?)(?:(\()|\s*)'
       captures:
         1: keyword.control.module.elixir
         2: entity.name.function.private.elixir
