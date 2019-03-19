@@ -440,7 +440,7 @@ contexts:
     - match: (?<!\.)\b(and|not|or|when|xor|in)\b
       comment: as above, just doesn't need a 'end' and does a logic operation
       scope: keyword.operator.elixir
-    - match: '{{module_name}}'
+    - match: '{{module_name}}(?!:)'
       scope: entity.name.class.elixir
     - match: '\b(nil|true|false)\b(?![?!])'
       scope: constant.language.elixir
