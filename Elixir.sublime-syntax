@@ -480,12 +480,12 @@ contexts:
           pop: true
         - include: interpolated_elixir
         - include: escaped_char
-    - match: '(?<!:)(:)(?>[a-zA-Z_][\w@]*(?>[?!]|=(?![>=]))?|\<\>|===?|!==?|<<>>|<<<|>>>|~~~|::|<\-|\|>|=>|=~|=|/|\\\\|\*\*?|\.\.?\.?|>=?|<=?|&&?&?|\+\+?|\-\-?|\|\|?\|?|\!|@|\%?\{\}|%|\[\]|\^(\^\^)?)'
+    - match: '(?<!:)(:)(?>[_[:alpha:]][\w@]*(?>[?!]|=(?![>=]))?|\<\>|===?|!==?|<<>>|<<<|>>>|~~~|::|<\-|\|>|=>|=~|=|/|\\\\|\*\*?|\.\.?\.?|>=?|<=?|&&?&?|\+\+?|\-\-?|\|\|?\|?|\!|@|\%?\{\}|%|\[\]|\^(\^\^)?)'
       comment: symbols
       scope: constant.other.symbol.elixir
       captures:
         1: punctuation.definition.constant.elixir
-    - match: '(?>[a-zA-Z_][\w@]*(?>[?!])?)(:)(?!:)'
+    - match: '(?>[_[:alpha:]][\w@]*(?>[?!])?)(:)(?!:)'
       comment: symbols
       scope: constant.other.keywords.elixir
       captures:
