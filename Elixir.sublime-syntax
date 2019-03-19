@@ -9,7 +9,7 @@ first_line_match: ^#!/.*\b(?:elixirc?|iex)
 scope: source.elixir
 
 variables:
-  module_name: '\b[A-Z]\w*\b'
+  module_name: '\b[A-Z][a-zA-Z0-9_]*\b'
 
 contexts:
   main:
