@@ -5,11 +5,12 @@ name: Elixir
 file_extensions:
   - ex
   - exs
-first_line_match: ^#!/.*\belixir
+first_line_match: ^#!/.*\b(?:elixirc?|iex)
 scope: source.elixir
 
 variables:
-  module_name: '\b[A-Z]\w*\b'
+  module_name: '\b[A-Z][a-zA-Z0-9_]*\b'
+  id_begin: '[[:alpha:]_]'
 
 contexts:
   main:
@@ -59,7 +60,7 @@ contexts:
         - match: ',|\)|$'
           pop: true
         - include: main
-    - match: \b(is_atom|is_binary|is_bitstring|is_boolean|is_float|is_function|is_integer|is_list|is_map|is_nil|is_number|is_pid|is_port|is_record|is_reference|is_tuple|is_exception|abs|bit_size|byte_size|div|elem|hd|length|map_size|node|rem|round|tl|trunc|tuple_size)\b
+    - match: \b(is_(?:atom|binary|bitstring|boolean|float|function|integer|list|map|nil|number|pid|port|record|reference|tuple|exception)|abs|bit_size|byte_size|div|elem|hd|length|map_size|node|rem|round|tl|trunc|tuple_size)\b
       scope: keyword.guard.elixir
 
   numeric:
@@ -335,13 +336,13 @@ contexts:
           pop: true
         - match: '{{module_name}}'
           scope: entity.name.protocol.elixir
-    - match: '^\s*(def|defmacro)\s+([a-zA-Z_]\w*(?:!|\?)?)(?:(\()|\s*)'
+    - match: '^\s*(def|defmacro)\s+({{id_begin}}\w*(?:!|\?)?)(?:(\()|\s*)'
       captures:
         1: keyword.control.module.elixir
         2: entity.name.function.public.elixir
         3: punctuation.definition.parameters.elixir
       push: function_body
-    - match: '^\s*(defp|defmacrop)\s+([a-zA-Z_]\w*(?:!|\?)?)(?:(\()|\s*)'
+    - match: '^\s*(defp|defmacrop)\s+({{id_begin}}\w*(?:!|\?)?)(?:(\()|\s*)'
       captures:
         1: keyword.control.module.elixir
         2: entity.name.function.private.elixir
@@ -440,7 +441,7 @@ contexts:
     - match: (?<!\.)\b(and|not|or|when|xor|in)\b
       comment: as above, just doesn't need a 'end' and does a logic operation
       scope: keyword.operator.elixir
-    - match: '{{module_name}}'
+    - match: '{{module_name}}(?!:)'
       scope: entity.name.class.elixir
     - match: '\b(nil|true|false)\b(?![?!])'
       scope: constant.language.elixir
@@ -480,12 +481,12 @@ contexts:
           pop: true
         - include: interpolated_elixir
         - include: escaped_char
-    - match: '(?<!:)(:)(?>[a-zA-Z_][\w@]*(?>[?!]|=(?![>=]))?|\<\>|===?|!==?|<<>>|<<<|>>>|~~~|::|<\-|\|>|=>|=~|=|/|\\\\|\*\*?|\.\.?\.?|>=?|<=?|&&?&?|\+\+?|\-\-?|\|\|?\|?|\!|@|\%?\{\}|%|\[\]|\^(\^\^)?)'
+    - match: '(?<!:)(:)(?>{{id_begin}}[\w@]*(?>[?!]|=(?![>=]))?|\<\>|===?|!==?|<<>>|<<<|>>>|~~~|::|<\-|\|>|=>|=~|=|/|\\\\|\*\*?|\.\.?\.?|>=?|<=?|&&?&?|\+\+?|\-\-?|\|\|?\|?|\!|@|\%?\{\}|%|\[\]|\^(\^\^)?)'
       comment: symbols
       scope: constant.other.symbol.elixir
       captures:
         1: punctuation.definition.constant.elixir
-    - match: '(?>[a-zA-Z_][\w@]*(?>[?!])?)(:)(?!:)'
+    - match: '(?>{{id_begin}}[\w@]*(?>[?!])?)(:)(?!:)'
       comment: symbols
       scope: constant.other.keywords.elixir
       captures:
