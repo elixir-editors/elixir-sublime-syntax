@@ -10,6 +10,7 @@ scope: source.elixir
 
 variables:
   module_name: '\b[A-Z][a-zA-Z0-9_]*\b'
+  id_begin: '[[:alpha:]_]'
 
 contexts:
   main:
@@ -335,13 +336,13 @@ contexts:
           pop: true
         - match: '{{module_name}}'
           scope: entity.name.protocol.elixir
-    - match: '^\s*(def|defmacro)\s+(\w+(?:!|\?)?)(?:(\()|\s*)'
+    - match: '^\s*(def|defmacro)\s+({{id_begin}}\w*(?:!|\?)?)(?:(\()|\s*)'
       captures:
         1: keyword.control.module.elixir
         2: entity.name.function.public.elixir
         3: punctuation.definition.parameters.elixir
       push: function_body
-    - match: '^\s*(defp|defmacrop)\s+(\w+(?:!|\?)?)(?:(\()|\s*)'
+    - match: '^\s*(defp|defmacrop)\s+({{id_begin}}\w*(?:!|\?)?)(?:(\()|\s*)'
       captures:
         1: keyword.control.module.elixir
         2: entity.name.function.private.elixir
@@ -480,12 +481,12 @@ contexts:
           pop: true
         - include: interpolated_elixir
         - include: escaped_char
-    - match: '(?<!:)(:)(?>[_[:alpha:]][\w@]*(?>[?!]|=(?![>=]))?|\<\>|===?|!==?|<<>>|<<<|>>>|~~~|::|<\-|\|>|=>|=~|=|/|\\\\|\*\*?|\.\.?\.?|>=?|<=?|&&?&?|\+\+?|\-\-?|\|\|?\|?|\!|@|\%?\{\}|%|\[\]|\^(\^\^)?)'
+    - match: '(?<!:)(:)(?>{{id_begin}}[\w@]*(?>[?!]|=(?![>=]))?|\<\>|===?|!==?|<<>>|<<<|>>>|~~~|::|<\-|\|>|=>|=~|=|/|\\\\|\*\*?|\.\.?\.?|>=?|<=?|&&?&?|\+\+?|\-\-?|\|\|?\|?|\!|@|\%?\{\}|%|\[\]|\^(\^\^)?)'
       comment: symbols
       scope: constant.other.symbol.elixir
       captures:
         1: punctuation.definition.constant.elixir
-    - match: '(?>[_[:alpha:]][\w@]*(?>[?!])?)(:)(?!:)'
+    - match: '(?>{{id_begin}}[\w@]*(?>[?!])?)(:)(?!:)'
       comment: symbols
       scope: constant.other.keywords.elixir
       captures:
