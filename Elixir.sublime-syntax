@@ -105,27 +105,19 @@ contexts:
       scope: constant.character.escape.char.elixir
 
   interpolated_elixir:
-    - match: '(#)\{'
-      scope: punctuation.section.embedded.elixir
-      captures:
-        1: punctuation.embedded.elixir
+    - match: (?=#\{)
       push:
-        - meta_scope: source.elixir.embedded.source
-        - match: '\}'
-          scope: punctuation.section.embedded.elixir
-          pop: true
-        - include: nest_curly_and_self
-        - include: main
-
-  nest_curly_and_self:
-    - match: '\{'
-      scope: punctuation.section.scope.elixir
-      push:
-        - match: '\}'
-          scope: punctuation.section.scope.elixir
-          pop: true
-        - include: nest_curly_and_self
-    - include: main
+        - clear_scopes: true
+        - match: '#\{'
+          scope: punctuation.section.interpolation.begin.elixir
+          set:
+            - clear_scopes: true
+            - meta_content_scope: source.elixir.embedded
+            - meta_scope: meta.interpolation.elixir
+            - match: \}
+              scope: punctuation.section.interpolation.end.elixir
+              pop: true
+            - include: main
 
   regex_sub:
     - include: interpolated_elixir
