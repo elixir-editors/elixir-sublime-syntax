@@ -92,8 +92,17 @@ contexts:
                 2: variable.numeric.elixir
 
   escaped_char:
-    - match: '\\(x[\da-fA-F]{1,2}|.)'
-      scope: constant.character.escaped.elixir
+    - match: \\x
+      scope: constant.character.escape.hex.elixir
+      push:
+        - match: \h{2}|\h(.?)|(..?)
+          scope: constant.character.escape.hex.elixir
+          captures:
+            1: invalid.illegal.escape.hex.elixir
+            2: invalid.illegal.escape.hex.elixir
+          pop: true
+    - match: \\.
+      scope: constant.character.escape.char.elixir
 
   interpolated_elixir:
     - match: '(#)\{'
