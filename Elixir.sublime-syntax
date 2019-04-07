@@ -119,9 +119,12 @@ contexts:
               pop: true
             - include: main
 
-  regex_sub:
-    - include: interpolated_elixir
+  escaped_or_interpolated:
     - include: escaped_char
+    - include: interpolated_elixir
+
+  regex_sub:
+    - include: escaped_or_interpolated
     - match: '(\{)\d+(,\d+)?(\})'
       scope: string.regexp.arbitrary-repitition.elixir
       captures:
@@ -158,8 +161,7 @@ contexts:
         - match: "'"
           scope: punctuation.definition.string.end.elixir
           pop: true
-        - include: interpolated_elixir
-        - include: escaped_char
+        - include: escaped_or_interpolated
     - match: '"'
       comment: double quoted string (allows for interpolation)
       scope: punctuation.definition.string.begin.elixir
@@ -168,140 +170,216 @@ contexts:
         - match: '"'
           scope: punctuation.definition.string.end.elixir
           pop: true
-        - include: interpolated_elixir
-        - include: escaped_char
+        - include: escaped_or_interpolated
+
+  block_string_interpolated:
+    - match: (""")(\s*.+$)?
+      comment: Triple-quoted heredocs
+      scope: string.quote.triple.double.elixir
+      captures:
+        1: punctuation.definition.string.begin.elixir
+        2: invalid.illegal.opening_heredoc.elixir
+      push:
+        - meta_content_scope: meta.string.interpolated.elixir string.quoted.triple.double.elixir
+        - match: ^\s*([^"]*)(""")
+          scope: string.quote.triple.double.elixir
+          captures:
+            1: invalid.illegal.closing_heredoc.elixir
+            2: punctuation.definition.string.end.elixir
+          pop: true
+        - include: escaped_or_interpolated
+
+    - match: (''')(\s*.+$)?
+      comment: Triple-quoted heredocs
+      scope: string.quote.triple.single.elixir
+      captures:
+        1: punctuation.definition.string.begin.elixir
+        2: invalid.illegal.opening_heredoc.elixir
+      push:
+        - meta_content_scope: meta.string.interpolated.elixir string.quoted.triple.single.elixir
+        - match: ^\s*([^']*)(''')
+          captures:
+            1: invalid.illegal.closing_heredoc.elixir
+            2: punctuation.definition.string.end.elixir
+          pop: true
+        - include: escaped_or_interpolated
+
+  block_string_raw:
+    - match: (""")(\s*.+$)?
+      comment: Triple-quoted heredocs
+      captures:
+        1: punctuation.definition.string.begin.elixir
+        2: invalid.illegal.opening_heredoc.elixir
+      push:
+        - meta_scope: string.quoted.triple.double.elixir
+        - match: ^\s*([^"]*)(""")
+          captures:
+            1: invalid.illegal.closing_heredoc.elixir
+            2: punctuation.definition.string.end.elixir
+          pop: true
+    - match: (''')(\s*.+$)?
+      comment: Triple-quoted heredocs
+      captures:
+        1: punctuation.definition.string.begin.elixir
+        2: invalid.illegal.opening_heredoc.elixir
+      push:
+        - meta_scope: string.quoted.triple.single.elixir
+        - match: ^\s*([^']*)(''')
+          captures:
+            1: invalid.illegal.closing_heredoc.elixir
+            2: punctuation.definition.string.end.elixir
+          pop: true
 
   string:
-    - match: (?>''')
-      comment: Single-quoted heredocs
-      scope: punctuation.definition.string.begin.elixir
-      push:
-        - meta_scope: string.quoted.single.heredoc.elixir
-        - match: ^\s*'''
-          scope: punctuation.definition.string.end.elixir
-          pop: true
-        - include: interpolated_elixir
-        - include: escaped_char
-    - match: (?>""")
-      comment: Double-quoted heredocs
-      scope: punctuation.definition.string.begin.elixir
-      push:
-        - meta_scope: string.quoted.double.heredoc.elixir
-        - match: ^\s*"""
-          scope: punctuation.definition.string.end.elixir
-          pop: true
-        - include: interpolated_elixir
-        - include: escaped_char
+    - match: (?="""|''')
+      set:
+        - include: block_string_interpolated
+        - {match: '', pop: true}
+
     - include: simple_string
-    - match: '~[a-z](?>""")'
-      comment: Double-quoted heredocs sigils
-      scope: punctuation.definition.string.begin.elixir
-      push:
-        - meta_scope: string.quoted.double.heredoc.elixir
-        - match: ^\s*"""
-          scope: punctuation.definition.string.end.elixir
+
+    - match: ~[a-z](?="""|''')
+      scope: storage.type.string.elixir
+      set:
+        - include: block_string_interpolated
+        - {match: '', set: str_modifiers_and_pop}
+
+    # Not nested below to avoid matching strings like: ~a/with sigil//without sigil/
+    - match: (?=~[a-z][/|"'])
+      comment: with sigil and without interpolation
+      set:
+        - match: (~[a-z])([/|"'])
+          captures:
+            1: storage.type.string.elixir
+            2: string.quoted.other.literal.lower.elixir punctuation.definition.string.begin.elixir
+          push:
+            - meta_content_scope: string.quoted.other.literal.lower.elixir
+            - match: \2
+              scope: string.quoted.other.literal.lower.elixir punctuation.definition.string.end.elixir
+              pop: true
+            - include: escaped_or_interpolated
+        - {match: '', set: str_modifiers_and_pop}
+
+    - match: ~[a-z]
+      comment: with sigil and with interpolation
+      scope: storage.type.string.elixir
+      set:
+        - match: (?=[{\[<(])
+          set:
+            - match: \{
+              scope: punctuation.definition.string.begin.elixir
+              push:
+                - meta_scope: string.interpolated.elixir
+                - match: \}
+                  scope: punctuation.definition.string.end.elixir
+                  pop: true
+                - include: escaped_or_interpolated
+            - match: \[
+              scope: punctuation.definition.string.begin.elixir
+              push:
+                - meta_scope: string.interpolated.elixir
+                - match: \]
+                  scope: punctuation.definition.string.end.elixir
+                  pop: true
+                - include: escaped_or_interpolated
+            - match: \<
+              scope: punctuation.definition.string.begin.elixir
+              push:
+                - meta_scope: string.interpolated.elixir
+                - match: \>
+                  scope: punctuation.definition.string.end.elixir
+                  pop: true
+                - include: escaped_or_interpolated
+            - match: \(
+              scope: punctuation.definition.string.begin.elixir
+              push:
+                - meta_scope: string.interpolated.elixir
+                - match: \)
+                  scope: punctuation.definition.string.end.elixir
+                  pop: true
+                - include: escaped_or_interpolated
+            - {match: '', set: str_modifiers_and_pop}
+
+        - match: .
+          scope: invalid.illegal.opening_string.elixir
           pop: true
-        - include: interpolated_elixir
-        - include: escaped_char
-    - match: '~[a-z]\{'
-      comment: sigil (allow for interpolation)
-      scope: punctuation.definition.string.begin.elixir
-      push:
-        - meta_scope: string.interpolated.elixir
-        - match: '\}[a-z]*'
-          scope: punctuation.definition.string.end.elixir
+
+    - match: ~[A-Z](?="""|''')
+      scope: storage.type.string.elixir
+      set:
+        - include: block_string_raw
+        - {match: '', set: str_modifiers_and_pop}
+
+    # Not nested below to avoid matching strings like: ~A/with sigil//without sigil/
+    - match: (?=~[A-Z][/|"'])
+      comment: with sigil and without interpolation
+      set:
+        - match: (~[A-Z])([/|"'])
+          captures:
+            1: storage.type.string.elixir
+            2: string.quoted.other.literal.upper.elixir punctuation.definition.string.begin.elixir
+          push:
+            - meta_content_scope: string.quoted.other.literal.upper.elixir
+            - match: \2
+              scope: string.quoted.other.literal.upper.elixir punctuation.definition.string.end.elixir
+              pop: true
+        - {match: '', set: str_modifiers_and_pop}
+
+    - match: ~[A-Z]
+      comment: with sigil and without interpolation
+      scope: storage.type.string.elixir
+      set:
+        - match: (?="""|''')
+          set:
+            - include: block_string_raw
+            - {match: '', set: str_modifiers_and_pop}
+
+        - match: (?=[{<(]|\[)
+          set:
+            - match: \{
+              scope: punctuation.definition.string.begin.elixir
+              set:
+                - meta_scope: string.quoted.other.literal.upper.elixir
+                - match: \}
+                  scope: punctuation.definition.string.end.elixir
+                  set: str_modifiers_and_pop
+            - match: \[
+              scope: punctuation.definition.string.begin.elixir
+              set:
+                - meta_scope: string.quoted.other.literal.upper.elixir
+                - match: \]
+                  scope: punctuation.definition.string.end.elixir
+                  set: str_modifiers_and_pop
+            - match: \<
+              scope: punctuation.definition.string.begin.elixir
+              set:
+                - meta_scope: string.quoted.other.literal.upper.elixir
+                - match: \>
+                  scope: punctuation.definition.string.end.elixir
+                  set: str_modifiers_and_pop
+            - match: \(
+              scope: punctuation.definition.string.begin.elixir
+              set:
+                - meta_scope: string.quoted.other.literal.upper.elixir
+                - match: \)
+                  scope: punctuation.definition.string.end.elixir
+                  set: str_modifiers_and_pop
+
+        - match: .
+          scope: invalid.illegal.opening_string.elixir
           pop: true
-        - include: interpolated_elixir
-        - include: escaped_char
-    - match: '~[a-z]\['
-      comment: sigil (allow for interpolation)
-      scope: punctuation.definition.string.begin.elixir
-      push:
-        - meta_scope: string.interpolated.elixir
-        - match: '\][a-z]*'
-          scope: punctuation.definition.string.end.elixir
-          pop: true
-        - include: interpolated_elixir
-        - include: escaped_char
-    - match: '~[a-z]\<'
-      comment: sigil (allow for interpolation)
-      scope: punctuation.definition.string.begin.elixir
-      push:
-        - meta_scope: string.interpolated.elixir
-        - match: '\>[a-z]*'
-          scope: punctuation.definition.string.end.elixir
-          pop: true
-        - include: interpolated_elixir
-        - include: escaped_char
-    - match: '~[a-z]\('
-      comment: sigil (allow for interpolation)
-      scope: punctuation.definition.string.begin.elixir
-      push:
-        - meta_scope: string.interpolated.elixir
-        - match: '\)[a-z]*'
-          scope: punctuation.definition.string.end.elixir
-          pop: true
-        - include: interpolated_elixir
-        - include: escaped_char
-    - match: '~[a-z]([^\w])'
-      comment: sigil (allow for interpolation)
-      scope: punctuation.definition.string.begin.elixir
-      push:
-        - meta_scope: string.interpolated.elixir
-        - match: '\1[a-z]*'
-          scope: punctuation.definition.string.end.elixir
-          pop: true
-        - include: interpolated_elixir
-        - include: escaped_char
-        - include: escaped_char
-    - match: '~[A-Z](?>""")'
-      comment: Double-quoted heredocs sigils
-      scope: punctuation.definition.string.begin.elixir
-      push:
-        - meta_scope: string.quoted.other.literal.upper.elixir
-        - match: ^\s*"""
-          scope: punctuation.definition.string.end.elixir
-          pop: true
-    - match: '~[A-Z]\{'
-      comment: sigil (without interpolation)
-      scope: punctuation.definition.string.begin.elixir
-      push:
-        - meta_scope: string.quoted.other.literal.upper.elixir
-        - match: '\}[a-z]*'
-          scope: punctuation.definition.string.end.elixir
-          pop: true
-    - match: '~[A-Z]\['
-      comment: sigil (without interpolation)
-      scope: punctuation.definition.string.begin.elixir
-      push:
-        - meta_scope: string.quoted.other.literal.upper.elixir
-        - match: '\][a-z]*'
-          scope: punctuation.definition.string.end.elixir
-          pop: true
-    - match: '~[A-Z]\<'
-      comment: sigil (without interpolation)
-      scope: punctuation.definition.string.begin.elixir
-      push:
-        - meta_scope: string.quoted.other.literal.upper.elixir
-        - match: '\>[a-z]*'
-          scope: punctuation.definition.string.end.elixir
-          pop: true
-    - match: '~[A-Z]\('
-      comment: sigil (without interpolation)
-      scope: punctuation.definition.string.begin.elixir
-      push:
-        - meta_scope: string.quoted.other.literal.upper.elixir
-        - match: '\)[a-z]*'
-          scope: punctuation.definition.string.end.elixir
-          pop: true
-    - match: '~[A-Z]([^\w])'
-      comment: sigil (without interpolation)
-      scope: punctuation.definition.string.begin.elixir
-      push:
-        - meta_scope: string.quoted.other.literal.upper.elixir
-        - match: '\1[a-z]*'
-          scope: punctuation.definition.string.end.elixir
-          pop: true
+
+  str_modifiers:
+    - match: '[a-zA-Z]+'
+      scope: string.quoted.modifiers.elixir storage.type.string.elixir
+    - match: \w+
+      scope: invalid.illegal.non_ascii_modifier.elixir
+
+  str_modifiers_and_pop:
+    - include: str_modifiers
+    - match: ''
+      pop: true
+
 
   def_blocks:
     - match: ^\s*(defmodule)\b
@@ -471,8 +549,7 @@ contexts:
         - match: "'"
           scope: punctuation.definition.constant.elixir
           pop: true
-        - include: interpolated_elixir
-        - include: escaped_char
+        - include: escaped_or_interpolated
     - match: ':"'
       scope: punctuation.definition.constant.elixir
       push:
@@ -480,8 +557,7 @@ contexts:
         - match: '"'
           scope: punctuation.definition.constant.elixir
           pop: true
-        - include: interpolated_elixir
-        - include: escaped_char
+        - include: escaped_or_interpolated
     - match: '(?<!:)(:)(?>{{id_begin}}[\w@]*(?>[?!]|=(?![>=]))?|\<\>|===?|!==?|<<>>|<<<|>>>|~~~|::|<\-|\|>|=>|=~|=|/|\\\\|\*\*?|\.\.?\.?|>=?|<=?|&&?&?|\+\+?|\-\-?|\|\|?\|?|\!|@|\%?\{\}|%|\[\]|\^(\^\^)?)'
       comment: symbols
       scope: constant.other.symbol.elixir
