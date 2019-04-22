@@ -97,12 +97,12 @@ heredoc text
 # Other delimiters.
 ~s||pipe ~s//slash ~s""dquote ~s''squote
 
-~S(()round ~S[[asfaf]square ~S<<>angle ~S{{}curly
+~S(()round ~S[[]square ~S<<>angle ~S{{}curly
 ~S||pipe ~S//slash ~S""dquote ~S''squote
 
 
    ""''"#{ to_string(123) }"'#{ to_string(123) }'~r/\s{1,2}/i
 #//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.string.elixir
-   ~s()r~s[]s~s<>a~s{}c~s||p~s//s~s""d~s''s~S(as)r~S[]s~S<>a~S{ sff}c~S||p~S//s~S""d~S''s
+   ~s()r~s[]s~s<>a~s{}c~s||p~s//s~s""d~s''s~S()r~S[]s~S<>a~S{}c~S||p~S//s~S""d~S''s
 #//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.string.elixir
 
