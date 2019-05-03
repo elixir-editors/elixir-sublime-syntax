@@ -492,14 +492,14 @@ contexts:
       scope: punctuation.separator.object.elixir
     - match: \.
       scope: punctuation.separator.method.elixir
-    - match: \}
-      scope: invalid.illegal.stray-closing-brace.elixir
     - match: '\[|\]'
       scope: punctuation.section.array.elixir
     - match: \(|\)
       scope: punctuation.section.function.elixir
 
   tuple:
+    - match: \}
+      scope: invalid.illegal.stray-closing-brace.elixir
     - match: \{
       scope: punctuation.section.sequence.begin.elixir
       push:
