@@ -247,7 +247,8 @@ contexts:
             - match: (?="""|''')
               set:
                 - include: heredoc_string_interpolated
-                - {match: '', set: string_modifiers_and_pop}
+                - match: ''
+                  set: string_modifiers_and_pop
             - match: (?=[/|"'])
               set:
                 - meta_scope: meta.string.elixir
@@ -261,7 +262,8 @@ contexts:
                       scope: string.quoted.other.literal.lower.elixir punctuation.definition.string.end.elixir
                       pop: true
                     - include: escaped_or_interpolated
-                - {match: '', set: string_modifiers_and_pop}
+                - match: ''
+                  set: string_modifiers_and_pop
             - match: \{
               scope: punctuation.definition.string.begin.elixir
               set:
@@ -299,7 +301,8 @@ contexts:
             - match: (?="""|''')
               set:
                 - include: heredoc_string_raw
-                - {match: '', set: string_modifiers_and_pop}
+                - match: ''
+                  set: string_modifiers_and_pop
             - match: (?=[/|"'])
               set:
                 - meta_scope: meta.string.elixir
@@ -312,7 +315,8 @@ contexts:
                     - match: \1
                       scope: string.quoted.other.literal.upper.elixir punctuation.definition.string.end.elixir
                       pop: true
-                - {match: '', set: string_modifiers_and_pop}
+                - match: ''
+                  set: string_modifiers_and_pop
             - match: \{
               scope: punctuation.definition.string.begin.elixir
               set:
