@@ -185,7 +185,7 @@ contexts:
       comment: Triple-quoted heredocs
       captures:
         1: punctuation.definition.string.begin.elixir
-        2: invalid.illegal.opening_heredoc.elixir
+        2: invalid.illegal.opening-heredoc.elixir
       push:
         - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
         - include: escaped_or_interpolated
@@ -195,7 +195,7 @@ contexts:
       comment: Triple-quoted heredocs
       captures:
         1: punctuation.definition.string.begin.elixir
-        2: invalid.illegal.opening_heredoc.elixir
+        2: invalid.illegal.opening-heredoc.elixir
       push:
         - meta_scope: meta.string.elixir string.quoted.triple.single.elixir
         - include: escaped_or_interpolated
@@ -206,7 +206,7 @@ contexts:
       comment: Triple-quoted heredocs
       captures:
         1: punctuation.definition.string.begin.elixir
-        2: invalid.illegal.opening_heredoc.elixir
+        2: invalid.illegal.opening-heredoc.elixir
       push:
         - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
         - include: heredoc_string_closing_double
@@ -215,7 +215,7 @@ contexts:
       comment: Triple-quoted heredocs
       captures:
         1: punctuation.definition.string.begin.elixir
-        2: invalid.illegal.opening_heredoc.elixir
+        2: invalid.illegal.opening-heredoc.elixir
       push:
         - meta_scope: meta.string.elixir string.quoted.triple.single.elixir
         - include: heredoc_string_closing_single
@@ -223,15 +223,15 @@ contexts:
   heredoc_string_closing_double:
     - match: ^\s*([^"]*?)\s*(""")
       captures:
-        1: invalid.illegal.closing_heredoc.elixir
-        2: punctuation.definition.string.end.elixirsss
+        1: invalid.illegal.closing-heredoc.elixir
+        2: punctuation.definition.string.end.elixir
       pop: true
 
   heredoc_string_closing_single:
     - match: ^\s*([^']*?)\s*(''')
       captures:
-        1: invalid.illegal.closing_heredoc.elixir
-        2: punctuation.definition.string.end.elixirsss
+        1: invalid.illegal.closing-heredoc.elixir
+        2: punctuation.definition.string.end.elixir
       pop: true
 
   string:
@@ -289,7 +289,7 @@ contexts:
                 - include: string_closing_round
                 - include: escaped_or_interpolated
         - match: .
-          scope: invalid.illegal.opening_string.elixir
+          scope: invalid.illegal.opening-string.elixir
           pop: true
 
     - match: ~[A-Z]
@@ -338,7 +338,7 @@ contexts:
                 - meta_scope: meta.string.elixir string.quoted.other.literal.upper.elixir
                 - include: string_closing_round
         - match: .
-          scope: invalid.illegal.opening_string.elixir
+          scope: invalid.illegal.opening-string.elixir
           pop: true
 
   string_closing_curly:
@@ -365,7 +365,7 @@ contexts:
     - match: '[a-zA-Z]+'
       scope: meta.string.elixir string.quoted.modifiers.elixir storage.type.string.elixir
     - match: \w+
-      scope: invalid.illegal.non_ascii_modifier.elixir
+      scope: invalid.illegal.non-ascii-modifier.elixir
 
   string_modifiers_and_pop:
     - include: string_modifiers
@@ -389,7 +389,7 @@ contexts:
       captures:
         1: keyword.control.protocol.elixir
       push:
-        - meta_scope: meta.protocol_declaration.elixir
+        - meta_scope: meta.protocol-declaration.elixir
         - match: \b(do)\b
           captures:
             1: keyword.control.protocol.elixir
@@ -400,7 +400,7 @@ contexts:
       captures:
         1: keyword.control.protocol.elixir
       push:
-        - meta_scope: meta.protocol_implementation.elixir
+        - meta_scope: meta.protocol-implementation.elixir
         - match: \b(do)\b
           captures:
             1: keyword.control.protocol.elixir
@@ -493,7 +493,7 @@ contexts:
     - match: \.
       scope: punctuation.separator.method.elixir
     - match: \}
-      scope: invalid.illegal.stray_closing_brace.elixir
+      scope: invalid.illegal.stray-closing-brace.elixir
     - match: '\[|\]'
       scope: punctuation.section.array.elixir
     - match: \(|\)
