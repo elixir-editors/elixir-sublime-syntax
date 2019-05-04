@@ -1,0 +1,231 @@
+%YAML 1.2
+---
+name: Regular Expressions (Elixir)
+scope: source.regexp.elixir
+file_extensions:
+  - ex.re
+hidden: true
+
+variables:
+  character_quantifier: '[?*+]'
+  lazy_or_possessive: '[?+]'
+  ranged_quantifier: '{\d+,?\d*?}'
+  capture_name: '[a-zA-Z_][a-zA-Z_\d]*'
+
+contexts:
+  main:
+    - include: expression
+
+  expression:
+    - include: backreference
+    - include: subroutine_call
+    - include: escaped_char
+    - include: class_set
+    - include: quantifier
+    - include: group
+    - include: operator
+    - include: assertion
+
+  subroutine_call:
+    - match: \\g(?:<(-?\d+|{{capture_name}})>|'(-?\d+|{{capture_name}})'|[<{'](\w+)[>}']?)
+      scope: keyword.other.subroutine.regexp.elixir
+      captures:
+        1: variable.other.subroutine.regexp.elixir
+        2: variable.other.subroutine.regexp.elixir
+        3: invalid.illegal.subroutine.regexp.elixir
+    - match: \(\?(-?\d+|{{capture_name}})\)
+      scope: keyword.other.subroutine.regexp.elixir
+      captures:
+        1: variable.other.subroutine.regexp.elixir
+
+  backreference:
+    - match: \\\d+
+      scope: keyword.other.backreference.regexp.elixir
+    - match: \\g(?>{(-?\d+|{{capture_name}})}|-?\d+)
+      scope: keyword.other.backreference.regexp.elixir
+    - match: \(\?P=(?:({{capture_name}})|(\w+))\)
+      scope: keyword.other.backreference.regexp.elixir
+      captures:
+        1: variable.other.backreference.regexp.elixir
+        2: invalid.illegal.backreference.regexp.elixir
+    - match: \\(?:k(?:{({{capture_name}})}|<({{capture_name}})>|'({{capture_name}})'|[<{'](\w+)[>}']?))
+      scope: keyword.other.backreference.regexp.elixir
+      captures:
+        1: variable.other.backreference.regexp.elixir
+        2: variable.other.backreference.regexp.elixir
+        3: variable.other.backreference.regexp.elixir
+        4: invalid.illegal.backreference.regexp.elixir
+
+  operator:
+    - match: \|
+      scope: keyword.operator.or.regexp.elixir
+      push: [unexpected_quantifier_pop]
+
+  assertion:
+    - match: \^
+      scope: keyword.control.line-begin-anchor.regexp.elixir
+    - match: \$
+      scope: keyword.control.line-end-anchor.regexp.elixir
+      # Simple assertions.
+    - match: \\[bBAzZG]
+      scope: keyword.control.simple-anchor.regexp.elixir
+
+  escaped_char:
+    - match: \\{{character_quantifier}}
+      scope: constant.character.escape.quantifier.regexp.elixir
+    - match: \.
+      scope: constant.character.escape.dot.regexp.elixir
+    - match: \\x
+      scope: constant.character.escape.hex.regexp.elixir
+      push:
+        - match: \h{2}|\h(.?)|(..?)
+          scope: constant.character.escape.hex.regexp.elixir
+          captures:
+            1: invalid.illegal.escape.hex.regexp.elixir
+            2: invalid.illegal.escape.hex.regexp.elixir
+          pop: true
+    # TODO: allow any escape sequence?
+    - match: \\.
+      scope: constant.character.escape.char.regexp.elixir
+
+  group:
+    - match: \)
+      scope: invalid.illegal.unmatched-brace.regexp.elixir
+      # Comment
+    - match: \(\?#
+      scope: punctuation.definition.comment.begin.regexp.elixir
+      push:
+        - meta_scope: meta.group.regexp.elixir comment.block.group.regexp.elixir
+        - match: \)
+          scope: punctuation.definition.comment.end.regexp.elixir
+          set: unexpected_quantifier_pop
+    - match: \(
+      scope: keyword.control.group.regexp.elixir punctuation.definition.group.begin.regexp.elixir
+      push:
+        - meta_scope: meta.group.regexp.elixir
+          # Named capture.
+          # TODO: max length capture_name = 32
+        - match: \?(?>P?<({{capture_name}})>|'({{capture_name}})'|P?[<'](\w+)[>']?)
+          scope: keyword.other.named-capture-group.regexp.elixir
+          captures:
+            1: entity.name.capture-group.regexp.elixir
+            2: entity.name.capture-group.regexp.elixir
+            3: invalid.illegal.named-capture.regexp.elixir
+          set: [group_body, unexpected_quantifier_pop]
+          # Conditional subpattern.
+        - match: \?\(
+          scope: keyword.control.conditional.regexp.elixir
+          set:
+            # TODO: include contexts, match patterns
+            - match: \)
+              scope: keyword.control.conditional.regexp.elixir
+              set: [group_body, unexpected_quantifier_pop]
+          # Atomic group.
+        - match: \?>
+          scope: keyword.control.atomic-group.regexp.elixir
+          set: [group_body, unexpected_quantifier_pop]
+          # Non-capturing group.
+        - match: '\?:'
+          scope: keyword.control.atomic-group.regexp.elixir
+          set: [group_body, unexpected_quantifier_pop]
+          # Reset/overload group numbers inside.
+        - match: \?\|
+          scope: keyword.control.group-numbers.regexp.elixir
+          set: [group_body, unexpected_quantifier_pop]
+          # Inline option.
+        - match: (\?)(?:([imsx])|(.))(:|(?=\)))
+          scope: storage.modifier.mode.regexp.elixir
+          captures:
+            1: storage.modifier.mode.question.regexp.elixir
+            2: storage.modifier.mode.letter.regexp.elixir
+            3: invalid.illegal.inline-option.regexp.elixir
+            4: storage.modifier.mode.colon.regexp.elixir
+          set: [group_body, unexpected_quantifier_pop]
+          # Look-ahead and look-behind.
+        - match: \?(<?[=!])
+          scope: keyword.control.assertion.regexp.elixir
+          set: [group_body, unexpected_quantifier_pop]
+        - match: ''
+          set: [group_body, unexpected_quantifier_pop]
+
+  group_body:
+    - meta_content_scope: meta.group.regexp.elixir
+    - match: \)
+      scope: meta.group.regexp.elixir keyword.control.group.regexp.elixir punctuation.definition.group.end.regexp.elixir
+      pop: true
+    - include: expression
+
+  class_set:
+    - match: (\[)(\^?)
+      captures:
+        1: keyword.control.set.elixir punctuation.definition.character-class.begin.regexp.elixir
+        2: keyword.operator.negation.regexp.elixir
+      push:
+        - meta_scope: constant.other.character-class.set.regexp.elixir
+        - include: character_range
+        - include: posix_character_class
+        - include: escape_sequence
+        - match: \]
+          scope: keyword.control.set.elixir punctuation.definition.character-class.end.regexp.elixir
+          pop: true
+
+  character_range:
+    - match: (\w)(-)(\w)
+      captures:
+        1: constant.other.range.elixir
+        2: keyword.operator.range.elixir
+        3: constant.other.range.elixir
+
+  escape_sequence:
+    - match: (?i)\\[dhpsvw]
+      scope: constant.other.escape-sequence.elixir
+
+  # E.g: [:alpha:]
+  posix_character_class:
+    - match: (\[:)(?:((?>alnum|alpha|ascii|blank|cntrl|digit|graph|lower|print|punct|space|upper|word|xdigit))|(\w+))(:\])
+      scope: constant.other.character-class.inside-set.regexp.elixir
+      captures:
+        1: keyword.control.set.posix.regexp.elixir punctuation.definition.posix-class.begin.regexp.elixir
+        2: constant.other.character-class.name.regexp.elixir
+        3: invalid.illegal.unknown-character-class.regexp.elixir
+        4: keyword.control.set.posix.regexp.elixir punctuation.definition.posix-class.end.regexp.elixir
+    # TODO: fix and use this version
+    # # Positive look-ahead for :] because [: can stand alone without being a posix character class.
+    # - match: (\[:)(?=[.\n]*?:])
+    #   scope: keyword.control.set.posix.regexp.elixir punctuation.definition.posix-class.begin.regexp.elixir
+    #   push:
+    #     # - meta_scope: constant.other.character-class.inside-set.regexp.elixir
+    #     - match: (?>alnum|alpha|ascii|blank|cntrl|digit|graph|lower|print|punct|space|upper|word|xdigit)
+    #       scope: constant.other.character-class.name.regexp.elixir
+    #       set: posix_character_class_closing
+    #     - match: \w*
+    #       scope: invalid.illegal.unknown-character-class.regexp.elixir
+    #       set: posix_character_class_closing
+
+  # posix_character_class_closing:
+  #   - match: ':]'
+  #     scope: keyword.control.set.posix.regexp.elixir punctuation.definition.posix-class.end.regexp.elixir
+  #     pop: true
+  #   - match: ''
+  #     pop: true
+
+  quantifier:
+    - match: ({)(\d+)(,)?(\d+)?(})
+      captures:
+        1: keyword.operator.quantifier.begin.regexp.elixir
+        2: constant.numeric.quantifier.min.regexp.elixir
+        3: keyword.operator.quantifier.comma.regexp.elixir
+        4: constant.numeric.quantifier.max.regexp.elixir
+        5: keyword.operator.quantifier.end.regexp.elixir
+    - match: '{{character_quantifier}}{{lazy_or_possessive}}?'
+      scope: keyword.operator.quantifier.regexp.elixir
+      push: unexpected_quantifier_pop
+
+  unexpected_quantifier:
+    - match: (?:{{character_quantifier}}|{{ranged_quantifier}})+
+      scope: invalid.illegal.unexpected-quantifier.regexp.elixir
+
+  unexpected_quantifier_pop:
+    - include: unexpected_quantifier
+    - match: ''
+      pop: true
