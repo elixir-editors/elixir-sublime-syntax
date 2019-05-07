@@ -156,6 +156,8 @@ contexts:
     - include: expression
 
   class_set:
+    - match: \[:.*?:\]
+      scope: invalid.illegal.posix-class.regexp.elixir
     - match: (\[)(\^?)
       captures:
         1: keyword.control.set.elixir punctuation.definition.character-class.begin.regexp.elixir
@@ -182,32 +184,22 @@ contexts:
 
   # E.g: [:alpha:]
   posix_character_class:
-    - match: (\[:)(?:((?>alnum|alpha|ascii|blank|cntrl|digit|graph|lower|print|punct|space|upper|word|xdigit))|(\w+))(:\])
-      scope: constant.other.character-class.inside-set.regexp.elixir
-      captures:
-        1: keyword.control.set.posix.regexp.elixir punctuation.definition.posix-class.begin.regexp.elixir
-        2: constant.other.character-class.name.regexp.elixir
-        3: invalid.illegal.unknown-character-class.regexp.elixir
-        4: keyword.control.set.posix.regexp.elixir punctuation.definition.posix-class.end.regexp.elixir
-    # TODO: fix and use this version
-    # # Positive look-ahead for :] because [: can stand alone without being a posix character class.
-    # - match: (\[:)(?=[.\n]*?:])
-    #   scope: keyword.control.set.posix.regexp.elixir punctuation.definition.posix-class.begin.regexp.elixir
-    #   push:
-    #     # - meta_scope: constant.other.character-class.inside-set.regexp.elixir
-    #     - match: (?>alnum|alpha|ascii|blank|cntrl|digit|graph|lower|print|punct|space|upper|word|xdigit)
-    #       scope: constant.other.character-class.name.regexp.elixir
-    #       set: posix_character_class_closing
-    #     - match: \w*
-    #       scope: invalid.illegal.unknown-character-class.regexp.elixir
-    #       set: posix_character_class_closing
-
-  # posix_character_class_closing:
-  #   - match: ':]'
-  #     scope: keyword.control.set.posix.regexp.elixir punctuation.definition.posix-class.end.regexp.elixir
-  #     pop: true
-  #   - match: ''
-  #     pop: true
+    - match: \[::\]
+      scope: invalid.illegal.posix-class.regexp.elixir
+    # Positive look-ahead for :] because [: can stand alone without being a posix character class.
+    # Read as: in-between there may be 0 or more of "\\", "[" not followed by ":", "[" or "]" preceded by a "\",
+    # and any other character besides "[", "]".
+    - match: (\[:)(?=(\\\\|\[(?!:)|(?<=\\)[\[\]]|[^\[\]])*?:])
+      scope: keyword.control.set.posix.regexp.elixir punctuation.definition.posix-class.begin.regexp.elixir
+      push:
+        - meta_scope: constant.other.character-class.posix.regexp.elixir
+        - match: :]
+          scope: keyword.control.set.posix.regexp.elixir punctuation.definition.posix-class.end.regexp.elixir
+          pop: true
+        - match: (?>alnum|alpha|ascii|blank|cntrl|digit|graph|lower|print|punct|space|upper|word|xdigit)
+          scope: constant.other.posix-class.name.regexp.elixir
+        - match: .+?(?=:])
+          scope: invalid.illegal.unknown-posix-class.regexp.elixir
 
   quantifier:
     - match: ({)(\d+)(,)?(\d+)?(})
