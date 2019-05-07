@@ -19,10 +19,10 @@ contexts:
   expression:
     - include: backreference
     - include: subroutine_call
-    - include: escaped_char
     - include: class_set
     - include: quantifier
     - include: group
+    - include: escaped_char
     - include: operator
     - include: assertion
 
@@ -132,6 +132,10 @@ contexts:
         - match: \?\|
           scope: keyword.control.group-numbers.regexp.elixir
           set: [group_body, unexpected_quantifier_pop]
+          # Look-ahead and look-behind.
+        - match: \?(<?[=!])
+          scope: keyword.control.assertion.regexp.elixir
+          set: [group_body, unexpected_quantifier_pop]
           # Inline option.
         - match: (\?)(?:([imsx])|(.))(:|(?=\)))
           scope: storage.modifier.mode.regexp.elixir
@@ -140,10 +144,6 @@ contexts:
             2: storage.modifier.mode.letter.regexp.elixir
             3: invalid.illegal.inline-option.regexp.elixir
             4: storage.modifier.mode.colon.regexp.elixir
-          set: [group_body, unexpected_quantifier_pop]
-          # Look-ahead and look-behind.
-        - match: \?(<?[=!])
-          scope: keyword.control.assertion.regexp.elixir
           set: [group_body, unexpected_quantifier_pop]
         - match: ''
           set: [group_body, unexpected_quantifier_pop]
@@ -167,6 +167,8 @@ contexts:
         - include: character_range
         - include: posix_character_class
         - include: escape_sequence
+        # TODO: check if any escaped char is allowed.
+        - include: escaped_char
         - match: \]
           scope: keyword.control.set.elixir punctuation.definition.character-class.end.regexp.elixir
           pop: true
