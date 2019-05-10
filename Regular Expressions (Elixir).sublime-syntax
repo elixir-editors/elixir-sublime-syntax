@@ -112,14 +112,7 @@ contexts:
             2: entity.name.capture-group.regexp.elixir
             3: invalid.illegal.named-capture.regexp.elixir
           set: [group_body, unexpected_quantifier_pop]
-          # Conditional subpattern.
-        - match: \?\(
-          scope: keyword.control.conditional.regexp.elixir
-          set:
-            # TODO: include contexts, match patterns
-            - match: \)
-              scope: keyword.control.conditional.regexp.elixir
-              set: [group_body, unexpected_quantifier_pop]
+        - include: conditional_subpattern
           # Atomic group.
         - match: \?>
           scope: keyword.control.atomic-group.regexp.elixir
@@ -133,7 +126,7 @@ contexts:
           scope: keyword.control.group-numbers.regexp.elixir
           set: [group_body, unexpected_quantifier_pop]
           # Look-ahead and look-behind.
-        - match: \?(<?[=!])
+        - match: \?<?[=!]
           scope: keyword.control.assertion.regexp.elixir
           set: [group_body, unexpected_quantifier_pop]
           # Inline option.
@@ -154,6 +147,47 @@ contexts:
       scope: meta.group.regexp.elixir keyword.control.group.regexp.elixir punctuation.definition.group.end.regexp.elixir
       pop: true
     - include: expression
+
+  conditional_subpattern:
+      # Conditional subpattern.
+    - match: \?(\()
+      scope: keyword.control.conditional.regexp.elixir
+      captures:
+        1: punctuation.definition.conditional.begin.regexp.elixir
+      push:
+          # Pseudo-condition called DEFINE.
+        - match: DEFINE
+          scope: keyword.other.conditional.definition.regexp
+          set: [conditional_subpattern_body, unexpected_quantifier_pop]
+          # References to recursion.
+        - match: R(?:\d+|&{{capture_name}})
+          scope: variable.other.backreference.recursion.regexp.elixir
+          set: [conditional_subpattern_body, unexpected_quantifier_pop]
+          # References to subpatterns.
+        - match: <({{capture_name}})>|'({{capture_name}})'|({{capture_name}})
+          captures:
+            1: variable.other.backreference.regexp.elixir
+            2: variable.other.backreference.regexp.elixir
+            3: variable.other.backreference.regexp.elixir
+          set: [conditional_subpattern_body, unexpected_quantifier_pop]
+          # Assertions: positive or negative lookahead or lookbehind assertion.
+        - match: \?<?[=!]
+          scope: keyword.control.assertion.regexp.elixir
+          set:
+            - match: \)
+              scope: keyword.control.group.regexp.elixir punctuation.definition.conditional.end.regexp.elixir
+              set: [group_body, unexpected_quantifier_pop]
+            - include: unexpected_quantifier_pop
+            - include: expression
+
+  conditional_subpattern_body:
+    - meta_content_scope: meta.conditional.regexp.elixir
+    - match: \)
+      scope: keyword.control.conditional.regexp.elixir
+      set: [group_body, unexpected_quantifier_pop]
+    - match: '[^)]+'
+      scope: invalid.illegal.conditional.regexp.elixir
+
 
   class_set:
     - match: \[:.*?:\]
