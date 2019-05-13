@@ -16,21 +16,25 @@ contexts:
     - match: <%#
       push:
         - meta_scope: comment.eex.elixir
-        - match: \%>
+        - match: '%>'
           pop: true
 
     - match: <%%
       scope: keyword punctuation.definition.string.begin.elixir
       push:
         - meta_content_scope: string.eex.elixir
-        - match: \%>
+        - match: '%>'
           scope: keyword punctuation.definition.string.end.elixir
           pop: true
 
-    - match: <%=?
-      scope: keyword punctuation.section.embedded.begin.elixir
-      embed: scope:source.elixir
-      embed_scope: source.elixir.embedded.html
-      escape: \%>
-      escape_captures:
-        0: keyword punctuation.section.embedded.end.elixir
+    - match: (?=<%)
+      push:
+        - clear_scopes: 1
+        - match: '%>'
+          scope: keyword punctuation.section.embedded.end.elixir
+          pop: true
+        - match: <%[=/|]?
+          scope: keyword punctuation.section.embedded.begin.elixir
+          embed: scope:source.elixir
+          embed_scope: source.elixir.embedded.html
+          escape: (?=%>)
