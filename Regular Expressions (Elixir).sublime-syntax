@@ -22,6 +22,8 @@ contexts:
     - include: subroutine_call
     - include: class_set
     - include: quantifier
+    - include: inline_option
+    - include: backtracking_verb
     - include: group
     - include: escaped_char
     - include: operator
@@ -88,6 +90,20 @@ contexts:
     # TODO: allow any escape sequence?
     - match: \\.
       scope: constant.character.escape.char.regexp.elixir
+
+  inline_option:
+    - match: \(\*((?>UTF8?|UCP|CRLF|CR|LF|ANYCRLF|ANY|BSR_ANYCRLF|BSR_UNICODE|LIMIT_(?>MATCH|RECURSION)=\d+))?\)
+      captures:
+        0: keyword.control.flag.regexp.elixir
+        1: storage.modifier.mode.letter.regexp.elixir
+
+  backtracking_verb:
+    - match: \(\*(?>NO_START_OPT|MARK|THEN|PRUNE|SKIP|COMMIT|FAIL|F|ACCEPT)(?::[^)]*)?\)
+      scope: keyword.control.verb.regexp.elixir
+    - match: \(\*([^)]+)\)
+      captures:
+        0: keyword.control.verb.regexp.elixir
+        1: invalid.illegal.backtracking-verb.regexp.elixir
 
   group:
     - match: \)
