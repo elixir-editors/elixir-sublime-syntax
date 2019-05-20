@@ -92,18 +92,49 @@ contexts:
       scope: constant.character.escape.char.regexp.elixir
 
   inline_option:
-    - match: \(\*((?>UTF8?|UCP|CRLF|CR|LF|ANYCRLF|ANY|BSR_ANYCRLF|BSR_UNICODE|LIMIT_(?>MATCH|RECURSION)=\d+))?\)
+    - match: (\(\*)((?>NO_START_OPT|UTF8?|UCP|CRLF|CR|LF|ANYCRLF|ANY|BSR_ANYCRLF|BSR_UNICODE|LIMIT_(?>MATCH|RECURSION)=))
       captures:
-        0: keyword.control.flag.regexp.elixir
-        1: storage.modifier.mode.letter.regexp.elixir
+        1: punctuation.definition.annotation.begin.regexp.elixir
+        2: storage.modifier.mode.letter.regexp.elixir
+      push:
+        - meta_scope: keyword.control.flag.regexp.elixir
+        - match: (?<==)\d+
+          scope: constant.numeric.integer.decimal.regexp.elixir
+        - match: '[^)]+'
+          scope: invalid.illegal.inline-option.regexp.elixir
+        - match: \)
+          scope: punctuation.definition.annotation.end.regexp.elixir
+          pop: true
 
   backtracking_verb:
-    - match: \(\*(?>NO_START_OPT|MARK|THEN|PRUNE|SKIP|COMMIT|FAIL|F|ACCEPT)(?::[^)]*)?\)
-      scope: keyword.control.verb.regexp.elixir
-    - match: \(\*([^)]+)\)
-      captures:
-        0: keyword.control.verb.regexp.elixir
-        1: invalid.illegal.backtracking-verb.regexp.elixir
+    - match: \(\*(?=[a-zA-Z:])
+      scope: punctuation.definition.annotation.begin.regexp.elixir
+      push:
+        - match: ((?>ACCEPT|COMMIT|FAIL|F))(:?)
+          captures:
+            1: keyword.control.verb.regexp.elixir
+            2: punctuation.separator.sequence.regexp.elixir
+          set: backtracking_verb_end
+        - match: (?>MARK|THEN|PRUNE|SKIP|(?=:))
+          scope: keyword.control.verb.regexp.elixir
+          set:
+            - match: ':'
+              scope: punctuation.separator.sequence.regexp.elixir
+              push:
+                - meta_content_scope: entity.name.constant.regexp.elixir
+                - match: (?=\))
+                  pop: true
+            - include: backtracking_verb_end
+        - include: backtracking_verb_end
+
+  backtracking_verb_end:
+    - match: ''
+      set:
+        - match: '[^)\n]+'
+          scope: invalid.illegal.backtracking-verb.regexp.elixir
+        - match: \)
+          scope: punctuation.definition.annotation.end.regexp.elixir
+          pop: true
 
   group:
     - match: \)
