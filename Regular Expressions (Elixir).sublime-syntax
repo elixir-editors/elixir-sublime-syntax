@@ -18,6 +18,7 @@ contexts:
     - include: expression
 
   expression:
+    - include: quoted_sequence
     - include: backreference
     - include: subroutine_call
     - include: class_set
@@ -28,6 +29,14 @@ contexts:
     - include: escaped_char
     - include: operator
     - include: assertion
+
+  quoted_sequence:
+    - match: \\Q
+      scope: keyword.control.quote.regexp.elixir
+      push:
+        - match: \\E
+          scope: keyword.control.quote.regexp.elixir
+          pop: true
 
   subroutine_call:
     - match: \\g(?:<(-?\d+|{{capture_name}})>|'(-?\d+|{{capture_name}})'|[<{'](\w+)[>}']?)
