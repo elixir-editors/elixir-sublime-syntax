@@ -68,11 +68,11 @@ contexts:
       scope: constant.numeric.elixir
 
   binary:
-    - match: (?><<)(?!<)
+    - match: <<(?!<)
       scope: punctuation.definition.binary.begin.elixir
       push:
         - meta_scope: binary.elixir
-        - match: '>>'
+        - match: '>>(?!>)'
           scope: punctuation.definition.binary.end.elixir
           pop: true
         - match: ','
@@ -105,10 +105,10 @@ contexts:
       scope: constant.character.escape.char.elixir
 
   interpolated_elixir:
-    - match: (?=#\{)
+    - match: (?=#{)
       push:
         - clear_scopes: true
-        - match: '#\{'
+        - match: '#{'
           scope: punctuation.section.interpolation.begin.elixir
           set:
             - clear_scopes: true
@@ -203,7 +203,7 @@ contexts:
         - include: heredoc_string_closing_single
 
   heredoc_string_interpolated:
-    - match: (""")\s*(.+$)?
+    - match: (""")\s*(.*)
       comment: Triple-quoted heredocs
       captures:
         1: punctuation.definition.string.begin.elixir
@@ -213,7 +213,7 @@ contexts:
         - include: escaped_or_interpolated
         - include: heredoc_string_closing_double
 
-    - match: (''')\s*(.+$)?
+    - match: (''')\s*(.*)
       comment: Triple-quoted heredocs
       captures:
         1: punctuation.definition.string.begin.elixir
@@ -224,7 +224,7 @@ contexts:
         - include: heredoc_string_closing_single
 
   heredoc_string_raw:
-    - match: (""")\s*(.+$)?
+    - match: (""")\s*(.*)
       comment: Triple-quoted heredocs
       captures:
         1: punctuation.definition.string.begin.elixir
@@ -233,7 +233,7 @@ contexts:
         - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
         - include: heredoc_string_closing_double
 
-    - match: (''')\s*(.+$)?
+    - match: (''')\s*(.*)
       comment: Triple-quoted heredocs
       captures:
         1: punctuation.definition.string.begin.elixir
@@ -627,11 +627,11 @@ contexts:
         - include: escaped_char
 
   punctuations:
-    - match: '<-|->'
+    - match: <-|->
       scope: keyword.operator.arrow.elixir
-    - match: '<>'
+    - match: <>
       scope: keyword.operator.binary-concatenation.elixir
-    - match: '\|>'
+    - match: \|>
       scope: keyword.operator.pipe.elixir
     - match: \+\+|--
       scope: keyword.operator.list-manipulation.elixir
@@ -643,17 +643,17 @@ contexts:
       scope: keyword.operator.bitwise.elixir
     - match: \||\*\*|\\\\|~
       scope: keyword.operator.other.elixir
-    - match: "===?|!==?|<=?|>=?"
+    - match: (?>[!=]=|[<>])=?
       scope: keyword.operator.comparison.elixir
     - match: '(?<=[ \t])!+|\bnot\b|&&|\band\b|\|\||\bor\b|\bxor\b'
       scope: keyword.operator.logical.elixir
-    - match: \+|-|\*|/
+    - match: '[-+*/]'
       scope: keyword.operator.arithmetic.elixir
-    - match: "="
+    - match: =
       scope: keyword.operator.assignment.elixir
-    - match: \;
+    - match: ;
       scope: punctuation.separator.statement.elixir
-    - match: ","
+    - match: \,
       scope: punctuation.separator.object.elixir
     - match: \.
       scope: punctuation.separator.method.elixir
