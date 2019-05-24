@@ -92,15 +92,18 @@ contexts:
                 2: variable.numeric.elixir
 
   escaped_char:
-    - match: \\x
+    - match: \\x\h{2}
       scope: constant.character.escape.hex.elixir
-      push:
-        - match: \h{2}|\h(.?)|(..?)
-          scope: constant.character.escape.hex.elixir
-          captures:
-            1: invalid.illegal.escape.hex.elixir
-            2: invalid.illegal.escape.hex.elixir
-          pop: true
+    # Avoid possibly matching closing string delimiter: [^'"/)\]}>]
+    - match: \\x(?:\h|([^'"/)\]}>])){1,2}
+      scope: constant.character.escape.hex.elixir
+      captures:
+        1: invalid.illegal.escape.hex.elixir
+        2: invalid.illegal.escape.hex.elixir
+    - match: \\u(?:\h{4}|{\h{1,6}})
+      scope: constant.character.escape.unicode.elixir
+    - match: \\u(?:{}|{?[^'"/)\]}>]{1,6}}?)
+      scope: invalid.illegal.escape.unicode.elixir
     - match: \\.
       scope: constant.character.escape.char.elixir
 
