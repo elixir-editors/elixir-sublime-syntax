@@ -19,6 +19,7 @@ contexts:
 
   expression:
     - include: quoted_sequence
+    - include: escaped_char
     - include: backreference
     - include: subroutine_call
     - include: class_set
@@ -26,7 +27,6 @@ contexts:
     - include: inline_option
     - include: backtracking_verb
     - include: group
-    - include: escaped_char
     - include: operator
     - include: assertion
 
@@ -87,17 +87,31 @@ contexts:
       scope: constant.character.escape.quantifier.regexp.elixir
     - match: \.
       scope: constant.character.escape.dot.regexp.elixir
-    - match: \\x
+    - match: (\\x(?!{))|(?>\\x(?>{\h+}|{(?>\h|([^}]))+}|({}?)|))
       scope: constant.character.escape.hex.regexp.elixir
+      captures:
+        1: invalid.illegal.escape.hex.regexp.elixir
+        2: invalid.illegal.escape.hex.regexp.elixir
+        3: invalid.illegal.escape.hex.regexp.elixir
+    - match: \\0[0-7]{1,2}
+      scope: constant.character.escape.octal.regexp.elixir
+    - match: (\\o(?!{))|(?>\\o(?>{[0-7]+}|{(?>[0-7]|([^}]))+}|({}?)|))
+      scope: constant.character.escape.octal.regexp.elixir
+      captures:
+        1: invalid.illegal.escape.octal.regexp.elixir
+        2: invalid.illegal.escape.octal.regexp.elixir
+        3: invalid.illegal.escape.octal.regexp.elixir
+    - match: \\c
+      scope: constant.character.escape.ascii.regexp.elixir
       push:
-        - match: \h{2}|\h(.?)|(..?)
-          scope: constant.character.escape.hex.regexp.elixir
+        - match: \p{ascii}|(.?)
+          scope: constant.character.escape.ascii.regexp.elixir
           captures:
-            1: invalid.illegal.escape.hex.regexp.elixir
-            2: invalid.illegal.escape.hex.regexp.elixir
+            1: invalid.illegal.escape.ascii.regexp.elixir
           pop: true
-    # TODO: allow any escape sequence?
-    - match: \\.
+    - match: \\[aefnrt]
+      scope: constant.character.escape.char.regexp.elixir
+    - match: \\[\[(]
       scope: constant.character.escape.char.regexp.elixir
 
   inline_option:
