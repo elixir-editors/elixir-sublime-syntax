@@ -290,9 +290,9 @@ contexts:
     - match: (?i)\\[dhpsvw]
       scope: constant.other.escape-sequence.elixir
 
-  # E.g: [:alpha:]
+  # E.g: [:alpha:] or [:^alpha:]
   posix_character_class:
-    - match: \[::\]
+    - match: \[:\^?:\]
       scope: invalid.illegal.posix-class.regexp.elixir
     # Positive look-ahead for :] because [: can stand alone without being a posix character class.
     # Read as: in-between there may be 0 or more of "\\", "[" not followed by ":", "[" or "]" preceded by a "\",
@@ -304,8 +304,10 @@ contexts:
         - match: :]
           scope: keyword.control.set.posix.regexp.elixir punctuation.definition.posix-class.end.regexp.elixir
           pop: true
-        - match: (?>alnum|alpha|ascii|blank|cntrl|digit|graph|lower|print|punct|space|upper|word|xdigit)
-          scope: constant.other.posix-class.name.regexp.elixir
+        - match: (\^?)((?>alnum|alpha|ascii|blank|cntrl|digit|graph|lower|print|punct|space|upper|word|xdigit))
+          captures:
+            1: keyword.control.set.negation.regexp.elixir
+            2: constant.other.posix-class.name.regexp.elixir
         - match: .+?(?=:])
           scope: invalid.illegal.unknown-posix-class.regexp.elixir
 
