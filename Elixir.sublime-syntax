@@ -60,7 +60,7 @@ contexts:
         - match: ',|\)|$'
           pop: true
         - include: main
-    - match: \b(is_(?:atom|binary|bitstring|boolean|float|function|integer|list|map|nil|number|pid|port|record|reference|tuple|exception)|abs|bit_size|byte_size|div|elem|hd|length|map_size|node|rem|round|tl|trunc|tuple_size)\b
+    - match: \b(?>is_(?>atom|binary|bitstring|boolean|float|function|integer|list|map|nil|number|pid|port|record|reference|tuple|exception)|abs|bit_size|byte_size|div|elem|hd|length|map_size|node|rem|round|tl|trunc|tuple_size)\b
       scope: keyword.guard.elixir
 
   numeric:
