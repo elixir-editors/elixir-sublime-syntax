@@ -262,7 +262,42 @@ contexts:
 
   string:
     - include: heredoc_string_interpolated
+
+    # Look for ':' behind the closing apostrophe.
+    - match: (?=(['"])(?>\\\\|\\\1|.)*?\1:)
+      comment: keyword string
+      push:
+        - match: (["'])
+          set:
+            - meta_scope: constant.other.symbol.double-quoted.elixir
+            - include: escaped_or_interpolated
+            - match: '\1:'
+              pop: true
+
     - include: simple_string
+
+    # Look for 'a' behind the closing delimiter.
+    - match: (?=~w([/|"'])(?>\\\\|\\\1|.)*?\1a)
+      comment: highlight words as atoms
+      push:
+        - match: (~w)(.)
+          captures:
+            1: storage.type.string.elixir
+            2: string.quoted.other.atom.elixir punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir
+            - meta_content_scope: string.quoted.other.atom.elixir constant.other.symbol.atom.elixir
+            - match: \s+
+              push:
+                - clear_scopes: 1
+                - match: ''
+                  pop: true
+            - include: interpolated_elixir
+            - match: (\2)(a)
+              captures:
+                1: string.quoted.other.atom.elixir punctuation.definition.string.end.elixir
+                2: string.quoted.modifiers.elixir storage.type.string.elixir
+              pop: true
 
     - match: ~r
       comment: regex sigil string with interpolation
