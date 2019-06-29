@@ -264,20 +264,23 @@ contexts:
     - include: heredoc_string_interpolated
 
     # Look for ':' behind the closing apostrophe.
-    - match: (?=(['"])(?>\\\\|\\\1|.)*?\1:)
+    - match: (?=(["'])(?>\\.|(?!\1).)*\1:)
       comment: keyword string
       push:
-        - match: (["'])
+        - match: (.)
+          scope: punctuation.definition.constant.begin.regexp.elixir
           set:
             - meta_scope: constant.other.symbol.double-quoted.elixir
             - include: escaped_or_interpolated
             - match: '\1:'
+              scope: punctuation.definition.constant.end.regexp.elixir
               pop: true
 
     - include: simple_string
 
     # Look for 'a' behind the closing delimiter.
-    - match: (?=~w([/|"'])(?>\\\\|\\\1|.)*?\1a)
+    # Bracket delimiters are not matched yet: <>, {}, [] and ()
+    - match: (?=~w([/|"'])(?>\\.|(?!\1).)*\1a)
       comment: highlight words as atoms
       push:
         - match: (~w)(.)
@@ -292,7 +295,7 @@ contexts:
                 - clear_scopes: 1
                 - match: ''
                   pop: true
-            - include: interpolated_elixir
+            - include: escaped_or_interpolated
             - match: (\2)(a)
               captures:
                 1: string.quoted.other.atom.elixir punctuation.definition.string.end.elixir
