@@ -106,3 +106,34 @@ heredoc text
    ~s()r~s[]s~s<>a~s{}c~s||p~s//s~s""d~s''s~S()r~S[]s~S<>a~S{}c~S||p~S//s~S""d~S''s
 #//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.string.elixir
 
+# Atom words string:
+{~w"\" \#{} \\ xyz"a, "a"}
+
+# Atoms as keywords and symbols.
+[
+  "": :"", "\\": :"\\", "\"": :"\"", "a \#{:b} c\":": :"a \#{:b} c\":", "#{''}": :"#{""}",
+  Ö: :Ö, ö: :ö, Ä@: :Ä@, :me@home@work :me@home@work,
+  =~: :=~, =: :=, ==: :==, ===: :===, !: :!, !=: :!=, !==: :!==, <<>>: :<<>>,
+  <<<: :<<<, >>>: :>>>, ~~~: :~~~, <~>: :<~>, <~: :<~, <<~: :<<~, ~>: :~>,
+  ~>>: :~>>, |>: :|>, <|>: :<|>, /: :/, \\: :\\, *: :*, ..: :.., ...: :...,
+  >=: :>=, <=: :<=, <: :<, <-: :<-, <>: :<>, -: :-, --: :--, ->: :->, >: :>,
+  &: :&, &&: :&&, &&&: :&&&, +: :+, ++: :++, |: :|, ||: :||, |||: :|||, @: :@,
+  {}: :{}, %{}: :%{}, %: :%, ^: :^, ^^^: :^^^
+]
+
+# Exceptions:
+[
+   **: :**,
+#//    ^^^ constant.other.symbol.elixir
+#//^^ keyword.operator.other.elixir
+   .: :.,
+#//   ^^ constant.other.symbol.elixir
+#//^ punctuation.separator.method.elixir
+   ^^: :^^,
+#//    ^^ constant.other.symbol.elixir
+#// ^^ constant.other.symbol.elixir
+   []: :[],
+#//    ^^^ constant.other.symbol.elixir
+#//^^ punctuation.section.array.elixir
+]
+
