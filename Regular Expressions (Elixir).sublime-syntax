@@ -19,16 +19,16 @@ contexts:
 
   expression:
     - include: quoted_sequence
-    - include: escaped_char
     - include: backreference
     - include: subroutine_call
+    - include: assertion
+    - include: escape_sequence
     - include: class_set
     - include: quantifier
     - include: inline_option
     - include: backtracking_verb
     - include: group
     - include: operator
-    - include: assertion
 
   quoted_sequence:
     - match: \\Q
@@ -67,6 +67,36 @@ contexts:
         2: variable.other.backreference.regexp.elixir
         3: variable.other.backreference.regexp.elixir
         4: invalid.illegal.backreference.regexp.elixir
+
+  common_escape_sequence:
+    - match: \\(?i)[dhsvw]
+      scope: constant.other.escape-sequence.regexp.elixir
+    - include: character_property
+    - include: escaped_char
+    - match: \\.
+      scope: constant.character.escape.regexp.elixir
+
+  character_property:
+    - match: \\[pP]{\^?(?>C[cfnos]?|L[&lmotu]?|M[cen]?|N[dlo]?|P[cdefios]?|S[ckmo]?|Z[lps]?|X(?>an|ps|sp|wd|uc))}
+      scope: constant.other.escape-sequence.general-category.regexp.elixir
+    - match: \\[pP][CLMNPSZ]
+      scope: constant.other.escape-sequence.general-category.regexp.elixir
+    - match: \\[pP]{[[:alpha:]]+}
+      scope: constant.other.escape-sequence.script-name.regexp.elixir
+    - match: \\[pP](.)
+      scope: constant.other.escape-sequence.general-category.regexp.elixir
+      captures:
+        1: invalid.illegal.general-category.regexp.elixir
+
+  # Outside character class.
+  escape_sequence:
+    - match: \\X
+      scope: constant.character.escape.extended-grapheme-cluster.regexp.elixir
+    - match: \\K
+      scope: constant.character.escape.match-reset.regexp.elixir
+    - match: \\R
+      scope: constant.character.escape.unicode-newline.regexp.elixir
+    - include: common_escape_sequence
 
   operator:
     - match: \|
@@ -110,9 +140,7 @@ contexts:
             1: invalid.illegal.escape.ascii.regexp.elixir
           pop: true
     - match: \\[aefnrt]
-      scope: constant.character.escape.char.regexp.elixir
-    - match: \\[\[(^$]
-      scope: constant.character.escape.char.regexp.elixir
+      scope: constant.character.escape.non-printable.regexp.elixir
 
   inline_option:
     - match: (\(\*)((?>NO_START_OPT|UTF8?|UCP|CRLF|CR|LF|ANYCRLF|ANY|BSR_ANYCRLF|BSR_UNICODE|LIMIT_(?>MATCH|RECURSION)=))
@@ -261,23 +289,20 @@ contexts:
     - match: '[^)]+'
       scope: invalid.illegal.conditional.regexp.elixir
 
-
   class_set:
     - match: \[:.*?:\]
       scope: invalid.illegal.posix-class.regexp.elixir
     - match: (\[)(\^?)
       captures:
-        1: keyword.control.set.elixir punctuation.definition.character-class.begin.regexp.elixir
+        1: keyword.control.set.regexp.elixir punctuation.definition.character-class.begin.regexp.elixir
         2: keyword.operator.negation.regexp.elixir
       push:
-        - meta_scope: constant.other.character-class.set.regexp.elixir
+        - meta_scope: meta.set.regexp.elixir
         - include: character_range
         - include: posix_character_class
-        - include: escape_sequence
-        # TODO: check if any escaped char is allowed.
-        - include: escaped_char
+        - include: class_set_escape_sequence
         - match: \]
-          scope: keyword.control.set.elixir punctuation.definition.character-class.end.regexp.elixir
+          scope: keyword.control.set.regexp.elixir punctuation.definition.character-class.end.regexp.elixir
           pop: true
 
   character_range:
@@ -287,9 +312,13 @@ contexts:
         2: keyword.operator.range.elixir
         3: constant.other.range.elixir
 
-  escape_sequence:
-    - match: (?i)\\[dhpsvw]
-      scope: constant.other.escape-sequence.elixir
+  # Escape sequences inside [...]
+  class_set_escape_sequence:
+    - match: \\N
+      scope: invalid.illegal.escape-sequence.regexp.elixir
+    - match: \\b
+      scope: constant.character.escape.backspace.regexp.elixir
+    - include: common_escape_sequence
 
   # E.g: [:alpha:] or [:^alpha:]
   posix_character_class:
