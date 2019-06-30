@@ -306,11 +306,23 @@ contexts:
           pop: true
 
   character_range:
-    - match: (\w)(-)(\w)
-      captures:
-        1: constant.other.range.elixir
-        2: keyword.operator.range.elixir
-        3: constant.other.range.elixir
+    - match: (?=(\\[dsw]|\\x\h\h|\\\d+|\\c\p{ascii}|\\.|.)-\g<1>)
+      push:
+        - match: (?>(\\[dsw])|(\\x\h\h|\\\d+|\\c\p{ascii}|\\.|.))
+          scope: meta.character-range.regexp.elixir
+          captures:
+            1: invalid.illegal.range.regexp.elixir
+            2: constant.other.range.regexp.elixir
+          set:
+            - match: '-'
+              scope: keyword.operator.range.regexp.elixir
+              set:
+                - meta_scope: meta.character-range.regexp.elixir
+                - match: (?>(\\[dsw])|(\\x\h\h|\\\d+|\\c\p{ascii}|\\.|.))
+                  captures:
+                    1: invalid.illegal.range.regexp.elixir
+                    2: constant.other.range.regexp.elixir
+                  pop: true
 
   # Escape sequences inside [...]
   class_set_escape_sequence:
