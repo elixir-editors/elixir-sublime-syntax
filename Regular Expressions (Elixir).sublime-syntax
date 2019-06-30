@@ -45,7 +45,7 @@ contexts:
         1: variable.other.subroutine.regexp.elixir
         2: variable.other.subroutine.regexp.elixir
         3: invalid.illegal.subroutine.regexp.elixir
-    - match: \(\?(-?\d+|{{capture_name}})\)
+    - match: \(\?([+-]?\d+|R|P>{{capture_name}}|&{{capture_name}})\)
       scope: keyword.other.subroutine.regexp.elixir
       captures:
         1: variable.other.subroutine.regexp.elixir
@@ -60,7 +60,7 @@ contexts:
       captures:
         1: variable.other.backreference.regexp.elixir
         2: invalid.illegal.backreference.regexp.elixir
-    - match: \\(?:k(?:{({{capture_name}})}|<({{capture_name}})>|'({{capture_name}})'|[<{'](\w+)[>}']?))
+    - match: \\k(?:{({{capture_name}})}|<({{capture_name}})>|'({{capture_name}})'|[<{'](\w+)[>}']?)
       scope: keyword.other.backreference.regexp.elixir
       captures:
         1: variable.other.backreference.regexp.elixir
@@ -87,7 +87,7 @@ contexts:
       scope: constant.character.escape.quantifier.regexp.elixir
     - match: \.
       scope: constant.character.escape.dot.regexp.elixir
-    - match: (\\x(?!{))|(?>\\x(?>{\h+}|{(?>\h|([^}]))+}|({}?)|))
+    - match: \\x\h\h|(\\x(?!{))|(?>\\x(?>{\h+}|{(?>\h|([^}]))+}|({}?)|))
       scope: constant.character.escape.hex.regexp.elixir
       captures:
         1: invalid.illegal.escape.hex.regexp.elixir
@@ -200,11 +200,12 @@ contexts:
           scope: keyword.control.assertion.regexp.elixir
           set: [group_body, unexpected_quantifier_pop]
           # Inline option.
-        - match: (\?)(?:([imsx])|(.))(:|(?=\)))
+        # - match: (\?)([imsx]+(?:-[imsx]*)?)([^:)]*)(:|(?=\)))
+        - match: (\?)([imsx]+(?:-[imsx]*)?)(.*?)(:|(?=\)))
           scope: storage.modifier.mode.regexp.elixir
           captures:
             1: storage.modifier.mode.question.regexp.elixir
-            2: storage.modifier.mode.letter.regexp.elixir
+            2: storage.modifier.mode.letters.regexp.elixir
             3: invalid.illegal.inline-option.regexp.elixir
             4: storage.modifier.mode.colon.regexp.elixir
           set: [group_body, unexpected_quantifier_pop]
@@ -292,7 +293,7 @@ contexts:
 
   # E.g: [:alpha:] or [:^alpha:]
   posix_character_class:
-    - match: \[:\^?:\]
+    - match: \[::\]
       scope: invalid.illegal.posix-class.regexp.elixir
     # Positive look-ahead for :] because [: can stand alone without being a posix character class.
     # Read as: in-between there may be 0 or more of "\\", "[" not followed by ":", "[" or "]" preceded by a "\",
