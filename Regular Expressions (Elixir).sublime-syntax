@@ -15,7 +15,9 @@ variables:
 
 contexts:
   main:
-    - include: expression
+    - include: unexpected_quantifier
+    - match: ''
+      push: expression
 
   expression:
     - include: quoted_sequence
@@ -24,11 +26,12 @@ contexts:
     - include: assertion
     - include: escape_sequence
     - include: class_set
-    - include: quantifier
     - include: inline_option
     - include: backtracking_verb
     - include: group
     - include: operator
+    - include: quantifier
+    - include: literal
 
   quoted_sequence:
     - match: \\Q
@@ -90,32 +93,36 @@ contexts:
 
   # Outside character class.
   escape_sequence:
-    - match: \\X
-      scope: constant.character.escape.extended-grapheme-cluster.regexp.elixir
     - match: \\K
       scope: constant.character.escape.match-reset.regexp.elixir
+      push: unexpected_quantifier_pop
     - match: \\R
       scope: constant.character.escape.unicode-newline.regexp.elixir
+    - match: \\X
+      scope: constant.character.escape.extended-grapheme-cluster.regexp.elixir
     - include: common_escape_sequence
 
   operator:
     - match: \|
       scope: keyword.operator.or.regexp.elixir
-      push: [unexpected_quantifier_pop]
+      push: unexpected_quantifier_pop
 
   assertion:
     - match: \^
       scope: keyword.control.line-begin-anchor.regexp.elixir
+      push: unexpected_quantifier_pop
     - match: \$
       scope: keyword.control.line-end-anchor.regexp.elixir
+      push: unexpected_quantifier_pop
       # Simple assertions.
     - match: \\[bBAzZG]
       scope: keyword.control.simple-anchor.regexp.elixir
+      push: unexpected_quantifier_pop
 
   escaped_char:
     - match: \\{{character_quantifier}}
       scope: constant.character.escape.quantifier.regexp.elixir
-    - match: \.
+    - match: \\\.
       scope: constant.character.escape.dot.regexp.elixir
     - match: \\x\h\h|(\\x(?!{))|(?>\\x(?>{\h+}|{(?>\h|([^}]))+}|({}?)|))
       scope: constant.character.escape.hex.regexp.elixir
@@ -228,7 +235,6 @@ contexts:
           scope: keyword.control.assertion.regexp.elixir
           set: [group_body, unexpected_quantifier_pop]
           # Inline option.
-        # - match: (\?)([imsx]+(?:-[imsx]*)?)([^:)]*)(:|(?=\)))
         - match: (\?)([imsx]+(?:-[imsx]*)?)(.*?)(:|(?=\)))
           scope: storage.modifier.mode.regexp.elixir
           captures:
@@ -290,6 +296,9 @@ contexts:
       scope: invalid.illegal.conditional.regexp.elixir
 
   class_set:
+    # NB: Mentioned in the docs. Keep here for completeness' sake.
+    # - match: \[.*\[:[<>]:\].*\]
+    #   scope: invalid.deprecated.regexp.elixir
     - match: \[:.*?:\]
       scope: invalid.illegal.posix-class.regexp.elixir
     - match: (\[)(\^?)
@@ -354,22 +363,33 @@ contexts:
           scope: invalid.illegal.unknown-posix-class.regexp.elixir
 
   quantifier:
-    - match: ({)(\d+)(,)?(\d+)?(})
+    - match: ({)(\d+)(,)?(\d*)(})
       captures:
         1: keyword.operator.quantifier.begin.regexp.elixir
         2: constant.numeric.quantifier.min.regexp.elixir
         3: keyword.operator.quantifier.comma.regexp.elixir
         4: constant.numeric.quantifier.max.regexp.elixir
         5: keyword.operator.quantifier.end.regexp.elixir
+      push: unexpected_quantifier_pop
     - match: '{{character_quantifier}}{{lazy_or_possessive}}?'
       scope: keyword.operator.quantifier.regexp.elixir
       push: unexpected_quantifier_pop
 
   unexpected_quantifier:
-    - match: (?:{{character_quantifier}}|{{ranged_quantifier}})+
+    - match: '{{ranged_quantifier}}'
+      scope: invalid.illegal.unexpected-quantifier.regexp.elixir
+    - match: (?>{{character_quantifier}}|{{ranged_quantifier}})+
       scope: invalid.illegal.unexpected-quantifier.regexp.elixir
 
   unexpected_quantifier_pop:
     - include: unexpected_quantifier
     - match: ''
       pop: true
+
+  literal:
+    - match: \.
+      scope: keyword.other.any.regexp.elixir
+    - match: .
+      scope: meta.literal.regexp.elixir
+    - match: \)
+      scope: invalid.illegal.unmatched-brace.regexp.elixir
