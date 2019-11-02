@@ -2,9 +2,10 @@
 ---
 name: Regular Expressions (Elixir)
 scope: source.regexp.elixir
-file_extensions:
-  - ex.re
+file_extensions: [ex.re]
 hidden: true
+comment: Elixir uses Erlang's regular expressions (http://erlang.org/doc/man/re.html)
+authors: [Aziz Köksal <aziz.koeksal@gmail.com>]
 
 variables:
   character_quantifier: '[?*+]'
@@ -76,8 +77,6 @@ contexts:
       scope: constant.other.escape-sequence.regexp.elixir
     - include: character_property
     - include: escaped_char
-    - match: \\.
-      scope: constant.character.escape.regexp.elixir
 
   character_property:
     - match: \\[pP]{\^?(?>C[cfnos]?|L[&lmotu]?|M[cen]?|N[dlo]?|P[cdefios]?|S[ckmo]?|Z[lps]?|X(?>an|ps|sp|wd|uc))}
@@ -148,6 +147,8 @@ contexts:
           pop: true
     - match: \\[aefnrt]
       scope: constant.character.escape.non-printable.regexp.elixir
+    - match: \\.
+      scope: constant.character.escape.regexp.elixir
 
   inline_option:
     - match: (\(\*)((?>NO_START_OPT|UTF8?|UCP|CRLF|CR|LF|ANYCRLF|ANY|BSR_ANYCRLF|BSR_UNICODE|LIMIT_(?>MATCH|RECURSION)=))
@@ -254,7 +255,6 @@ contexts:
     - include: expression
 
   conditional_subpattern:
-      # Conditional subpattern.
     - match: \?(\()
       scope: keyword.control.conditional.regexp.elixir
       captures:
@@ -389,7 +389,5 @@ contexts:
   literal:
     - match: \.
       scope: keyword.other.any.regexp.elixir
-    - match: .
+    - match: .|\n
       scope: meta.literal.regexp.elixir
-    - match: \)
-      scope: invalid.illegal.unmatched-brace.regexp.elixir
