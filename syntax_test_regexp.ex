@@ -1,5 +1,21 @@
 #// SYNTAX TEST "Packages/ElixirSyntax/Elixir.sublime-syntax"
 
+# Quoted sequence:
+~r"\Qnot terminating \Q is not an error"
+#//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.literal.regexp.elixir
+#//^^ keyword.control.quote.regexp.elixir
+
+~r"\Q?+*{1} ^ $ . | ) ( $ \ \s \b \N [] \g<1>
+#//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.literal.regexp.elixir
+#//^^ keyword.control.quote.regexp.elixir punctuation.definition.quote.begin.regexp.elixir
+\E"
+#//<- keyword.control.quote.regexp.elixir punctuation.definition.quote.end.regexp.elixir
+
+# Quantifier after quoted sequence:
+~r"\Qxyz\E{0,2}"
+#//       ^^^^^ keyword.operator.quantifier.regexp.elixir
+
+
 ~r"{1}"~r"+"~r"\K*"~r"\b+"~r"|?"
 #//                           ^ invalid.illegal.unexpected-quantifier.regexp.elixir
 #//                     ^ invalid.illegal.unexpected-quantifier.regexp.elixir
