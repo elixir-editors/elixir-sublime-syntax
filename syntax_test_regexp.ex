@@ -61,3 +61,72 @@
 #//             ^ variable.other.back-reference.regexp.elixir
 #//        ^ variable.other.back-reference.regexp.elixir
 #//   ^ variable.other.back-reference.regexp.elixir
+
+# Escape sequences:
+~r"\d\h\s\v\w\D\H\S\V\W"
+#//^^^^^^^^^^^^^^^^^^^^ constant.other.escape-sequence.regexp.elixir
+~r"\p{C}\p{Cc}\p{Cf}\p{Cn}\p{Co}\p{Cs}\p{L}\p{Ll}\p{Lm}\p{Lo}\p{Lt}\p{Lu}\p{M}\p{Mc}\p{Me}\p{Mn}\p{N}\p{Nd}\p{Nl}\p{No}\p{P}\p{Pc}\p{Pd}\p{Pe}\p{Pf}\p{Pi}\p{Po}\p{Ps}\p{S}\p{Sc}\p{Sk}\p{Sm}\p{So}\p{Z}\p{Zl}\p{Zp}\p{Zs}"
+#//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ constant.other.escape-sequence.general-category.regexp.elixir
+~r"\p{C}\p{L}\p{M}\p{N}\p{P}\p{S}\p{Z}\pC\pL\pM\pN\pP\pS\pZ"
+#//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ constant.other.escape-sequence.general-category.regexp.elixir
+~r"\p{123}\p\p{}"
+#//           ^^ invalid.illegal.general-category.regexp.elixir
+#//       ^^ invalid.illegal.general-category.regexp.elixir
+#//   ^^^ invalid.illegal.general-category.regexp.elixir
+#//^^^^^^^^^ constant.other.escape-sequence.general-category.regexp.elixir
+~r"\K\R\X\?\*\+\.\x00\00\07\o\o{}\o{84}\o{0}\cX\cä\a\e\f\n\r\t"
+#//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ constant.character.escape
+
+# Assertions:
+~r"^\b\B\A\z\Z\G$"
+#//^^^^^^^^^^^^^^ keyword.control.anchor
+
+# Class sets:
+# TODO:
+~r"[.+*?{1}()|^$]"
+#// ^^^^^^^^^^^^ meta.literal.regexp.elixir
+#//^^^^^^^^^^^^^^ meta.set.regexp.elixir
+~r"[[:>:]][]"
+#//       ^^ invalid.illegal.set.regexp.elixir
+#// ^^^^^ invalid.deprecated.word-boundary.regexp.elixir
+~r"[
+#// ^ meta.set.regexp.elixir
+]"
+
+# Inline options:
+# TODO:
+~r""
+
+# Backtracking verbs:
+# TODO:
+~r""
+
+# Groups:
+# TODO:
+~r""
+
+# Operator:
+~r"|"
+#//^ keyword.operator.or.regexp.elixir
+
+# Quantifiers:
+# TODO:
+~r""
+
+# Dot meta character:
+~r"."
+#//^ keyword.other.any.regexp.elixir
+
+# Literals:
+~r[ !"#%&',-/0123456789:;<=>@ABCDEFGHIJKLMNOPQRSTUVWXYZ_`abcdefghijklmnopqrstuvwxyz{}~]
+#//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.literal.regexp.elixir
+~r"äöüßȩşḑḩļçáóéíú€¢"
+#//^^^^^^^^^^^^^^^^^ meta.literal.regexp.elixir
+~r"
+#//^ meta.literal.regexp.elixir
+"
+
+# Elixir string interpolations:
+# TODO:
+~r" #{123}"
+~r[ #{123}]
