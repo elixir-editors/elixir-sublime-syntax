@@ -11,8 +11,8 @@ variables:
   character_quantifier: '[?*+]'
   lazy_or_possessive: '[?+]'
   ranged_quantifier: '{\d+,?\d*?}'
-  # TODO: limit to max length 32?
-  capture_name: '[a-zA-Z_][a-zA-Z_\d]*'
+  capture_name: '[a-zA-Z_][a-zA-Z_\d]{,31}'
+  invalid_capture_name: '[^\[\\(){}|^$.?*+\n]+'
 
 contexts:
   main:
@@ -22,8 +22,8 @@ contexts:
 
   expression:
     - include: quoted_sequence
-    - include: backreference
     - include: subroutine_call
+    - include: back_reference
     - include: assertion
     - include: escape_sequence
     - include: class_set
@@ -43,34 +43,70 @@ contexts:
           pop: true
 
   subroutine_call:
-    - match: \\g(?:<(-?\d+|{{capture_name}})>|'(-?\d+|{{capture_name}})'|[<{'](\w+)[>}']?)
+    - match: |-
+        (?x)
+        \\g(?:
+          <( ((?>-[1-9]\d*|\d+) | {{capture_name}}) | \g<-1>?({{invalid_capture_name}}) )> | '\g<1>' |
+          (<({{invalid_capture_name}}*)>? | '\g<-1>'?) )
       scope: keyword.other.subroutine.regexp.elixir
       captures:
-        1: variable.other.subroutine.regexp.elixir
+        1: ''
         2: variable.other.subroutine.regexp.elixir
         3: invalid.illegal.subroutine.regexp.elixir
-    - match: \(\?([+-]?\d+|R|P>{{capture_name}}|&{{capture_name}})\)
+        4: invalid.illegal.subroutine.regexp.elixir
+        5: invalid.illegal.subroutine.regexp.elixir
+        6: invalid.illegal.subroutine.regexp.elixir
+    - match: |-
+        (?x)
+        \(\?(?:
+          ([+-]?\d+|R|(?:P>|&){{capture_name}})\) |
+          (?:P>|&)({{invalid_capture_name}})\)? |
+          (R|P>|&)\)? )
       scope: keyword.other.subroutine.regexp.elixir
       captures:
         1: variable.other.subroutine.regexp.elixir
+        2: invalid.illegal.subroutine.regexp.elixir
+        3: invalid.illegal.subroutine.regexp.elixir
 
-  backreference:
+  back_reference:
     - match: \\\d+
-      scope: keyword.other.backreference.regexp.elixir
-    - match: \\g(?>{(-?\d+|{{capture_name}})}|-?\d+)
-      scope: keyword.other.backreference.regexp.elixir
-    - match: \(\?P=(?:({{capture_name}})|(\w+))\)
-      scope: keyword.other.backreference.regexp.elixir
+      scope: keyword.other.back-reference.regexp.elixir
+    - match: |-
+        (?x)
+        \\g(?:
+          (-?[1-9]\d*) |
+          {((?:-?[1-9]\d*|{{capture_name}}))} |
+          {\g<-1>?({{invalid_capture_name}})} |
+          ({{{invalid_capture_name}}*}?|-?0) ) |
+        (\\g)
+      scope: keyword.other.back-reference.regexp.elixir
       captures:
-        1: variable.other.backreference.regexp.elixir
-        2: invalid.illegal.backreference.regexp.elixir
-    - match: \\k(?:{({{capture_name}})}|<({{capture_name}})>|'({{capture_name}})'|[<{'](\w+)[>}']?)
-      scope: keyword.other.backreference.regexp.elixir
+        1: variable.other.back-reference.regexp.elixir
+        2: variable.other.back-reference.regexp.elixir
+        3: invalid.illegal.back-reference.regexp.elixir
+        4: invalid.illegal.back-reference.regexp.elixir
+        5: invalid.illegal.back-reference.regexp.elixir
+    - match: (?x) \(\?P=({{capture_name}})\) | \(\?(P=)\) | \(\?P=({{invalid_capture_name}})\)? | \(\?(P=)
+      scope: keyword.other.back-reference.regexp.elixir
       captures:
-        1: variable.other.backreference.regexp.elixir
-        2: variable.other.backreference.regexp.elixir
-        3: variable.other.backreference.regexp.elixir
-        4: invalid.illegal.backreference.regexp.elixir
+        1: variable.other.back-reference.regexp.elixir
+        2: invalid.illegal.back-reference.regexp.elixir
+        3: invalid.illegal.back-reference.regexp.elixir
+        4: invalid.illegal.back-reference.regexp.elixir
+    - match: |-
+        (?x)
+        \\k(?:
+          {(?<name> ({{capture_name}}) | \g<-1>?({{invalid_capture_name}}) )} | <\g<name>> | '\g<name>' |
+          ({({{invalid_capture_name}}*)}? | <\g<-1>>? | '\g<-1>'?) ) |
+        (\\k)
+      scope: keyword.other.back-reference.regexp.elixir
+      captures:
+        1: '' # Ignore (?<name>)
+        2: variable.other.back-reference.regexp.elixir
+        3: invalid.illegal.back-reference.regexp.elixir
+        4: invalid.illegal.back-reference.regexp.elixir
+        5: invalid.illegal.back-reference.regexp.elixir
+        6: invalid.illegal.back-reference.regexp.elixir
 
   common_escape_sequence:
     - match: \\(?i)[dhsvw]
@@ -210,15 +246,17 @@ contexts:
       scope: keyword.control.group.regexp.elixir punctuation.definition.group.begin.regexp.elixir
       push:
         - meta_scope: meta.group.regexp.elixir
+          # Look-ahead and look-behind.
+        - match: \?<?[=!]
+          scope: keyword.control.assertion.regexp.elixir
+          set: [group_body, unexpected_quantifier_pop]
           # Named capture.
-        - match: \?(?>P?<({{capture_name}})>|'({{capture_name}})'|P?[<'](\w+)[>']?)
+        - match: \?(?>P?(?><({{capture_name}})>|'\g<-1>'|<({{invalid_capture_name}}?)>|'\g<-1>'))
           scope: keyword.other.named-capture-group.regexp.elixir
           captures:
             1: entity.name.capture-group.regexp.elixir
-            2: entity.name.capture-group.regexp.elixir
-            3: invalid.illegal.named-capture.regexp.elixir
+            2: invalid.illegal.named-capture.regexp.elixir
           set: [group_body, unexpected_quantifier_pop]
-        - include: conditional_subpattern
           # Atomic group.
         - match: \?>
           scope: keyword.control.atomic-group.regexp.elixir
@@ -231,10 +269,6 @@ contexts:
         - match: \?\|
           scope: keyword.control.group-numbers.regexp.elixir
           set: [group_body, unexpected_quantifier_pop]
-          # Look-ahead and look-behind.
-        - match: \?<?[=!]
-          scope: keyword.control.assertion.regexp.elixir
-          set: [group_body, unexpected_quantifier_pop]
           # Inline option.
         - match: (\?)([imsx]+(?:-[imsx]*)?)(.*?)(:|(?=\)))
           scope: storage.modifier.mode.regexp.elixir
@@ -244,6 +278,7 @@ contexts:
             3: invalid.illegal.inline-option.regexp.elixir
             4: storage.modifier.mode.colon.regexp.elixir
           set: [group_body, unexpected_quantifier_pop]
+        - include: conditional_subpattern
         - match: ''
           set: [group_body, unexpected_quantifier_pop]
 
@@ -266,14 +301,12 @@ contexts:
           set: [subpattern_condition, unexpected_quantifier_pop]
           # References to recursion.
         - match: R(?:\d+|&{{capture_name}})
-          scope: variable.other.backreference.recursion.regexp.elixir
+          scope: variable.other.back-reference.recursion.regexp.elixir
           set: [subpattern_condition, unexpected_quantifier_pop]
           # References to subpatterns.
-        - match: <({{capture_name}})>|'({{capture_name}})'|({{capture_name}})
+        - match: <({{capture_name}})>|'\g<-1>'|\g<-1>
           captures:
-            1: variable.other.backreference.regexp.elixir
-            2: variable.other.backreference.regexp.elixir
-            3: variable.other.backreference.regexp.elixir
+            1: variable.other.back-reference.regexp.elixir
           set: [subpattern_condition, unexpected_quantifier_pop]
           # Assertions: positive or negative lookahead or lookbehind assertion.
         - match: \?<?[=!]
@@ -364,6 +397,7 @@ contexts:
 
   quantifier:
     - match: ({)(\d+)(,)?(\d*)(})
+      scope: keyword.operator.quantifier.regexp.elixir
       captures:
         1: keyword.operator.quantifier.begin.regexp.elixir
         2: constant.numeric.quantifier.min.regexp.elixir
