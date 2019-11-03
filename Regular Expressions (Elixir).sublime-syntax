@@ -72,7 +72,7 @@ contexts:
         3: invalid.illegal.subroutine.regexp.elixir
 
   back_reference:
-    - match: \\\d+
+    - match: \\(?!0\d)\d+
       scope: keyword.other.back-reference.regexp.elixir
     - match: |-
         (?x)
@@ -124,10 +124,12 @@ contexts:
       scope: constant.other.escape-sequence.general-category.regexp.elixir
     - match: \\[pP]{[[:alpha:]]+}
       scope: constant.other.escape-sequence.script-name.regexp.elixir
-    - match: \\[pP](.)
+    - match: \\[pP](?:({})|{({{invalid_capture_name}}*)}?)|(\\[pP])
       scope: constant.other.escape-sequence.general-category.regexp.elixir
       captures:
         1: invalid.illegal.general-category.regexp.elixir
+        2: invalid.illegal.general-category.regexp.elixir
+        3: invalid.illegal.general-category.regexp.elixir
 
   # Outside character class.
   escape_sequence:
@@ -147,14 +149,14 @@ contexts:
 
   assertion:
     - match: \^
-      scope: keyword.control.line-begin-anchor.regexp.elixir
+      scope: keyword.control.anchor.line-begin.regexp.elixir
       push: unexpected_quantifier_pop
     - match: \$
-      scope: keyword.control.line-end-anchor.regexp.elixir
+      scope: keyword.control.anchor.line-end.regexp.elixir
       push: unexpected_quantifier_pop
       # Simple assertions.
     - match: \\[bBAzZG]
-      scope: keyword.control.simple-anchor.regexp.elixir
+      scope: keyword.control.anchor.simple.regexp.elixir
       push: unexpected_quantifier_pop
 
   escaped_char:
