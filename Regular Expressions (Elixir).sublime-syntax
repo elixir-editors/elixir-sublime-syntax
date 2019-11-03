@@ -32,15 +32,18 @@ contexts:
     - include: group
     - include: operator
     - include: quantifier
+    - include: dot_meta_char
     - include: literal
 
   quoted_sequence:
     - match: \\Q
-      scope: keyword.control.quote.regexp.elixir
+      scope: keyword.control.quote.regexp.elixir punctuation.definition.quote.begin.regexp.elixir
       push:
+        - meta_scope: meta.quote.regexp.elixir
         - match: \\E
-          scope: keyword.control.quote.regexp.elixir
+          scope: keyword.control.quote.regexp.elixir punctuation.definition.quote.end.regexp.elixir
           pop: true
+        - include: literal
 
   subroutine_call:
     - match: |-
@@ -329,14 +332,16 @@ contexts:
       scope: invalid.illegal.conditional.regexp.elixir
 
   class_set:
-    # NB: Mentioned in the docs. Keep here for completeness' sake.
-    # - match: \[.*\[:[<>]:\].*\]
-    #   scope: invalid.deprecated.regexp.elixir
     - match: \[:.*?:\]
       scope: invalid.illegal.posix-class.regexp.elixir
+    - match: (\[)(\])
+      scope: meta.set.regexp.elixir keyword.control.set.regexp.elixir invalid.illegal.set.regexp.elixir
+      captures:
+        1: punctuation.definition.set.begin.regexp.elixir
+        2: punctuation.definition.set.end.regexp.elixir
     - match: (\[)(\^?)
       captures:
-        1: keyword.control.set.regexp.elixir punctuation.definition.character-class.begin.regexp.elixir
+        1: keyword.control.set.regexp.elixir punctuation.definition.set.begin.regexp.elixir
         2: keyword.operator.negation.regexp.elixir
       push:
         - meta_scope: meta.set.regexp.elixir
@@ -344,8 +349,9 @@ contexts:
         - include: posix_character_class
         - include: class_set_escape_sequence
         - match: \]
-          scope: keyword.control.set.regexp.elixir punctuation.definition.character-class.end.regexp.elixir
+          scope: keyword.control.set.regexp.elixir punctuation.definition.set.end.regexp.elixir
           pop: true
+        - include: literal
 
   character_range:
     - match: (?=(\\[dsw]|\\x\h\h|\\\d+|\\c\p{ascii}|\\.|.)-\g<1>)
@@ -376,6 +382,8 @@ contexts:
 
   # E.g: [:alpha:] or [:^alpha:]
   posix_character_class:
+    - match: \[:[<>]:\]
+      scope: invalid.deprecated.word-boundary.regexp.elixir
     - match: \[::\]
       scope: invalid.illegal.posix-class.regexp.elixir
     # Positive look-ahead for :] because [: can stand alone without being a posix character class.
@@ -384,7 +392,7 @@ contexts:
     - match: (\[:)(?=(\\\\|\[(?!:)|(?<=\\)[\[\]]|[^\[\]])*?:])
       scope: keyword.control.set.posix.regexp.elixir punctuation.definition.posix-class.begin.regexp.elixir
       push:
-        - meta_scope: constant.other.character-class.posix.regexp.elixir
+        - meta_scope: constant.other.set.posix.regexp.elixir
         - match: :]
           scope: keyword.control.set.posix.regexp.elixir punctuation.definition.posix-class.end.regexp.elixir
           pop: true
@@ -420,8 +428,10 @@ contexts:
     - match: ''
       pop: true
 
-  literal:
+  dot_meta_char:
     - match: \.
       scope: keyword.other.any.regexp.elixir
+
+  literal:
     - match: .|\n
       scope: meta.literal.regexp.elixir
