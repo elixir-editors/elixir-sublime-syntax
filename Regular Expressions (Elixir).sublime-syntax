@@ -34,6 +34,7 @@ contexts:
     - include: operator
     - include: quantifier
     - include: dot_meta_char
+    - include: comment
     - include: literal
 
   quoted_sequence:
@@ -469,7 +470,7 @@ contexts:
         - match: '#'
           scope: meta.literal.regexp.elixir
           pop: true
-    - match: (?<=\s)#
+    - match: (?<!\\\s)(?<=\s)#
       push:
         - meta_scope: comment.line.number-sign.regexp.elixir
         - match: \n
