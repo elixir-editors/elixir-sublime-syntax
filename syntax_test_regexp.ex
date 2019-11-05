@@ -117,6 +117,26 @@
 ~r"."
 #//^ keyword.other.any.regexp.elixir
 
+# Comments:
+~r"# # asdasd"
+#//  ^ comment.line.number-sign.regexp.elixir
+#//^^ meta.literal.regexp.elixir
+~r"[ # not a comment inside a set]"
+#// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.literal.regexp.elixir
+~r" # a comment"
+#// ^^^^^^^^^^^ comment.line.number-sign.regexp.elixir
+#//^ meta.literal.regexp.elixir
+~r"\ # escape preceding space to prevent matching as a comment"
+#//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.literal.regexp.elixir
+#//^^ constant.character.escape.regexp.elixir
+~r"no preceding space#not a comment"
+#//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.literal.regexp.elixir
+~R[ #{123}] ~r[ #{123}]
+#//             ^^^^^^ meta.interpolation.elixir
+#//            ^ meta.literal.regexp.elixir
+#// ^^^^^^ comment.line.number-sign.regexp.elixir
+#//^ meta.literal.regexp.elixir
+
 # Literals:
 ~r[ !"#%&',-/0123456789:;<=>@ABCDEFGHIJKLMNOPQRSTUVWXYZ_`abcdefghijklmnopqrstuvwxyz{}~]
 #//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.literal.regexp.elixir

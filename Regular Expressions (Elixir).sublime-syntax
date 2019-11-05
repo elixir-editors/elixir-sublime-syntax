@@ -33,6 +33,7 @@ contexts:
     - include: operator
     - include: quantifier
     - include: dot_meta_char
+    - include: comment
     - include: literal
 
   quoted_sequence:
@@ -409,11 +410,11 @@ contexts:
     - match: ({)(\d+)(,)?(\d*)(})
       scope: keyword.operator.quantifier.regexp.elixir
       captures:
-        1: keyword.operator.quantifier.begin.regexp.elixir
+        1: punctuation.definition.quantifier.begin.regexp.elixir
         2: constant.numeric.quantifier.min.regexp.elixir
-        3: keyword.operator.quantifier.comma.regexp.elixir
+        3: punctuation.separator.quantifier.regexp.elixir
         4: constant.numeric.quantifier.max.regexp.elixir
-        5: keyword.operator.quantifier.end.regexp.elixir
+        5: punctuation.definition.quantifier.end.regexp.elixir
       push: unexpected_quantifier_pop
     - match: '{{character_quantifier}}{{lazy_or_possessive}}?'
       scope: keyword.operator.quantifier.regexp.elixir
@@ -433,6 +434,13 @@ contexts:
   dot_meta_char:
     - match: \.
       scope: keyword.other.any.regexp.elixir
+
+  comment:
+    - match: (?<!\\\s)(?<=\s)#
+      push:
+        - meta_scope: comment.line.number-sign.regexp.elixir
+        - match: \n
+          pop: true
 
   literal:
     - match: .|\n
