@@ -390,14 +390,12 @@ contexts:
                 - meta_scope: meta.string.elixir
                 # (?<=R) avoids matching again after the closing delimiter. E.g.: ~R||//
                 - match: (?<=R)([/|"'])
-                  captures:
-                    1: string.quoted.other.literal.upper.elixir punctuation.definition.string.begin.elixir
-                  push:
-                    - meta_content_scope: string.quoted.other.literal.upper.elixir
-                    - match: \1
-                      scope: string.quoted.other.literal.upper.elixir punctuation.definition.string.end.elixir
-                      pop: true
-                    - include: regex_elixir
+                  scope: string.quoted.other.literal.upper.elixir punctuation.definition.string.begin.elixir
+                  embed_scope: string.quoted.other.literal.upper.elixir
+                  embed: regex_elixir
+                  escape: \1
+                  escape_captures:
+                    0: meta.string.elixir string.quoted.other.literal.upper.elixir punctuation.definition.string.end.elixir
                 - match: ''
                   set: string_modifiers_and_pop
             - match: \{
@@ -408,7 +406,7 @@ contexts:
                 - match: ''
                   push: regex_elixir
                   with_prototype:
-                    - match: (?=#{|})
+                    - match: (?=})
                       pop: true
             - match: \[
               scope: punctuation.definition.string.begin.elixir
@@ -418,7 +416,7 @@ contexts:
                 - match: ''
                   push: regex_elixir
                   with_prototype:
-                    - match: (?=#{|])
+                    - match: (?=])
                       pop: true
             - match: \<
               scope: punctuation.definition.string.begin.elixir
@@ -428,7 +426,7 @@ contexts:
                 - match: ''
                   push: regex_elixir
                   with_prototype:
-                    - match: (?=#{|>)
+                    - match: (?=>)
                       pop: true
             - match: \(
               scope: punctuation.definition.string.begin.elixir
@@ -438,7 +436,7 @@ contexts:
                 - match: ''
                   push: regex_elixir
                   with_prototype:
-                    - match: (?=#{|\))
+                    - match: (?=\))
                       pop: true
         - match: .
           scope: invalid.illegal.opening-string.elixir
