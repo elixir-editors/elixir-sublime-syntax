@@ -205,7 +205,7 @@ contexts:
           scope: invalid.illegal.inline-option.regexp.elixir
         - match: \)
           scope: punctuation.definition.annotation.end.regexp.elixir
-          pop: true
+          set: unexpected_quantifier_pop
 
   backtracking_verb:
     - match: \(\*(?=[a-zA-Z:])
@@ -235,7 +235,7 @@ contexts:
           scope: invalid.illegal.backtracking-verb.regexp.elixir
         - match: \)
           scope: punctuation.definition.annotation.end.regexp.elixir
-          pop: true
+          set: unexpected_quantifier_pop
 
   group:
     - match: \)
@@ -337,11 +337,13 @@ contexts:
   class_set:
     - match: \[:.*?:\]
       scope: invalid.illegal.posix-class.regexp.elixir
+      set: unexpected_quantifier_pop
     - match: (\[)(\])
       scope: meta.set.regexp.elixir keyword.control.set.regexp.elixir invalid.illegal.set.regexp.elixir
       captures:
         1: punctuation.definition.set.begin.regexp.elixir
         2: punctuation.definition.set.end.regexp.elixir
+      set: unexpected_quantifier_pop
     - match: (\[)(\^?)
       captures:
         1: keyword.control.set.regexp.elixir punctuation.definition.set.begin.regexp.elixir
