@@ -17,7 +17,7 @@ variables:
 contexts:
   main:
     - include: unexpected_quantifier
-    - match: ''
+    - match: (?=.|\n)
       push: expression
 
   expression:
