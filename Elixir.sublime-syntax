@@ -156,7 +156,7 @@ contexts:
         - include: escaped_or_interpolated
 
   heredoc_regex_interpolated:
-    - match: (""")\s*(.*)
+    - match: (""")\s*(.*)\n
       captures:
         1: punctuation.definition.string.begin.elixir
         2: invalid.illegal.opening-heredoc.elixir
@@ -170,7 +170,7 @@ contexts:
             - match: (?=^.*?""")
               pop: true
 
-    - match: (''')\s*(.*)
+    - match: (''')\s*(.*)\n
       captures:
         1: punctuation.definition.string.begin.elixir
         2: invalid.illegal.opening-heredoc.elixir
@@ -185,28 +185,36 @@ contexts:
               pop: true
 
   heredoc_regex_raw:
-    - match: (""")\s*(.*)
+    - match: (""")\s*(.*)\n
       comment: Triple-quoted heredocs
       captures:
         1: punctuation.definition.string.begin.elixir
         2: invalid.illegal.opening-heredoc.elixir
       push:
         - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
-        - include: regex_elixir
         - include: heredoc_string_closing_double
+        - match: ''
+          push: regex_elixir
+          with_prototype:
+            - match: (?=^.*?""")
+              pop: true
 
-    - match: (''')\s*(.*)
+    - match: (''')\s*(.*)\n
       comment: Triple-quoted heredocs
       captures:
         1: punctuation.definition.string.begin.elixir
         2: invalid.illegal.opening-heredoc.elixir
       push:
         - meta_scope: meta.string.elixir string.quoted.triple.single.elixir
-        - include: regex_elixir
         - include: heredoc_string_closing_single
+        - match: ''
+          push: regex_elixir
+          with_prototype:
+            - match: (?=^.*?''')
+              pop: true
 
   heredoc_string_interpolated:
-    - match: (""")\s*(.*)
+    - match: (""")\s*(.*)\n
       comment: Triple-quoted heredocs
       captures:
         1: punctuation.definition.string.begin.elixir
@@ -216,7 +224,7 @@ contexts:
         - include: escaped_or_interpolated
         - include: heredoc_string_closing_double
 
-    - match: (''')\s*(.*)
+    - match: (''')\s*(.*)\n
       comment: Triple-quoted heredocs
       captures:
         1: punctuation.definition.string.begin.elixir
@@ -227,7 +235,7 @@ contexts:
         - include: heredoc_string_closing_single
 
   heredoc_string_raw:
-    - match: (""")\s*(.*)
+    - match: (""")\s*(.*)\n
       comment: Triple-quoted heredocs
       captures:
         1: punctuation.definition.string.begin.elixir
@@ -236,7 +244,7 @@ contexts:
         - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
         - include: heredoc_string_closing_double
 
-    - match: (''')\s*(.*)
+    - match: (''')\s*(.*)\n
       comment: Triple-quoted heredocs
       captures:
         1: punctuation.definition.string.begin.elixir
