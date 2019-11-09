@@ -325,19 +325,54 @@ contexts:
             - include: heredoc_regex_interpolated
             - match: ''
               set: string_modifiers_and_pop
-        - match: (?=[/|"'])
+        - match: \"
+          scope: punctuation.definition.string.begin.elixir
           set:
             - meta_scope: meta.string.elixir string.interpolated.elixir
-            # (?<=r) avoids matching again after the closing delimiter. E.g.: ~r||//
-            - match: (?<=r)([/|"'])
-              scope: string.quoted.other.literal.lower.elixir punctuation.definition.string.begin.elixir
-              embed_scope: string.quoted.other.literal.lower.elixir
-              embed: regex_or_interpolated
-              escape: \1
-              escape_captures:
-                0: meta.string.elixir string.quoted.other.literal.lower.elixir punctuation.definition.string.end.elixir
-            - match: ''
+            - match: \"
               set: string_modifiers_and_pop
+            - match: ''
+              push: regex_elixir
+              with_prototype:
+                - include: interpolated_elixir
+                - match: (?=")
+                  pop: true
+        - match: \'
+          scope: punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir string.interpolated.elixir
+            - match: \'
+              set: string_modifiers_and_pop
+            - match: ''
+              push: regex_elixir
+              with_prototype:
+                - include: interpolated_elixir
+                - match: (?=')
+                  pop: true
+        - match: /
+          scope: punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir string.interpolated.elixir
+            - match: /
+              set: string_modifiers_and_pop
+            - match: ''
+              push: regex_elixir
+              with_prototype:
+                - include: interpolated_elixir
+                - match: (?=/)
+                  pop: true
+        - match: \|
+          scope: punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir string.interpolated.elixir
+            - match: \|
+              set: string_modifiers_and_pop
+            - match: ''
+              push: regex_elixir
+              with_prototype:
+                - include: interpolated_elixir
+                - match: (?=\|)
+                  pop: true
         - match: \{
           scope: punctuation.definition.string.begin.elixir
           set:
