@@ -310,6 +310,12 @@ contexts:
                 2: string.quoted.modifiers.elixir storage.type.string.elixir
               pop: true
 
+    - match: (?x) (~[a-zA-Z])\n | ~[a-zA-Z]([^{\[<(/|"'])
+      scope: meta.string.elixir storage.type.string.elixir
+      captures:
+        1: invalid.illegal.sigil-string.elixir
+        2: invalid.illegal.string-delimiter.elixir
+
     - match: ~r
       comment: regex sigil string with interpolation
       scope: meta.string.elixir storage.type.string.elixir
@@ -339,44 +345,44 @@ contexts:
               set:
                 - meta_scope: meta.string.elixir string.interpolated.elixir
                 - include: string_closing_curly
-                - include: interpolated_elixir
                 - match: ''
                   push: regex_elixir
                   with_prototype:
-                    - match: (?=#{|})
+                    - include: interpolated_elixir
+                    - match: (?=})
                       pop: true
             - match: \[
               scope: punctuation.definition.string.begin.elixir
               set:
                 - meta_scope: meta.string.elixir string.interpolated.elixir
                 - include: string_closing_square
-                - include: interpolated_elixir
                 - match: ''
                   push: regex_elixir
                   with_prototype:
-                    - match: (?=#{|])
+                    - include: interpolated_elixir
+                    - match: (?=])
                       pop: true
             - match: \<
               scope: punctuation.definition.string.begin.elixir
               set:
                 - meta_scope: meta.string.elixir string.interpolated.elixir
                 - include: string_closing_angle
-                - include: interpolated_elixir
                 - match: ''
                   push: regex_elixir
                   with_prototype:
-                    - match: (?=#{|>)
+                    - include: interpolated_elixir
+                    - match: (?=>)
                       pop: true
             - match: \(
               scope: punctuation.definition.string.begin.elixir
               set:
                 - meta_scope: meta.string.elixir string.interpolated.elixir
                 - include: string_closing_round
-                - include: interpolated_elixir
                 - match: ''
                   push: regex_elixir
                   with_prototype:
-                    - match: (?=#{|\))
+                    - include: interpolated_elixir
+                    - match: (?=\))
                       pop: true
         - match: .
           scope: invalid.illegal.opening-string.elixir
@@ -386,172 +392,157 @@ contexts:
       comment: regex sigil string without interpolation
       scope: meta.string.elixir storage.type.string.elixir
       push:
-        - match: (?=[{\[<(/|"'])
+        - match: (?="""|''')
           set:
-            - match: (?="""|''')
-              set:
-                - include: heredoc_regex_raw
-                - match: ''
-                  set: string_modifiers_and_pop
-            - match: (?=[/|"'])
-              set:
-                - meta_scope: meta.string.elixir
-                # (?<=R) avoids matching again after the closing delimiter. E.g.: ~R||//
-                - match: (?<=R)([/|"'])
-                  scope: string.quoted.other.literal.upper.elixir punctuation.definition.string.begin.elixir
-                  embed_scope: string.quoted.other.literal.upper.elixir
-                  embed: regex_elixir
-                  escape: \1
-                  escape_captures:
-                    0: meta.string.elixir string.quoted.other.literal.upper.elixir punctuation.definition.string.end.elixir
-                - match: ''
-                  set: string_modifiers_and_pop
-            - match: \{
-              scope: punctuation.definition.string.begin.elixir
-              set:
-                - meta_scope: meta.string.elixir string.quoted.other.literal.regex.elixir
-                - include: string_closing_curly
-                - match: ''
-                  push: regex_elixir
-                  with_prototype:
-                    - match: (?=})
-                      pop: true
-            - match: \[
-              scope: punctuation.definition.string.begin.elixir
-              set:
-                - meta_scope: meta.string.elixir string.quoted.other.literal.regex.elixir
-                - include: string_closing_square
-                - match: ''
-                  push: regex_elixir
-                  with_prototype:
-                    - match: (?=])
-                      pop: true
-            - match: \<
-              scope: punctuation.definition.string.begin.elixir
-              set:
-                - meta_scope: meta.string.elixir string.quoted.other.literal.regex.elixir
-                - include: string_closing_angle
-                - match: ''
-                  push: regex_elixir
-                  with_prototype:
-                    - match: (?=>)
-                      pop: true
-            - match: \(
-              scope: punctuation.definition.string.begin.elixir
-              set:
-                - meta_scope: meta.string.elixir string.quoted.other.literal.regex.elixir
-                - include: string_closing_round
-                - match: ''
-                  push: regex_elixir
-                  with_prototype:
-                    - match: (?=\))
-                      pop: true
-        - match: .
-          scope: invalid.illegal.opening-string.elixir
-          pop: true
+            - include: heredoc_regex_raw
+            - match: ''
+              set: string_modifiers_and_pop
+        - match: (?=[/|"'])
+          set:
+            - meta_scope: meta.string.elixir
+            # (?<=R) avoids matching again after the closing delimiter. E.g.: ~R||//
+            - match: (?<=R)([/|"'])
+              scope: string.quoted.other.literal.upper.elixir punctuation.definition.string.begin.elixir
+              embed_scope: string.quoted.other.literal.upper.elixir
+              embed: regex_elixir
+              escape: \1
+              escape_captures:
+                0: meta.string.elixir string.quoted.other.literal.upper.elixir punctuation.definition.string.end.elixir
+            - match: ''
+              set: string_modifiers_and_pop
+        - match: \{
+          scope: punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir string.quoted.other.literal.regex.elixir
+            - include: string_closing_curly
+            - match: ''
+              push: regex_elixir
+              with_prototype:
+                - match: (?=})
+                  pop: true
+        - match: \[
+          scope: punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir string.quoted.other.literal.regex.elixir
+            - include: string_closing_square
+            - match: ''
+              push: regex_elixir
+              with_prototype:
+                - match: (?=])
+                  pop: true
+        - match: \<
+          scope: punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir string.quoted.other.literal.regex.elixir
+            - include: string_closing_angle
+            - match: ''
+              push: regex_elixir
+              with_prototype:
+                - match: (?=>)
+                  pop: true
+        - match: \(
+          scope: punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir string.quoted.other.literal.regex.elixir
+            - include: string_closing_round
+            - match: ''
+              push: regex_elixir
+              with_prototype:
+                - match: (?=\))
+                  pop: true
 
     - match: ~[a-z]
       comment: with sigil and with interpolation
       scope: meta.string.elixir storage.type.string.elixir
       push:
-        - match: (?=[{\[<(/|"'])
+        - match: (?="""|''')
           set:
-            - match: (?="""|''')
-              set:
-                - include: heredoc_string_interpolated
-                - match: ''
-                  set: string_modifiers_and_pop
-            - match: (?=[/|"'])
-              set:
-                - meta_scope: meta.string.elixir
-                # (?<=[a-z]) avoids matching again after the closing delimiter. E.g.: ~s||//
-                - match: (?<=[a-z])([/|"'])
-                  captures:
-                    1: string.quoted.other.literal.lower.elixir punctuation.definition.string.begin.elixir
-                  push:
-                    - meta_content_scope: string.quoted.other.literal.lower.elixir
-                    - match: \1
-                      scope: string.quoted.other.literal.lower.elixir punctuation.definition.string.end.elixir
-                      pop: true
-                    - include: escaped_or_interpolated
-                - match: ''
-                  set: string_modifiers_and_pop
-            - match: \{
-              scope: punctuation.definition.string.begin.elixir
-              set:
-                - meta_scope: meta.string.elixir string.interpolated.elixir
-                - include: string_closing_curly
+            - include: heredoc_string_interpolated
+            - match: ''
+              set: string_modifiers_and_pop
+        - match: (?=[/|"'])
+          set:
+            - meta_scope: meta.string.elixir
+            # (?<=[a-z]) avoids matching again after the closing delimiter. E.g.: ~s||//
+            - match: (?<=[a-z])([/|"'])
+              captures:
+                1: string.quoted.other.literal.lower.elixir punctuation.definition.string.begin.elixir
+              push:
+                - meta_content_scope: string.quoted.other.literal.lower.elixir
+                - match: \1
+                  scope: string.quoted.other.literal.lower.elixir punctuation.definition.string.end.elixir
+                  pop: true
                 - include: escaped_or_interpolated
-            - match: \[
-              scope: punctuation.definition.string.begin.elixir
-              set:
-                - meta_scope: meta.string.elixir string.interpolated.elixir
-                - include: string_closing_square
-                - include: escaped_or_interpolated
-            - match: \<
-              scope: punctuation.definition.string.begin.elixir
-              set:
-                - meta_scope: meta.string.elixir string.interpolated.elixir
-                - include: string_closing_angle
-                - include: escaped_or_interpolated
-            - match: \(
-              scope: punctuation.definition.string.begin.elixir
-              set:
-                - meta_scope: meta.string.elixir string.interpolated.elixir
-                - include: string_closing_round
-                - include: escaped_or_interpolated
-        - match: .
-          scope: invalid.illegal.opening-string.elixir
-          pop: true
+            - match: ''
+              set: string_modifiers_and_pop
+        - match: \{
+          scope: punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir string.interpolated.elixir
+            - include: string_closing_curly
+            - include: escaped_or_interpolated
+        - match: \[
+          scope: punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir string.interpolated.elixir
+            - include: string_closing_square
+            - include: escaped_or_interpolated
+        - match: \<
+          scope: punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir string.interpolated.elixir
+            - include: string_closing_angle
+            - include: escaped_or_interpolated
+        - match: \(
+          scope: punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir string.interpolated.elixir
+            - include: string_closing_round
+            - include: escaped_or_interpolated
 
     - match: ~[A-Z]
       comment: with sigil and without interpolation
       scope: meta.string.elixir storage.type.string.elixir
       push:
-        - match: (?=[{\[<(/|"'])
+        - match: (?="""|''')
           set:
-            - match: (?="""|''')
-              set:
-                - include: heredoc_string_raw
-                - match: ''
-                  set: string_modifiers_and_pop
-            - match: (?=[/|"'])
-              set:
-                - meta_scope: meta.string.elixir
-                # (?<=[A-Z]) avoids matching again after the closing delimiter. E.g.: ~S||//
-                - match: (?<=[A-Z])([/|"'])
-                  captures:
-                    1: string.quoted.other.literal.upper.elixir punctuation.definition.string.begin.elixir
-                  push:
-                    - meta_content_scope: string.quoted.other.literal.upper.elixir
-                    - match: \1
-                      scope: string.quoted.other.literal.upper.elixir punctuation.definition.string.end.elixir
-                      pop: true
-                - match: ''
-                  set: string_modifiers_and_pop
-            - match: \{
-              scope: punctuation.definition.string.begin.elixir
-              set:
-                - meta_scope: meta.string.elixir string.quoted.other.literal.upper.elixir
-                - include: string_closing_curly
-            - match: \[
-              scope: punctuation.definition.string.begin.elixir
-              set:
-                - meta_scope: meta.string.elixir string.quoted.other.literal.upper.elixir
-                - include: string_closing_square
-            - match: \<
-              scope: punctuation.definition.string.begin.elixir
-              set:
-                - meta_scope: meta.string.elixir string.quoted.other.literal.upper.elixir
-                - include: string_closing_angle
-            - match: \(
-              scope: punctuation.definition.string.begin.elixir
-              set:
-                - meta_scope: meta.string.elixir string.quoted.other.literal.upper.elixir
-                - include: string_closing_round
-        - match: .
-          scope: invalid.illegal.opening-string.elixir
-          pop: true
+            - include: heredoc_string_raw
+            - match: ''
+              set: string_modifiers_and_pop
+        - match: (?=[/|"'])
+          set:
+            - meta_scope: meta.string.elixir
+            # (?<=[A-Z]) avoids matching again after the closing delimiter. E.g.: ~S||//
+            - match: (?<=[A-Z])([/|"'])
+              captures:
+                1: string.quoted.other.literal.upper.elixir punctuation.definition.string.begin.elixir
+              push:
+                - meta_content_scope: string.quoted.other.literal.upper.elixir
+                - match: \1
+                  scope: string.quoted.other.literal.upper.elixir punctuation.definition.string.end.elixir
+                  pop: true
+            - match: ''
+              set: string_modifiers_and_pop
+        - match: \{
+          scope: punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir string.quoted.other.literal.upper.elixir
+            - include: string_closing_curly
+        - match: \[
+          scope: punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir string.quoted.other.literal.upper.elixir
+            - include: string_closing_square
+        - match: \<
+          scope: punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir string.quoted.other.literal.upper.elixir
+            - include: string_closing_angle
+        - match: \(
+          scope: punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir string.quoted.other.literal.upper.elixir
+            - include: string_closing_round
 
   string_closing_curly:
     - match: \}
