@@ -94,8 +94,8 @@
 ]"
 
 # Inline options:
-# TODO:
-~r""
+~r"(*NO_START_OPT)(*UTF)(*UTF8)(*UCP)(*CRLF)(*CR)(*LF)(*ANYCRLF)(*ANY)(*BSR_ANYCRLF)(*BSR_UNICODE)(*LIMIT_MATCH=)(*LIMIT_RECURSION=)(*ANY)"
+#//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ keyword.control.flag.regexp.elixir
 
 # Backtracking verbs:
 # TODO:
@@ -127,6 +127,8 @@
 "
 
 # Elixir string interpolations:
-# TODO:
-~r" #{123}"
-~r[ #{123}]
+
+~r"_{0,#{1}} # #{2}"
+#//            ^^^^ meta.interpolation.elixir
+#//          ^^ comment.line.number-sign.regexp.elixir
+#//    ^^^^ meta.interpolation.elixir
