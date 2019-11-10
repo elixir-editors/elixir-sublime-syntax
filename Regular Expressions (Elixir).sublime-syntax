@@ -211,17 +211,22 @@ contexts:
     - match: \(\*(?=[a-zA-Z:])
       scope: punctuation.definition.annotation.begin.regexp.elixir
       push:
+        - meta_scope: meta.backtracking.regexp.elixir
         - match: ((?>ACCEPT|COMMIT|FAIL|F))(:?)
           captures:
             1: keyword.control.verb.regexp.elixir
             2: punctuation.separator.sequence.regexp.elixir
           set: backtracking_verb_end
-        - match: (?>MARK|THEN|PRUNE|SKIP|(?=:))
+        - match: MARK(?=:\))
+          scope: keyword.control.verb.regexp.elixir
+          set: backtracking_verb_end
+        - match: (?>MARK|THEN|PRUNE|SKIP|(?=:[^)]))
           scope: keyword.control.verb.regexp.elixir
           set:
             - match: ':'
               scope: punctuation.separator.sequence.regexp.elixir
               push:
+                - meta_scope: meta.backtracking.regexp.elixir
                 - meta_content_scope: entity.name.constant.regexp.elixir
                 - match: (?=\))
                   pop: true
@@ -231,6 +236,7 @@ contexts:
   backtracking_verb_end:
     - match: ''
       set:
+        - meta_scope: meta.backtracking.regexp.elixir
         - match: '[^)\n]+'
           scope: invalid.illegal.backtracking-verb.regexp.elixir
         - match: \)
@@ -394,7 +400,7 @@ contexts:
     # Positive look-ahead for :] because [: can stand alone without being a posix character class.
     # Read as: in-between there may be 0 or more of "\\", "[" not followed by ":", "[" or "]" preceded by a "\",
     # and any other character besides "[", "]".
-    - match: (\[:)(?=(\\\\|\[(?!:)|(?<=\\)[\[\]]|[^\[\]])*?:])
+    - match: (?x) (\[:) (?=(\\\\ | \[(?!:) | (?<=\\)[\[\]] | [^\[\]])*? :])
       scope: keyword.control.set.posix.regexp.elixir punctuation.definition.posix-class.begin.regexp.elixir
       push:
         - meta_scope: constant.other.set.posix.regexp.elixir
@@ -410,7 +416,7 @@ contexts:
 
   quantifier:
     - match: ({)(\d+)(,)?(\d*)(})
-      scope: keyword.operator.quantifier.regexp.elixir
+      scope: meta.quantifier.regexp.elixir keyword.operator.quantifier.regexp.elixir
       captures:
         1: punctuation.definition.quantifier.begin.regexp.elixir
         2: constant.numeric.quantifier.min.regexp.elixir
