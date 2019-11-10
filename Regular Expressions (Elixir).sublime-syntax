@@ -263,7 +263,7 @@ contexts:
           scope: keyword.control.assertion.regexp.elixir
           set: [group_body, unexpected_quantifier_pop]
           # Named capture.
-        - match: \?(?>P?(?><({{capture_name}})>|'\g<-1>'|<({{invalid_capture_name}}?)>|'\g<-1>'))
+        - match: \?(?>(?>P?<({{capture_name}})>|'\g<-1>'|P?<({{invalid_capture_name}}?)>|'\g<-1>'))
           scope: keyword.other.named-capture-group.regexp.elixir
           captures:
             1: entity.name.capture-group.regexp.elixir
@@ -281,8 +281,8 @@ contexts:
         - match: \?\|
           scope: keyword.control.group-numbers.regexp.elixir
           set: [group_body, unexpected_quantifier_pop]
-          # Inline option.
-        - match: (\?)([imsx]+(?:-[imsx]*)?)(.*?)(:|(?=\)))
+          # Internal option setting.
+        - match: (?x) (\?) ([imsxJUX]+(?:-[imsxJUX]*)? | (?:-[imsxJUX]*)+) (.*?) (:|(?=\)))
           scope: storage.modifier.mode.regexp.elixir
           captures:
             1: storage.modifier.mode.question.regexp.elixir
