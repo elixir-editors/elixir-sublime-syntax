@@ -23,15 +23,6 @@
 #//       ^ invalid.illegal.unexpected-quantifier.regexp.elixir
 #//^^^ invalid.illegal.unexpected-quantifier.regexp.elixir
 
-~r"{} }{ {,} {,1} {1, } {1, 2} {1} {1,} {12} {1,2} {12,3} {12,34}"
-#//                                                       ^^^^^^^ keyword.operator.quantifier.regexp.elixir
-#//                                                ^^^^^^ keyword.operator.quantifier.regexp.elixir
-#//                                          ^^^^^ keyword.operator.quantifier.regexp.elixir
-#//                                     ^^^^ keyword.operator.quantifier.regexp.elixir
-#//                                ^^^^ keyword.operator.quantifier.regexp.elixir
-#//                            ^^^ keyword.operator.quantifier.regexp.elixir
-#//^^^^^^^^^^^^^^^^^^^^^^^^^^^  meta.literal.regexp.elixir
-
 # Subroutine calls:
 ~r"\g<n>\g'n'\g<-1>\g<1>\g'-1'\g'1'\g'\g''\g<\g<>\g'aä'\g<aä>\g<aä\g<>\g<-0>"
 #//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ keyword.other.subroutine.regexp.elixir
@@ -83,7 +74,9 @@
 
 # Class sets:
 # TODO:
-~r"[.+*?{1}()|^$]"
+~r"[.+*?{1}()|^$][\N\b]"
+#//                 ^^ constant.character.escape.backspace.regexp.elixir
+#//               ^^ invalid.illegal.escape-sequence.regexp.elixir
 #// ^^^^^^^^^^^^ meta.literal.regexp.elixir
 #//^^^^^^^^^^^^^^ meta.set.regexp.elixir
 ~r"[[:>:]][]"
@@ -98,23 +91,53 @@
 #//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ keyword.control.flag.regexp.elixir
 
 # Backtracking verbs:
-# TODO:
-~r""
+~r"(*ACCEPT)(*COMMIT)(*FAIL)(*F)(*MARK)(*THEN)(*PRUNE)(*SKIP)"
+#//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.backtracking.regexp.elixir
+~r"(*ACCEPT:)(*COMMIT:)(*FAIL:)(*F:)(*MARK)(*THEN:)(*PRUNE:)(*SKIP:)(*:name)"
+#//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.backtracking.regexp.elixir
+~r"(*ACCEPT:n)(*COMMIT:n)(*FAIL:n)(*F:n)(*MARK:)(*:)"
+#//                                               ^ invalid.illegal.backtracking-verb.regexp.elixir
+#//                                           ^ invalid.illegal.backtracking-verb.regexp.elixir
+#//                                   ^ invalid.illegal.backtracking-verb.regexp.elixir
+#//                             ^ invalid.illegal.backtracking-verb.regexp.elixir
+#//                    ^ invalid.illegal.backtracking-verb.regexp.elixir
+#//         ^ invalid.illegal.backtracking-verb.regexp.elixir
 
 # Groups:
 # TODO:
 ~r""
 
 # Operator:
-~r"|"
+~r"|(|)|"
+#//    ^ keyword.operator.or.regexp.elixir
+#//  ^ keyword.operator.or.regexp.elixir
 #//^ keyword.operator.or.regexp.elixir
+~r"|+"
+#// ^ invalid.illegal.unexpected-quantifier.regexp.elixir
 
 # Quantifiers:
-# TODO:
-~r""
+~r"x{1}y{1,2}"
+#//        ^ constant.numeric.quantifier.max.regexp.elixir
+#//       ^ punctuation.separator.quantifier.regexp.elixir
+#//      ^ constant.numeric.quantifier.min.regexp.elixir
+#//   ^ punctuation.definition.quantifier.end.regexp.elixir
+#//  ^ constant.numeric.quantifier.min.regexp.elixir
+#// ^ punctuation.definition.quantifier.begin.regexp.elixir
+~r"{} }{ {,} {,1} {1, } {1, 2} {1} {1,} {12} {1,2} {12,3} {12,34}"
+#//                                                       ^^^^^^^ keyword.operator.quantifier.regexp.elixir
+#//                                                ^^^^^^ keyword.operator.quantifier.regexp.elixir
+#//                                          ^^^^^ keyword.operator.quantifier.regexp.elixir
+#//                                     ^^^^ keyword.operator.quantifier.regexp.elixir
+#//                                ^^^^ keyword.operator.quantifier.regexp.elixir
+#//                            ^^^ keyword.operator.quantifier.regexp.elixir
+#//^^^^^^^^^^^^^^^^^^^^^^^^^^^  meta.literal.regexp.elixir
+~r"+*?{1}x{2}{3}+*?"
+#//          ^^^^^^ invalid.illegal.unexpected-quantifier.regexp.elixir
+#//^^^^^^ invalid.illegal.unexpected-quantifier.regexp.elixir
 
 # Dot meta character:
-~r"."
+~r".[.]"
+#//  ^ meta.literal.regexp.elixir
 #//^ keyword.other.any.regexp.elixir
 
 # Comments:
