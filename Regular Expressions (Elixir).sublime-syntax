@@ -263,11 +263,13 @@ contexts:
           scope: keyword.control.assertion.regexp.elixir
           set: [group_body, unexpected_quantifier_pop]
           # Named capture.
-        - match: \?(?>(?>P?<({{capture_name}})>|'\g<-1>'|P?<({{invalid_capture_name}}?)>|'\g<-1>'))
+        - match: (?x) \? (?>P?<({{capture_name}})> | '\g<-1>' | (P)(?=') | P?(<>|'') | P?<({{invalid_capture_name}}?)> | P?'\g<-1>')
           scope: keyword.other.named-capture-group.regexp.elixir
           captures:
             1: entity.name.capture-group.regexp.elixir
             2: invalid.illegal.named-capture.regexp.elixir
+            3: invalid.illegal.named-capture.regexp.elixir
+            4: invalid.illegal.named-capture.regexp.elixir
           set: [group_body, unexpected_quantifier_pop]
           # Atomic group.
         - match: \?>
@@ -290,7 +292,8 @@ contexts:
             3: invalid.illegal.inline-option.regexp.elixir
             4: storage.modifier.mode.colon.regexp.elixir
           set: [group_body, unexpected_quantifier_pop]
-        - include: conditional_subpattern
+        - match: (?=\?\()
+          set: conditional_subpattern_pop
         - match: ''
           set: [group_body, unexpected_quantifier_pop]
 
@@ -301,41 +304,60 @@ contexts:
       pop: true
     - include: expression
 
+  conditional_subpattern_pop:
+    - meta_content_scope: meta.group.regexp.elixir
+    - include: conditional_subpattern
+    - match: ''
+      pop: true
+
   conditional_subpattern:
+    - match: \?((\()(\)))
+      scope: keyword.control.conditional.regexp.elixir
+      captures:
+        1: invalid.illegal.conditional.regexp.elixir
+        2: punctuation.definition.conditional.begin.regexp.elixir
+        3: punctuation.definition.conditional.end.regexp.elixir
     - match: \?(\()
       scope: keyword.control.conditional.regexp.elixir
       captures:
         1: punctuation.definition.conditional.begin.regexp.elixir
       push:
+        - meta_scope: meta.conditional.regexp.elixir
           # Pseudo-condition called DEFINE.
         - match: DEFINE
           scope: keyword.other.conditional.definition.regexp
-          set: [subpattern_condition, unexpected_quantifier_pop]
+          set: conditional_subpattern_end
           # References to recursion.
-        - match: R(?:\d+|&{{capture_name}})
-          scope: variable.other.back-reference.recursion.regexp.elixir
-          set: [subpattern_condition, unexpected_quantifier_pop]
+        - match: (R)(?:(&)({{capture_name}})|(\d+)|)
+          captures:
+            1: keyword.operator.recursion.regexp.elixir
+            2: keyword.operator.recursion.regexp.elixir
+            3: variable.other.recursion.regexp.elixir
+            4: variable.other.recursion.regexp.elixir
+          set: conditional_subpattern_end
           # References to subpatterns.
         - match: <({{capture_name}})>|'\g<-1>'|\g<-1>
           captures:
             1: variable.other.back-reference.regexp.elixir
-          set: [subpattern_condition, unexpected_quantifier_pop]
+          set: conditional_subpattern_end
           # Assertions: positive or negative lookahead or lookbehind assertion.
         - match: \?<?[=!]
           scope: keyword.control.assertion.regexp.elixir
           set:
-            - match: \)
-              scope: keyword.control.group.regexp.elixir punctuation.definition.conditional.end.regexp.elixir
-              set: [group_body, unexpected_quantifier_pop]
-            - include: unexpected_quantifier_pop
-            - include: expression
+            - include: unexpected_quantifier
+            - match: ''
+              set:
+                - meta_content_scope: meta.conditional.regexp.elixir
+                - match: (?=\))
+                  set: conditional_subpattern_end
+                - include: expression
         - match: ''
-          set: [subpattern_condition, unexpected_quantifier_pop]
+          set: conditional_subpattern_end
 
-  subpattern_condition:
+  conditional_subpattern_end:
     - meta_content_scope: meta.conditional.regexp.elixir
     - match: \)
-      scope: keyword.control.conditional.regexp.elixir
+      scope: keyword.control.conditional.regexp.elixir punctuation.definition.conditional.end.regexp.elixir
       set: [group_body, unexpected_quantifier_pop]
     - match: '[^)]+'
       scope: invalid.illegal.conditional.regexp.elixir
