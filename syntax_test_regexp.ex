@@ -89,6 +89,9 @@
 # Inline options:
 ~r"(*NO_START_OPT)(*UTF)(*UTF8)(*UCP)(*CRLF)(*CR)(*LF)(*ANYCRLF)(*ANY)(*BSR_ANYCRLF)(*BSR_UNICODE)(*LIMIT_MATCH=)(*LIMIT_RECURSION=)(*ANY)"
 #//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ keyword.control.flag.regexp.elixir
+~r"(*LIMIT_MATCH=1)(*LIMIT_RECURSION=2)"
+#//                                  ^ constant.numeric.integer.decimal.regexp.elixir
+#//              ^ constant.numeric.integer.decimal.regexp.elixir
 
 # Backtracking verbs:
 ~r"(*ACCEPT)(*COMMIT)(*FAIL)(*F)(*MARK)(*THEN)(*PRUNE)(*SKIP)"
@@ -104,14 +107,73 @@
 #//         ^ invalid.illegal.backtracking-verb.regexp.elixir
 
 # Groups:
-# TODO:
-~r""
+~r"()"
+#//^^ meta.group.regexp.elixir keyword.control.group.regexp.elixir
+#// ^ punctuation.definition.group.end.regexp.elixir
+#//^ punctuation.definition.group.begin.regexp.elixir
+~r")"
+#//^ invalid.illegal.unmatched-brace.regexp.elixir
+
+# Internal options:
+~r"(?i)(?m)(?s)(?x)(?J)(?U)(?X)(?-)(?-:)(?-i:)"
+#//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.group.regexp.elixir
+~r"(?i:)(?m:)(?s:)(?x:)(?J:)(?U:)(?X:)"
+
+~r"(?=)(?!)(?<=)(?<!)(?>)(?:)(?|)"
+#//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.group.regexp.elixir
+
+~r"(?P<name>)(?<name>)(?'name')"
+#//                      ^^^^ entity.name.capture-group.regexp.elixir
+#//             ^^^^ entity.name.capture-group.regexp.elixir
+#//    ^^^^ entity.name.capture-group.regexp.elixir
+~r"(?<ä>)(?P<ä>)(?'ä')(?P<>)(?<>)(?P'name')(?<)(?')"
+#//                                             ^ invalid.illegal.unexpected-quantifier.regexp.elixir
+#//                                         ^ invalid.illegal.unexpected-quantifier.regexp.elixir
+#//                                ^ invalid.illegal.named-capture.regexp.elixir
+#//                           ^^ invalid.illegal.named-capture.regexp.elixir
+#//                      ^^ invalid.illegal.named-capture.regexp.elixir
+#//                ^ invalid.illegal.named-capture.regexp.elixir
+#//          ^ invalid.illegal.named-capture.regexp.elixir
+#//   ^ invalid.illegal.named-capture.regexp.elixir
+
+~r"(?>atomic group)(?:non-capturing group)(?|reset group)"
+#//                                        ^^ keyword.control.reset-numbers-group.regexp.elixir
+#//                 ^^ keyword.control.non-capturing-group.regexp.elixir
+#// ^^ keyword.control.atomic-group.regexp.elixir
+
+~r"(?(Rx)t|f) (?(R)t|f) (?(R3)t|f) (?(R&r)t|f) (?(DEFINE)t|f) (?(DEFINEx)t|f)"
+#//                                                              ^^^^^^^ variable.other.back-reference.regexp.elixir
+#//                                               ^^^^^^ keyword.other.conditional.definition.regexp
+#//                                     ^ variable.other.recursion.regexp.elixir
+#//                         ^ variable.other.recursion.regexp.elixir
+#//              ^ keyword.operator.recursion.regexp.elixir
+#//   ^^ variable.other.back-reference.regexp.elixir
+~r"(?(condition)t|f) (?('condition')t|f) (?(<condition>)t|f)"
+#//                                          ^^^^^^^^^ variable.other.back-reference.regexp.elixir
+#//                      ^^^^^^^^^ variable.other.back-reference.regexp.elixir
+#//   ^^^^^^^^^ variable.other.back-reference.regexp.elixir
+~r"(?(?=)t|f) (?(?!)t|f) (?(?<=)t|f) (?(?<!)t|f)"
+#//                                     ^^^^ meta.conditional.regexp.elixir
+#//                         ^^^^ meta.conditional.regexp.elixir
+#//             ^^^^ meta.conditional.regexp.elixir
+#//  ^^^^ meta.conditional.regexp.elixir
+~r"(?(R3x)t|f) (?(DEFINE+xyz?)+t|f) (?()) (?()+) (?(?=+)+)"
+#//                                                     ^ invalid.illegal.unexpected-quantifier.regexp.elixir
+#//                                                   ^ invalid.illegal.unexpected-quantifier.regexp.elixir
+#//                                           ^ invalid.illegal.unexpected-quantifier.regexp.elixir
+#//                                         ^^ invalid.illegal.conditional.regexp.elixir
+#//                                   ^^ invalid.illegal.conditional.regexp.elixir
+#//                           ^ invalid.illegal.unexpected-quantifier.regexp.elixir
+#//                     ^^^^^ invalid.illegal.conditional.regexp.elixir
+#//     ^ invalid.illegal.conditional.regexp.elixir
+
+~r"(?(?!)t|f) (?(?<=)t|f) (?(?=xyz)t|f) (?(?!xyz)t|f) (?(?<=xyz)t|f) (?(?<!xyz)t|f)"
 
 # Operator:
 ~r"|(|)|"
-#//    ^ keyword.operator.or.regexp.elixir
-#//  ^ keyword.operator.or.regexp.elixir
-#//^ keyword.operator.or.regexp.elixir
+#//    ^ keyword.operator.alternation.regexp.elixir
+#//  ^ keyword.operator.alternation.regexp.elixir
+#//^ keyword.operator.alternation.regexp.elixir
 ~r"|+"
 #// ^ invalid.illegal.unexpected-quantifier.regexp.elixir
 
@@ -139,6 +201,28 @@
 ~r".[.]"
 #//  ^ meta.literal.regexp.elixir
 #//^ keyword.other.any.regexp.elixir
+
+# Comments:
+~r"(?#comment block)"
+#//^^^^^^^^^^ comment.block.group.regexp.elixir
+~r"# # comment line"
+#//  ^ comment.line.number-sign.regexp.elixir
+#//^^ meta.literal.regexp.elixir
+~r"[ # not a comment inside a set]"
+#// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.literal.regexp.elixir
+~r" # a comment"
+#// ^^^^^^^^^^^ comment.line.number-sign.regexp.elixir
+#//^ meta.literal.regexp.elixir
+~r"\ # escape preceding space to prevent matching as a comment"
+#//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.literal.regexp.elixir
+#//^^ constant.character.escape.regexp.elixir
+~r"no preceding space#not a comment"
+#//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.literal.regexp.elixir
+~R[ #{123}] ~r[ #{123}]
+#//             ^^^^^^ meta.interpolation.elixir
+#//            ^ meta.literal.regexp.elixir
+#// ^^^^^^ comment.line.number-sign.regexp.elixir
+#//^ meta.literal.regexp.elixir
 
 # Literals:
 ~r[ !"#%&',-/0123456789:;<=>@ABCDEFGHIJKLMNOPQRSTUVWXYZ_`abcdefghijklmnopqrstuvwxyz{}~]
