@@ -185,7 +185,9 @@
 #//   ^ punctuation.definition.quantifier.end.regexp.elixir
 #//  ^ constant.numeric.quantifier.min.regexp.elixir
 #// ^ punctuation.definition.quantifier.begin.regexp.elixir
-~r"{} }{ {,} {,1} {1, } {1, 2} {1} {1,} {12} {1,2} {12,3} {12,34}"
+~r"{} }{ {,} {,1} {1, } {1, 2} {1} {1,} {12} {1,2} {12,3} {12,34} {5}+ {6}?"
+#//                                                                    ^^^^ keyword.operator.quantifier.regexp.elixir
+#//                                                               ^^^^ keyword.operator.quantifier.regexp.elixir
 #//                                                       ^^^^^^^ keyword.operator.quantifier.regexp.elixir
 #//                                                ^^^^^^ keyword.operator.quantifier.regexp.elixir
 #//                                          ^^^^^ keyword.operator.quantifier.regexp.elixir
@@ -193,7 +195,9 @@
 #//                                ^^^^ keyword.operator.quantifier.regexp.elixir
 #//                            ^^^ keyword.operator.quantifier.regexp.elixir
 #//^^^^^^^^^^^^^^^^^^^^^^^^^^^  meta.literal.regexp.elixir
-~r"+*?{1}x{2}{3}+*?"
+~r"+*?{1}x{2}{3}+*? {4}* {5}+*"
+#//                          ^ invalid.illegal.unexpected-quantifier.regexp.elixir
+#//                    ^ invalid.illegal.unexpected-quantifier.regexp.elixir
 #//          ^^^^^^ invalid.illegal.unexpected-quantifier.regexp.elixir
 #//^^^^^^ invalid.illegal.unexpected-quantifier.regexp.elixir
 
