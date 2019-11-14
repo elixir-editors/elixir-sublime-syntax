@@ -145,7 +145,7 @@ contexts:
 
   operator:
     - match: \|
-      scope: keyword.operator.or.regexp.elixir
+      scope: keyword.operator.alternation.regexp.elixir
       push: unexpected_quantifier_pop
 
   assertion:
@@ -277,11 +277,11 @@ contexts:
           set: [group_body, unexpected_quantifier_pop]
           # Non-capturing group.
         - match: '\?:'
-          scope: keyword.control.atomic-group.regexp.elixir
+          scope: keyword.control.non-capturing-group.regexp.elixir
           set: [group_body, unexpected_quantifier_pop]
           # Reset/overload group numbers inside.
         - match: \?\|
-          scope: keyword.control.group-numbers.regexp.elixir
+          scope: keyword.control.reset-numbers-group.regexp.elixir
           set: [group_body, unexpected_quantifier_pop]
           # Internal option setting.
         - match: (?x) (\?) ([imsxJUX]+(?:-[imsxJUX]*)? | (?:-[imsxJUX]*)+) (.*?) (:|(?=\)))
@@ -317,6 +317,7 @@ contexts:
         1: invalid.illegal.conditional.regexp.elixir
         2: punctuation.definition.conditional.begin.regexp.elixir
         3: punctuation.definition.conditional.end.regexp.elixir
+      set: [group_body, unexpected_quantifier_pop]
     - match: \?(\()
       scope: keyword.control.conditional.regexp.elixir
       captures:
@@ -324,11 +325,11 @@ contexts:
       push:
         - meta_scope: meta.conditional.regexp.elixir
           # Pseudo-condition called DEFINE.
-        - match: DEFINE
-          scope: keyword.other.conditional.definition.regexp
+        - match: DEFINE(?=\))
+          scope: keyword.other.conditional.definition.regexp.elixir
           set: conditional_subpattern_end
           # References to recursion.
-        - match: (R)(?:(&)({{capture_name}})|(\d+)|)
+        - match: (R)(?:(&)({{capture_name}})|(\d+)|(?=\)))
           captures:
             1: keyword.operator.recursion.regexp.elixir
             2: keyword.operator.recursion.regexp.elixir
