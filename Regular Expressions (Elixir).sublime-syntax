@@ -438,7 +438,7 @@ contexts:
           scope: invalid.illegal.unknown-posix-class.regexp.elixir
 
   quantifier:
-    - match: ({)(\d+)(,)?(\d*)(})
+    - match: ({)(\d+)(,)?(\d*)(}){{lazy_or_possessive}}?
       scope: meta.quantifier.regexp.elixir keyword.operator.quantifier.regexp.elixir
       captures:
         1: punctuation.definition.quantifier.begin.regexp.elixir
@@ -448,12 +448,10 @@ contexts:
         5: punctuation.definition.quantifier.end.regexp.elixir
       push: unexpected_quantifier_pop
     - match: '{{character_quantifier}}{{lazy_or_possessive}}?'
-      scope: keyword.operator.quantifier.regexp.elixir
+      scope: meta.quantifier.regexp.elixir keyword.operator.quantifier.regexp.elixir
       push: unexpected_quantifier_pop
 
   unexpected_quantifier:
-    - match: '{{ranged_quantifier}}'
-      scope: invalid.illegal.unexpected-quantifier.regexp.elixir
     - match: (?>{{character_quantifier}}|{{ranged_quantifier}})+
       scope: invalid.illegal.unexpected-quantifier.regexp.elixir
 
