@@ -167,8 +167,6 @@
 #//                     ^^^^^ invalid.illegal.conditional.regexp.elixir
 #//     ^ invalid.illegal.conditional.regexp.elixir
 
-~r"(?(?!)t|f) (?(?<=)t|f) (?(?=xyz)t|f) (?(?!xyz)t|f) (?(?<=xyz)t|f) (?(?<!xyz)t|f)"
-
 # Operator:
 ~r"|(|)|"
 #//    ^ keyword.operator.alternation.regexp.elixir
