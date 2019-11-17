@@ -87,7 +87,7 @@ heredoc text
    ~s/\xaf\xa \xww\s\//escapes
 #//                    ^^^^^^^ storage.type.string.elixir
 #//               ^^^^ constant.character.escape.char.elixir
-#//             ^^ invalid.illegal
+#//              ^ invalid.illegal
 #//          ^ invalid.illegal
 #//   ^^^^^^^ constant.character.escape.hex.elixir
 #//^^ storage.type.string.elixir
@@ -137,3 +137,58 @@ heredoc text
 #//^^ punctuation.section.array.elixir
 ]
 
+# Regular expression strings:
+~r"\""i ~r'\''i ~r/\//i ~r|\||i ~r<<\>>i ~r{{\}}i ~r[[\]]i ~r((\))i
+#//                                                               ^ string.quoted.modifiers.elixir
+#//                                                            ^^ constant.character.escape.regexp.elixir
+#//                                                      ^ string.quoted.modifiers.elixir
+#//                                                   ^^ constant.character.escape.regexp.elixir
+#//                                             ^ string.quoted.modifiers.elixir
+#//                                          ^^ constant.character.escape.regexp.elixir
+#//                                    ^ string.quoted.modifiers.elixir
+#//                                 ^^ constant.character.escape.regexp.elixir
+#//                           ^ string.quoted.modifiers.elixir
+#//                        ^^ constant.character.escape.regexp.elixir
+#//                   ^ string.quoted.modifiers.elixir
+#//                ^^ constant.character.escape.regexp.elixir
+#//           ^ string.quoted.modifiers.elixir
+#//        ^^ constant.character.escape.regexp.elixir
+#//   ^ string.quoted.modifiers.elixir
+#//^^ constant.character.escape.regexp.elixir
+  ~r"""   *
+#//    ^^^^ invalid.illegal.opening-heredoc.elixir
+   *"""x
+#//    ^ string.quoted.modifiers.elixir
+#//^ invalid.illegal.closing-heredoc.elixir
+  ~r'''   *
+#//    ^^^^ invalid.illegal.opening-heredoc.elixir
+   *'''x
+#//    ^ string.quoted.modifiers.elixir
+#//^ invalid.illegal.closing-heredoc.elixir
+~R"\""i ~R'\''i ~R/\//i ~R|\||i ~R<<\>>i ~R{{\}}i ~R[[\]]i ~R((\))i
+#//                                                               ^ string.quoted.modifiers.elixir
+#//                                                            ^^ constant.character.escape.regexp.elixir
+#//                                                      ^ string.quoted.modifiers.elixir
+#//                                                   ^^ constant.character.escape.regexp.elixir
+#//                                             ^ string.quoted.modifiers.elixir
+#//                                          ^^ constant.character.escape.regexp.elixir
+#//                                    ^ string.quoted.modifiers.elixir
+#//                                 ^^ constant.character.escape.regexp.elixir
+#//                           ^ string.quoted.modifiers.elixir
+#//                        ^^ constant.character.escape.regexp.elixir
+#//                   ^ string.quoted.modifiers.elixir
+#//                ^^ constant.character.escape.regexp.elixir
+#//           ^ string.quoted.modifiers.elixir
+#//        ^^ constant.character.escape.regexp.elixir
+#//   ^ string.quoted.modifiers.elixir
+#//^^ constant.character.escape.regexp.elixir
+  ~R"""   *
+#//    ^^^^ invalid.illegal.opening-heredoc.elixir
+   *"""x
+#//    ^ string.quoted.modifiers.elixir
+#//^ invalid.illegal.closing-heredoc.elixir
+  ~R'''   *
+#//    ^^^^ invalid.illegal.opening-heredoc.elixir
+   *'''x
+#//    ^ string.quoted.modifiers.elixir
+#//^ invalid.illegal.closing-heredoc.elixir
