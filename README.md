@@ -3,6 +3,15 @@
 Elixir Sublime Syntax based on [Elixir Package](https://github.com/elixir-editors/elixir-tmbundle)
 with better highlighting and syntax parsing
 
+
+#### 2019-11-20
+
+Thanks to @azizk again
+- We now have regex syntax highlighting
+- EEx syntax highlighting now reuses html definition and interpolates Elixir parts into it
+- various fixes on general Elixir syntax definition
+- comprehensive sublime syntax tests
+
 #### 2019-03-22
 
 Thanks to @azizk
