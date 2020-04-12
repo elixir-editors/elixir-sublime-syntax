@@ -25,6 +25,7 @@ contexts:
     - include: subroutine_call
     - include: back_reference
     - include: assertion
+    - include: comment
     - include: escape_sequence
     - include: class_set
     - include: inline_option
@@ -33,7 +34,6 @@ contexts:
     - include: operator
     - include: quantifier
     - include: dot_meta_char
-    - include: comment
     - include: literal
 
   quoted_sequence:
@@ -367,16 +367,11 @@ contexts:
     - match: \[:.*?:\]
       scope: invalid.illegal.posix-class.regexp.elixir
       set: unexpected_quantifier_pop
-    - match: (\[)(\])
-      scope: meta.set.regexp.elixir keyword.control.set.regexp.elixir invalid.illegal.set.regexp.elixir
-      captures:
-        1: punctuation.definition.set.begin.regexp.elixir
-        2: punctuation.definition.set.end.regexp.elixir
-      set: unexpected_quantifier_pop
-    - match: (\[)(\^?)
+    - match: (\[)(\^?)(]?)
       captures:
         1: keyword.control.set.regexp.elixir punctuation.definition.set.begin.regexp.elixir
         2: keyword.operator.negation.regexp.elixir
+        3: meta.literal.regexp.elixir
       push:
         - meta_scope: meta.set.regexp.elixir
         - include: character_range
@@ -388,9 +383,9 @@ contexts:
         - include: literal
 
   character_range:
-    - match: (?=(\\[dsw]|\\x\h\h|\\\d+|\\c\p{ascii}|\\.|.)-\g<1>)
+    - match: (?=(\\x\h\h?|\\x{\h+}|\\[0-7]{1,3}|\o{[0-7]+}|\\c\p{ascii}|\\.|[^\\])-(?!])\g<1>)
       push:
-        - match: (?>(\\[dsw])|(\\x\h\h|\\\d+|\\c\p{ascii}|\\.|.))
+        - match: (\\[dsw])|(\\x\h\h?|\\x{\h+}|\\[0-7]{1,3}|\o{[0-7]+}|\\c\p{ascii}|\\.|[^\\])
           scope: meta.character-range.regexp.elixir
           captures:
             1: invalid.illegal.range.regexp.elixir
@@ -400,7 +395,7 @@ contexts:
               scope: keyword.operator.range.regexp.elixir
               set:
                 - meta_scope: meta.character-range.regexp.elixir
-                - match: (?>(\\[dsw])|(\\x\h\h|\\\d+|\\c\p{ascii}|\\.|.))
+                - match: (\\[dsw])|(\\x\h\h?|\\x{\h+}|\\[0-7]{1,3}|\o{[0-7]+}|\\c\p{ascii}|\\.|[^\\])
                   captures:
                     1: invalid.illegal.range.regexp.elixir
                     2: constant.other.range.regexp.elixir
@@ -412,6 +407,9 @@ contexts:
       scope: invalid.illegal.escape-sequence.regexp.elixir
     - match: \\b
       scope: constant.character.escape.backspace.regexp.elixir
+    # Inside a class set \x, \xh and \xhh are valid sequences.
+    - match: \\x\h?\h?
+      scope: constant.character.escape.hex.regexp.elixir
     - include: common_escape_sequence
 
   # E.g: [:alpha:] or [:^alpha:]
@@ -465,7 +463,13 @@ contexts:
       scope: keyword.other.any.regexp.elixir
 
   comment:
-    - match: (?<!\\\s)(?<=\s)#
+    - match: '(?=(\\{2})*\\ #)'
+      push:
+        - include: escape_sequence
+        - match: '#'
+          scope: meta.literal.regexp.elixir
+          pop: true
+    - match: (?<=\s)#
       push:
         - meta_scope: comment.line.number-sign.regexp.elixir
         - match: \n
