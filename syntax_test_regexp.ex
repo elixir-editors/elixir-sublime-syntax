@@ -64,7 +64,7 @@
 #//           ^^ invalid.illegal.general-category.regexp.elixir
 #//       ^^ invalid.illegal.general-category.regexp.elixir
 #//   ^^^ invalid.illegal.general-category.regexp.elixir
-#//^^^^^^^^^ constant.other.escape-sequence.general-category.regexp.elixir
+#//^^^^^^^^^^^^^ constant.other.escape-sequence.general-category.regexp.elixir
 ~r"\K\R\X\?\*\+\.\x00\00\07\o\o{}\o{84}\o{0}\cX\cä\a\e\f\n\r\t"
 #//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ constant.character.escape
 
@@ -73,18 +73,60 @@
 #//^^^^^^^^^^^^^^ keyword.control.anchor
 
 # Class sets:
-# TODO:
-~r"[.+*?{1}()|^$][\N\b]"
-#//                 ^^ constant.character.escape.backspace.regexp.elixir
-#//               ^^ invalid.illegal.escape-sequence.regexp.elixir
-#// ^^^^^^^^^^^^ meta.literal.regexp.elixir
-#//^^^^^^^^^^^^^^ meta.set.regexp.elixir
-~r"[[:>:]][]"
-#//       ^^ invalid.illegal.set.regexp.elixir
+~r"[.+*?{1}()[|^$][\N\b\x\xf\xff\A\B\g\G\k\K\R\X\z\Z]"
+#//                             ^^^^^^^^^^^^^^^^^^^^ constant.character.escape.regexp.elixir
+#//                    ^^^^^^^^^ constant.character.escape.hex.regexp.elixir
+#//                  ^^ constant.character.escape.backspace.regexp.elixir
+#//                ^^ invalid.illegal.escape-sequence.regexp.elixir
+#// ^^^^^^^^^^^^^ meta.literal.regexp.elixir
+#//^^^^^^^^^^^^^^^ meta.set.regexp.elixir
+~r"[[:>:]]"
 #// ^^^^^ invalid.deprecated.word-boundary.regexp.elixir
+~r"[a]][]][^]][^a]"
+#//             ^ meta.literal.regexp.elixir
+#//          ^ punctuation.definition.set.end.regexp.elixir
+#//         ^ meta.literal.regexp.elixir
+#//        ^ keyword.operator.negation.regexp.elixir
+#//      ^ punctuation.definition.set.end.regexp.elixir
+#//     ^ meta.literal.regexp.elixir
+#//   ^ meta.literal.regexp.elixir
+#// ^ meta.literal.regexp.elixir
 ~r"[
-#// ^ meta.set.regexp.elixir
+#// ^ meta.set.regexp.elixir meta.literal.regexp.elixir
 ]"
+
+~r"[a-b-c] [-a-z-] [\d-\s \w-\\] [\x0-\x1] [\x00-\xff] [\000-\007] [\0-\18]"
+#//                                                                      ^ meta.literal.regexp.elixir
+#//                                                          ^^^^ constant.other.range.regexp.elixir
+#//                                                         ^ keyword.operator.range.regexp.elixir
+#//                                                     ^^^^ constant.other.range.regexp.elixir
+#//                                              ^^^^ constant.other.range.regexp.elixir
+#//                                         ^^^^ constant.other.range.regexp.elixir
+#//                                   ^^^ constant.other.range.regexp.elixir
+#//                               ^^^ constant.other.range.regexp.elixir
+#//                          ^^ constant.other.range.regexp.elixir
+#//                       ^^ invalid.illegal.range.regexp.elixir
+#//                    ^^ invalid.illegal.range.regexp.elixir
+#//                 ^^ invalid.illegal.range.regexp.elixir
+#//             ^ meta.literal.regexp.elixir
+#//           ^ keyword.operator.range.regexp.elixir
+#//         ^ meta.literal.regexp.elixir
+#//    ^^ meta.literal.regexp.elixir
+~r"[-] [--] [---] [\--\-] [[--] [--[] [[-[] [[-] [[-\]] [\[-\]]"
+#//                                                      ^^ constant.other.range.regexp.elixir
+#//                                                 ^^ constant.other.range.regexp.elixir
+#//                                          ^^ meta.literal.regexp.elixir
+#//                                      ^ constant.other.range.regexp.elixir
+#//                                    ^ constant.other.range.regexp.elixir
+#//                                ^ constant.other.range.regexp.elixir
+#//                          ^ constant.other.range.regexp.elixir
+#//                        ^ constant.other.range.regexp.elixir
+#//                   ^^ constant.other.range.regexp.elixir
+#//                ^^ constant.other.range.regexp.elixir
+#//           ^ keyword.operator.range.regexp.elixir
+#//       ^ punctuation.definition.set.end.regexp.elixir
+#//     ^^ meta.literal.regexp.elixir
+#// ^ meta.literal.regexp.elixir
 
 # Inline options:
 ~r"(*NO_START_OPT)(*UTF)(*UTF8)(*UCP)(*CRLF)(*CR)(*LF)(*ANYCRLF)(*ANY)(*BSR_ANYCRLF)(*BSR_UNICODE)(*LIMIT_MATCH=)(*LIMIT_RECURSION=)(*ANY)"
@@ -206,18 +248,31 @@
 
 # Comments:
 ~r"(?#comment block)"
-#//^^^^^^^^^^ comment.block.group.regexp.elixir
+#//^^^^^^^^^^^^^^^^^ comment.block.group.regexp.elixir
 ~r"# # comment line"
 #//  ^ comment.line.number-sign.regexp.elixir
 #//^^ meta.literal.regexp.elixir
 ~r"[ # not a comment inside a set]"
 #// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.literal.regexp.elixir
-~r" # a comment"
-#// ^^^^^^^^^^^ comment.line.number-sign.regexp.elixir
-#//^ meta.literal.regexp.elixir
-~r"\ # escape preceding space to prevent matching as a comment"
-#//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.literal.regexp.elixir
+~r"\ # \\\ # # a comment"
+#//          ^^^^^^^^^^^ comment.line.number-sign.regexp.elixir
+#//        ^^ meta.literal.regexp.elixir
+#//    ^^^^ constant.character.escape.regexp.elixir
+#//  ^^ meta.literal.regexp.elixir
 #//^^ constant.character.escape.regexp.elixir
+~r"\ # escape preceding space to prevent matching as a comment
+#//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.literal.regexp.elixir
+#//^^ constant.character.escape.regexp.elixir
+(back to regex...)
+#//           ^^^ keyword.other.any.regexp.elixir
+"
+~r"\\ # match as comment with an even number of preceding backslashes
+#//   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ comment.line.number-sign.regexp.elixir
+#//^^ constant.character.escape.regexp.elixir
+(back to regex...)
+#//           ^^^ keyword.other.any.regexp.elixir
+"
+
 ~r"no preceding space#not a comment"
 #//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.literal.regexp.elixir
 ~R[ #{123}] ~r[ #{123}]
