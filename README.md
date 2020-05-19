@@ -4,6 +4,11 @@ Elixir Sublime Syntax based on [Elixir Package](https://github.com/elixir-editor
 with better highlighting and syntax parsing
 
 
+#### 2020-05-20
+
+Thanks @dkarter
+- Allow leex file to be picked up
+
 #### 2019-11-20
 
 Thanks to @azizk again
