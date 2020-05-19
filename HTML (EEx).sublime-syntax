@@ -3,6 +3,7 @@
 name: HTML (EEx)
 file_extensions:
   - html.eex
+  - html.leex
 scope: text.html.elixir
 
 contexts:
