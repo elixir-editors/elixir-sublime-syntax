@@ -1,7 +1,123 @@
 #// SYNTAX TEST "Packages/ElixirSyntax/Elixir.sublime-syntax"
 
-# Strings:
-##########
+## Declarations:
+
+alias A.B.{C, D}
+#//            ^ punctuation.section.braces.end.elixir
+#//        ^ constant.other.module.elixir
+#//       ^ punctuation.section.braces.begin.elixir
+alias A.B, as: C
+#//            ^ entity.name.namespace.elixir
+#//     ^ constant.other.module.elixir
+#//   ^ constant.other.module.elixir
+
+def func1() do
+#// ^^^^^ entity.name.function
+end
+
+defmodule Some.Module do
+#//            ^^^^^^ entity.name.namespace.elixir
+#//       ^^^^ constant.other.module.elixir
+  def func2() do
+  end
+end
+
+defimpl Utility.YAY, for: Some.Module do
+#//                            ^^^^^^ constant.other.module.elixir
+#//                       ^^^^ constant.other.module.elixir
+#//             ^^^ entity.name.namespace.elixir
+  def types(_value), do: nil
+end
+
+defmodule X do
+  defdelegate alive?(pid), to: :erlang, as: :is_process_alive
+#//           ^^^^^^ entity.name.function
+end
+
+defprotocol Utility.ABC do
+#//                 ^^^ entity.name.namespace.elixir
+   @spec type(t) :: String.t()
+   def type(value, opts)
+
+   def type(value, opts) do
+   end
+end
+
+## Attributes:
+
+   @M
+#// ^ invalid.illegal.attribute.elixir
+   @type t
+#//      ^ entity.name.type.elixir
+#// ^^^^ variable.function.elixir
+#//^ keyword.operator.attribute.elixir
+
+@vsn "1.0"
+@compile
+@before_compile
+@after_compile
+@deprecated "..."
+
+@typedoc "Supported strategies"
+@type strategy :: :one_for_one | :one_for_all | :rest_for_one
+
+## YAML, JSON, LiveView:
+
+~L"""
+  <div class="">
+    <div>
+      <%= @deploy_step %>
+    </div>
+  </div>
+  """
+~j"""
+  {
+    "key": "#{value}",
+#//         ^^^^^^^^ meta.interpolation.elixir
+    "#{key}": "value"
+#//  ^^^^^^ meta.interpolation.elixir
+  }
+  """
+~J"""
+  {
+    "key": "#{value}",
+#//         ^^^^^^^^ string.quoted.double.json
+    "#{key}": "value"
+#// ^^^^^^^^ string.quoted.double.json
+  }
+  """
+~y"""
+  a: {xyz: "#{0}"}
+  #//       ^^^^ meta.interpolation.elixir
+  b: #{[1, 2, 3]}
+  c:
+  # FIXME: the c key isn't highlighted due to the interpolation on the previous line.
+  """
+~Y"""
+  a: {bc: "#{0}"}
+  #//      ^^^^^ string.quoted.double.yaml
+  """
+
+## Binary strings:
+
+   <<1, <<2, 3, 4>>, 5>> = <<1, 2, 3, 4, 5>>
+#//                   ^^ punctuation.definition.string.binary.end.elixir
+#//              ^^ punctuation.definition.string.binary.end.elixir
+#//     ^^ punctuation.definition.string.binary.begin.elixir
+#//^^ punctuation.definition.string.binary.begin.elixir
+#//                      ^ keyword.operator.assignment.elixir
+#//                        ^^^^^^^^^^^^^^^^^ meta.string.binary.elixir
+#//^^^^^^^^^^^^^^^^^^^^^ meta.string.binary.elixir
+
+# TODO:
+assert <<106, 111, 115, 195, 169>> == <<"josé"::bytes>>
+<<"valim"::utf8>>
+<<"ü"<>x, rëst::8-binary>> = "über"
+
+for <<c1::12, c2::12, c3::12, c4::12 <- main>>, into: <<>> do
+end
+
+## Strings:
 
 {~w"""
    """s,
@@ -11,10 +127,9 @@
 #//            ^ punctuation.section.sequence.end.elixir
 #//           ^ punctuation.section.sequence.begin.elixir
 #//<~ punctuation.section.sequence.begin.elixir
-
    ~s<?~><><<?~>>
-#//            ^^ punctuation.definition.binary.end
-#//        ^^ punctuation.definition.binary.begin
+#//            ^^ punctuation.definition.string.binary.end
+#//        ^^ punctuation.definition.string.binary.begin
 #//      ^^ keyword.operator.binary-concatenation
 #//^^^^^^ meta.string
 # TODO:      ^^ source.elixir constant.numeric.elixir
@@ -37,8 +152,7 @@
 #//                   ^^^^^ variable.other
 #//^^^^^^^^^^^^^^^^^^^ meta.string
 
-
-# Heredoc strings:
+## Heredoc strings:
    """
    #{1 + x}
 #//  ^^^^^ source.elixir.embedded
@@ -53,7 +167,7 @@
    '''nomod
 #//   ^^^^^ variable.other
 
-# Interpolation inside heredoc:
+## Interpolation inside heredoc:
 """
   #{
     ~s""ss}
@@ -84,6 +198,11 @@ heredoc text
 #//   ^^^^ string.quoted.modifiers
 
 # Escape chars, including invalid hex escapes.
+   ~s/\u{1}\u{122222}\u1234/
+   ~s/\u{1}\u{122222}\u/
+   ~s/\usd \u{ssa01133} \uasa /
+   ~s/\xaf\xa \xws/aasd w\s\//escapes
+   ~r"[\p{sdas}]"
    ~s/\xaf\xa \xww\s\//escapes
 #//                    ^^^^^^^ storage.type.string.elixir
 #//               ^^^^ constant.character.escape.char.elixir
@@ -106,43 +225,190 @@ heredoc text
    ~s()r~s[]s~s<>a~s{}c~s||p~s//s~s""d~s''s~S()r~S[]s~S<>a~S{}c~S||p~S//s~S""d~S''s
 #//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.string.elixir
 
-# Atom words string:
-{~w"\" \#{} \\ xyz"a, "a"}
+## Atom words string:
 
-# Atoms as keywords and symbols.
+# TODO:
+~w"abc  xyz"a
+~w"aaa\" #{asd} bbb"a
+
+## Character literals:
+
+   ?	? ?
+#//   ^^ invalid.illegal.character-literal.elixir
+#// ^ invalid.illegal.character-literal.elixir
+   ?\\ ?a ?? ?\
+#//          ^^^ constant.numeric.elixir
+#//       ^^ constant.numeric.elixir
+#//    ^^ constant.numeric.elixir
+#//^^^ constant.numeric.elixir
+
+## Atoms as keywords and symbols.
 [
   "": :"", "\\": :"\\", "\"": :"\"", "a \#{:b} c\":": :"a \#{:b} c\":", "#{''}": :"#{""}",
-  Ö: :Ö, ö: :ö, Ä@: :Ä@, :me@home@work :me@home@work,
+  Enum: :Enum, Kö: :Kö, Ö: :Ö, ö: :ö, Ä@: :Ä@, me@home@work: :me@home@work,
   =~: :=~, =: :=, ==: :==, ===: :===, !: :!, !=: :!=, !==: :!==, <<>>: :<<>>,
   <<<: :<<<, >>>: :>>>, ~~~: :~~~, <~>: :<~>, <~: :<~, <<~: :<<~, ~>: :~>,
   ~>>: :~>>, |>: :|>, <|>: :<|>, /: :/, \\: :\\, *: :*, ..: :.., ...: :...,
   >=: :>=, <=: :<=, <: :<, <-: :<-, <>: :<>, -: :-, --: :--, ->: :->, >: :>,
   &: :&, &&: :&&, &&&: :&&&, +: :+, ++: :++, |: :|, ||: :||, |||: :|||, @: :@,
-  {}: :{}, %{}: :%{}, %: :%, ^: :^, ^^^: :^^^
+  {}: :{}, %{}: :%{}, %: :%, ^: :^, ^^^: :^^^, "::": :::
 ]
 
-# Exceptions:
+# Atom symbol exceptions:
 [
+   :: ::,
+#//   ^^ keyword.operator.colon.elixir
+#//^^ keyword.operator.colon.elixir
    **: :**,
-#//    ^^^ constant.other.symbol.elixir
-#//^^ keyword.operator.other.elixir
+#//      ^ keyword.operator.arithmetic.elixir
+#//    ^^ constant.other.symbol.elixir
+#//^^^ invalid.illegal.atom-keyword.elixir
    .: :.,
 #//   ^^ constant.other.symbol.elixir
-#//^ punctuation.separator.method.elixir
+#//^^ invalid.illegal.atom-keyword.elixir
    ^^: :^^,
-#//    ^^ constant.other.symbol.elixir
-#// ^^ constant.other.symbol.elixir
+#//    ^^^ constant.other.symbol.elixir
+#//^^^ invalid.illegal.atom-keyword.elixir
    []: :[],
 #//    ^^^ constant.other.symbol.elixir
-#//^^ punctuation.section.array.elixir
+#//^^^ invalid.illegal.atom-keyword.elixir
 ]
 
-# Regular expression strings:
+
+## Captures:
+
+   &0; &1; &func/1; &Module.func/2
+#//                              ^ constant.numeric
+#//                             ^ punctuation.accessor.slash.elixir
+#//                         ^^^^ variable.other.capture.elixir
+#//                  ^^^^^^ constant.other.module.elixir
+#//                 ^ keyword.operator.capture.elixir
+#//              ^ constant.numeric
+#//             ^ punctuation.accessor.slash.elixir
+#//         ^^^^ variable.other.capture.elixir
+#//        ^ keyword.operator.capture.elixir
+#//    ^^ constant.other.capture.elixir
+#//^^invalid.illegal.capture.elixir
+
+## Function calls:
+
+# TODO:
+kernel.<>()
+kernel.<>
+&Kernel.<>/2
+Kernel.<>()
+
+  (&String.starts_with?/2).("a", "a")
+
+   Mod.fun() Mod.fun.() mod.fun.()
+#//                         ^ variable.function.elixir
+#//              ^^^ variable.function.elixir
+#//    ^^^ variable.function.elixir
+
+   Module.a.b.c.d()
+#//             ^ variable.function.elixir
+#//           ^ variable.other.elixir
+#//         ^ variable.other.elixir
+#//       ^ variable.function.elixir
+
+## Operators:
+[
+  [[l | r], l \\ r, l |> r, l -> r, l <- r, l => r, l .. r, l ++ r, l -- r, l <> r],
+
+  [l != r, l == r, l !== r, l === r, l <= r, l < r, l >= r, l > r],
+
+  [l not in r, l :: r],
+
+  [l &&& r, l ||| r, l <<< r, l >>> r, l ~~~ r, l ^^^ r, l && r, l and r, l || r, l or r, l xor r],
+
+  [not l, !l, -l, +l],
+
+  [l - r, l + r, l * r, l / r],
+
+  [l = r, (l; r), l.r]
+]
+
+   l &r
+#//^ variable.function.elixir
+   l +r
+#//^ variable.function.elixir
+   l -r
+#//^ variable.function.elixir
+   l << >>
+#//^ variable.function.elixir
+
+   assert not Enum.all?(list, & &1)
+#//^^^^^^ variable.function
+   assert+x
+#//^^^^^^ variable.other
+   assert +x
+#//^^^^^^ variable.function
+   assert-x
+#//^^^^^^ variable.other
+   assert -x
+#//^^^^^^ variable.function
+   [x ++ y, x++y]
+   [x -- y, x--y]
+
+
+# TODO:
+   case A.aasd do
+   end
+   case a.bcd do
+   end
+
+   assert cond fn ->
+   end
+
+   assert cond do
+#//       ^^^^ variable.other.elixir
+#//^^^^^^ variable.function.elixir
+     cond -> cond
+#//          ^^^^ variable.other.elixir
+#//  ^^^^ variable.other.elixir
+     x.cond -> cond.x
+#//            ^^^^ variable.other.elixir
+#//    ^^^^ variable.other.elixir
+   end
+
+## Special forms:
+
+   %__MODULE__{}
+#// ^^^^^^^^^^ variable.language.special-form.elixir
+
+  [__CALLER__: __CALLER__, __ENV__: __ENV__, __MODULE__: __MODULE__,
+#//                                                      ^^^^^^^^^^ variable.language.special-form.elixir
+#//                                          ^^^^^^^^^^^ constant.other.keywords.elixir
+#//                                 ^^^^^^^ variable.language.special-form.elixir
+#//                        ^^^^^^^^ constant.other.keywords.elixir
+#//            ^^^^^^^^^^ variable.language.special-form.elixir
+#//^^^^^^^^^^^ constant.other.keywords.elixir
+   __DIR__: __DIR__, __STACKTRACE__: __STACKTRACE__]
+#//                                  ^^^^^^^^^^^^^^ variable.language.special-form.elixir
+#//                  ^^^^^^^^^^^^^^^ constant.other.keywords.elixir
+#//         ^^^^^^^ variable.language.special-form.elixir
+#//^^^^^^^^ constant.other.keywords.elixir
+
+   :__DIR__.__DIR__
+#//         ^^^^^^^ variable.other.elixir
+#//^^^^^^^^ constant.other.symbol.elixir
+
+## SQL fragment:
+
+fragment("""
+jsonb_to_tsvector('simple', content, '["string", "numeric"]')
+""")
+fragment("jsonb_to_tsvector('simple', content, '[\"string\", \"numeric\"]')")
+
+## Regular expression strings:
+
 ~r"\""i ~r'\''i ~r/\//i ~r|\||i ~r<<\>>i ~r{{\}}i ~r[[\]]i ~r((\))i
 #//                                                               ^ string.quoted.modifiers.elixir
 #//                                                            ^^ constant.character.escape.regexp.elixir
+#//                                                           ^ punctuation.definition.group.begin.regexp.elixir
 #//                                                      ^ string.quoted.modifiers.elixir
 #//                                                   ^^ constant.character.escape.regexp.elixir
+#//                                                  ^ punctuation.definition.set.begin.regexp.elixir
 #//                                             ^ string.quoted.modifiers.elixir
 #//                                          ^^ constant.character.escape.regexp.elixir
 #//                                    ^ string.quoted.modifiers.elixir
