@@ -32,7 +32,7 @@ contexts:
 
   fn_block:
     - match: \bfn\b(?!:)
-      scope: keyword.control.elixir
+      scope: keyword.control.elixir punctuation.section.block.begin.elixir
       push:
         - include: block_end_pop
         - include: core_syntax
@@ -48,18 +48,19 @@ contexts:
           set: function_params_end_pop
         - match: \,
           scope: punctuation.separator.elixir
-        - match: '\\\\'
+        - match: \\\\
           scope: keyword.operator.other.elixir
         - include: core_syntax
     - include: pop_empty
 
+  # TODO: the when clause can appear on the next line; maybe simply let core_syntax match the rest.
   function_params_end_pop:
     - include: when_params
     - match: \,
       scope: punctuation.separator.elixir
       set:
         #- include: do_block_pop
-        - match: '\bdo:(?!:)|$'
+        - match: \bdo:(?!:)|$
           scope: constant.other.keywords.elixir
           pop: true
         - include: core_syntax
@@ -768,7 +769,7 @@ contexts:
         - match: \,
           scope: punctuation.separator.elixir
           push:
-            - match: '\bfor:(?=\s)'
+            - match: \bfor:(?=\s)
               scope: constant.other.keywords.elixir
               set: module_names_pop
         - match: '$'
@@ -786,7 +787,7 @@ contexts:
 
   do_block_pop:
     # - meta_content_scope: meta.block.elixir
-    # - match: '\bdo:'
+    # - match: \bdo:
     #   scope: constant.other.keywords.elixir
     #   pop: true
     - match: \bdo\b(?!:)
@@ -844,7 +845,8 @@ contexts:
           pop: true
         - match: '{{module_name}}'
           scope: constant.other.module.elixir
-        - match: '(?<!\.)_(?:{{identifier}})?'
+        # E.g.: def member?(_.._, _value)
+        - match: '(?<![^.]\.)_(?:{{identifier}})?'
           scope: variable.other.unused.elixir comment.variable.elixir
         - match: '{{identifier}}'
           scope: variable.other.elixir
@@ -877,18 +879,14 @@ contexts:
       captures:
         1: keyword.operator.attribute.elixir
       push:
-        # - clear_scopes: true
         - meta_scope: comment.block.documentation.elixir
         - meta_content_scope: comment.block.documentation.elixir
-        # - match: \s+
         - match: ''
           set:
             - meta_scope: comment.block.documentation.elixir
             - meta_content_scope: comment.block.documentation.elixir
             - clear_scopes: true
-            - include: markdown_comment_sigil
             - include: markdown_comment
-            - include: string
             - match: (?=\S|$)
               pop: true
 
@@ -899,19 +897,30 @@ contexts:
         2: invalid.illegal.opening-heredoc.elixir
       push:
         - meta_scope: meta.string.elixir
-        - match: (?=^.*?""")
+        - match: (?=^\s*""")
           set:
             - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
             - include: heredoc_string_closing_double
-        - include: interpolated_elixir
+        - include: escaped_or_interpolated
         - include: iex_prompt
         - match: ''
           embed: scope:text.html.markdown
           embed_scope: text.html.elixir source.elixir.embedded.html
-          escape: (?=(?>^\s*"""|\biex>)|#{)
+          escape: (?=(?>^\s*"""|\biex>)|\\|#{)
 
-  markdown_comment_sigil:
-    # TODO: add ~s""" as well?
+    - match: \"
+      scope: punctuation.definition.string.begin.elixir string.quoted.double.elixir
+      push:
+        - meta_scope: meta.string.elixir
+        - match: \"
+          scope: punctuation.definition.string.end.elixir string.quoted.double.elixir
+          pop: true
+        - include: escaped_or_interpolated
+        - match: ''
+          embed: scope:text.html.markdown
+          embed_scope: text.html.elixir source.elixir.embedded.html
+          escape: (?="|\\|#{)
+
     - match: ~S(""")(.*)\n
       scope: meta.string.elixir storage.type.string.elixir
       captures:
@@ -919,7 +928,7 @@ contexts:
         2: invalid.illegal.opening-heredoc.elixir
       push:
         - meta_scope: meta.string.elixir
-        - match: (?=^.*?""")
+        - match: (?=^\s*""")
           set:
             - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
             - include: heredoc_string_closing_double
@@ -928,6 +937,23 @@ contexts:
           embed: scope:text.html.markdown
           embed_scope: text.html.elixir source.elixir.embedded.html
           escape: (?=(?>^\s*"""|\biex>))
+
+    - match: ~S(''')(.*)\n
+      scope: meta.string.elixir storage.type.string.elixir
+      captures:
+        1: punctuation.definition.string.begin.elixir string.quoted.triple.single.elixir
+        2: invalid.illegal.opening-heredoc.elixir
+      push:
+        - meta_scope: meta.string.elixir
+        - match: (?=^\s*''')
+          set:
+            - meta_scope: meta.string.elixir string.quoted.triple.single.elixir
+            - include: heredoc_string_closing_single
+        - include: iex_prompt
+        - match: ''
+          embed: scope:text.html.markdown
+          embed_scope: text.html.elixir source.elixir.embedded.html
+          escape: (?=(?>^\s*'''|\biex>))
 
   iex_prompt:
     - match: \b(iex)(>)
@@ -957,7 +983,8 @@ contexts:
       scope: keyword.operator.pipe.elixir
     - match: \+\+|--
       scope: keyword.operator.list.elixir
-    - match: \.\.\.
+    - match: \.{3}
+      comment: can appear in @type declarations
       scope: keyword.operator.ellipsis.elixir
     - match: \.\.
       scope: keyword.operator.range.elixir
@@ -1015,21 +1042,27 @@ contexts:
       scope: punctuation.section.mapping.begin.elixir
       push:
         - match: \s+
+        # TODO: use sequential matching for special_form and module_names
         - include: special_form
         - match: _
           scope: comment.underscore.elixir
+          set: map_body_pop
         - include: module_names
-        - match: \{
-          scope: punctuation.section.mapping.begin.elixir
-          set:
-            - meta_scope: meta.mapping.elixir
-            - match: \}
-              scope: punctuation.section.mapping.end.elixir
-              pop: true
-            - match: \,
-              scope: punctuation.separator.mapping.elixir
-            - include: core_syntax
-        - include: pop_empty
+        - include: map_body_pop
+
+  map_body_pop:
+    - match: \s+
+    - match: \{
+      scope: punctuation.section.mapping.begin.elixir
+      set:
+        - meta_scope: meta.mapping.elixir
+        - match: \}
+          scope: punctuation.section.mapping.end.elixir
+          pop: true
+        - match: \,
+          scope: punctuation.separator.mapping.elixir
+        - include: core_syntax
+    - include: pop_empty
 
   parens:
     - match: \)
@@ -1058,7 +1091,7 @@ contexts:
     - match: \,
       scope: punctuation.separator.elixir
       set:
-        - match: '\bas:(?=\s)'
+        - match: \bas:(?=\s)
           scope: constant.other.keywords.elixir
           set: 
             - match: \s+
@@ -1216,10 +1249,15 @@ contexts:
         \b(
           jsonb_to_tsvector|to_jsonb?|(?>array|row)_to_json|jsonb?_build_array|jsonb?(?:_build)?_object |
           jsonb?_(?>array_(?>length|elements(?:_text)?)|each(?:_text)?|extract_path(?:_text)?|object_keys|populate_record(?:set)?|typeof|to_record(?:set)?|strip_nulls) |
-          jsonb_(?>set|insert|pretty|path_exists|path_match|path_query(?>_array|_first)?) |
-          random
+          jsonb_(?>set|insert|pretty|path_exists|path_match|path_query(?>_array|_first)?)
         )\b
       scope: support.function.sql
+    - match: '(?i)\b(now|(?>array|string|jsonb?)_agg|random|row_number|to_tsquery|to_tsvector|setweight|replace)\b'
+      scope: support.function.sql
+    - match: '(?i)\b(ANY|OVER|NOT\s+IN|NULLS\s+LAST)\b|::'
+      scope: keyword.operator.sql
+    - match: '(?<=::)(jsonb?|tsvector)\b'
+      scope: storage.type.sql
     - match: ->>?|#>>?|@[>@?]|<@|#-
       comment: Postgres jsonb operators
       scope: keyword.operator.jsonb.sql
