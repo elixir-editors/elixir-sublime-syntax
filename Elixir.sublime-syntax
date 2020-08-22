@@ -10,11 +10,12 @@ scope: source.elixir
 
 variables:
   module_name: \b[A-Z][a-zA-Z0-9_]*\b
-  atom_id: (?>[[:alpha:]_][\w@]*[?!]?)
+  atom_id_suffix: '[\w@]*[?!]?'
+  atom_id: (?>[[:alpha:]_]{{atom_id_suffix}})
   identifier: (?>[[:lower:]_]\w*[?!]?)
-  id_suffix: '[?!:]'
+  id_or_key_suffix: '(?>{{atom_id_suffix}}:|[?!])'
   # Negative look-ahead for closing token or binary operator.
-  closing_or_operator: (?>(?<!\s)\[|~~~|[*=/>.,;()}|\]\\#]|<(?!<[^<])|\^\^|&&|(?<!\s)[-+]\S|[-+][-+>\s]|::|$|!=|(?>and|x?or|when|in|not\s+in|do|else|end)\b(?!{{id_suffix}}))
+  closing_or_operator: (?>(?<!\s)[\[(]|~~~|[*=/>.,;)}|\]\\#]|<(?!<[^<])|\^\^|&&|(?<!\s)[-+]\S|[-+][-+>\s]|::|$|!=|(?>and|x?or|when|in|not\s+in|do|else|end)\b(?!{{id_or_key_suffix}}))
   not_closing_or_operator: (?!\s*{{closing_or_operator}})
   operators: =(?>~|=?=?)|!==?|!|<<<|>>>|~~~|::|<~>|<?<~|~>>?|<?\|>|/|\\\\|\*|\.{1,3}|[<>]=|[<-][->]?|>|&&?&?|\+\+?|\|{1,3}|@|%?{}|\[\]|\^\^{0,2}
   atom_ops: (?><<>>|%{}|%)
@@ -23,17 +24,8 @@ contexts:
   main:
     - include: core_syntax
 
-  builtins:
-    - match: |
-        (?x)
-        \b(?>
-          is_(?>atom|binary|bitstring|boolean|float|function|integer|list|map|nil|number|pid|port|record|reference|tuple|exception) |
-          abs|bit_size|byte_size|div|elem|hd|length|map_size|node|rem|round|tl|trunc|tuple_size
-        )(?=\s*\()
-      scope: variable.function.builtin.elixir
-
   fn_block:
-    - match: \bfn\b(?!{{id_suffix}})
+    - match: \bfn\b(?!{{id_or_key_suffix}})
       scope: keyword.control.elixir punctuation.section.block.begin.elixir
       push:
         # TODO: try to match parameters according to indentation:
@@ -60,7 +52,7 @@ contexts:
 
   first_fn_header:
     # - meta_scope: meta.function.parameters.elixir
-    - match: \bwhen\b(?!{{id_suffix}})
+    - match: \bwhen\b(?!{{id_or_key_suffix}})
       scope: keyword.other.elixir
       set:
         - match: (?=->)
@@ -76,7 +68,7 @@ contexts:
         - include: block_end_pop
         - include: core_syntax
     # - include: special_form
-    # - match: \b(?>nil|true|false)\b(?!{{id_suffix}})
+    # - match: \b(?>nil|true|false)\b(?!{{id_or_key_suffix}})
     #   scope: constant.language.elixir
     # - match: '(?!_){{identifier}}(?!:)(?=\s*(?>[,)=\\]|\.\.|->|$))'
     #   scope: variable.parameter.elixir
@@ -96,7 +88,7 @@ contexts:
   function_header_pop:
     - match: \s+
     # TODO: add \bin\b to {{operators}}?
-    - match: ({{identifier}})\s*({{operators}}|\bin\b(?!{{id_suffix}}))\s*({{identifier}})?
+    - match: ({{identifier}})\s*({{operators}}|\bin\b(?!{{id_or_key_suffix}}))\s*({{identifier}})?
       captures:
         1: variable.parameter.elixir
         2: entity.name.function.elixir
@@ -129,7 +121,7 @@ contexts:
     - include: atom_keyword
     - include: elixir_keywords
     # - include: special_form
-    # - match: \b(?>nil|true|false)\b(?!{{id_suffix}})
+    # - match: \b(?>nil|true|false)\b(?!{{id_or_key_suffix}})
     #   scope: constant.language.elixir
     - match: (?!_)({{identifier}})(?!:)(?=\s*(?>[,)}\]=|\\]|\.\.|\bwhen\b[^?!:]|->|$))
       captures:
@@ -181,9 +173,9 @@ contexts:
       scope: punctuation.section.mapping.begin.elixir
       push:
         - match: \s+
-        - match: (?=\b__MODULE__\b(?!{{id_suffix}}))
+        - match: (?=\b__MODULE__\b(?!{{id_or_key_suffix}}))
           set: [map_params_body_pop, map_special_form_pop]
-        - match: \b_\b(?!{{id_suffix}})
+        - match: \b_\b(?!{{id_or_key_suffix}})
           scope: comment.underscore.elixir
           set: map_params_body_pop
         - match: (?={{module_name}})
@@ -213,7 +205,7 @@ contexts:
       set:
         #- include: do_block_pop
         - match: \bdo:(?!:)|$
-          scope: constant.other.keywords.elixir
+          scope: constant.other.keyword.elixir
           pop: true
         - include: core_syntax
     - include: do_block_pop
@@ -222,7 +214,7 @@ contexts:
 
   when_params:
     # TODO: need to break at comma; solve with with_prototype or escape?
-    - match: \bwhen\b(?!{{id_suffix}})
+    - match: \bwhen\b(?!{{id_or_key_suffix}})
       scope: keyword.other.elixir
     - include: core_syntax
     - match: $
@@ -896,7 +888,7 @@ contexts:
 
 
   def_blocks:
-    - match: \bdefmodule\b(?!{{id_suffix}})
+    - match: \bdefmodule\b(?!{{id_or_key_suffix}})
       scope: keyword.control.module.elixir
       push:
         - meta_scope: meta.namespace.module.elixir
@@ -904,7 +896,7 @@ contexts:
         - include: module_namespaces
         - match: '$'
           pop: true
-    - match: \bdefprotocol\b(?!{{id_suffix}})
+    - match: \bdefprotocol\b(?!{{id_or_key_suffix}})
       scope: keyword.control.protocol.elixir
       push:
         - meta_scope: meta.namespace.protocol.elixir
@@ -912,7 +904,7 @@ contexts:
         - include: module_namespaces
         - match: '$'
           pop: true
-    - match: \bdefimpl\b(?!{{id_suffix}})
+    - match: \bdefimpl\b(?!{{id_or_key_suffix}})
       scope: keyword.control.implementation.elixir
       push:
         - meta_scope: meta.namespace.implementation.elixir
@@ -921,33 +913,33 @@ contexts:
         - match: \,
           scope: punctuation.separator.elixir
           push:
-            - match: \bfor:(?=\s)
-              scope: constant.other.keywords.elixir
+            - match: \bfor:(?!:)
+              scope: constant.other.keyword.elixir
               set: module_names_pop
         - match: '$'
           pop: true
-    - match: \bdef(?>delegate|macro|guard|)\b(?!{{id_suffix}})
+    - match: \bdef(?>delegate|macro|guard|)\b(?!{{id_or_key_suffix}})
       scope: keyword.declaration.function.public.elixir
       push: function_header_pop
-    - match: \bdef(?>delegate|macro|guard|)p\b(?!{{id_suffix}})
+    - match: \bdef(?>delegate|macro|guard|)p\b(?!{{id_or_key_suffix}})
       scope: keyword.declaration.function.private.elixir
       push: function_header_pop
 
   do_block_pop:
     # - meta_content_scope: meta.block.elixir
     # - match: \bdo:
-    #   scope: constant.other.keywords.elixir
+    #   scope: constant.other.keyword.elixir
     #   pop: true
-    - match: \bdo\b(?!{{id_suffix}})
+    - match: \bdo\b(?!{{id_or_key_suffix}})
       scope: keyword.control.elixir punctuation.section.block.begin.elixir
       set:
         - include: block_end_pop
         - include: core_syntax
 
   do_block:
-    - match: \b(end)\b(?!{{id_suffix}})
+    - match: \b(end)\b(?!{{id_or_key_suffix}})
       scope: invalid.illegal.block-end.elixir
-    - match: (?=\bdo\b(?!{{id_suffix}}))
+    - match: (?=\bdo\b(?!{{id_or_key_suffix}}))
       push: do_block_pop
 
   block_end_pop:
@@ -1026,7 +1018,7 @@ contexts:
 
   doc_attribute:
     # @(module)?doc\s+(?!"|'|since:|guard:|deprecated:|authors:|false|~S"|~S')
-    - match: (@)((?>module|type)?doc)\b(?!{{id_suffix}}){{not_closing_or_operator}}
+    - match: (@)((?>module|type)?doc)\b(?!{{id_or_key_suffix}}){{not_closing_or_operator}}
       captures:
         1: keyword.operator.attribute.elixir
         2: comment.line.doc-keyword.elixir
@@ -1194,9 +1186,9 @@ contexts:
       scope: punctuation.section.mapping.begin.elixir
       push:
         - match: \s+
-        - match: (?=\b__MODULE__\b(?!{{id_suffix}}))
+        - match: (?=\b__MODULE__\b(?!{{id_or_key_suffix}}))
           set: [map_body_pop, map_special_form_pop]
-        - match: \b_\b(?!{{id_suffix}})
+        - match: \b_\b(?!{{id_or_key_suffix}})
           scope: comment.underscore.elixir
           set: map_body_pop
         - match: (?={{module_name}})
@@ -1234,7 +1226,7 @@ contexts:
         - include: core_syntax
 
   alias:
-    - match: \balias\b(?=\s+do\b|{{not_closing_or_operator}})
+    - match: \balias\b(?=\s+do\b(?!{{id_or_key_suffix}})|{{not_closing_or_operator}})
       scope: keyword.control.elixir
       # set: [alias_names, alias_arg]
       push:
@@ -1248,8 +1240,8 @@ contexts:
     - match: \,
       scope: punctuation.separator.elixir
       set:
-        - match: \bas:(?=\s)
-          scope: constant.other.keywords.elixir
+        - match: \bas:(?!:)
+          scope: constant.other.keyword.elixir
           set:
             - match: \s+
             - match: '{{module_name}}'
@@ -1301,12 +1293,14 @@ contexts:
           pop: true
 
   atom_keyword:
-    - match: '(?>\*\*|\[\]|\^\^|\.):'
+    - match: (?>\*\*|\[\]|\^\^|\.)(:)(?!:)
       scope: invalid.illegal.atom-keyword.elixir
+      captures:
+        1: punctuation.definition.constant.elixir
 
     - match: (?>{{atom_id}}|{{module_name}}|{{identifier}}|{{atom_ops}}|{{operators}})(:)(?!:)
-      comment: keyword symbols
-      scope: constant.other.keywords.elixir
+      comment: keyword symbol
+      scope: constant.other.keyword.elixir
       captures:
         1: punctuation.definition.constant.elixir
 
@@ -1319,7 +1313,7 @@ contexts:
         - match: (.)
           scope: punctuation.definition.constant.begin.regexp.elixir
           set:
-            - meta_scope: constant.other.symbol.double-quoted.elixir
+            - meta_scope: constant.other.keyword.double-quoted.elixir
             - include: escaped_or_interpolated
             - match: '\1:'
               scope: punctuation.definition.constant.end.regexp.elixir
@@ -1446,18 +1440,33 @@ contexts:
       captures:
         1: invalid.illegal.character-literal.elixir
 
+  built-ins:
+    - match: |
+        (?x)
+        (?>
+          is_(?>atom|binary|bitstring|boolean|float|function|integer|list|map|nil|number|pid|port|record|reference|tuple|exception) |
+          abs|bit_size|byte_size|div|elem|hd|length|map_size|node|rem|round|tl|trunc|tuple_size
+        )\b(?=\s*\(|{{not_closing_or_operator}})
+      scope: variable.function.built-in.elixir
+      push:
+        - match: (?=\()
+          set: [arguments_pop, spaces_pop]
+        - include: arguments_\s_pop
+        - include: pop_empty
+
   function_call:
     # - match: \s+
+    - include: built-ins
     - match: |
         (?x)
         {{identifier}}
         (?=
           \s*\.?\s*\( |
-          # \s+\[ |
-          # \s+do\b(?!{{id_suffix}}) |
+          # FIXME: will also highlight last argument as a function, e.g.: test "...", context do
+          # \s+do\b(?!{{id_or_key_suffix}}) |
           {{not_closing_or_operator}}
         )# |
-        # TODO:
+        # TODO: see FIXME above
         #(?>^\s*{{identifier}}\s+)(?=do\b)
       scope: variable.function.elixir
       push:
@@ -1465,11 +1474,10 @@ contexts:
           captures:
             # TODO: better scope?
             1: punctuation.accessor.dot.elixir
-        - match: (?=\s*\()
+        - match: (?=\()
           set: [arguments_pop, spaces_pop]
         - include: arguments_\s_pop
         - include: pop_empty
-
     - match: ({{module_name}})\s*(\.)\s*({{identifier}}|{{operators}})
       comment: always a function call after a module
       captures:
@@ -1506,6 +1514,8 @@ contexts:
       scope: punctuation.definition.arguments.begin.elixir
       set:
         - meta_scope: meta.function-call.arguments.elixir
+        - match: (\,)(?=\s*do\b(?!{{id_or_key_suffix}}))
+          scope: invalid.illegal.separator.arguments.elixir
         - match: (\,)(?:\s*$)?
           captures:
             1: punctuation.separator.arguments.elixir
@@ -1513,7 +1523,7 @@ contexts:
         - match: '[\n\r]|(?=[})\];])'
           scope: punctuation.definition.arguments.end.elixir
           pop: true
-        - match: (?=\bdo\b[^?!:])
+        - match: (?=\bdo\b(?!{{id_or_key_suffix}}))
           set: do_block_pop
         - include: core_syntax
 
@@ -1548,12 +1558,12 @@ contexts:
   special_attributes:
     - include: doc_attribute
 
-    - match: ^\s*(@)(spec|derive|deprecated|impl|file|behaviour|vsn|custom_attr|(?:macro)?callback|(?>before_|after_)?compile|dialyzer|external_resource|on_(?>definition|load))\b(?!{{id_suffix}})
+    - match: (@)(derive|deprecated|impl|file|behaviour|vsn|macrocallback|(?>before_|after_)?compile|dialyzer|external_resource|on_(?>definition|load))\b(?!{{id_or_key_suffix}})
       captures:
         1: keyword.operator.attribute.elixir
         2: keyword.other.elixir
 
-    - match: ^\s*(@)(typep?|opaque)\b(?!{{id_suffix}})
+    - match: (@)(spec|typep?|opaque|callback)\b(?!{{id_or_key_suffix}})
       captures:
         1: keyword.operator.attribute.elixir
         2: keyword.declaration.type.elixir
@@ -1563,22 +1573,21 @@ contexts:
           pop: true
 
   module_attribute:
-    # - match: (@)({{identifier}})(?!:)(?=(?!$)|{{not_closing_or_operator}})
-    # TODO: (?=\s*\[)
-    - match: (@)({{identifier}})(?!:){{not_closing_or_operator}}
+    - match: (@)({{identifier}}){{not_closing_or_operator}}
       comment: definition
       captures:
         1: keyword.operator.attribute.elixir
         2: entity.name.constant.elixir variable.other.constant.elixir
-    - match: (@)({{module_name}})(?!:)
-      captures:
-        1: keyword.operator.attribute.elixir
-        2: invalid.illegal.attribute.elixir
-    - match: (@)({{identifier}})(?!:)
+    - match: (@)({{identifier}})(?!{{id_or_key_suffix}})
       comment: reference
       captures:
         1: keyword.operator.attribute.elixir
         2: variable.other.attribute.elixir
+    - match: (@)(([A-Z]){{identifier}}?)(?!{{id_or_key_suffix}})
+      captures:
+        1: keyword.operator.attribute.elixir
+        2: variable.other.attribute.elixir
+        3: invalid.illegal.attribute.elixir
 
   elixir_keywords:
     - match: \b(?>when|not|in|fn|catch|after|rescue|do|else|end)\b(?![?!])
@@ -1599,7 +1608,6 @@ contexts:
   core_syntax:
     - include: atom_keyword
     - include: atom_symbol
-    - include: builtins
     - include: numeric
     - include: binary_string
     - include: string
