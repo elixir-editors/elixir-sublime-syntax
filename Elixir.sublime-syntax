@@ -920,23 +920,23 @@ contexts:
     - include: string_modifiers
     - include: pop_empty
 
-
   def_blocks:
-    # FIXME: defmodule(Temp, unquote(block))
     - match: \bdefmodule\b(?!{{id_or_key_suffix}})
       scope: keyword.control.module.elixir
       push:
         - meta_scope: meta.namespace.module.elixir
-        - include: do_block_pop
-        # E.g.: defmodule MyApp do ... end
-        - include: module_namespaces
-        # E.g.: defmodule :"Elixir.ModuleTest.RawModule" do ... end
-        - include: atom_symbol
-        # E.g.: defmodule __MODULE__.NonAtomAlias do ... end
-        - include: special_form
-        # E.g.: defmodule unquote(name) do ... end
-        - include: function_call
-        - include: modules_identifiers
+        - include: defmodule_1st_argument
+        - match: \(
+          scope: punctuation.section.arguments.begin.elixir
+          push:
+            - meta_scope: meta.function-call.arguments.elixir
+            - include: arguments_closing_pop
+            - match: \,
+              scope: punctuation.separator.arguments.elixir
+              set:
+                - include: arguments_closing_pop
+                - include: core_syntax
+            - include: defmodule_1st_argument
         - match: '$'
           pop: true
     - match: \bdefprotocol\b(?!{{id_or_key_suffix}})
@@ -961,6 +961,18 @@ contexts:
       scope: keyword.declaration.function.private.elixir
       push: function_header_pop
 
+  defmodule_1st_argument:
+    - include: do_block_pop
+    # E.g.: defmodule MyApp do ... end
+    - include: module_namespaces
+    # E.g.: defmodule :"Elixir.ModuleTest.RawModule" do ... end
+    - include: atom_symbol
+    # E.g.: defmodule __MODULE__.NonAtomAlias do ... end
+    - include: special_form
+    # E.g.: defmodule unquote(name) do ... end
+    - include: function_call
+    - include: modules_identifiers
+
   do_block_pop:
     - match: \bdo\b(?!{{id_or_key_suffix}})
       scope: keyword.control.elixir punctuation.section.block.begin.elixir
@@ -970,13 +982,14 @@ contexts:
         - include: core_syntax
 
   do_block:
-    - match: \b(end)\b(?!{{id_or_key_suffix}})
-      scope: invalid.illegal.block-end.elixir
+    # NB: Commented out due to EEx templates: <%= if x do %>...<% end %>
+    # - match: \bend\b(?!{{id_or_key_suffix}})
+    #   scope: invalid.illegal.block-end.elixir
     - match: (?=\bdo\b(?!{{id_or_key_suffix}}))
       push: do_block_pop
 
   block_end_pop:
-    - match: \b(end)\b
+    - match: \bend\b(?!{{id_or_key_suffix}})
       scope: keyword.control.elixir punctuation.section.block.end.elixir
       pop: true
 
@@ -1192,7 +1205,7 @@ contexts:
       scope: keyword.operator.default.elixir
     - match: (?>[!=]=|[<>])=?
       scope: keyword.operator.comparison.elixir
-    - match: \b(?>not|and|or|xor)\b|!|\|\||&&
+    - match: \b(?>not|and|or|xor)\b(?!{{id_or_key_suffix}})|!|\|\||&&
       scope: keyword.operator.logical.elixir
     - match: '[-+*/]'
       scope: keyword.operator.arithmetic.elixir
@@ -1276,21 +1289,22 @@ contexts:
         - include: core_syntax
 
   alias:
-    # FIXME: alias :lists, as: MyList
-    - match: \balias\b(?=\s+do\b(?!{{id_or_key_suffix}})|{{not_closing_or_operator}})
+    - match: \balias\b(?={{not_closing_or_operator}})
       scope: keyword.control.elixir
-      # set: [alias_names, alias_arg]
       push:
         - match: \s+
         - include: alias_names
         - include: alias_arg
+        - match: \,
+          scope: punctuation.separator.arguments.elixir
+        - include: core_syntax
         - match: $
           pop: true
 
   alias_arg:
-    - match: \,
-      scope: punctuation.separator.elixir
-      set:
+    - match: \,(?=\s*as:(?!:))
+      scope: punctuation.separator.arguments.elixir
+      push:
         - match: \bas:(?!:)
           scope: constant.other.keyword.elixir
           set:
@@ -1300,7 +1314,7 @@ contexts:
             - include: pop_empty
 
   alias_names:
-    - match: (?={{module_name}}|\b(__MODULE__)\b)
+    - match: (?=(?>{{module_name}}|\b__MODULE__\b)(?!{{id_or_key_suffix}}))
       push:
         - meta_scope: meta.path.modules.elixir
         - match: \b(__MODULE__)\b
@@ -1506,7 +1520,6 @@ contexts:
         - include: pop_empty
 
   function_call:
-    # - match: \s+
     - include: built-ins
     - match: |
         (?x)
@@ -1548,12 +1561,15 @@ contexts:
       scope: punctuation.section.arguments.begin.elixir
       push:
         - meta_scope: meta.function-call.arguments.elixir
-        - match: \)
-          scope: punctuation.section.arguments.end.elixir
-          pop: true
+        - include: arguments_closing_pop
         - match: \,
           scope: punctuation.separator.arguments.elixir
         - include: core_syntax
+
+  arguments_closing_pop:
+    - match: \)
+      scope: punctuation.section.arguments.end.elixir
+      pop: true
 
   arguments_pop:
     - include: arguments
@@ -1562,7 +1578,7 @@ contexts:
   arguments_\s_pop:
     - match: \s
       comment: arguments list without parentheses
-      scope: punctuation.definition.arguments.begin.elixir
+      scope: punctuation.section.arguments.begin.elixir
       set:
         - meta_scope: meta.function-call.arguments.elixir
         - match: (\,)(?=\s*do\b(?!{{id_or_key_suffix}}))
@@ -1571,8 +1587,8 @@ contexts:
           captures:
             1: punctuation.separator.arguments.elixir
         # NB: needed due to "... #{inspect x} ..." or Repo.all(from p in q, select: p.title)
-        - match: '[\n\r]|(?=[})\];])'
-          scope: punctuation.definition.arguments.end.elixir
+        - match: '[\n\r]|(?=[})\];]|\b(?>else|end)\b(?!{{id_or_key_suffix}}))'
+          scope: punctuation.section.arguments.end.elixir
           pop: true
         - match: (?=\bdo\b(?!{{id_or_key_suffix}}))
           set: do_block_pop
