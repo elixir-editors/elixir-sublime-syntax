@@ -123,9 +123,11 @@ contexts:
     # - include: special_form
     # - match: \b(?>nil|true|false)\b(?!{{id_or_key_suffix}})
     #   scope: constant.language.elixir
-    - match: (?!_)({{identifier}})(?!:)(?=\s*(?>[,)}\]=|\\]|\.\.|\bwhen\b[^?!:]|->|$))
+    - match: (?!_)({{identifier}})(?=\s*(?>[,)}\]=|\\]|\.\.|::|->|\bwhen\b(?!{{id_or_key_suffix}})|$))
       captures:
         1: variable.parameter.elixir
+    - match: \,(?=\s*\))
+      scope: invalid.illegal.separator.elixir
     - match: \,
       scope: punctuation.separator.elixir
     # TODO: avoid matching expressions as parametrs after \\
@@ -137,12 +139,13 @@ contexts:
     #       pop: true
     - match: \\\\
       scope: keyword.operator.other.elixir
-    - include: tuple_params
-    - include: list_params
-    - include: map_params
+    - include: tuple_param
+    - include: list_param
+    - include: map_param
+    - include: binary_string_param
     - include: core_syntax
 
-  tuple_params:
+  tuple_param:
     - match: \{
       scope: punctuation.section.sequence.begin.elixir
       push:
@@ -155,7 +158,7 @@ contexts:
         - include: parameters
         - include: core_syntax
 
-  list_params:
+  list_param:
     - match: \[
       scope: punctuation.section.brackets.begin.elixir
       push:
@@ -168,21 +171,21 @@ contexts:
         - include: parameters
         - include: core_syntax
 
-  map_params:
+  map_param:
     - match: \%
       scope: punctuation.section.mapping.begin.elixir
       push:
         - match: \s+
         - match: (?=\b__MODULE__\b(?!{{id_or_key_suffix}}))
-          set: [map_params_body_pop, map_special_form_pop]
+          set: [map_param_body_pop, map_special_form_pop]
         - match: \b_\b(?!{{id_or_key_suffix}})
           scope: comment.underscore.elixir
-          set: map_params_body_pop
+          set: map_param_body_pop
         - match: (?={{module_name}})
-          set: [map_params_body_pop, module_names_pop]
-        - include: map_params_body_pop
+          set: [map_param_body_pop, module_names_pop]
+        - include: map_param_body_pop
 
-  map_params_body_pop:
+  map_param_body_pop:
     - match: \s+
     - match: \{
       scope: punctuation.section.mapping.begin.elixir
@@ -196,6 +199,17 @@ contexts:
         - include: parameters
         - include: core_syntax
     - include: pop_empty
+
+  binary_string_param:
+    - match: '>>(?!>)'
+      scope: punctuation.definition.string.binary.end.elixir invalid.illegal.elixir
+    - match: <<(?!<)
+      scope: punctuation.definition.string.binary.begin.elixir string.other.elixir
+      push:
+        - meta_scope: meta.string.binary.elixir
+        - include: binary_string_body
+        - include: parameters
+        - include: core_syntax
 
   # TODO: the when clause can appear on the next line; maybe simply let core_syntax match the rest.
   function_params_end_pop:
@@ -222,8 +236,18 @@ contexts:
 
 
   numeric:
-    - match: \b(0x\h(?:_?\h)*|0b[01]+|0o[0-7]+|\d(?:_?\d)*(\.\d(?:_?\d)*)?([eE][-+]?\d(?:_?\d)*)?)\b
-      scope: constant.numeric.elixir
+    - match: |
+        (?x)
+        \b(
+          0x\h[\h_]* |
+          0b[01](?:_?[01])* |
+          0o[0-7](?:_?[0-7])* |
+          \d(?:_?\d)*(?:\.\d(?:_?\d)*)?(?:[eE][-+]?\d(?:_?\d)*)?
+        )(\w*)\b
+      comment: (?:_?\d)* because double or trailing '_' are invalid
+      captures:
+        1: constant.numeric.elixir
+        2: invalid.illegal.numeric.elixir
 
   binary_string:
     - match: '>>(?!>)'
@@ -232,26 +256,35 @@ contexts:
       scope: punctuation.definition.string.binary.begin.elixir string.other.elixir
       push:
         - meta_scope: meta.string.binary.elixir
-        - match: '>>(?!>)'
-          scope: punctuation.definition.string.binary.end.elixir string.other.elixir
-          pop: true
-        # - include: binary
-        - match: \,
-          scope: punctuation.separator.binary.elixir
-        - match: '::'
-          scope: keyword.other.colon.elixir
-          push:
-            - match: (?=,|<-|>>)
-              pop: true
-            - match: ((?>\d+-)?[a-z][\w-]*)(?>\((?>(\d+)|({{identifier}}))?\))?
-              captures:
-                # TODO: pick better scope name for \1
-                1: keyword.type.binary.elixir
-                2: constant.numeric.elixir
-                3: variable.numeric.elixir
-            - match: \d+
-              scope: keyword.type.binary.elixir
+        - include: binary_string_body
         - include: core_syntax
+
+  binary_string_body:
+    - match: '>>(?!>)'
+      scope: punctuation.definition.string.binary.end.elixir string.other.elixir
+      pop: true
+    - match: (\,)\s*(\,)
+      captures:
+        1: invalid.illegal.separator.binary.elixir
+        2: invalid.illegal.separator.binary.elixir
+    - match: \,
+      scope: punctuation.separator.binary.elixir
+    - match: '::(?!:)'
+      scope: keyword.other.colon.elixir
+      push:
+        - match: (?:[a-z][\w-]*)\s*(?>\(\s*(?>(\d+)|({{identifier}}))?\s*\))?
+          scope: storage.type.binary.elixir
+          captures:
+            1: constant.numeric.elixir
+            2: variable.other.elixir
+        - match: (?=\()
+          push:
+            - meta_scope: storage.type.elixir
+            - include: arguments_pop
+        - match: \d+|[-_*]
+          scope: storage.type.binary.elixir
+        - match: (?=\S)
+          pop: true
 
   escaped_char:
     - match: \\x\h{2}
