@@ -305,6 +305,7 @@ contexts:
   interpolated_elixir:
     - match: (?=#{)
       push:
+        # TODO: could use 1, but need to adjust scopes in rules using escaped_or_interpolated.
         - clear_scopes: true
         - match: '#{'
           scope: punctuation.section.interpolation.begin.elixir
@@ -921,12 +922,21 @@ contexts:
 
 
   def_blocks:
+    # FIXME: defmodule(Temp, unquote(block))
     - match: \bdefmodule\b(?!{{id_or_key_suffix}})
       scope: keyword.control.module.elixir
       push:
         - meta_scope: meta.namespace.module.elixir
         - include: do_block_pop
+        # E.g.: defmodule MyApp do ... end
         - include: module_namespaces
+        # E.g.: defmodule :"Elixir.ModuleTest.RawModule" do ... end
+        - include: atom_symbol
+        # E.g.: defmodule __MODULE__.NonAtomAlias do ... end
+        - include: special_form
+        # E.g.: defmodule unquote(name) do ... end
+        - include: function_call
+        - include: modules_identifiers
         - match: '$'
           pop: true
     - match: \bdefprotocol\b(?!{{id_or_key_suffix}})
@@ -937,35 +947,25 @@ contexts:
         - include: module_namespaces
         - match: '$'
           pop: true
-    - match: \bdefimpl\b(?!{{id_or_key_suffix}})
+    - match: \bdefimpl\b(?!{{id_or_key_suffix}}){{not_closing_or_operator}}
       scope: keyword.control.implementation.elixir
       push:
         - meta_scope: meta.namespace.implementation.elixir
-        - include: do_block_pop
-        - include: module_names
-        - match: \,
-          scope: punctuation.separator.elixir
-          push:
-            - match: \bfor:(?!:)
-              scope: constant.other.keyword.elixir
-              set: module_names_pop
-        - match: '$'
-          pop: true
-    - match: \bdef(?>delegate|macro|guard|)\b(?!{{id_or_key_suffix}})
+        - match: (?=\s)
+          set: arguments_\s_pop
+        - include: pop_empty
+    - match: \bdef(?>delegate|macro|guard|)\b(?!{{id_or_key_suffix}}){{not_closing_or_operator}}
       scope: keyword.declaration.function.public.elixir
       push: function_header_pop
-    - match: \bdef(?>delegate|macro|guard|)p\b(?!{{id_or_key_suffix}})
+    - match: \bdef(?>delegate|macro|guard|)p\b(?!{{id_or_key_suffix}}){{not_closing_or_operator}}
       scope: keyword.declaration.function.private.elixir
       push: function_header_pop
 
   do_block_pop:
-    # - meta_content_scope: meta.block.elixir
-    # - match: \bdo:
-    #   scope: constant.other.keyword.elixir
-    #   pop: true
     - match: \bdo\b(?!{{id_or_key_suffix}})
       scope: keyword.control.elixir punctuation.section.block.begin.elixir
       set:
+        - meta_scope: meta.block.elixir
         - include: block_end_pop
         - include: core_syntax
 
@@ -995,11 +995,22 @@ contexts:
     - include: pop_empty
 
   module_namespaces:
-    - match: (?={{module_name}})
+    # TODO: should also handle: defmodule :"Elixir.ModuleTest.RawModule" do ... end
+    - match: (?={{module_name}}|:{{atom_id}})
       push:
         - meta_scope: meta.namespace.elixir
+        - match: (?=:{{atom_id}}\s*\.)
+          push:
+            - include: atom_symbol
+            - match: (?=\.)
+              pop: true
         - match: '{{module_name}}(?=\s*\.)'
           scope: constant.other.module.elixir
+        - match: '(:)({{atom_id}})'
+          scope: constant.other.symbol.elixir
+          captures:
+            1: punctuation.definition.constant.begin.elixir
+            2: entity.name.namespace.elixir
         - match: '{{module_name}}'
           scope: entity.name.namespace.elixir
         - include: module_accessor_or_pop
@@ -1056,11 +1067,10 @@ contexts:
         1: keyword.operator.attribute.elixir
         2: comment.line.doc-keyword.elixir
       push:
-        - match: ''
+        - match: \s+
           set:
             # TODO: correct scope? use comment.line below for "..."?
             - meta_scope: comment.block.documentation.elixir
-            - clear_scopes: true
             - include: markdown_comment
             - match: (?=\S|$)
               pop: true
@@ -1081,7 +1091,7 @@ contexts:
         - match: ''
           embed: scope:text.html.markdown
           embed_scope: text.html.elixir source.elixir.embedded.html
-          escape: (?=(?>^\s*"""|\biex>)|\\|#{)
+          escape: (?=^\s*"""|(?<=\s{4})(?:iex.*?>|def(?>module|macro|p|)\b(?!{{id_or_key_suffix}}))|\\|#{)
 
     - match: \"
       scope: punctuation.definition.string.begin.elixir string.quoted.double.elixir
@@ -1111,7 +1121,7 @@ contexts:
         - match: ''
           embed: scope:text.html.markdown
           embed_scope: text.html.elixir source.elixir.embedded.html
-          escape: (?=(?>^\s*"""|\biex>))
+          escape: (?=^\s*"""|(?<=\s{4})(?:iex.*?>|def(?>module|macro|p|)\b(?!{{id_or_key_suffix}})))
 
     - match: ~S(''')(.*)\n
       scope: meta.string.elixir storage.type.string.elixir
@@ -1128,17 +1138,24 @@ contexts:
         - match: ''
           embed: scope:text.html.markdown
           embed_scope: text.html.elixir source.elixir.embedded.html
-          escape: (?=(?>^\s*'''|\biex>))
+          escape: (?=^\s*'''|(?<=\s{4})(?:iex.*?>|def(?>module|macro|p|)\b(?!{{id_or_key_suffix}})))
 
   iex_prompt:
-    - match: \b(iex)(>)
+    - match: (?<=\s{4})(?=\bdef(?>module|macro|p|)\b(?!{{id_or_key_suffix}}))
+      push:
+        - clear_scopes: true
+        - meta_scope: meta.interpolation.elixir markup.raw.block.markdown markup.raw.block.elixir
+        - include: scope:source.elixir
+        - match: $\s
+          scope: markup.raw.block.elixir
+          pop: true
+    - match: (?<=\s{4})(iex).*?(>)
       captures:
         1: keyword.other.elixir
         2: keyword.other.elixir
       push:
         - clear_scopes: true
-        # meta.block-level.markdown markup.raw.block.markdown
-        - meta_scope: meta.interpolation.elixir markup.raw.block.elixir
+        - meta_scope: meta.interpolation.elixir markup.raw.block.markdown markup.raw.block.elixir
         # NB: needs with_prototype or embed to work
         - match: ^\s*(\.{3})(>)
           scope: keyword.other.elixir
@@ -1259,6 +1276,7 @@ contexts:
         - include: core_syntax
 
   alias:
+    # FIXME: alias :lists, as: MyList
     - match: \balias\b(?=\s+do\b(?!{{id_or_key_suffix}})|{{not_closing_or_operator}})
       scope: keyword.control.elixir
       # set: [alias_names, alias_arg]
@@ -1521,7 +1539,7 @@ contexts:
         # NB: no \s* before \(
         - match: (?=\()
           set: arguments_pop
-        - match: (?!\.[^.])
+        - match: (?=\s)
           set: arguments_\s_pop
         - include: pop_empty
 
@@ -1591,18 +1609,20 @@ contexts:
   special_attributes:
     - include: doc_attribute
 
-    - match: (@)(derive|deprecated|impl|file|behaviour|vsn|macrocallback|(?>before_|after_)?compile|dialyzer|external_resource|on_(?>definition|load))\b(?!{{id_or_key_suffix}})
+    - match: (@)(derive|deprecated|impl|file|behaviour|vsn|(?>before_|after_)?compile|dialyzer|external_resource|on_(?>definition|load))\b(?!{{id_or_key_suffix}}){{not_closing_or_operator}}
       captures:
         1: keyword.operator.attribute.elixir
         2: keyword.other.elixir
 
-    - match: (@)(spec|typep?|opaque|callback)\b(?!{{id_or_key_suffix}})
+    - match: (@)(spec|typep?|opaque|(?:macro)?callback)\b(?!{{id_or_key_suffix}}){{not_closing_or_operator}}
       captures:
         1: keyword.operator.attribute.elixir
         2: keyword.declaration.type.elixir
       push:
         - match: '{{identifier}}'
           scope: entity.name.type.elixir
+          pop: true
+        - match: (?=\S)
           pop: true
 
   module_attribute:
