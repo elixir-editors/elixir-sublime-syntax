@@ -1,0 +1,38 @@
+{
+  "name": "Elixir",
+  "globals": {},
+  "rules":
+  [
+    {
+      "name": "EEx tag",
+      "scope": "eex-tag.elixir",
+      "foreground": "#777a68",
+      "background": "color(var(white) alpha(0.02))"
+    },
+    {
+      "name": "EEx embedded",
+      "scope": "source.elixir.embedded.html",
+      "background": "color(var(white) alpha(0.02))"
+    },
+    {
+        "name": "Unused variable",
+        "scope": "variable.other.unused",
+        "foreground": "color(grey alpha(0.75))"
+    },
+    {
+        "name": "Module atom",
+        "scope": "constant.other.module",
+        "foreground": "color(var(purple) alpha(0.9))"
+    },
+    {
+        "name": "Atom keyword",
+        "scope": "constant.other.keyword",
+        "foreground": "color(var(purple) alpha(0.8))"
+    },
+    {
+        "name": "Atom keyword punctuation",
+        "scope": "punctuation.definition.constant",
+        "foreground": "color(var(white) alpha(0.67))"
+    }
+  ]
+}
