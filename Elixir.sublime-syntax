@@ -1055,7 +1055,7 @@ contexts:
           scope: constant.other.module.elixir
         # E.g.: def member?(_.._, _value)
         - match: '(?<![^.]\.)_{{identifier}}?'
-          scope: variable.other.unused.elixir comment.variable.elixir
+          scope: variable.other.unused.elixir
         - match: '{{identifier}}'
           scope: variable.other.elixir
         - match: \s*\.(?!\.)
