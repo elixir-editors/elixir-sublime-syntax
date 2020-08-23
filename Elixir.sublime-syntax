@@ -86,21 +86,30 @@ contexts:
   #       - include: core_syntax
 
   function_header_pop:
-    - match: \s+
-    # TODO: add \bin\b to {{operators}}?
-    - match: ({{identifier}})\s*({{operators}}|\bin\b(?!{{id_or_key_suffix}}))\s*({{identifier}})?
-      captures:
-        1: variable.parameter.elixir
-        2: entity.name.function.elixir
-        3: variable.parameter.elixir
-      set: function_params_pop
-    - match: '{{identifier}}'
+    - match: \bunquote\b(?!{{id_or_key_suffix}})(?=\s*\()
+      scope: variable.function.elixir
+      set:
+        - match: (?=\()
+          set: [function_params_pop, arguments_pop]
+    - match: '{{identifier}}(?=\s*(\(|,|do\b(?!{{id_or_key_suffix}})|$))'
       scope: entity.name.function.elixir
       set: function_params_pop
-    - include: function_params_pop
+    - match: (?=\S)
+      set:
+        - match: ({{operators}}|\bin\b(?!{{id_or_key_suffix}}))
+          scope: entity.name.function.elixir
+          set:
+            - include: parameters
+            - match: (?=\S|$)
+              pop: true
+        - match: (?=\()
+          set: function_params_pop
+        - include: parameters
+        - match: (?=\S|$)
+          pop: true
 
   function_params_pop:
-    - match: '[^\S\n]'
+    - match: '[^\S\n\r]'
     - match: \(
       scope: punctuation.definition.parameters.begin.elixir
       set:
@@ -120,10 +129,7 @@ contexts:
   parameters:
     - include: atom_keyword
     - include: elixir_keywords
-    # - include: special_form
-    # - match: \b(?>nil|true|false)\b(?!{{id_or_key_suffix}})
-    #   scope: constant.language.elixir
-    - match: (?!_)({{identifier}})(?=\s*(?>[,)}\]=|\\]|\.\.|::|->|\bwhen\b(?!{{id_or_key_suffix}})|$))
+    - match: (?!_)({{identifier}})(?=\s*(?>[,)}\]=|\\]|\.\.|::|->|\b(when|in|do)\b(?!{{id_or_key_suffix}})|$))
       captures:
         1: variable.parameter.elixir
     - match: \,(?=\s*\))
@@ -952,7 +958,7 @@ contexts:
       push:
         - meta_scope: meta.namespace.implementation.elixir
         - match: (?=\s)
-          set: arguments_\s_pop
+          set: arguments_ws_pop
         - include: pop_empty
     - match: \bdef(?>delegate|macro|guard|)\b(?!{{id_or_key_suffix}}){{not_closing_or_operator}}
       scope: keyword.declaration.function.public.elixir
@@ -1516,22 +1522,12 @@ contexts:
       push:
         - match: (?=\()
           set: [arguments_pop, spaces_pop]
-        - include: arguments_\s_pop
+        - include: arguments_ws_pop
         - include: pop_empty
 
   function_call:
     - include: built-ins
-    - match: |
-        (?x)
-        {{identifier}}
-        (?=
-          \s*\.?\s*\( |
-          # FIXME: will also highlight last argument as a function, e.g.: test "...", context do
-          # \s+do\b(?!{{id_or_key_suffix}}) |
-          {{not_closing_or_operator}}
-        )# |
-        # TODO: see FIXME above
-        #(?>^\s*{{identifier}}\s+)(?=do\b)
+    - match: '{{identifier}}(?=\s*\.?\s*\(|{{not_closing_or_operator}})'
       scope: variable.function.elixir
       push:
         - match: \s*(\.)(?!\.)
@@ -1540,7 +1536,7 @@ contexts:
             1: punctuation.accessor.dot.elixir
         - match: (?=\()
           set: [arguments_pop, spaces_pop]
-        - include: arguments_\s_pop
+        - include: arguments_ws_pop
         - include: pop_empty
     - match: ({{module_name}})\s*(\.)\s*({{identifier}}|{{operators}})
       comment: always a function call after a module
@@ -1553,13 +1549,13 @@ contexts:
         - match: (?=\()
           set: arguments_pop
         - match: (?=\s)
-          set: arguments_\s_pop
+          set: arguments_ws_pop
         - include: pop_empty
 
-  arguments:
+  arguments_pop:
     - match: \(
       scope: punctuation.section.arguments.begin.elixir
-      push:
+      set:
         - meta_scope: meta.function-call.arguments.elixir
         - include: arguments_closing_pop
         - match: \,
@@ -1571,11 +1567,7 @@ contexts:
       scope: punctuation.section.arguments.end.elixir
       pop: true
 
-  arguments_pop:
-    - include: arguments
-    - include: pop_empty
-
-  arguments_\s_pop:
+  arguments_ws_pop:
     - match: \s
       comment: arguments list without parentheses
       scope: punctuation.section.arguments.begin.elixir
@@ -1587,11 +1579,15 @@ contexts:
           captures:
             1: punctuation.separator.arguments.elixir
         # NB: needed due to "... #{inspect x} ..." or Repo.all(from p in q, select: p.title)
-        - match: '[\n\r]|(?=[})\];]|\b(?>else|end)\b(?!{{id_or_key_suffix}}))'
+        - match: '[\n\r]|(?=[})\];]|%>|\b(?>else|end)\b(?!{{id_or_key_suffix}}))'
           scope: punctuation.section.arguments.end.elixir
           pop: true
         - match: (?=\bdo\b(?!{{id_or_key_suffix}}))
           set: do_block_pop
+        - match: (?={{identifier}}\s+do\b)
+          set:
+            - include: modules_identifiers
+            - include: pop_empty
         - include: core_syntax
 
   spaces_pop:
@@ -1669,6 +1665,7 @@ contexts:
     # \b(?>case|...)\b(?!\.)(?=\s+do\b|{{not_closing_or_operator}})
     - match: \b(?>case|for|if|cond|unless|try|receive|defrecord|defstruct|defexception|defoverridable|exit|raise|reraise|throw|import|require|use|quote|unquote|super|with)\b{{not_closing_or_operator}}
       scope: keyword.control.elixir
+      push: arguments_ws_pop
 
   pop_empty:
     - match: ''
