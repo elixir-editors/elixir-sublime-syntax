@@ -16,17 +16,23 @@
     },
     {
         "name": "Unused variable",
-        "scope": "variable.other.unused",
+        "scope": "variable.other.unused.elixir",
         "foreground": "color(grey alpha(0.75))"
     },
     {
+        "name": "Unused parameter",
+        "scope": "variable.parameter.unused.elixir",
+        "foreground": "color(var(orange) alpha(0.6))"
+    },
+    {
         "name": "Module atom",
-        "scope": "constant.other.module",
-        "foreground": "color(var(purple) alpha(0.9))"
+        "scope": "constant.other.module.elixir",
+        // "foreground": "color(var(purple) alpha(0.9))"
+        "foreground": "#0bc23e"
     },
     {
         "name": "Atom keyword",
-        "scope": "constant.other.keyword",
+        "scope": "constant.other.keyword.elixir",
         "foreground": "color(var(purple) alpha(0.8))"
     },
     {
