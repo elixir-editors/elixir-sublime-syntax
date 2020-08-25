@@ -20,7 +20,7 @@ variables:
   not_closing_or_operator: (?!\s*(?>{{closing_token}}|{{binary_operator}}))
 
   operators: =(?>~|=?=?)|!==?|!|<<<|>>>|~~~|::|<~>|<?<~|~>>?|<?\|>|/|\\\\|\*|\.{1,3}|[<>]=|[<-][->]?|>|&&?&?|\+\+?|\|{1,3}|@|%?{}|\[\]|\^\^{0,2}
-  atom_ops: (?><<>>|%{}|%)
+  special_atom: (?><<>>|%{}|%)
 
 contexts:
   main:
@@ -96,7 +96,7 @@ contexts:
     - match: '{{identifier}}(?=\s){{not_closing_or_operator}}'
       scope: entity.name.function.elixir
       set:
-        - match: (?=(?>{{atom_id}}|{{atom_ops}}|{{operators}}):(?!:))
+        - match: (?=(?>{{atom_id}}|{{special_atom}}|{{operators}}):(?!:))
           pop: true
         - include: parameters
         - match: (?=\S|$)
@@ -244,8 +244,10 @@ contexts:
       scope: punctuation.separator.elixir
       set:
         #- include: do_block_pop
-        - match: \bdo:(?!:)|$
+        - match: \bdo(:)(?!:)|$
           scope: constant.other.keyword.elixir
+          captures:
+            1: punctuation.definition.constant.elixir
           pop: true
         - include: core_syntax
     - include: do_block_pop
@@ -1331,8 +1333,10 @@ contexts:
     - match: \,(?=\s*as:(?!:))
       scope: punctuation.separator.arguments.elixir
       push:
-        - match: \bas:(?!:)
+        - match: \bas(:)(?!:)
           scope: constant.other.keyword.elixir
+          captures:
+            1: punctuation.definition.constant.elixir
           set:
             - match: \s+
             - match: '{{module_name}}'
@@ -1345,50 +1349,44 @@ contexts:
         - meta_scope: meta.path.modules.elixir
         - match: \b(__MODULE__)\b
           scope: variable.language.elixir
-        - match: '{{module_name}}'
-          scope: constant.other.module.elixir
-        - match: (?<=\.)\s*\{
-          scope: punctuation.section.braces.begin.elixir
-          push:
-            - match: \}
-              scope: punctuation.section.braces.end.elixir
-              pop: true
-            - match: \,
-              scope: punctuation.separator.sequence.elixir
-            - include: alias_names_scoped
-        - match: \.
-          scope: punctuation.accessor.elixir
-        - match: \s+
+          set: alias_dot_or_pop
+        - include: alias_module_name_pop
         - match: $|(?=,)
           pop: true
 
-  alias_names_scoped:
-    - match: (?={{module_name}})
-      push:
-        - meta_scope: meta.alias-names.elixir
+  alias_module_name_pop:
+    - match: '{{module_name}}'
+      scope: constant.other.module.elixir
+      set: alias_dot_or_pop
+
+  alias_dot_or_pop:
+    - match: \.
+      scope: punctuation.accessor.elixir
+      set: alias_name_or_tuple_pop
+    - include: non_space_pop
+
+  alias_name_or_tuple_pop:
+    - include: alias_module_name_pop
+    - match: \{
+      scope: punctuation.section.braces.begin.elixir
+      set:
+        - match: \}
+          scope: punctuation.section.braces.end.elixir
+          pop: true
+        - match: \,
+          scope: punctuation.separator.sequence.elixir
         - match: '{{module_name}}'
           scope: constant.other.module.elixir
-        - match: \{
-          scope: punctuation.section.braces.begin.elixir
-          push:
-            - match: \}
-              scope: punctuation.section.braces.end.elixir
-              pop: true
-            - match: \,
-              scope: punctuation.separator.sequence.elixir
-            - include: alias_names_scoped
-        - match: \.
-          scope: punctuation.accessor.elixir
-        - match: \s+
-        - match: (?=})
-          pop: true
+          push: alias_dot_or_pop
+        # NB: to avoid messing up the highlighting due to an unfinished alias
+        - include: core_syntax
 
   atom_keyword:
     - match: (?>\*\*|\[\]|\^\^|\.)(:)(?!:)
       scope: invalid.illegal.atom-keyword.elixir
       captures:
         1: punctuation.definition.constant.elixir
-    - match: (?!:::)(?>{{atom_id}}|{{atom_ops}}|{{operators}})(:)(?!:)
+    - match: (?!:::)(?>{{atom_id}}|{{special_atom}}|{{operators}})(:)(?!:)
       comment: keyword symbol
       scope: constant.other.keyword.elixir
       captures:
@@ -1407,7 +1405,7 @@ contexts:
               pop: true
 
   atom_symbol:
-    - match: (:)(?>{{atom_id}}|{{atom_ops}}|{{operators}})
+    - match: (:)(?>{{atom_id}}|{{special_atom}}|{{operators}})
       comment: atom symbols
       scope: constant.other.symbol.elixir
       captures:
@@ -1680,7 +1678,7 @@ contexts:
 
   elixir_functions:
     # \b(?>case|...)\b(?!\.)(?=\s+do\b|{{not_closing_or_operator}})
-    - match: \b(?>case|for|if|cond|unless|try|receive|defrecord|defstruct|defexception|defoverridable|exit|raise|reraise|throw|import|require|use|quote|unquote|super|with)\b{{not_closing_or_operator}}
+    - match: \b(?>case|for|if|cond|unless|try|receive|defrecord|defstruct|defexception|defoverridable|exit|raise|reraise|throw|import|require|use|using|quote|unquote|super|with)\b{{not_closing_or_operator}}
       scope: keyword.control.elixir
       push: arguments_ws_pop
 
