@@ -99,8 +99,7 @@ contexts:
         - match: (?=(?>{{atom_id}}|{{special_atom}}|{{operators}}):(?!:))
           pop: true
         - include: parameters
-        - match: (?=\S|$)
-          pop: true
+        - include: non_space_or_nl_pop
     - match: '{{identifier}}(?=\s*(\(|,|do\b{{not_id_key_suffix}}|$))'
       scope: entity.name.function.elixir
       set: function_params_pop
@@ -110,13 +109,11 @@ contexts:
           scope: entity.name.function.elixir
           set:
             - include: parameters
-            - match: (?=\S|$)
-              pop: true
+            - include: non_space_or_nl_pop
         - match: (?=\()
           set: function_params_pop
         - include: parameters
-        - match: (?=\S|$)
-          pop: true
+        - include: non_space_or_nl_pop
 
   function_params_pop:
     - match: '[^\S\n\r]'
@@ -209,7 +206,7 @@ contexts:
         - match: \b_\b{{not_id_key_suffix}}
           scope: comment.underscore.elixir
           set: map_param_body_pop
-        - match: (?={{module_name}})
+        - match: (?={{module_name}}{{not_id_key_suffix}})
           set: [map_param_body_pop, module_names_pop]
         - include: map_param_body_pop
 
@@ -1094,12 +1091,10 @@ contexts:
               scope: variable.other.elixir
             - include: modules_identifiers
             - include: pop_empty
-            # - match: (?=\S|$)
-            #   pop: true
+            # - include: non_space_or_nl_pop
         - include: pop_empty
         # NB: highlights every id after the first one as an id, e.g.: "x end"
-        # - match: (?=\S|$)
-        #   pop: true
+        # - include: non_space_or_nl_pop
 
   doc_attribute:
     # @(module)?doc\s+(?!"|'|since:|guard:|deprecated:|authors:|false|~S"|~S')
@@ -1113,8 +1108,7 @@ contexts:
             # TODO: correct scope? use comment.line below for "..."?
             - meta_scope: comment.block.documentation.elixir
             - include: markdown_comment
-            - match: (?=\S|$)
-              pop: true
+            - include: non_space_or_nl_pop
 
   markdown_comment:
     - match: (""")(.*)\n
@@ -1282,7 +1276,7 @@ contexts:
         - match: \b_\b{{not_id_key_suffix}}
           scope: comment.underscore.elixir
           set: map_body_pop
-        - match: (?={{module_name}})
+        - match: (?={{module_name}}{{not_id_key_suffix}})
           set: [map_body_pop, module_names_pop]
         - include: map_body_pop
 
@@ -1320,7 +1314,6 @@ contexts:
     - match: \balias\b(?={{not_closing_or_operator}})
       scope: keyword.control.elixir
       push:
-        - match: \s+
         - include: alias_names
         - include: alias_arg
         - match: \,
@@ -1339,7 +1332,7 @@ contexts:
             1: punctuation.definition.constant.elixir
           set:
             - match: \s+
-            - match: '{{module_name}}'
+            - match: '{{module_name}}{{not_id_key_suffix}}'
               scope: entity.name.namespace.elixir
             - include: pop_empty
 
@@ -1355,7 +1348,7 @@ contexts:
           pop: true
 
   alias_module_name_pop:
-    - match: '{{module_name}}'
+    - match: '{{module_name}}{{not_id_key_suffix}}'
       scope: constant.other.module.elixir
       set: alias_dot_or_pop
 
@@ -1363,7 +1356,7 @@ contexts:
     - match: \.
       scope: punctuation.accessor.elixir
       set: alias_name_or_tuple_pop
-    - include: non_space_pop
+    - include: non_space_or_nl_pop
 
   alias_name_or_tuple_pop:
     - include: alias_module_name_pop
@@ -1375,11 +1368,12 @@ contexts:
           pop: true
         - match: \,
           scope: punctuation.separator.sequence.elixir
-        - match: '{{module_name}}'
+        - match: '{{module_name}}{{not_id_key_suffix}}'
           scope: constant.other.module.elixir
           push: alias_dot_or_pop
         # NB: to avoid messing up the highlighting due to an unfinished alias
-        - include: core_syntax
+        - include: non_space_pop
+    - include: non_space_or_nl_pop
 
   atom_keyword:
     - match: (?>\*\*|\[\]|\^\^|\.)(:)(?!:)
@@ -1688,6 +1682,10 @@ contexts:
 
   non_space_pop:
     - match: (?=\S)
+      pop: true
+
+  non_space_or_nl_pop:
+    - match: (?=\S|$)
       pop: true
 
   pop_empty:
