@@ -1,0 +1,23 @@
+name: Syntax Tests
+
+on:
+  push:
+    paths:
+      - '**.sublime-syntax'
+      - '**/syntax_test*'
+      - '**.tmPreferences'
+  pull_request:
+    paths:
+      - '**.sublime-syntax'
+      - '**/syntax_test*'
+      - '**.tmPreferences'
+
+jobs:
+  syntax_tests:
+    name: Run Syntax Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: SublimeText/syntax-test-action@v2
+        with:
+          build: 4084  # or 'latest' for the latest ST3 build
