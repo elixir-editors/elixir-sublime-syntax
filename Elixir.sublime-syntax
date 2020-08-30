@@ -1023,7 +1023,7 @@ contexts:
 
   do_block_pop:
     - match: \bdo\b{{not_id_key_suffix}}
-      scope: keyword.control.elixir punctuation.section.block.begin.elixir
+      scope: punctuation.section.block.begin.elixir keyword.control.elixir
       set:
         - meta_scope: meta.block.elixir
         - include: block_end_pop
@@ -1038,7 +1038,7 @@ contexts:
 
   block_end_pop:
     - match: \bend\b{{not_id_key_suffix}}
-      scope: keyword.control.elixir punctuation.section.block.end.elixir
+      scope: punctuation.section.block.end.elixir keyword.control.elixir
       pop: true
 
   module_names:
