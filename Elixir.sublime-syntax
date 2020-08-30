@@ -32,6 +32,21 @@ contexts:
     - match: \bfn\b{{not_id_key_suffix}}
       scope: keyword.control.elixir punctuation.section.block.begin.elixir
       push:
+        # - match: |
+        #     (?x)
+        #     (?=
+        #       (?:
+        #         (
+        #           \( (?: [^()]++   | \g<-1> )* \) |
+        #           \[ (?: [^\[\]]++ | \g<-1> )* \] |
+        #           \{ (?: [^{}]++   | \g<-1> )* \}
+        #         ) |
+        #         [^{(\[]+
+        #       )*
+        #       =>
+        #     )
+        #   push: first_fn_header
+
         # TODO: try to match parameters according to indentation:
         # - match: (?=->)
         #   set: first_fn_header
@@ -376,12 +391,12 @@ contexts:
         2: invalid.illegal.opening-heredoc.elixir
       push:
         - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
-        - include: heredoc_string_closing_double
+        - include: heredoc_string_closing_double_pop
         - match: ''
           push: regex_elixir
           with_prototype:
             - include: interpolated_elixir
-            - match: (?=^.*?""")
+            - match: (?=^(?>\\.|[^"])*?""")
               pop: true
 
     - match: (''')(.*)\n
@@ -390,12 +405,12 @@ contexts:
         2: invalid.illegal.opening-heredoc.elixir
       push:
         - meta_scope: meta.string.elixir string.quoted.triple.single.elixir
-        - include: heredoc_string_closing_single
+        - include: heredoc_string_closing_single_pop
         - match: ''
           push: regex_elixir
           with_prototype:
             - include: interpolated_elixir
-            - match: (?=^.*?''')
+            - match: (?=^(?>\\.|[^'])*?''')
               pop: true
 
   heredoc_regex_raw:
@@ -408,11 +423,11 @@ contexts:
         - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
         # TODO: not yet committed. simplifies rules because no interpolation is needed.
         # - include: regex_elixir
-        - include: heredoc_string_closing_double
+        - include: heredoc_string_closing_double_pop
         - match: ''
           push: regex_elixir
           with_prototype:
-            - match: (?=^.*?""")
+            - match: (?=^(?>\\.|[^"])*?""")
               pop: true
 
     - match: (''')(.*)\n
@@ -424,11 +439,11 @@ contexts:
         - meta_scope: meta.string.elixir string.quoted.triple.single.elixir
         # TODO: not yet committed. simplifies rules because no interpolation is needed.
         # - include: regex_elixir
-        - include: heredoc_string_closing_single
+        - include: heredoc_string_closing_single_pop
         - match: ''
           push: regex_elixir
           with_prototype:
-            - match: (?=^.*?''')
+            - match: (?=^(?>\\.|[^'])*?''')
               pop: true
 
   heredoc_string_interpolated:
@@ -440,7 +455,7 @@ contexts:
       push:
         - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
         - include: escaped_or_interpolated
-        - include: heredoc_string_closing_double
+        - include: heredoc_string_closing_double_pop
 
     - match: (''')(.*)\n
       comment: Triple-quoted heredocs
@@ -450,7 +465,7 @@ contexts:
       push:
         - meta_scope: meta.string.elixir string.quoted.triple.single.elixir
         - include: escaped_or_interpolated
-        - include: heredoc_string_closing_single
+        - include: heredoc_string_closing_single_pop
 
   heredoc_string_raw:
     - match: (""")(.*)\n
@@ -460,7 +475,9 @@ contexts:
         2: invalid.illegal.opening-heredoc.elixir
       push:
         - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
-        - include: heredoc_string_closing_double
+        - include: heredoc_string_closing_double_pop
+        - match: \\"
+          scope: constant.character.escape.char.elixir
 
     - match: (''')(.*)\n
       comment: Triple-quoted heredocs
@@ -469,17 +486,19 @@ contexts:
         2: invalid.illegal.opening-heredoc.elixir
       push:
         - meta_scope: meta.string.elixir string.quoted.triple.single.elixir
-        - include: heredoc_string_closing_single
+        - include: heredoc_string_closing_single_pop
+        - match: \\'
+          scope: constant.character.escape.char.elixir
 
-  heredoc_string_closing_double:
-    - match: ^\s*([^"]*?)\s*(""")
+  heredoc_string_closing_double_pop:
+    - match: ^\s*((?>\\.|[^"])*?)\s*(""")
       captures:
         1: invalid.illegal.closing-heredoc.elixir
         2: punctuation.definition.string.end.elixir
       pop: true
 
-  heredoc_string_closing_single:
-    - match: ^\s*([^']*?)\s*(''')
+  heredoc_string_closing_single_pop:
+    - match: ^\s*((?>\\.|[^'])*?)\s*(''')
       captures:
         1: invalid.illegal.closing-heredoc.elixir
         2: punctuation.definition.string.end.elixir
@@ -530,16 +549,19 @@ contexts:
             2: invalid.illegal.opening-heredoc.elixir
           set:
             - meta_scope: meta.string.elixir
-            - match: (?=^.*?""")
+            - match: (?=^(?>\\.|[^"])*?""")
               set:
                 - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
-                - include: heredoc_string_closing_double
+                - include: heredoc_string_closing_double_pop
             - match: ''
               push: scope:text.html.elixir
               with_prototype:
                 - include: interpolated_elixir
-                - match: (?=^.*?""")
+                - match: \\"
+                  scope: constant.character.escape.char.elixir
+                - match: (?=^(?>\\.|[^"])*?""")
                   pop: true
+
     - match: ~y
       comment: YAML with interpolation
       scope: meta.string.elixir storage.type.string.elixir
@@ -550,16 +572,17 @@ contexts:
             2: invalid.illegal.opening-heredoc.elixir
           set:
             - meta_scope: meta.string.elixir
-            - match: (?=^.*?""")
+            - match: (?=^(?>\\.|[^"])*?""")
               set:
                 - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
-                - include: heredoc_string_closing_double
+                - include: heredoc_string_closing_double_pop
             - match: ''
               push: scope:source.yaml
               with_prototype:
                 - include: interpolated_elixir
-                - match: (?=^.*?""")
+                - match: (?=^(?>\\.|[^"])*?""")
                   pop: true
+
     - match: ~Y
       comment: YAML raw
       scope: meta.string.elixir storage.type.string.elixir
@@ -570,15 +593,18 @@ contexts:
             2: invalid.illegal.opening-heredoc.elixir
           set:
             - meta_scope: meta.string.elixir
-            - match: (?=^.*?""")
+            - match: (?=^(?>\\.|[^"])*?""")
               set:
                 - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
-                - include: heredoc_string_closing_double
+                - include: heredoc_string_closing_double_pop
             - match: ''
               push: scope:source.yaml
               with_prototype:
-                - match: (?=^.*?""")
+                - match: \\"
+                  scope: constant.character.escape.char.elixir
+                - match: (?=^(?>\\.|[^"])*?""")
                   pop: true
+
     - match: ~j
       comment: JSON with interpolation
       scope: meta.string.elixir storage.type.string.elixir
@@ -589,16 +615,17 @@ contexts:
             2: invalid.illegal.opening-heredoc.elixir
           set:
             - meta_scope: meta.string.elixir
-            - match: (?=^.*?""")
+            - match: (?=^(?>\\.|[^"])*?""")
               set:
                 - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
-                - include: heredoc_string_closing_double
+                - include: heredoc_string_closing_double_pop
             - match: ''
               push: scope:source.json
               with_prototype:
                 - include: interpolated_elixir
-                - match: (?=^.*?""")
+                - match: (?=^(?>\\.|[^"])*?""")
                   pop: true
+
     - match: ~J
       comment: JSON raw
       scope: meta.string.elixir storage.type.string.elixir
@@ -609,14 +636,16 @@ contexts:
             2: invalid.illegal.opening-heredoc.elixir
           set:
             - meta_scope: meta.string.elixir
-            - match: (?=^.*?""")
+            - match: (?=^(?>\\.|[^"])*?""")
               set:
                 - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
-                - include: heredoc_string_closing_double
+                - include: heredoc_string_closing_double_pop
             - match: ''
               push: scope:source.json
               with_prototype:
-                - match: (?=^.*?""")
+                - match: \\"
+                  scope: constant.character.escape.char.elixir
+                - match: (?=^(?>\\.|[^"])*?""")
                   pop: true
 
     - match: ~r
@@ -885,6 +914,8 @@ contexts:
                 - match: \1
                   scope: string.quoted.other.literal.upper.elixir punctuation.definition.string.end.elixir
                   pop: true
+                - match: \\[/|"']
+                  scope: constant.character.escape.char.elixir
             - match: ''
               set: string_modifiers_and_pop
         - match: \{
@@ -1080,6 +1111,34 @@ contexts:
         - include: arguments_ws_pop
         - include: pop_empty
 
+  quoted_remote_call_pop:
+    - match: \"
+      scope: punctuation.definition.constant.begin.elixir
+      set:
+        - match: \\\"
+          scope: constant.character.escape.char.elixir
+        - match: \"
+          scope: punctuation.definition.constant.end.elixir
+          set:
+            - match: (?=\()
+              set: [dot_accessor_or_pop, arguments_pop]
+            - include: pop_empty
+        - match: \\?[^"]
+          scope: variable.function.elixir
+    - match: \'
+      scope: punctuation.definition.constant.begin.elixir
+      set:
+        - match: \\\'
+          scope: constant.character.escape.char.elixir
+        - match: \'
+          scope: punctuation.definition.constant.end.elixir
+          set:
+            - match: (?=\()
+              set: [dot_accessor_or_pop, arguments_pop]
+            - include: pop_empty
+        - match: \\?[^']
+          scope: variable.function.elixir
+
   modules_or_identifiers_or_calls:
     - match: (?={{module_name}}|{{identifier}})
       push:
@@ -1106,6 +1165,7 @@ contexts:
           pop: true
         - include: module_function_call_pop
         - include: identifier_operator_call_pop
+        - include: quoted_remote_call_pop
         - match: (?=\s*\()
           set: [dot_accessor_or_pop, arguments_pop, spaces_pop]
         - match: '{{identifier}}|{{operators}}'
@@ -1179,14 +1239,14 @@ contexts:
         - match: (?=^\s*""")
           set:
             - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
-            - include: heredoc_string_closing_double
+            - include: heredoc_string_closing_double_pop
         - include: escaped_or_interpolated
         - include: iex_prompt
         - include: elixir_markdown
         - match: ''
           embed: scope:text.html.markdown
           embed_scope: text.html.elixir source.elixir.embedded.html
-          escape: (?=^\s*"""|(?<=\s{4})(?:iex.*?>|```\s*elixir\b|def(?>module|macro|p|)\b{{not_id_key_suffix}})|\\|#{)
+          escape: (?=^\s*"""|(?<=\s{4})(?:iex.*?>|```\s*elixir\b|(?>cond|receive|try)\s+do\b|def(?>module|macro|p|)\b{{not_id_key_suffix}})|\\|#{)
 
     - match: \"
       scope: punctuation.definition.string.begin.elixir string.quoted.double.elixir
@@ -1211,13 +1271,13 @@ contexts:
         - match: (?=^\s*""")
           set:
             - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
-            - include: heredoc_string_closing_double
+            - include: heredoc_string_closing_double_pop
         - include: iex_prompt
         - include: elixir_markdown
         - match: ''
           embed: scope:text.html.markdown
           embed_scope: text.html.elixir source.elixir.embedded.html
-          escape: (?=^\s*"""|(?<=\s{4})(?:iex.*?>|```\s*elixir\b|def(?>module|macro|p|)\b{{not_id_key_suffix}}))
+          escape: (?=^\s*"""|(?<=\s{4})(?:iex.*?>|```\s*elixir\b|(?>cond|receive|try)\s+do\b|def(?>module|macro|p|)\b{{not_id_key_suffix}}))
 
     - match: ~S(''')(.*)\n
       scope: meta.string.elixir storage.type.string.elixir
@@ -1229,16 +1289,16 @@ contexts:
         - match: (?=^\s*''')
           set:
             - meta_scope: meta.string.elixir string.quoted.triple.single.elixir
-            - include: heredoc_string_closing_single
+            - include: heredoc_string_closing_single_pop
         - include: iex_prompt
         - include: elixir_markdown
         - match: ''
           embed: scope:text.html.markdown
           embed_scope: text.html.elixir source.elixir.embedded.html
-          escape: (?=^\s*'''|(?<=\s{4})(?:iex.*?>|```\s*elixir\b|def(?>module|macro|p|)\b{{not_id_key_suffix}}))
+          escape: (?=^\s*'''|(?<=\s{4})(?:iex.*?>|```\s*elixir\b|(?>cond|receive|try)\s+do\b|def(?>module|macro|p|)\b{{not_id_key_suffix}}))
 
   iex_prompt:
-    - match: (?<=\s{4})(?=\bdef(?>module|macro|p|)\b{{not_id_key_suffix}})
+    - match: (?<=\s{4})(?=(?>(?>cond|receive|try)\s+do|def(?>module|macro|p|))\b{{not_id_key_suffix}})
       push:
         - clear_scopes: true
         - meta_scope: meta.interpolation.elixir markup.raw.block.markdown markup.raw.block.elixir
