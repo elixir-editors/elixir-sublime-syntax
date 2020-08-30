@@ -15,6 +15,16 @@
       "background": "color(var(white) alpha(0.02))"
     },
     {
+        "name": "Doc attribute",
+        "scope": "support.attr.doc.elixir",
+        "foreground": "var(yellow5)"
+    },
+    {
+        "name": "Support attributes",
+        "scope": "support.attr.elixir",
+        "foreground": "var(blue)"
+    },
+    {
         "name": "Unused variable",
         "scope": "variable.other.unused.elixir",
         "foreground": "color(grey alpha(0.75))"
