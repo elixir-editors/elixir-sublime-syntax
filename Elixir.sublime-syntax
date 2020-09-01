@@ -168,14 +168,14 @@ contexts:
         - match: (?=[,)]|\b(?>when|do){{not_id_key_suffix}})
           pop: true
         - include: core_syntax
-    - include: paren_params
+    - include: paren_param
     - include: tuple_param
     - include: list_param
     - include: map_param
     - include: binary_string_param
     - include: core_syntax
 
-  paren_params:
+  paren_param:
     - match: \(
       scope: punctuation.definition.parameters.begin.elixir
       set:
@@ -940,21 +940,29 @@ contexts:
             - include: string_closing_round
 
   string_closing_curly:
+    - match: \\\}
+      scope: constant.character.escape.char.elixir
     - match: \}
       scope: punctuation.definition.string.end.elixir
       set: string_modifiers_and_pop
 
   string_closing_square:
+    - match: \\\]
+      scope: constant.character.escape.char.elixir
     - match: \]
       scope: punctuation.definition.string.end.elixir
       set: string_modifiers_and_pop
 
   string_closing_angle:
+    - match: \\\>
+      scope: constant.character.escape.char.elixir
     - match: \>
       scope: punctuation.definition.string.end.elixir
       set: string_modifiers_and_pop
 
   string_closing_round:
+    - match: \\\)
+      scope: constant.character.escape.char.elixir
     - match: \)
       scope: punctuation.definition.string.end.elixir
       set: string_modifiers_and_pop
@@ -1187,7 +1195,7 @@ contexts:
       push: module_attribute_pop
 
   module_attribute_pop:
-    - match: (?!{{identifier}}{{not_id_key_suffix}})
+    - match: (?!{{identifier}}(?!{{atom_id_suffix}}:))
       set:
         - match: '[A-Z]'
           scope: invalid.illegal.attribute.elixir
@@ -1349,11 +1357,13 @@ contexts:
     - match: <-|->
       scope: keyword.operator.arrow.elixir
     - match: <>
-      scope: keyword.operator.binary-concatenation.elixir
+      scope: keyword.operator.binary-concat.elixir
     - match: \|>
       scope: keyword.operator.pipe.elixir
-    - match: \+\+|--
-      scope: keyword.operator.list.elixir
+    - match: --
+      scope: keyword.operator.list-diff.elixir
+    - match: \+\+
+      scope: keyword.operator.list-concat.elixir
     - match: \.{3}
       comment: can appear in @type declarations
       scope: keyword.operator.ellipsis.elixir
@@ -1373,8 +1383,10 @@ contexts:
       scope: keyword.operator.logical.elixir
     - match: '[-+*/]'
       scope: keyword.operator.arithmetic.elixir
+    - match: =~
+      scope: keyword.operator.regex.elixir
     - match: =
-      scope: keyword.operator.assignment.elixir
+      scope: keyword.operator.match.elixir
     - match: ;
       scope: keyword.operator.semicolon.elixir
     - match: \^
@@ -1444,7 +1456,7 @@ contexts:
         - include: core_syntax
 
   alias:
-    - match: \balias\b(?={{not_closing_or_operator}})
+    - match: \balias\b{{not_closing_or_operator}}
       scope: keyword.control.elixir
       push:
         - include: alias_names
@@ -1709,9 +1721,24 @@ contexts:
           pop: true
         - match: (?=\bdo{{not_id_key_suffix}})
           set: do_block_pop
-        - match: (?={{identifier}}(?:\s*\.\s*{{identifier}})*\s*do{{not_id_key_suffix}})
-          comment: avoid matching last argument as a function variable call
+        - match: |
+            (?x)
+            (?=
+              (?>
+                @\s*{{identifier}} |
+                {{identifier}}(?:\s*\.\s*{{identifier}})*
+              )
+              \s*do{{not_id_key_suffix}}
+            )
+          comment: prevent matching last argument as a function call
           set:
+            - match: (@)\s*({{identifier}})
+              comment: reference
+              captures:
+                1: keyword.operator.attribute.elixir
+                2: variable.other.attribute.elixir
+            - match: _{{identifier}}?
+              scope: variable.other.unused.elixir
             - match: '{{identifier}}'
               scope: variable.other.elixir
             - match: \.
