@@ -32,6 +32,7 @@ contexts:
     - match: \bfn{{not_id_key_suffix}}
       scope: keyword.control.elixir punctuation.section.block.begin.elixir
       push:
+        - include: first_fn_header
         # - match: |
         #     (?x)
         #     (?=
@@ -62,47 +63,16 @@ contexts:
         #                 - include: block_end_pop
         #                 - include: core_syntax
         #             - include: fn_parameters
-
-        - include: first_fn_header
-
         # - include: block_end_pop
         # - include: core_syntax
-        # - include: fn_header
 
   first_fn_header:
     # - meta_scope: meta.function.parameters.elixir
-    - match: \bwhen{{not_id_key_suffix}}
-      scope: keyword.other.elixir
-      set:
-        - match: (?=->)
-          scope: punctuation.definition.parameters.end.elixir
-          set:
-            - include: block_end_pop
-            - include: core_syntax
-        - include: block_end_pop
-        - include: core_syntax
-    - match: (?=->)
-      scope: punctuation.definition.parameters.end.elixir
+    - match: (?=->|\bwhen{{not_id_key_suffix}})
       set:
         - include: block_end_pop
         - include: core_syntax
-    # - include: special_form
-    # - match: \b(?>nil|true|false){{not_id_key_suffix}}
-    #   scope: constant.language.elixir
-    # - match: '(?!_){{identifier}}(?!:)(?=\s*(?>[,)=\\]|\.\.|->|$))'
-    #   scope: variable.parameter.elixir
-    # - match: \,
-    #   scope: punctuation.separator.elixir
     - include: fn_parameters
-
-  # fn_header:
-  #   - match: (?=.+?->)
-  #     push:
-  #       - match: (?=->)
-  #         scope: punctuation.definition.parameters.end.elixir
-  #         pop: true
-  #       - include: fn_parameters
-  #       - include: core_syntax
 
   function_header_pop:
     - match: \bunquote(?=\s*\()
@@ -114,8 +84,8 @@ contexts:
         - match: (?={{atom_symbol}}:(?!:))
           pop: true
         - include: parameters
-        - include: non_space_or_nl_pop
-    - match: '{{identifier}}(?=\s*(\(|,|do{{not_id_key_suffix}}|$))'
+        - include: non_space_or_eol_pop
+    - match: '{{identifier}}(?=\s*([(,]|do{{not_id_key_suffix}}|$))'
       scope: entity.name.function.elixir
       set: function_params_pop
     - match: (?=\S)
@@ -124,11 +94,11 @@ contexts:
           scope: entity.name.function.elixir
           set:
             - include: parameters
-            - include: non_space_or_nl_pop
+            - include: non_space_or_eol_pop
         - match: (?=\()
           set: function_params_pop
         - include: parameters
-        - include: non_space_or_nl_pop
+        - include: non_space_or_eol_pop
 
   function_params_pop:
     - match: '[^\S\n\r]'
@@ -138,9 +108,9 @@ contexts:
         - meta_scope: meta.function.parameters.elixir
         - match: \)
           scope: punctuation.definition.parameters.end.elixir
-          set: function_params_end_pop
+          set: function_post_params_pop
         - include: parameters
-    - include: pop_empty
+    - include: empty_pop
 
   fn_parameters:
     # NB: no default parameters in fn blocks
@@ -151,6 +121,8 @@ contexts:
   parameters:
     - include: atom_keyword
     - include: elixir_keywords
+    - match: \b__MODULE__{{not_id_key_suffix}}
+      scope: variable.language.special-form.elixir
     - match: |
         (?x)
         (?>((?<![^.]\.)_{{identifier}}?)|({{identifier}}))
@@ -232,7 +204,7 @@ contexts:
         - match: \,
           scope: punctuation.separator.mapping.elixir
         - include: parameters
-    - include: non_space_or_nl_pop
+    - include: non_space_or_eol_pop
 
   binary_string_param:
     - match: '>>(?!>)'
@@ -244,13 +216,14 @@ contexts:
         - include: binary_string_body
         - include: parameters
 
-  # TODO: the when clause can appear on the next line; maybe simply let core_syntax match the rest.
-  function_params_end_pop:
-    - include: when_params
+  function_post_params_pop:
     - match: \,
       scope: punctuation.separator.elixir
       set:
-        #- include: do_block_pop
+        # Commented out. May be annoying during typing.
+        # - match: \bdo{{not_id_key_suffix}}
+        #   comment: compiler reports this as an unexpected token; doesn't try to find matching "end"
+        #   scope: invalid.illegal.keyword.elixir
         - match: \bdo(:)(?!:)|$
           scope: constant.other.keyword.elixir
           captures:
@@ -258,16 +231,8 @@ contexts:
           pop: true
         - include: core_syntax
     - include: do_block_pop
-    - match: $
-      pop: true
-
-  when_params:
-    # TODO: need to break at comma; solve with with_prototype or escape?
-    - match: \bwhen{{not_id_key_suffix}}
-      scope: keyword.other.elixir
     - include: core_syntax
-    - match: $
-      pop: true
+    - include: eol_pop
 
   numeric:
     - match: |
@@ -504,10 +469,10 @@ contexts:
         2: punctuation.definition.string.end.elixir
       pop: true
 
-
   string:
     - include: heredoc_string_interpolated
     - include: simple_string
+    - include: binary_string
 
     - match: (?x) (~[a-zA-Z])\n | ~[a-zA-Z]([^{\[<(/|"'])
       comment: catch invalid sigils first
@@ -531,7 +496,7 @@ contexts:
             - match: \s+
               push:
                 - clear_scopes: 1
-                - include: pop_empty
+                - include: empty_pop
             - include: escaped_or_interpolated
             - match: (\2)(a)
               captures:
@@ -975,7 +940,7 @@ contexts:
 
   string_modifiers_and_pop:
     - include: string_modifiers
-    - include: pop_empty
+    - include: empty_pop
 
   def_blocks:
     - match: \bdefmodule{{not_id_key_suffix}}
@@ -994,23 +959,21 @@ contexts:
                 - include: arguments_closing_pop
                 - include: core_syntax
             - include: defmodule_1st_argument
-        - match: $
-          pop: true
+        - include: eol_pop
     - match: \bdefprotocol{{not_id_key_suffix}}
       scope: keyword.control.protocol.elixir
       push:
         - meta_scope: meta.namespace.protocol.elixir
         - include: do_block_pop
         - include: module_namespaces
-        - match: $
-          pop: true
+        - include: eol_pop
     - match: \bdefimpl{{not_id_key_suffix}}{{not_closing_or_operator}}
       scope: keyword.control.implementation.elixir
       push:
         - meta_scope: meta.namespace.implementation.elixir
         - match: (?=\s)
           set: arguments_ws_pop
-        - include: pop_empty
+        - include: empty_pop
     - match: \bdef(?>delegate|macro|guard|){{not_id_key_suffix}}{{not_closing_or_operator}}
       scope: keyword.declaration.function.public.elixir
       push: function_header_pop
@@ -1061,7 +1024,7 @@ contexts:
     - match: \s+(?!$)
     # - match: '[^\S\r\n]+'
     - include: module_names
-    - include: pop_empty
+    - include: empty_pop
 
   module_namespaces:
     # TODO: should also handle: defmodule :"Elixir.ModuleTest.RawModule" do ... end
@@ -1089,7 +1052,7 @@ contexts:
     - match: \s+(?!$)
     - match: \.
       scope: punctuation.accessor.elixir
-    - include: pop_empty
+    - include: empty_pop
 
   module_function_call_pop:
     - match: ({{module_name}})\s*(\.)\s*({{identifier}}|{{operators}})
@@ -1104,7 +1067,7 @@ contexts:
             - match: (?=\()
               set: [dot_accessor_or_pop, arguments_pop]
             - include: arguments_ws_pop
-        - include: pop_empty
+        - include: empty_pop
 
   identifier_operator_call_pop:
     - match: (?>{{identifier}}|{{operators}})(?=(?:\s*\.\s*)?\(|{{not_closing_or_operator}})
@@ -1117,7 +1080,7 @@ contexts:
         - match: (?=\()
           set: [dot_accessor_or_pop, arguments_pop]
         - include: arguments_ws_pop
-        - include: pop_empty
+        - include: empty_pop
 
   quoted_remote_call_pop:
     - match: \"
@@ -1130,7 +1093,7 @@ contexts:
           set:
             - match: (?=\()
               set: [dot_accessor_or_pop, arguments_pop]
-            - include: pop_empty
+            - include: empty_pop
         - match: \\?[^"]
           scope: variable.function.elixir
     - match: \'
@@ -1143,7 +1106,7 @@ contexts:
           set:
             - match: (?=\()
               set: [dot_accessor_or_pop, arguments_pop]
-            - include: pop_empty
+            - include: empty_pop
         - match: \\?[^']
           scope: variable.function.elixir
 
@@ -1186,7 +1149,7 @@ contexts:
 
   dot_accessor_or_pop:
     - include: dot_accessor
-    - include: non_space_or_nl_pop
+    - include: non_space_or_eol_pop
 
 
   module_attribute:
@@ -1199,7 +1162,7 @@ contexts:
       set:
         - match: '[A-Z]'
           scope: invalid.illegal.attribute.elixir
-        - include: pop_empty
+        - include: empty_pop
 
     # Special attributes:
     - match: (?>(?>module|type|short)?doc)(?=\(|{{not_closing_or_operator}})
@@ -1207,7 +1170,7 @@ contexts:
       set:
         - meta_content_scope: comment.block.documentation.elixir
         - include: markdown_comment
-        - include: non_space_or_nl_pop
+        - include: non_space_or_eol_pop
 
     - match: (?>derive|deprecated|impl|file|behaviour|vsn|(?>before_|after_)?compile|dialyzer|external_resource|on_(?>definition|load))(?=\(|{{not_closing_or_operator}})
       scope: support.attr.elixir
@@ -1441,7 +1404,7 @@ contexts:
         - match: \,
           scope: punctuation.separator.mapping.elixir
         - include: core_syntax
-    - include: non_space_or_nl_pop
+    - include: non_space_or_eol_pop
 
   parens:
     - match: \)
@@ -1466,11 +1429,9 @@ contexts:
             - include: alias_arg
             - match: \,
               scope: punctuation.separator.arguments.elixir
-            - match: $
-              pop: true
+            - include: eol_pop
             - include: core_syntax
-        - match: $
-          pop: true
+        - include: eol_pop
         - include: core_syntax
 
   alias_arg:
@@ -1486,7 +1447,7 @@ contexts:
               scope: entity.name.namespace.elixir
             - match: (?=,)
               pop: true
-            - include: non_space_or_nl_pop
+            - include: non_space_or_eol_pop
 
   alias_names:
     - match: (?=(?>{{module_name}}|\b__MODULE__){{not_id_key_suffix}}|:(?>{{atom_id}}|['"]))
@@ -1494,7 +1455,7 @@ contexts:
         - meta_scope: meta.path.modules.elixir
         - include: alias_module_name_pop
         - match: __MODULE__
-          scope: variable.language.elixir
+          scope: variable.language.special-form.elixir
           set: alias_dot_or_pop
         - include: atom_symbol
         - include: alias_dot_or_pop
@@ -1508,7 +1469,7 @@ contexts:
     - match: \.
       scope: punctuation.accessor.elixir
       set: alias_name_or_tuple_pop
-    - include: non_space_or_nl_pop
+    - include: non_space_or_eol_pop
 
   alias_name_or_tuple_pop:
     - include: alias_module_name_pop
@@ -1525,7 +1486,7 @@ contexts:
           push: alias_dot_or_pop
         # NB: to avoid messing up the highlighting due to an unfinished alias
         - include: non_space_pop
-    - include: non_space_or_nl_pop
+    - include: non_space_or_eol_pop
 
   atom_keyword:
     - match: (?>\*\*|\[\]|\^\^|\.)(:)(?!:)
@@ -1687,7 +1648,7 @@ contexts:
         - match: (?=\()
           set: [arguments_pop, spaces_pop]
         - include: arguments_ws_pop
-        - include: pop_empty
+        - include: empty_pop
 
   arguments_pop:
     - match: \(
@@ -1743,7 +1704,7 @@ contexts:
               scope: variable.other.elixir
             - match: \.
               scope: punctuation.accessor.dot.elixir
-            - include: pop_empty
+            - include: empty_pop
         - include: core_syntax
 
   special_form:
@@ -1770,11 +1731,15 @@ contexts:
     - match: (?=\S)
       pop: true
 
-  non_space_or_nl_pop:
+  non_space_or_eol_pop:
     - match: (?=\S|$)
       pop: true
 
-  pop_empty:
+  eol_pop:
+    - match: $
+      pop: true
+
+  empty_pop:
     - match: ''
       pop: true
 
@@ -1782,7 +1747,6 @@ contexts:
     - include: atom_keyword
     - include: atom_symbol
     - include: numeric
-    - include: binary_string
     - include: string
     - include: def_blocks
     - include: do_block
