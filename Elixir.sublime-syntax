@@ -28,6 +28,32 @@ contexts:
   main:
     - include: core_syntax
 
+  core_syntax:
+    - include: atom_keyword
+    - include: atom_symbol
+    - include: numeric
+    - include: string
+    - include: def_blocks
+    - include: do_block
+    - include: fn_block
+    - include: tuple
+    - include: parens
+    - include: list
+    - include: map
+    - include: operator
+    - include: capture
+    - include: dot_accessor
+    - include: alias
+    - include: elixir_keywords
+    - include: elixir_functions
+    - include: special_form
+    - include: sql_fragment
+    - include: built_ins
+    - include: module_attribute
+    - include: modules_or_identifiers_or_calls
+    - include: comment
+    - include: char_literal
+
   fn_block:
     - match: \bfn{{not_id_key_suffix}}
       scope: keyword.control.elixir punctuation.section.block.begin.elixir
@@ -329,12 +355,12 @@ contexts:
 
 
   simple_string:
-    - match: "'"
+    - match: \'
       comment: single quoted string (allows for interpolation)
       scope: punctuation.definition.string.begin.elixir
       push:
         - meta_scope: meta.string.elixir string.quoted.single.elixir
-        - match: "'"
+        - match: \'
           scope: punctuation.definition.string.end.elixir
           pop: true
         - include: escaped_or_interpolated
@@ -386,8 +412,6 @@ contexts:
         2: invalid.illegal.opening-heredoc.elixir
       push:
         - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
-        # TODO: not yet committed. simplifies rules because no interpolation is needed.
-        # - include: regex_elixir
         - include: heredoc_string_closing_double_pop
         - match: ''
           push: regex_elixir
@@ -402,8 +426,6 @@ contexts:
         2: invalid.illegal.opening-heredoc.elixir
       push:
         - meta_scope: meta.string.elixir string.quoted.triple.single.elixir
-        # TODO: not yet committed. simplifies rules because no interpolation is needed.
-        # - include: regex_elixir
         - include: heredoc_string_closing_single_pop
         - match: ''
           push: regex_elixir
@@ -521,7 +543,6 @@ contexts:
             - match: ''
               push: scope:text.html.elixir
               with_prototype:
-                - include: interpolated_elixir
                 - match: \\"
                   scope: constant.character.escape.char.elixir
                 - match: (?=^(?>\\.|[^"])*?""")
@@ -544,7 +565,7 @@ contexts:
             - match: ''
               push: scope:source.yaml
               with_prototype:
-                - include: interpolated_elixir
+                - include: escaped_or_interpolated
                 - match: (?=^(?>\\.|[^"])*?""")
                   pop: true
 
@@ -619,9 +640,9 @@ contexts:
       push:
         - match: (?="""|''')
           set:
-            - include: heredoc_regex_interpolated
-            - match: ''
+            - match: (?<="""|''')
               set: string_modifiers_and_pop
+            - include: heredoc_regex_interpolated
         - match: \"
           scope: punctuation.definition.string.begin.elixir
           set:
@@ -721,9 +742,21 @@ contexts:
       push:
         - match: (?="""|''')
           set:
-            - include: heredoc_regex_raw
-            - match: ''
+            - match: (?<="""|''')
               set: string_modifiers_and_pop
+            - include: heredoc_regex_raw
+        # NB: not used as it doesn't correctly match the closing / inside the char set: ~R/[/]/
+        # - match: (?=[/|"'])
+        #   set:
+        #     - match: (?<=[/|"'])
+        #       set: string_modifiers_and_pop
+        #     - match: ([/|"'])
+        #       scope: punctuation.definition.string.begin.elixir
+        #       push: regex_elixir
+        #       with_prototype:
+        #         - match: \1
+        #           scope: punctuation.definition.string.end.elixir
+        #           pop: true
         - match: \"
           scope: punctuation.definition.string.begin.elixir
           set:
@@ -815,9 +848,9 @@ contexts:
       push:
         - match: (?="""|''')
           set:
-            - include: heredoc_string_interpolated
-            - match: ''
+            - match: (?<="""|''')
               set: string_modifiers_and_pop
+            - include: heredoc_string_interpolated
         - match: (?=[/|"'])
           set:
             - meta_scope: meta.string.elixir
@@ -864,9 +897,9 @@ contexts:
       push:
         - match: (?="""|''')
           set:
-            - include: heredoc_string_raw
-            - match: ''
+            - match: (?<="""|''')
               set: string_modifiers_and_pop
+            - include: heredoc_string_raw
         - match: (?=[/|"'])
           set:
             - meta_scope: meta.string.elixir
@@ -1019,12 +1052,6 @@ contexts:
         - match: '{{module_name}}'
           scope: constant.other.module.elixir
         - include: module_accessor_or_pop
-
-  module_names_pop:
-    - match: \s+(?!$)
-    # - match: '[^\S\r\n]+'
-    - include: module_names
-    - include: empty_pop
 
   module_namespaces:
     # TODO: should also handle: defmodule :"Elixir.ModuleTest.RawModule" do ... end
@@ -1193,10 +1220,13 @@ contexts:
     # Regular attributes:
     - match: '{{identifier}}(?=\(|{{not_closing_or_operator}})'
       comment: definition
-      scope: entity.name.constant.elixir
+      # FIXME: sublime doesn't list it as a "Goto"-symbol for some reason.
+      # scope: entity.name.constant.elixir
+      scope: entity.other.attribute-name.elixir
       pop: true
     - match: '{{identifier}}'
       comment: reference
+      # FIXME: "Goto Definition" doesn't work no matter which scope is used.
       scope: variable.other.attribute.elixir
       pop: true
 
@@ -1273,10 +1303,9 @@ contexts:
       push:
         - clear_scopes: true
         - meta_scope: meta.interpolation.elixir markup.raw.block.markdown markup.raw.block.elixir
-        - include: scope:source.elixir
-        - match: $\s
-          scope: markup.raw.block.elixir
+        - match: $
           pop: true
+        - include: core_syntax
     - match: (?<=\s{4})(iex).*?(>)
       captures:
         1: keyword.other.elixir
@@ -1284,13 +1313,11 @@ contexts:
       push:
         - clear_scopes: true
         - meta_scope: meta.interpolation.elixir markup.raw.block.markdown markup.raw.block.elixir
-        # NB: needs with_prototype or embed to work
         - match: ^\s*(\.{3})(>)
           scope: keyword.other.elixir
-        - include: scope:source.elixir
-        - match: $\s
-          scope: markup.raw.block.elixir
+        - match: $
           pop: true
+        - include: core_syntax
 
   elixir_markdown:
     - match: \s*(```)\s*(elixir)\b
@@ -1558,37 +1585,42 @@ contexts:
       scope: keyword.operator.capture.elixir
 
   sql_fragment:
-    # See: https://github.com/sublimehq/Packages/blob/3b1923b025db53d67d4fde4baf1360a0c76d7469/SQL/SQL.sublime-syntax#L188
     - match: \b(fragment)\s*(\()
       captures:
         1: support.function.elixir
-        2: punctuation.section.parens.begin.elixir
+        2: punctuation.section.arguments.begin.elixir
       push:
-        - match: \)
-          scope: punctuation.section.parens.end.elixir
-          pop: true
-        # TODO: handle triple quoted strings.
+        # TODO: add sigil strings?
         - match: '"""\n'
           scope: punctuation.definition.string.begin.elixir string.quoted.double.elixir
-          push:
+          set:
             - match: ''
               set: scope:source.sql
               with_prototype:
                 - include: sql_embedded
+                - include: escaped_char
                 - match: '"""'
                   scope: punctuation.definition.string.end.elixir string.quoted.double.elixir
-                  pop: true
+                  set: sql_fragment_args_pop
         - match: \"
           scope: punctuation.definition.string.begin.elixir string.quoted.double.elixir
-          push:
+          set:
             - match: ''
               set: scope:source.sql
               with_prototype:
                 - include: sql_embedded
+                - include: escaped_char
                 - match: \"
                   scope: punctuation.definition.string.end.elixir string.quoted.double.elixir
-                  pop: true
-        - include: core_syntax
+                  set: sql_fragment_args_pop
+        - match: (?=\S)
+          set: sql_fragment_args_pop
+
+  sql_fragment_args_pop:
+    - match: \)
+      scope: punctuation.section.arguments.end.elixir
+      pop: true
+    - include: core_syntax
 
   sql_embedded:
     - match: |
@@ -1630,13 +1662,13 @@ contexts:
   char_literal:
     - match: \?$
       scope: invalid.illegal.character-literal.elixir
-    - match: \?(?>\\(?>.|\n)|\S|(\s))
+    - match: \?(?>\\(?>.|\n|\r)|\S|(\s))
       comment: character literal as an integer
       scope: constant.numeric.elixir
       captures:
         1: invalid.illegal.character-literal.elixir
 
-  built-ins:
+  built_ins:
     - match: |
         (?x)
         (?>
@@ -1742,29 +1774,3 @@ contexts:
   empty_pop:
     - match: ''
       pop: true
-
-  core_syntax:
-    - include: atom_keyword
-    - include: atom_symbol
-    - include: numeric
-    - include: string
-    - include: def_blocks
-    - include: do_block
-    - include: fn_block
-    - include: tuple
-    - include: parens
-    - include: list
-    - include: map
-    - include: operator
-    - include: capture
-    - include: dot_accessor
-    - include: alias
-    - include: elixir_keywords
-    - include: elixir_functions
-    - include: special_form
-    - include: sql_fragment
-    - include: built-ins
-    - include: module_attribute
-    - include: modules_or_identifiers_or_calls
-    - include: comment
-    - include: char_literal
