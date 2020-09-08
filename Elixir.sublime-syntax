@@ -16,7 +16,7 @@ variables:
   not_id_key_suffix: \b(?!{{atom_id_suffix}}:|[?!])
 
   closing_token: (?>[,;)}\]#]|%>|$|\b(?>catch|after|rescue|else|end){{not_id_key_suffix}})
-  binary_operator: (?>(?<!\s)[\[(]|~~~|[*=/|\\>.]|<(?!<[^<])|\^\^|&&|(?<!\s)[-+]\S|[-+][-+>\s]|::|$|!=|(?>and|x?or|when|in|not\s+in){{not_id_key_suffix}})
+  binary_operator: (?>(?<!\s)[\[(]|~~~|<?<~|~>>?|<~>|[*=/|\\>.]|<(?!<[^<~])|\^\^|&&|(?<!\s)[-+]\S|[-+][-+>\s]|::|$|!=|(?>and|or|when|in|not\s+in){{not_id_key_suffix}})
   not_closing_or_operator: (?!\s*(?>{{closing_token}}|{{binary_operator}}))
 
   operators: =(?>~|=?=?)|!==?|!|<<<|>>>|~~~|::|<~>|<?<~|~>>?|<?\|>|/|\\\\|\*|\.{1,3}|[<>]=|[<-][->]?|>|&&?&?|\+\+?|\|{1,3}|@|{}|\[\]|\^\^{0,2}
@@ -105,19 +105,29 @@ contexts:
       scope: variable.function.elixir
       set: [function_params_pop, arguments_pop, spaces_pop]
     - match: '{{identifier}}(?=\s){{not_closing_or_operator}}'
+      comment: "free-form header, e.g.: def func a, b do {a, b} end"
       scope: entity.name.function.elixir
       set:
         - match: (?={{atom_symbol}}:(?!:))
+          comment: break at first atom key (usually "do:")
           pop: true
         - include: parameters
         - include: non_space_or_eol_pop
     - match: '{{identifier}}(?=\s*([(,]|do{{not_id_key_suffix}}|$))'
+      comment: '"def func," OR "def func(a, b)" OR "def func do" OR "def func"'
       scope: entity.name.function.elixir
       set: function_params_pop
     - match: (?=\S)
       set:
-        - match: ({{operators}}|\bin{{not_id_key_suffix}})
-          scope: entity.name.function.elixir
+        - match: |
+            (?x)
+            (?>(_{{identifier}}?)|({{identifier}}))
+            \s*
+            ({{operators}}|\b(?>in|and|or){{not_id_key_suffix}})
+          captures:
+            1: variable.parameter.unused.elixir
+            2: variable.parameter.elixir
+            3: entity.name.function.elixir
           set:
             - include: parameters
             - include: non_space_or_eol_pop
@@ -127,7 +137,6 @@ contexts:
         - include: non_space_or_eol_pop
 
   function_params_pop:
-    - match: '[^\S\n\r]'
     - match: \(
       scope: punctuation.definition.parameters.begin.elixir
       set:
@@ -136,7 +145,7 @@ contexts:
           scope: punctuation.definition.parameters.end.elixir
           set: function_post_params_pop
         - include: parameters
-    - include: empty_pop
+    - include: non_space_or_eol_pop
 
   fn_parameters:
     # NB: no default parameters in fn blocks
@@ -152,7 +161,7 @@ contexts:
     - match: |
         (?x)
         (?>((?<![^.]\.)_{{identifier}}?)|({{identifier}}))
-        (?=\s*(?>[,)}\]=|\\]|\.\.|::|->|\b(when|in|do){{not_id_key_suffix}}|$))
+        (?=\s*(?>[,)}\]=|\\]|\.\.|::|->|\b(?>when|in|do){{not_id_key_suffix}}|$))
       captures:
         1: variable.parameter.unused.elixir
         2: variable.parameter.elixir
@@ -235,7 +244,7 @@ contexts:
   binary_string_param:
     - match: '>>(?!>)'
       scope: punctuation.definition.string.binary.end.elixir invalid.illegal.elixir
-    - match: <<(?!<)
+    - match: <<(?![<~])
       scope: punctuation.definition.string.binary.begin.elixir string.other.elixir
       push:
         - meta_scope: meta.string.binary.elixir
@@ -277,7 +286,7 @@ contexts:
   binary_string:
     - match: '>>(?!>)'
       scope: punctuation.definition.string.binary.end.elixir invalid.illegal.elixir
-    - match: <<(?!<)
+    - match: <<(?![<~])
       scope: punctuation.definition.string.binary.begin.elixir string.other.elixir
       push:
         - meta_scope: meta.string.binary.elixir
@@ -976,7 +985,7 @@ contexts:
     - include: empty_pop
 
   def_blocks:
-    - match: \bdefmodule{{not_id_key_suffix}}
+    - match: \bdefmodule\b(?![?!])
       scope: keyword.control.module.elixir
       push:
         - meta_scope: meta.namespace.module.elixir
@@ -993,24 +1002,23 @@ contexts:
                 - include: core_syntax
             - include: defmodule_1st_argument
         - include: eol_pop
-    - match: \bdefprotocol{{not_id_key_suffix}}
+    - match: \bdefprotocol\b(?![?!])
       scope: keyword.control.protocol.elixir
       push:
         - meta_scope: meta.namespace.protocol.elixir
         - include: do_block_pop
         - include: module_namespaces
         - include: eol_pop
-    - match: \bdefimpl{{not_id_key_suffix}}{{not_closing_or_operator}}
+    - match: \bdefimpl\b(?![?!]){{not_closing_or_operator}}
       scope: keyword.control.implementation.elixir
       push:
         - meta_scope: meta.namespace.implementation.elixir
-        - match: (?=\s)
-          set: arguments_ws_pop
+        - include: arguments_ws_pop
         - include: empty_pop
-    - match: \bdef(?>delegate|macro|guard|){{not_id_key_suffix}}{{not_closing_or_operator}}
+    - match: \bdef(?>delegate|macro|guard|)\b(?![?!]){{not_closing_or_operator}}
       scope: keyword.declaration.function.public.elixir
       push: function_header_pop
-    - match: \bdef(?>delegate|macro|guard|)p{{not_id_key_suffix}}{{not_closing_or_operator}}
+    - match: \bdef(?>delegate|macro|guard|)p\b(?![?!]){{not_closing_or_operator}}
       scope: keyword.declaration.function.private.elixir
       push: function_header_pop
 
@@ -1094,6 +1102,7 @@ contexts:
             - match: (?=\()
               set: [dot_accessor_or_pop, arguments_pop]
             - include: arguments_ws_pop
+            - include: empty_pop
         - include: empty_pop
 
   identifier_operator_call_pop:
@@ -1342,13 +1351,12 @@ contexts:
   operator:
     - match: '::'
       scope: keyword.operator.colon.elixir
-    - match: <~
-      scope: keyword.operator.arrow-tilde.elixir
     - match: <-|->
       scope: keyword.operator.arrow.elixir
     - match: <>
       scope: keyword.operator.binary-concat.elixir
-    - match: \|>
+    - match: <?\|>|<?<~|~>>?|<~>
+      comment: operators with pipe precedence
       scope: keyword.operator.pipe.elixir
     - match: --
       scope: keyword.operator.list-diff.elixir
@@ -1369,7 +1377,9 @@ contexts:
       scope: keyword.operator.default.elixir
     - match: (?>[!=]=|[<>])=?
       scope: keyword.operator.comparison.elixir
-    - match: \b(?>not|and|or|xor){{not_id_key_suffix}}|!|\|\||&&
+    - match: \bxor{{not_id_key_suffix}}
+      scope: invalid.deprecated.operator.elixir
+    - match: \b(?>not|and|or){{not_id_key_suffix}}|!|\|\||&&
       scope: keyword.operator.logical.elixir
     - match: '[-+*/]'
       scope: keyword.operator.arithmetic.elixir
@@ -1511,6 +1521,7 @@ contexts:
         - match: '{{module_name}}{{not_id_key_suffix}}'
           scope: constant.other.module.elixir
           push: alias_dot_or_pop
+        - include: comment
         # NB: to avoid messing up the highlighting due to an unfinished alias
         - include: non_space_pop
     - include: non_space_or_eol_pop
@@ -1633,7 +1644,7 @@ contexts:
       scope: support.function.sql
     - match: '(?i)\b(now|(?>array|string|jsonb?)_agg|random|row_number|to_tsquery|to_tsvector|setweight|replace)\b'
       scope: support.function.sql
-    - match: '(?i)\b(ANY|OVER|NOT\s+IN|NULLS\s+LAST)\b|::'
+    - match: '(?i)\b(ANY|OVER|NOT|I[SN]|NULLS\s+LAST)\b|::'
       scope: keyword.operator.sql
     - match: '(?<=::)(jsonb?|tsvector)\b'
       scope: storage.type.sql
@@ -1730,6 +1741,7 @@ contexts:
               captures:
                 1: keyword.operator.attribute.elixir
                 2: variable.other.attribute.elixir
+            - include: special_form
             - match: _{{identifier}}?
               scope: variable.other.unused.elixir
             - match: '{{identifier}}'
@@ -1744,16 +1756,18 @@ contexts:
       scope: variable.language.special-form.elixir
 
   elixir_keywords:
-    - match: \b(?>when|not|in|fn|catch|after|rescue|do|else|end)\b(?![?!])
+    - match: \b(?>when|not|in|or|and|fn|catch|after|rescue|do|else|end)\b(?![?!])
       comment: fully reserved keywords
       scope: keyword.control.elixir
     - match: \b(?>nil|true|false)\b(?![?!])
       scope: constant.language.elixir
 
   elixir_functions:
-    - match: \b(?>case|for|if|cond|unless|try|receive|defrecord|defstruct|defexception|defoverridable|exit|raise|reraise|throw|import|require|use|using|quote|unquote|super|with)\b{{not_closing_or_operator}}
+    - match: \b(?>case|for|if|cond|unless|try|receive|defrecord|defstruct|defexception|defoverridable|exit|raise|reraise|throw|import|require|use|using|quote|unquote|super|with)\b(?![?!]){{not_closing_or_operator}}
       scope: keyword.control.elixir
-      push: arguments_ws_pop
+      push: 
+        - include: arguments_ws_pop
+        - include: empty_pop
 
   spaces_pop:
     - match: \s*
