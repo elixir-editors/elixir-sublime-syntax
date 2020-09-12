@@ -57,8 +57,8 @@ contexts:
     - include: char_literal
 
   fn_block:
-    - match: \bfn{{not_id_key_suffix}}
-      scope: keyword.control.elixir punctuation.section.block.begin.elixir
+    - match: fn{{not_id_key_suffix}}
+      scope: keyword.declaration.function.elixir punctuation.section.block.begin.elixir
       push:
         - include: first_fn_header
         # - match: |
@@ -96,15 +96,15 @@ contexts:
 
   first_fn_header:
     # - meta_scope: meta.function.parameters.elixir
-    - match: (?=->|\bwhen{{not_id_key_suffix}})
+    - match: (?=->|when{{not_id_key_suffix}})
       set:
         - include: block_end_pop
         - include: core_syntax
     - include: fn_parameters
 
   function_header_pop:
-    - match: \bunquote(?=\s*\()
-      scope: variable.function.elixir
+    - match: unquote(?=\s*\()
+      scope: keyword.other.elixir
       set: [function_params_pop, arguments_pop, spaces_pop]
     - match: '{{identifier}}(?=\s){{is_argument_token}}'
       comment: "free-form header, e.g.: def func a, b do {a, b} end"
@@ -125,7 +125,7 @@ contexts:
             (?x)
             (?>(_{{identifier}}?)|({{identifier}}))
             \s*
-            ({{operators}}|\b(?>in|and|or){{not_id_key_suffix}})
+            ({{operators}}|(?>in|and|or){{not_id_key_suffix}})
           captures:
             1: variable.parameter.unused.elixir
             2: variable.parameter.elixir
@@ -158,12 +158,12 @@ contexts:
   parameters:
     - include: atom_keyword
     - include: elixir_keywords
-    - match: \b__MODULE__{{not_id_key_suffix}}
+    - match: __MODULE__{{not_id_key_suffix}}
       scope: variable.language.special-form.elixir
     - match: |
         (?x)
         (?>((?<![^.]\.)_{{identifier}}?)|({{identifier}}))
-        (?=\s*(?>[,;)}\]=|\\]|\.\.|::|->|\b(?>when|in|do){{not_id_key_suffix}}|$))
+        (?=\s*(?>[,;)}\]=|\\]|\.\.|::|->|(?>when|in|do){{not_id_key_suffix}}|$))
       captures:
         1: variable.parameter.unused.elixir
         2: variable.parameter.elixir
@@ -174,7 +174,7 @@ contexts:
     - match: \\\\(?!:)
       scope: keyword.operator.other.elixir
       push:
-        - match: (?=[,)]|\b(?>when|do){{not_id_key_suffix}})
+        - match: (?=[,)]|(?>when|do){{not_id_key_suffix}})
           pop: true
         - include: core_syntax
     - include: paren_param
@@ -224,7 +224,7 @@ contexts:
     - match: \%
       scope: punctuation.section.mapping.begin.elixir
       push:
-        - match: \b_{{not_id_key_suffix}}
+        - match: _{{not_id_key_suffix}}
           scope: variable.parameter.unused.elixir
           set: map_param_body_pop
         - include: alias_names
@@ -258,10 +258,10 @@ contexts:
       scope: punctuation.separator.elixir
       set:
         # Commented out. May be annoying during typing.
-        # - match: \bdo{{not_id_key_suffix}}
+        # - match: do{{not_id_key_suffix}}
         #   comment: compiler reports this as an unexpected token; doesn't try to find matching "end"
         #   scope: invalid.illegal.keyword.elixir
-        - match: \bdo(:)(?!:)|$
+        - match: do(:)(?!:)|$
           scope: constant.other.keyword.elixir
           captures:
             1: punctuation.definition.constant.elixir
@@ -274,12 +274,12 @@ contexts:
   numeric:
     - match: |
         (?x)
-        \b(
+        (
           0x\h[\h_]* |
           0b[01](?:_?[01])* |
           0o[0-7](?:_?[0-7])* |
           \d(?:_?\d)*(?:\.\d(?:_?\d)*)?(?:[eE][-+]?\d(?:_?\d)*)?
-        )(\w*)\b
+        )(\w*)
       comment: (?:_?\d)* because double or trailing '_' are invalid
       captures:
         1: constant.numeric.elixir
@@ -987,8 +987,8 @@ contexts:
     - include: empty_pop
 
   def_blocks:
-    - match: \bdefmodule{{no_suffix_then_arguments}}
-      scope: keyword.control.module.elixir
+    - match: defmodule{{no_suffix_then_arguments}}
+      scope: keyword.declaration.module.elixir
       push:
         - meta_scope: meta.namespace.module.elixir
         - include: defmodule_1st_argument
@@ -1004,22 +1004,22 @@ contexts:
                 - include: core_syntax
             - include: defmodule_1st_argument
         - include: eol_pop
-    - match: \bdefprotocol{{no_suffix_then_arguments}}
-      scope: keyword.control.protocol.elixir
+    - match: defprotocol{{no_suffix_then_arguments}}
+      scope: keyword.declaration.protocol.elixir
       push:
         - meta_scope: meta.namespace.protocol.elixir
         - include: do_block_pop
         - include: module_namespaces
         - include: eol_pop
-    - match: \bdefimpl{{no_suffix_then_arguments}}
-      scope: keyword.control.implementation.elixir
+    - match: defimpl{{no_suffix_then_arguments}}
+      scope: keyword.declaration.implementation.elixir
       push:
         - meta_scope: meta.namespace.implementation.elixir
         - include: arguments_ws_or_empty_pop
-    - match: \bdef(?>delegate|macro|guard|){{no_suffix_then_arguments}}
+    - match: def(?>delegate|macro|guard|){{no_suffix_then_arguments}}
       scope: keyword.declaration.function.public.elixir
       push: function_header_pop
-    - match: \bdef(?>delegate|macro|guard|)p{{no_suffix_then_arguments}}
+    - match: def(?>delegate|macro|guard|)p{{no_suffix_then_arguments}}
       scope: keyword.declaration.function.private.elixir
       push: function_header_pop
 
@@ -1035,8 +1035,8 @@ contexts:
     - include: modules_or_identifiers_or_calls
 
   do_block_pop:
-    - match: \bdo{{not_id_key_suffix}}
-      scope: keyword.control.elixir punctuation.section.block.begin.elixir
+    - match: do{{not_id_key_suffix}}
+      scope: punctuation.section.block.begin.elixir keyword.context.block.elixir
       set:
         - meta_scope: meta.block.elixir
         - include: block_end_pop
@@ -1044,14 +1044,14 @@ contexts:
 
   do_block:
     # NB: Commented out due to EEx templates: <%= if x do %>...<% end %>
-    # - match: \bend{{not_id_key_suffix}}
+    # - match: end{{not_id_key_suffix}}
     #   scope: invalid.illegal.block-end.elixir
-    - match: (?=\bdo{{not_id_key_suffix}})
+    - match: (?=do{{not_id_key_suffix}})
       push: do_block_pop
 
   block_end_pop:
-    - match: \bend{{not_id_key_suffix}}
-      scope: keyword.control.elixir punctuation.section.block.end.elixir
+    - match: end{{not_id_key_suffix}}
+      scope: punctuation.section.block.end.elixir keyword.context.block.elixir
       pop: true
 
   module_names:
@@ -1212,14 +1212,13 @@ contexts:
     # Regular attributes:
     - match: '{{identifier}}{{has_arguments}}'
       comment: definition
-      # FIXME: sublime doesn't list it as a "Goto"-symbol for some reason.
-      # scope: entity.name.constant.elixir
-      scope: entity.other.attribute-name.elixir
+      # FIXME: Sublime doesn't list it as a "Goto"-symbol for some reason.
+      scope: entity.name.constant.elixir
       pop: true
     - match: '{{identifier}}'
       comment: reference
       # FIXME: "Goto Definition" doesn't work no matter which scope is used.
-      scope: variable.other.attribute.elixir
+      scope: variable.other.elixir
       pop: true
 
   markdown_comment:
@@ -1360,9 +1359,9 @@ contexts:
       scope: keyword.operator.default.elixir
     - match: (?>[!=]=|[<>])=?
       scope: keyword.operator.comparison.elixir
-    - match: \bxor{{not_id_key_suffix}}
+    - match: xor{{not_id_key_suffix}}
       scope: invalid.deprecated.operator.elixir
-    - match: \b(?>not|and|or){{not_id_key_suffix}}|!|\|\||&&
+    - match: (?>not|and|or){{not_id_key_suffix}}|!|\|\||&&
       scope: keyword.operator.logical.elixir
     - match: '[-+*/]'
       scope: keyword.operator.arithmetic.elixir
@@ -1407,7 +1406,7 @@ contexts:
     - match: \%
       scope: punctuation.section.mapping.begin.elixir
       push:
-        - match: \b_{{not_id_key_suffix}}
+        - match: _{{not_id_key_suffix}}
           scope: variable.other.unused.elixir
           set: map_body_pop
         - include: alias_names
@@ -1439,8 +1438,8 @@ contexts:
         - include: core_syntax
 
   alias:
-    - match: \balias{{no_suffix_then_arguments}}
-      scope: keyword.control.elixir
+    - match: alias{{no_suffix_then_arguments}}
+      scope: keyword.control.import.elixir
       push:
         # alias(X, as: Y)
         - match: \(
@@ -1484,7 +1483,7 @@ contexts:
         - include: non_space_pop
 
   alias_names:
-    - match: (?=(?>{{module_name}}|\b__MODULE__){{not_id_key_suffix}}|:(?>{{atom_id}}|['"]))
+    - match: (?=(?>{{module_name}}|__MODULE__){{not_id_key_suffix}}|:(?>{{atom_id}}|['"]))
       push:
         - meta_scope: meta.path.modules.elixir
         - include: alias_module_name_pop
@@ -1544,7 +1543,7 @@ contexts:
         - match: (.)
           scope: punctuation.definition.constant.begin.regexp.elixir
           set:
-            - meta_scope: constant.other.keyword.double-quoted.elixir
+            - meta_scope: meta.string.elixir constant.other.keyword.elixir
             - include: escaped_or_interpolated
             - match: '\1:'
               scope: punctuation.definition.constant.end.regexp.elixir
@@ -1592,7 +1591,7 @@ contexts:
         3: keyword.operator.capture.elixir
 
   sql_fragment:
-    - match: \b(fragment)\s*(\()
+    - match: (fragment)\s*(\()
       captures:
         1: support.function.elixir
         2: punctuation.section.arguments.begin.elixir
@@ -1726,10 +1725,10 @@ contexts:
           captures:
             1: punctuation.separator.arguments.elixir
         # NB: needed due to "... #{inspect x} ..." or Repo.all(from p in q, select: p.title)
-        - match: '[\n\r]|(?=[})\];]|%>|\b(?>else|end){{not_id_key_suffix}})'
+        - match: '[\n\r]|(?=[})\];]|%>|(?>else|end){{not_id_key_suffix}})'
           scope: punctuation.section.arguments.end.elixir
           pop: true
-        - match: (?=\bdo{{not_id_key_suffix}})
+        - match: (?=do{{not_id_key_suffix}})
           set: do_block_pop
         - match: |
             (?x)
@@ -1758,19 +1757,21 @@ contexts:
         - include: core_syntax
 
   special_form:
-    - match: \b(__(?>CALLER|ENV|MODULE|DIR|STACKTRACE)__){{not_id_key_suffix}}
+    - match: __(?>CALLER|ENV|MODULE|DIR|STACKTRACE)__{{not_id_key_suffix}}
       scope: variable.language.special-form.elixir
 
   elixir_keywords:
-    - match: \b(?>when|not|in|or|and|fn|catch|after|rescue|do|else|end)\b(?![?!])
+    # TODO: separate and assign different scopes
+    - match: (?>when|not|in|or|and|fn|catch|after|rescue|do|else|end)\b(?![?!])
       comment: fully reserved keywords
-      scope: keyword.control.elixir
-    - match: \b(?>nil|true|false)\b(?![?!])
+      scope: keyword.other.elixir
+    - match: (?>nil|true|false)\b(?![?!])
       scope: constant.language.elixir
 
   elixir_functions:
-    - match: \b(?>case|for|if|cond|unless|try|receive|defrecord|defstruct|defexception|defoverridable|exit|raise|reraise|throw|import|require|use|using|quote|unquote|super|with){{no_suffix_then_arguments}}
-      scope: keyword.control.elixir
+    # TODO: separate and assign different scopes
+    - match: (?>case|for|if|cond|unless|try|receive|defrecord|defstruct|defexception|defoverridable|exit|raise|reraise|throw|import|require|use|using|quote|unquote|super|with){{no_suffix_then_arguments}}
+      scope: keyword.other.elixir
       push: arguments_or_empty_pop
 
   spaces_pop:
