@@ -49,6 +49,16 @@
         "name": "Atom keyword punctuation",
         "scope": "punctuation.definition.constant",
         "foreground": "color(var(white) alpha(0.67))"
+    },
+    {
+        "name": "Escapes in remote function call",
+        "scope": "variable.function.elixir constant.character.escape.char.elixir",
+        "foreground": "color(var(blue) alpha(0.70))"
+    },
+    {
+        "name": "SQL boolean",
+        "scope": "constant.boolean.sql",
+        "foreground": "color(var(purple))"
     }
   ]
 }
