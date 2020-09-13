@@ -4,38 +4,48 @@ name: HTML (EEx)
 file_extensions:
   - html.eex
   - html.leex
-scope: text.html.elixir
+scope: text.html.eex
 
 contexts:
   main:
     - match: ''
-      push: 'Packages/HTML/HTML.sublime-syntax'
+      push: scope:text.html.basic
       with_prototype:
         - include: eex_tags
 
   eex_tags:
     - match: <%#
       push:
-        - meta_scope: comment.eex.elixir
+        - meta_scope: comment.eex
         - match: '%>'
-          pop: true
-
-    - match: <%%
-      scope: keyword.other.eex.elixir punctuation.definition.string.begin.elixir
-      push:
-        - meta_content_scope: string.eex.elixir
-        - match: '%>'
-          scope: keyword.other.eex.elixir punctuation.definition.string.end.elixir
           pop: true
 
     - match: (?=<%)
       push:
         - clear_scopes: true
+        - meta_scope: meta.interpolation.eex
         - match: '%>'
-          scope: text.html.elixir keyword.other.eex.elixir punctuation.section.embedded.end.elixir
+          scope: text.html.eex keyword.other.eex punctuation.section.embedded.end.eex
           pop: true
-        - match: <%[=/|]?
-          scope: text.html.elixir keyword.other.eex.elixir punctuation.section.embedded.begin.elixir
+        - match: <%(?>%=?|[=/|]?)
+          scope: text.html.eex keyword.other.eex punctuation.section.embedded.begin.eex
           embed: scope:source.elixir
-          embed_scope: text.html.elixir source.elixir.embedded.html
-          escape: (?=%>)
+          embed_scope: text.html.eex source.elixir.embedded.eex
+          escape: (?=%>|<%)
+        
+        # NB: can't use with_prototype because the following error dialog window appears:
+        #     ```
+        #     Error loading syntax file "...":
+        #     Apparent recursion within a with_prototype action: 25000 context sanity limit hit
+        #     ```
+        # The error is caused by all the syntax embedding within Elixir.sublime-syntax.
+        # This would've solved highlighting certain files in Phoenix correctly, e.g.:
+        #   https://github.com/phoenixframework/phoenix/blob/master/installer/templates/phx_live/templates/layout/root.html.leex
+
+        # - match: <%(?>%=?|[=/|]?)
+        #   scope: text.html.eex keyword.other.eex punctuation.section.embedded.begin.eex
+        #   push: scope:source.eex
+        #   with_prototype:
+        #     - match: (?=%>)
+        #       pop: true
+        #     - include: eex_tags

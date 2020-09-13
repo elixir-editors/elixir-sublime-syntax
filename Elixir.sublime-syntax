@@ -552,7 +552,7 @@ contexts:
                 - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
                 - include: heredoc_string_closing_double_pop
             - match: ''
-              push: scope:text.html.elixir
+              push: scope:text.html.eex
               with_prototype:
                 - match: \\"
                   scope: constant.character.escape.char.elixir
@@ -1091,13 +1091,16 @@ contexts:
     - include: empty_pop
 
   module_function_call_pop:
-    - match: ({{module_name}})\s*(\.)\s*({{identifier}}|{{operators}})
+    - match: ({{module_name}})\s*(\.)\s*(?={{identifier}}|{{operators}})
       comment: always a function call after a module
       captures:
         1: constant.other.module.elixir
         2: punctuation.accessor.dot.elixir
-        3: variable.function.elixir
-      set: arguments_and_dot_or_pop
+      set:
+        # NB: match separately so that <%%= Routes.<%= xyz %> %> is recognised correctly.
+        - match: '{{identifier}}|{{operators}}'
+          scope: variable.function.elixir
+          set: arguments_and_dot_or_pop
 
   identifier_operator_call_pop:
     - match: ({{identifier}}|{{operators}})(?:\s*(\.)\s*(?=\())?{{has_arguments}}
@@ -1239,7 +1242,7 @@ contexts:
         - include: elixir_markdown
         - match: ''
           embed: scope:text.html.markdown
-          embed_scope: text.html.elixir source.elixir.embedded.html
+          embed_scope: text.html.eex source.elixir.embedded.html
           escape: (?=^\s*"""|(?<=\s{4})(?:iex.*?>|```\s*elixir\b|(?>cond|receive|try)\s+do\b|def(?>module|impl|macro|p|){{not_id_key_suffix}})|\\|#{)
 
     - match: \"
@@ -1252,7 +1255,7 @@ contexts:
         - include: escaped_or_interpolated
         - match: ''
           embed: scope:text.html.markdown
-          embed_scope: text.html.elixir source.elixir.embedded.html
+          embed_scope: text.html.eex source.elixir.embedded.html
           escape: (?="|\\|#{)
 
     - match: ~S(""")(.*)\n
@@ -1270,7 +1273,7 @@ contexts:
         - include: elixir_markdown
         - match: ''
           embed: scope:text.html.markdown
-          embed_scope: text.html.elixir source.elixir.embedded.html
+          embed_scope: text.html.eex source.elixir.embedded.html
           escape: (?=^\s*"""|(?<=\s{4})(?:iex.*?>|```\s*elixir\b|(?>cond|receive|try)\s+do\b|def(?>module|impl|macro|p|){{not_id_key_suffix}}))
 
     - match: ~S(''')(.*)\n
@@ -1288,7 +1291,7 @@ contexts:
         - include: elixir_markdown
         - match: ''
           embed: scope:text.html.markdown
-          embed_scope: text.html.elixir source.elixir.embedded.html
+          embed_scope: text.html.eex source.elixir.embedded.html
           escape: (?=^\s*'''|(?<=\s{4})(?:iex.*?>|```\s*elixir\b|(?>cond|receive|try)\s+do\b|def(?>module|impl|macro|p|){{not_id_key_suffix}}))
 
   iex_prompt:
