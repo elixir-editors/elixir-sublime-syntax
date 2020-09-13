@@ -7,58 +7,72 @@
       "name": "EEx tag",
       "scope": "eex-tag.elixir",
       "foreground": "#777a68",
-      "background": "color(var(white) alpha(0.02))"
+      "background": "color(var(white) a(0.03))"
     },
     {
       "name": "EEx embedded",
       "scope": "source.elixir.embedded.html",
-      "background": "color(var(white) alpha(0.02))"
+      "background": "color(var(white) a(0.03))"
     },
     {
-        "name": "Doc attribute",
-        "scope": "support.attr.doc.elixir",
-        "foreground": "var(yellow5)"
+      "name": "Doc attribute",
+      "scope": "support.attr.doc.elixir",
+      "foreground": "var(yellow5)"
     },
     {
-        "name": "Support attributes",
-        "scope": "support.attr.elixir",
-        "foreground": "var(blue)"
+      "name": "Support attributes",
+      "scope": "support.attr.elixir",
+      "foreground": "var(blue)"
     },
     {
-        "name": "Unused variable",
-        "scope": "variable.other.unused.elixir",
-        "foreground": "color(grey alpha(0.75))"
+      "name": "Unused variable",
+      "scope": "variable.other.unused.elixir",
+      "foreground": "color(var(yellow5) a(0.6))"
     },
     {
-        "name": "Unused parameter",
-        "scope": "variable.parameter.unused.elixir",
-        "foreground": "color(var(orange) alpha(0.6))"
+      "name": "Unused parameter",
+      "scope": "variable.parameter.unused.elixir",
+      "foreground": "color(var(orange) a(0.6))"
     },
     {
-        "name": "Module atom",
-        "scope": "constant.other.module.elixir",
-        // "foreground": "color(var(purple) alpha(0.9))"
-        "foreground": "#0bc23e"
+      "name": "Module atom",
+      "scope": "constant.other.module.elixir",
+      "foreground": "color(var(yellow2) s(+ 50%) l(- 20%))"
     },
     {
-        "name": "Atom keyword",
-        "scope": "constant.other.keyword.elixir",
-        "foreground": "color(var(purple) alpha(0.8))"
+      "name": "Atom keyword",
+      "scope": "constant.other.keyword.elixir",
+      "foreground": "color(var(purple) s(- 50%) l(- 20%))"
     },
     {
-        "name": "Atom keyword punctuation",
-        "scope": "punctuation.definition.constant",
-        "foreground": "color(var(white) alpha(0.67))"
+      "name": "Atom keyword punctuation",
+      "scope": "punctuation.definition.constant",
+      "foreground": "color(var(white) a(0.65))"
     },
     {
-        "name": "Escapes in remote function call",
-        "scope": "variable.function.elixir constant.character.escape.char.elixir",
-        "foreground": "color(var(blue) alpha(0.70))"
+      "name": "Escapes in remote function call",
+      "scope": "variable.function.elixir constant.character.escape.char.elixir",
+      "foreground": "color(var(blue) l(- 30%))"
     },
     {
-        "name": "SQL boolean",
-        "scope": "constant.boolean.sql",
-        "foreground": "color(var(purple))"
+      "name": "Interpolation",
+      "scope": "source.elixir.embedded",
+      "background": "color(var(white) a(0.03))"
+    },
+    {
+      "name": "Interpolation punctuation",
+      "scope": "punctuation.section.interpolation.begin.elixir | punctuation.section.interpolation.end.elixir",
+      "foreground": "color(var(white) l(- 30%))"
+    },
+    {
+      "name": "SQL boolean",
+      "scope": "constant.boolean.sql",
+      "foreground": "color(var(purple))"
+    },
+    {
+      "name": "SQL embedded",
+      "scope": "source.elixir source.sql",
+      "background": "color(var(white) a(0.03))"
     }
   ]
 }
