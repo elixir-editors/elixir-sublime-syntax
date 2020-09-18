@@ -252,6 +252,7 @@ contexts:
           pop: true
         - include: comma
         - include: parameters
+        - include: cons_operator
 
   map_param:
     - match: \%
@@ -273,6 +274,8 @@ contexts:
           pop: true
         - include: comma
         - include: parameters
+        # No cons operator when parameter.
+        # - include: cons_operator
     - include: non_space_or_eol_pop
 
   binary_string_param:
@@ -283,6 +286,151 @@ contexts:
         - meta_scope: meta.string.binary.elixir
         - include: binary_string_body_pop
         - include: parameters
+
+  ## Types
+
+  type_definition_pop:
+    - match: (?=\()
+      push:
+        - include: paren_type
+        - include: return_types_pop
+    - include: return_types_pop
+
+  types:
+    - include: elixir_keywords
+    - match: __MODULE__{{not_id_key_suffix}}
+      scope: variable.language.special-form.elixir
+    # FIXME: doesn't match remote types like Range.t()
+    - match: |
+        (?x)
+        ((?>
+          # Basic types:
+          any|atom|float|map|
+          (?>
+            nonempty_char|
+            (?>nonempty_maybe_|nonempty_|maybe_)improper_|nonempty_
+            |
+          )list|
+          none|pid|port|reference|tuple|
+          (?>(?:non_)?neg_|pos_)?integer|
+          # Built-in types:
+          arity|as_boolean|binary|bitstring|boolean|byte|charlist|char|
+          function|fun|identifier|iodata|iolist|keyword|
+          maybe_improper_list|mfa|module|no_return|node|
+          # nonempty_charlist|nonempty_list|nonempty_maybe_improper_list|
+          number|struct|term|timeout
+        )){{not_id_key_suffix}}
+      scope: support.type.elixir
+    - match: (?>optional|required){{not_id_key_suffix}}
+      scope: keyword.other.elixir
+    - match: '{{identifier}}{{not_id_key_suffix}}'
+      scope: storage.type.elixir
+    - include: paren_type
+    - include: tuple_type
+    - include: list_type
+    - include: map_type
+    - include: binary_string_type
+    - include: core_syntax
+
+  return_types_pop:
+    - match: ::(?!:)
+      scope: keyword.operator.colon.elixir
+      set: [types_until_eol, non_space_pop]
+    - include: non_space_or_eol_pop
+
+  types_until_eol:
+    - match: $
+      set: [alternative_types_or_pop, non_space_pop]
+    - include: union_next_type
+    - include: types
+
+  alternative_types_or_pop:
+    - match: (?=#)
+      push:
+        - include: comment
+        - include: non_space_pop
+    - match: \|
+      scope: keyword.operator.union.elixir
+      push: types_until_eol
+    - include: non_space_or_eol_pop
+
+  union_next_type:
+    - match: \|
+      scope: keyword.operator.union.elixir
+      push: non_space_pop
+
+  union_operator:
+    - match: \|
+      scope: keyword.operator.union.elixir
+
+  paren_type:
+    - match: \(
+      scope: punctuation.definition.parens.begin.elixir
+      push:
+        - meta_scope: meta.parens.elixir
+        - match: \)
+          scope: punctuation.definition.parens.end.elixir
+          pop: true
+        - include: comma
+        - include: types
+        - include: union_operator
+
+  tuple_type:
+    - match: \{
+      scope: punctuation.section.sequence.begin.elixir
+      push:
+        - meta_scope: meta.braces.elixir
+        - match: \}
+          scope: punctuation.section.sequence.end.elixir
+          pop: true
+        - include: comma
+        - include: types
+        - include: union_operator
+
+  list_type:
+    - match: \[
+      scope: punctuation.section.brackets.begin.elixir
+      push:
+        - meta_scope: meta.brackets.elixir
+        - match: \]
+          scope: punctuation.section.brackets.end.elixir
+          pop: true
+        - include: comma
+        - include: types
+        - include: union_operator
+
+  map_type:
+    - match: \%
+      scope: punctuation.section.mapping.begin.elixir
+      push:
+        - match: _{{not_id_key_suffix}}
+          scope: variable.type.unused.elixir
+          set: map_type_body_pop
+        - include: alias_names
+        - include: map_type_body_pop
+
+  map_type_body_pop:
+    - match: \{
+      scope: punctuation.section.mapping.begin.elixir
+      set:
+        - meta_scope: meta.mapping.elixir
+        - match: \}
+          scope: punctuation.section.mapping.end.elixir
+          pop: true
+        - include: comma
+        - include: types
+        - include: union_operator
+    - include: non_space_or_eol_pop
+
+  binary_string_type:
+    - include: stray_binary_end
+    - match: <<(?![<~])
+      scope: punctuation.definition.string.binary.begin.elixir string.other.elixir
+      push:
+        - meta_scope: meta.string.binary.elixir
+        - include: binary_string_body_pop
+        - include: types
+        - include: union_operator
 
   numeric:
     - match: |
@@ -320,8 +468,8 @@ contexts:
         1: invalid.illegal.separator.binary.elixir
         2: invalid.illegal.separator.binary.elixir
     - include: comma
-    - match: '::(?!:)'
-      scope: keyword.other.colon.elixir
+    - match: ::(?!:)
+      scope: keyword.operator.colon.elixir
       push:
         - match: (?:[a-z][\w-]*)\s*(?>\(\s*(?>(\d+)|({{identifier}}))?\s*\))?
           scope: storage.type.binary.elixir
@@ -1214,19 +1362,27 @@ contexts:
     - match: (?>derive|deprecated|impl|file|behaviour|vsn|(?>before_|after_)?compile|dialyzer|external_resource|on_(?>definition|load)){{no_suffix_then_arguments}}
       scope: support.attr.elixir
       pop: true
+    # FIXME: @spec ~~~integer :: integer
+    # FIXME: @type(tuple(arg) :: {:tuple, arg})
     - match: (?>spec|(?:macro)?callback){{no_suffix_then_arguments}}
       scope: keyword.declaration.type.elixir
       set:
-        - match: '{{identifier}}'
+        # FIXME: @spec integer &&& integer :: integer
+        # - match: |
+        #     (?x)
+        #     ({{identifier}})\s*
+        #     (?={{operators}}|(?>in|and|or){{not_id_key_suffix}})
+        #   scope: support.type.elixir
+        - match: '{{identifier}}|{{operators}}'
           scope: variable.other.type.elixir
-          pop: true
+          set: type_definition_pop
         - include: non_space_pop
     - match: (?>typep?|opaque){{no_suffix_then_arguments}}
       scope: keyword.declaration.type.elixir
       set:
         - match: '{{identifier}}'
           scope: entity.name.type.elixir
-          pop: true
+          set: type_definition_pop
         - include: non_space_pop
 
     # Regular attributes:
@@ -1377,8 +1533,6 @@ contexts:
       scope: keyword.operator.map-pair.elixir
     - match: (?>\|\|\||&&&|\^\^\^|<<<|>>>|~~~)
       scope: keyword.operator.bitwise.elixir
-    - match: \|
-      scope: keyword.operator.cons.elixir
     - match: \\\\
       scope: keyword.operator.default.elixir
     - match: (?>[!=]=|[<>])=?
@@ -1397,6 +1551,11 @@ contexts:
       scope: keyword.operator.semicolon.elixir
     - match: \^
       scope: keyword.operator.pin.elixir
+
+  # Separate to make @type matching possible.
+  cons_operator:
+    - match: \|
+      scope: keyword.operator.cons.elixir
 
   tuple:
     - match: \}
@@ -1423,6 +1582,7 @@ contexts:
           pop: true
         - include: comma
         - include: core_syntax
+        - include: cons_operator
 
   map:
     - match: \%
@@ -1444,6 +1604,7 @@ contexts:
           pop: true
         - include: comma
         - include: core_syntax
+        - include: cons_operator
     - include: non_space_or_eol_pop
 
   parens:
