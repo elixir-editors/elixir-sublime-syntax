@@ -21,7 +21,7 @@ variables:
   has_arguments: (?=\(|{{is_argument_token}})
   no_suffix_then_arguments: \b(?![?!]){{has_arguments}}
 
-  operators: =(?>~|=?=?)|!==?|!|<<<|>>>|~~~|::|<~>|<?<~|~>>?|<?\|>|/|\\\\|\*|\.{1,3}|[<>]=|[<-][->]?|>|&&?&?|\+\+?|\|{1,3}|@|{}|\[\]|\^\^{0,2}
+  operators: (?>=(?>~|=?=?)|!==?|!|<<<|>>>|~~~|::|<~>|<?<~|~>>?|<?\|>|/|\\\\|\*|\.{1,3}|[<>]=|[<-][->]?|>|&&?&?|\+\+?|\|{1,3}|@|{}|\[\]|\^\^{0,2})
 
   special_atom: (?><<>>|%{}|%)
   atom_symbol: (?>{{atom_id}}|{{special_atom}}|{{operators}})
@@ -117,6 +117,7 @@ contexts:
       set:
         - match: |
             (?x)
+            # FIXME: def ~~~expr do end
             (?>(_{{identifier}}?)|({{identifier}}))
             \s*
             ({{operators}}|(?>in|and|or){{not_id_key_suffix}})
@@ -138,6 +139,7 @@ contexts:
     - match: unquote(?=\s*\()
       scope: keyword.other.elixir
       set: [function_params_pop, arguments_pop, spaces_pop]
+    - include: do_block_pop
     - match: '{{identifier}}(?=\s){{is_argument_token}}'
       comment: "free-form header, e.g.: def func a, b do {a, b} end"
       scope: entity.name.function.elixir
@@ -308,7 +310,7 @@ contexts:
           any|atom|float|map|
           (?>
             nonempty_char|
-            (?>nonempty_maybe_|nonempty_|maybe_)improper_|nonempty_
+            (?>(?:nonempty_)?maybe_|nonempty_)improper_|nonempty_
             |
           )list|
           none|pid|port|reference|tuple|
@@ -324,22 +326,23 @@ contexts:
     - match: (?>optional|required){{not_id_key_suffix}}
       scope: keyword.other.elixir
     - match: '{{identifier}}{{not_id_key_suffix}}'
-      scope: storage.type.elixir
+      scope: storage.type.custom.elixir
     - include: paren_type
     - include: tuple_type
     - include: list_type
     - include: map_type
     - include: binary_string_type
+    - include: closing_paren_pop
     - include: core_syntax
 
   return_types_pop:
     - match: ::(?!:)
       scope: keyword.operator.colon.elixir
-      set: [types_until_eol, non_space_pop]
+      set: [types_until_eol_pop, non_space_pop]
     - include: non_space_or_eol_pop
 
-  types_until_eol:
-    - match: $
+  types_until_eol_pop:
+    - match: \n
       set: [alternative_types_or_pop, non_space_pop]
     - include: union_next_type
     - include: types
@@ -351,7 +354,23 @@ contexts:
         - include: non_space_pop
     - match: \|
       scope: keyword.operator.union.elixir
-      push: types_until_eol
+      push: types_until_eol_pop
+    - match: when{{not_id_key_suffix}}
+      scope: keyword.operator.union.elixir
+      set:
+        - match: \,
+          scope: punctuation.separator.sequence.elixir
+          push: non_space_pop
+        - match: (?=#)
+          push:
+            - include: comment
+            - include: non_space_pop
+        - include: atom_keyword
+        - match: (?<=[\w"'@]:)
+          comment: skips to keyword value
+          push: non_space_pop
+        - include: types
+        - include: non_space_or_eol_pop
     - include: non_space_or_eol_pop
 
   union_next_type:
@@ -1362,9 +1381,7 @@ contexts:
     - match: (?>derive|deprecated|impl|file|behaviour|vsn|(?>before_|after_)?compile|dialyzer|external_resource|on_(?>definition|load)){{no_suffix_then_arguments}}
       scope: support.attr.elixir
       pop: true
-    # FIXME: @spec ~~~integer :: integer
-    # FIXME: @type(tuple(arg) :: {:tuple, arg})
-    - match: (?>spec|(?:macro)?callback){{no_suffix_then_arguments}}
+    - match: (?>spec|(?:macro)?callback)(?={{no_suffix_then_arguments}}|\s*{{operators}})
       scope: keyword.declaration.type.elixir
       set:
         # FIXME: @spec integer &&& integer :: integer
@@ -1373,6 +1390,13 @@ contexts:
         #     ({{identifier}})\s*
         #     (?={{operators}}|(?>in|and|or){{not_id_key_suffix}})
         #   scope: support.type.elixir
+        - match: \(
+          scope: punctuation.section.arguments.begin.elixir
+          set:
+            - include: arguments_closing_pop
+            - match: '{{identifier}}'
+              scope: variable.other.type.elixir
+              push: type_definition_pop
         - match: '{{identifier}}|{{operators}}'
           scope: variable.other.type.elixir
           set: type_definition_pop
@@ -1380,6 +1404,15 @@ contexts:
     - match: (?>typep?|opaque){{no_suffix_then_arguments}}
       scope: keyword.declaration.type.elixir
       set:
+        # TODO:
+        # - meta_content_scope: meta.type.elixir
+        - match: \(
+          scope: punctuation.section.arguments.begin.elixir
+          set:
+            - include: arguments_closing_pop
+            - match: '{{identifier}}'
+              scope: entity.name.type.elixir
+              push: type_definition_pop
         - match: '{{identifier}}'
           scope: entity.name.type.elixir
           set: type_definition_pop
@@ -1470,7 +1503,7 @@ contexts:
       push:
         - clear_scopes: true
         - meta_scope: meta.interpolation.elixir markup.raw.block.markdown markup.raw.block.elixir
-        - match: $
+        - match: \n
           pop: true
         - include: core_syntax
     - match: (?<=\s{4})(iex).*?(>)
@@ -1482,7 +1515,7 @@ contexts:
         - meta_scope: meta.interpolation.elixir markup.raw.block.markdown markup.raw.block.elixir
         - match: ^\s*(\.{3})(>)
           scope: keyword.other.elixir
-        - match: $
+        - match: \n
           pop: true
         - include: core_syntax
 
@@ -1620,7 +1653,7 @@ contexts:
         - include: core_syntax
 
   alias:
-    - match: alias{{no_suffix_then_arguments}}
+    - match: (?>alias|require){{no_suffix_then_arguments}}
       scope: keyword.control.import.elixir
       push:
         # alias(X, as: Y)

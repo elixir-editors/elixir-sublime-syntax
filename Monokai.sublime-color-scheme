@@ -73,6 +73,11 @@
       "name": "SQL embedded",
       "scope": "source.elixir source.sql",
       "background": "color(var(white) a(0.03))"
+    },
+    {
+      "name": "Darker pre-defined types",
+      "scope": "support.type.elixir",
+      "foreground": "color(var(blue) l(- 20%))"
     }
   ]
 }
