@@ -75,6 +75,11 @@
       "background": "color(var(white) a(0.03))"
     },
     {
+      "name": "Spec name",
+      "scope": "variable.other.type.elixir",
+      "foreground": "color(var(yellow2))"
+    },
+    {
       "name": "Darker pre-defined types",
       "scope": "support.type.elixir",
       "foreground": "color(var(blue) l(- 20%))"
