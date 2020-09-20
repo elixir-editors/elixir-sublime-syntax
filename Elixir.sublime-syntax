@@ -16,7 +16,7 @@ variables:
   not_id_key_suffix: \b(?!{{atom_id_suffix}}:|[?!])
 
   closing_token: (?>[,;)}\]#]|%>|$|\b(?>catch|after|rescue|else|end){{not_id_key_suffix}})
-  binary_operator: (?>(?<!\s)[\[(]|~~~|<?<~|~>>?|<~>|[*=/|\\>.]|<(?!<[^<~])|\^\^|&&|(?<!\s)[-+]\S|[-+][-+>\s]|::|$|!=|(?>and|or|when|in|not\s+in){{not_id_key_suffix}})
+  binary_operator: (?>(?<!\s)[\[(]|<?<~|~>>?|<~>|[*=/|\\>.]|<(?!<[^<~])|\^\^|&&|(?<!\s)[-+]\S|[-+][-+>\s]|::|$|!=|(?>and|or|when|in|not\s+in){{not_id_key_suffix}})
   is_argument_token: (?!\s*(?>{{closing_token}}|{{binary_operator}}))
   has_arguments: (?=\(|{{is_argument_token}})
   no_suffix_then_arguments: \b(?![?!]){{has_arguments}}
@@ -42,6 +42,7 @@ contexts:
     - include: parens
     - include: list
     - include: map
+    - include: merge_conflict
     - include: operator
     - include: capture
     - include: dot_accessor
@@ -117,8 +118,7 @@ contexts:
       set:
         - match: |
             (?x)
-            # FIXME: def ~~~expr do end
-            (?>(_{{identifier}}?)|({{identifier}}))
+            (?>(_{{identifier}}?)|({{identifier}}))?
             \s*
             ({{operators}}|(?>in|and|or){{not_id_key_suffix}})
           captures:
@@ -1588,6 +1588,26 @@ contexts:
         #       pop: true
         - include: core_syntax
 
+  merge_conflict:
+    # NB: should use with_prototype but the context limit seems to be exhausted. :(
+    - match: ^<<<<<<<
+      scope: source.git keyword.control.git
+      push: [existing_code_pop, if_eol_pop]
+
+  existing_code_pop:
+    # - meta_content_scope: meta.existing_code.git
+    - match: ^=======
+      scope: source.git keyword.control.git
+      set: [incoming_code_pop, if_eol_pop]
+    - include: core_syntax
+
+  incoming_code_pop:
+    # - meta_content_scope: meta.incoming_code.git
+    - match: ^>>>>>>>
+      scope: source.git keyword.control.git
+      set: if_eol_pop
+    - include: core_syntax
+
   comma:
     - match: \,
       scope: punctuation.separator.sequence.elixir
@@ -1743,7 +1763,7 @@ contexts:
       push:
         - match: '{{module_name}}{{not_id_key_suffix}}'
           scope: entity.name.namespace.elixir
-        - include: if_non_space_pop
+        - include: if_non_space_or_eol_pop
 
   alias_names:
     - match: (?=(?>{{module_name}}|__MODULE__){{not_id_key_suffix}}|:(?>{{atom_id}}|['"]))
