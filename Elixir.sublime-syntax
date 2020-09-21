@@ -211,6 +211,13 @@ contexts:
     - match: \,(?=\s*\))
       scope: invalid.illegal.separator.elixir
     - include: comma
+    - match: ::(?!:)
+      scope: keyword.operator.colon.elixir
+      push:
+        - match: (?=[,)])
+          pop: true
+        - include: union_operator
+        - include: types
     - match: \\\\(?!:)
       scope: keyword.operator.other.elixir
       push:
@@ -293,14 +300,34 @@ contexts:
 
   ## Types
 
-  type_definition_pop:
-    - match: \s|$
-      push: if_non_space_pop
+  spec_definition_pop:
     - match: (?=\()
       set:
         - include: paren_type
         - include: return_types_pop
+        - include: if_non_space_pop
     - include: return_types_pop
+    - include: if_non_space_or_eol_pop
+
+  spec_op_definition_pop:
+    - match: (?=\()
+      set:
+        - include: paren_type
+        - include: return_types_pop
+        - include: types
+    - include: return_types_pop
+    # Match types between operator and "::", e.g.: @spec integer &&& integer :: integer
+    - include: types
+    - include: if_non_space_or_eol_pop
+
+  type_definition_pop:
+    - match: (?=\()
+      set:
+        - include: paren_param
+        - include: return_types_pop
+        - include: if_non_space_or_eol_pop
+    - include: return_types_pop
+    - include: if_non_space_or_eol_pop
 
   types:
     - include: atom_keyword
@@ -333,6 +360,8 @@ contexts:
       scope: keyword.other.elixir
     - match: '{{identifier}}{{not_id_key_suffix}}'
       scope: storage.type.custom.elixir
+    - match: ::(?!:)
+      scope: keyword.operator.colon.elixir
     - include: paren_type
     - include: tuple_type
     - include: list_type
@@ -364,9 +393,6 @@ contexts:
     - match: ::(?!:)
       scope: keyword.operator.colon.elixir
       set: [first_type_pop, if_non_space_pop]
-    # Match types between operator and "::", e.g.: @spec integer &&& integer :: integer
-    - include: types
-    - include: if_non_space_or_eol_pop
 
   first_type_pop:
     - include: comments_in_type
@@ -387,6 +413,9 @@ contexts:
       scope: keyword.operator.union.elixir
       push: [if_non_space_pop, union_types_eol_pop, if_non_space_pop]
     - include: comments_in_type
+    - match: ::(?!:)
+      scope: keyword.operator.colon.elixir
+      push: [if_non_space_pop, union_types_eol_pop, if_non_space_pop]
     - include: if_non_space_or_eol_pop
 
   union_types_eol_pop:
@@ -410,6 +439,8 @@ contexts:
     - match: (?<=[\w"'@]:)
       comment: skips to keyword value
       push: if_non_space_pop
+    - match: var{{not_id_key_suffix}}
+      scope: support.type.elixir
     - include: types
     - include: if_non_space_or_eol_pop
 
@@ -1424,15 +1455,18 @@ contexts:
     - match: (?>spec|(?:macro)?callback)(?={{no_suffix_then_arguments}}|\s*{{operators}})
       scope: keyword.declaration.type.elixir
       set:
-        - match: \(
+        - match: \s*\(
           scope: punctuation.section.arguments.begin.elixir
           set:
             - include: arguments_closing_pop
-            - include: unquote_type
-            - match: '(?={{identifier}}|{{operators}})'
+            - match: unquote(?=\s*\()
+              scope: keyword.other.elixir
+              push: [spec_definition_pop, arguments_pop, spaces_pop]
+            - match: (?={{identifier}}|{{operators}})
               push: spec_header_pop
-            - include: types
-        - include: unquote_type
+        - match: unquote(?=\s*\()
+          scope: keyword.other.elixir
+          set: [spec_definition_pop, arguments_pop, spaces_pop]
         - include: spec_header_pop
         - include: if_non_space_pop
     - match: (?>typep?|opaque){{no_suffix_then_arguments}}
@@ -1444,11 +1478,15 @@ contexts:
           scope: punctuation.section.arguments.begin.elixir
           set:
             - include: arguments_closing_pop
-            - include: unquote_type
+            - match: unquote(?=\s*\()
+              scope: keyword.other.elixir
+              push: [type_definition_pop, arguments_pop, spaces_pop]
             - match: '{{identifier}}'
               scope: entity.name.type.elixir
               push: type_definition_pop
-        - include: unquote_type
+        - match: unquote(?=\s*\()
+          scope: keyword.other.elixir
+          set: [type_definition_pop, arguments_pop, spaces_pop]
         - match: '{{identifier}}'
           scope: entity.name.type.elixir
           set: type_definition_pop
@@ -1467,17 +1505,16 @@ contexts:
       pop: true
 
   spec_header_pop:
-    - match: |
-        (?x)
-        ({{identifier}}) \s* ((?!::){{operators}} | (?>in|and|or){{not_id_key_suffix}}) |
-        ({{operators}}|not{{not_id_key_suffix}}) |
-        ({{identifier}})
+    - match: (?x) ({{identifier}}) \s* ((?!::){{operators}} | (?>in|and|or){{not_id_key_suffix}})
       captures:
         1: storage.type.elixir
         2: keyword.operator.type.elixir
-        3: keyword.operator.type.elixir
-        4: variable.other.type.elixir
-      set: type_definition_pop
+      set: spec_op_definition_pop
+    - match: (?x) ({{operators}}|not{{not_id_key_suffix}}) | ({{identifier}})
+      captures:
+        1: keyword.operator.type.elixir
+        2: variable.other.type.elixir
+      set: spec_definition_pop
 
   markdown_comment:
     - match: (""")(.*)\n
