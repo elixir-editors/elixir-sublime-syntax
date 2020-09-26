@@ -392,16 +392,16 @@ contexts:
   return_types_pop:
     - match: ::(?!:)
       scope: keyword.operator.colon.elixir
-      set: [first_type_pop, if_non_space_pop]
+      set: [first_and_next_types_pop, if_non_space_pop]
 
-  first_type_pop:
-    - include: comments_in_type
+  first_and_next_types_pop:
+    - include: comments
     - match: (?=when{{not_id_key_suffix}})
       comment: no when clause directly after "::"
       pop: true
     - match: ''
       set:
-        - include: comments_in_type
+        - include: comments
         # NB: we can't prevent matching more than one type expression.
         - include: types
         - match: ''
@@ -412,14 +412,14 @@ contexts:
     - match: \|
       scope: keyword.operator.union.elixir
       push: [if_non_space_pop, union_types_eol_pop, if_non_space_pop]
-    - include: comments_in_type
+    - include: comments
     - match: ::(?!:)
       scope: keyword.operator.colon.elixir
       push: [if_non_space_pop, union_types_eol_pop, if_non_space_pop]
     - include: if_non_space_or_eol_pop
 
   union_types_eol_pop:
-    - include: comments_in_type
+    - include: comments
     - include: types
     - include: if_non_space_or_eol_pop
 
@@ -432,23 +432,17 @@ contexts:
     - match: \,
       scope: punctuation.separator.sequence.elixir
       push: if_non_space_pop
-    - include: comments_in_type
+    - include: comments
     - match: \|
       scope: keyword.operator.union.elixir
       push: [next_types_pop, if_non_space_pop]
     - match: (?<=[\w"'@]:)
       comment: skips to keyword value
-      push: if_non_space_pop
+      push: [first_and_next_types_pop, if_non_space_pop]
     - match: var{{not_id_key_suffix}}
       scope: support.type.elixir
     - include: types
     - include: if_non_space_or_eol_pop
-
-  comments_in_type:
-    - match: (?=#)
-      push:
-        - include: comment
-        - include: if_non_space_pop
 
   union_operator:
     - match: \|
@@ -1268,7 +1262,7 @@ contexts:
       scope: keyword.declaration.implementation.elixir
       push:
         - meta_scope: meta.namespace.implementation.elixir
-        - include: arguments_ws_or_empty_pop
+        - include: arguments_ws_pop
     - match: def(?>delegate|macro|guard|){{no_suffix_then_arguments}}
       scope: keyword.declaration.function.public.elixir
       push: function_header_pop
@@ -1992,10 +1986,16 @@ contexts:
       captures:
         1: punctuation.definition.comment.elixir
 
+  comments:
+    - match: (?=#)
+      push:
+        - include: comment
+        - include: if_non_space_pop
+
   char_literal:
     - match: \?$
       scope: invalid.illegal.character-literal.elixir
-    - match: \?(?>\\(?>.|\n|\r)|\S|(\s))
+    - match: \?(?>\\(?>.|\n)|\S|(\s))
       comment: character literal as an integer
       scope: constant.numeric.elixir
       captures:
@@ -2014,12 +2014,12 @@ contexts:
   arguments_or_empty_pop:
     - match: (?=\()
       set: [arguments_pop, spaces_pop]
-    - include: arguments_ws_or_empty_pop
+    - include: arguments_ws_pop
 
   arguments_or_dot_accessor_pop:
     - match: (?=\()
       set: [dot_accessor_or_pop, arguments_pop]
-    - include: arguments_ws_or_empty_pop
+    - include: arguments_ws_pop
 
   arguments_and_dot_or_pop:
     - match: '{{has_arguments}}'
@@ -2040,7 +2040,7 @@ contexts:
       scope: punctuation.section.arguments.end.elixir
       pop: true
 
-  arguments_ws_or_empty_pop:
+  arguments_ws_pop:
     - match: \s?
       comment: arguments list without parentheses
       scope: punctuation.section.arguments.begin.elixir
@@ -2052,7 +2052,7 @@ contexts:
           captures:
             1: punctuation.separator.arguments.elixir
         # NB: needed due to "... #{inspect x} ..." or Repo.all(from p in q, select: p.title)
-        - match: '[\n\r]|(?=[})\];]|%>|(?>else|end){{not_id_key_suffix}})'
+        - match: \n|(?=[})\];]|%>|(?>else|end){{not_id_key_suffix}})
           scope: punctuation.section.arguments.end.elixir
           pop: true
         - match: (?=do{{not_id_key_suffix}})
@@ -2074,6 +2074,8 @@ contexts:
                 1: keyword.operator.attribute.elixir
                 2: variable.other.attribute.elixir
             - include: special_form
+            # Avoid matching "and"/"or" as an id.
+            - include: operator
             - match: _{{identifier}}?
               scope: variable.other.unused.elixir
             - match: '{{identifier}}'
