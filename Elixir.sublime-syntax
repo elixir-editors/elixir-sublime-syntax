@@ -1770,15 +1770,18 @@ contexts:
                 - include: arguments_closing_pop
                 - include: core_syntax
             - include: core_syntax
-        # alias X, as: Y
-        - include: alias_names
-        - match: \,
-          scope: punctuation.separator.sequence.elixir
-          set: [alias_kw_args_pop, if_non_space_pop]
-        - include: if_eol_pop
-        - include: core_syntax
+        - match: ''
+          set:
+            # alias X, as: Y
+            - include: alias_names
+            - match: \,
+              scope: punctuation.separator.sequence.elixir
+              set: [alias_kw_args_pop, if_non_space_pop]
+            - include: if_eol_pop
+            - include: core_syntax
 
   alias_kw_args_pop:
+    - include: comments
     - include: alias_as_arg
     - match: \,
       scope: punctuation.separator.sequence.elixir
@@ -1791,9 +1794,16 @@ contexts:
       scope: constant.other.keyword.elixir
       captures:
         1: punctuation.definition.constant.elixir
-      push:
-        - match: '{{module_name}}{{not_id_key_suffix}}'
-          scope: entity.name.namespace.elixir
+      push: [alias_as_name_pop, if_non_space_pop]
+
+  alias_as_name_pop:
+    - match: '{{module_name}}{{not_id_key_suffix}}'
+      scope: meta.path.modules.elixir entity.name.namespace.elixir
+    - match: ''
+      set:
+        - match: (?=[})\]])
+          pop: true
+        - include: core_syntax
         - include: if_non_space_or_eol_pop
 
   alias_names:
@@ -1814,15 +1824,17 @@ contexts:
 
   alias_dot_or_pop:
     - match: \.
-      scope: punctuation.accessor.elixir
+      scope: meta.path.modules.elixir punctuation.accessor.elixir
       set: alias_name_or_tuple_pop
     - include: if_non_space_or_eol_pop
 
   alias_name_or_tuple_pop:
+    - meta_scope: meta.path.modules.elixir
     - include: alias_module_name_pop
     - match: \{
       scope: punctuation.section.braces.begin.elixir
       set:
+        - meta_scope: meta.path.modules.elixir
         - match: \}
           scope: punctuation.section.braces.end.elixir
           pop: true
@@ -1830,7 +1842,7 @@ contexts:
         - match: '{{module_name}}{{not_id_key_suffix}}'
           scope: constant.other.module.elixir
           push: alias_dot_or_pop
-        - include: comment
+        - include: comments
         # NB: to avoid messing up the highlighting due to an unfinished alias
         - include: if_non_space_pop
     - include: if_non_space_or_eol_pop
