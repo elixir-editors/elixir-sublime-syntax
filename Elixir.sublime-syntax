@@ -556,17 +556,12 @@ contexts:
     - match: ::(?!:)
       scope: keyword.operator.colon.elixir
       push:
-        - match: (?:[a-z][\w-]*)\s*(?>\(\s*(?>(\d+)|({{identifier}}))?\s*\))?
+        - meta_scope: meta.type.binary.elixir
+        - include: unquote_type
+        - match: '{{identifier}}|[-*\d]+'
           scope: storage.type.binary.elixir
-          captures:
-            1: constant.numeric.elixir
-            2: variable.other.elixir
         - match: (?=\()
-          push:
-            - meta_scope: storage.type.elixir
-            - include: arguments_pop
-        - match: \d+|[-_*]
-          scope: storage.type.binary.elixir
+          push: arguments_pop
         - include: if_non_space_pop
 
   escaped_char:
