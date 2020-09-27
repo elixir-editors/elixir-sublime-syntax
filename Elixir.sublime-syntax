@@ -1918,71 +1918,42 @@ contexts:
         2: punctuation.section.arguments.begin.elixir
       push:
         - include: comment
-        # TODO: add sigil strings?
-        - match: '"""\n'
-          scope: string.quoted.double.elixir punctuation.definition.string.begin.elixir
-          set:
-            - match: '"""'
-              scope: string.quoted.double.elixir punctuation.definition.string.end.elixir
-              set: sql_fragment_args_pop
-            - match: ''
-              push: scope:source.sql
-              with_prototype:
-                - match: (?=""")
-                  pop: true
-                - include: sql_embedded
-                - include: escaped_char
-        - match: \"
-          scope: string.quoted.double.elixir punctuation.definition.string.begin.elixir
-          set:
-            - match: \"
-              scope: string.quoted.double.elixir punctuation.definition.string.end.elixir
-              set: sql_fragment_args_pop
-            - match: ''
-              push: scope:source.sql
-              with_prototype:
-                - match: (?=")
-                  pop: true
-                - include: sql_embedded
-                - include: escaped_char
+        # TODO: add sigil strings? Or use ~Q"" for SQL similar to ~L"" for LiveView?
+        - match: (?=")
+          set: [sql_fragment_args_pop, sql_string_pop]
         - match: (?=\S)
           set: sql_fragment_args_pop
 
+  sql_string_pop:
+    - match: '"""\n'
+      scope: string.quoted.double.elixir punctuation.definition.string.begin.elixir
+      set:
+        - match: '"""'
+          scope: string.quoted.double.elixir punctuation.definition.string.end.elixir
+          pop: true
+        - match: ''
+          push: scope:source.ex.sql
+          with_prototype:
+            - match: (?=""")
+              pop: true
+            - include: escaped_char
+    - match: \"
+      scope: string.quoted.double.elixir punctuation.definition.string.begin.elixir
+      set:
+        - match: \"
+          scope: string.quoted.double.elixir punctuation.definition.string.end.elixir
+          pop: true
+        - match: ''
+          push: scope:source.ex.sql
+          with_prototype:
+            - match: (?=")
+              pop: true
+            - include: escaped_char
+
   sql_fragment_args_pop:
     - include: arguments_closing_pop
+    - include: arg_comma_and_skip_ws
     - include: core_syntax
-
-  sql_embedded:
-    - match: |
-        (?xi)
-        \b(?>
-          (
-            jsonb_to_tsvector|to_jsonb?|(?>array|row)_to_json|jsonb?_build_array|jsonb?(?:_build)?_object |
-            jsonb?_(?>array_(?>length|elements(?:_text)?)|each(?:_text)?|extract_path(?:_text)?|object_keys|populate_record(?:set)?|typeof|to_record(?:set)?|strip_nulls) |
-            jsonb_(?>set|insert|pretty|path_exists|path_match|path_query(?>_array|_first)?)
-          ) |
-          (any|over|not|i[sn]) |
-          (nulls\s+last) |
-          (now|(?>array|string|jsonb?)_agg|random|row_number|to_ts(?>query|vector)|setweight|replace)
-        )\b |
-        (::|\|?\|/|!!?|<<|>>|[%^@|&#~]) |
-        (?<=::)\s*((?!\d)\w+)
-      captures:
-        1: support.function.sql
-        2: keyword.operator.sql
-        3: constant.language.sql
-        4: support.function.sql
-        5: keyword.operator.psql.sql
-        6: storage.type.sql
-    - match: (\\\\)(\?[|&]?)?|(->>?|#>>?|@[>@?]|<@|#-)
-      comment: Postgres jsonb operators
-      captures:
-        1: constant.character.escape.sql
-        2: keyword.operator.jsonb.sql
-        3: keyword.operator.jsonb.sql
-    - match: (?<!\w)\\?\?(?!\w)
-      comment: Ecto argument placeholder
-      scope: constant.other.placeholder.elixir
 
   comment:
     - match: (##).*

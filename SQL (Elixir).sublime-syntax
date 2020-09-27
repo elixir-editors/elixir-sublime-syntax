@@ -1,0 +1,54 @@
+%YAML 1.2
+---
+# version: 2
+name: SQL (Elixir)
+file_extensions: [ex.sql]
+scope: source.ex.sql
+extends: Packages/SQL/SQL.sublime-syntax
+
+contexts:
+  main:
+    - meta_prepend: true
+    - match: |
+        (?xi)
+        \b(?>
+          # Postgres jsonb functions.
+          (
+            jsonb_to_tsvector | to_jsonb? | (?>array|row)_to_json |
+            jsonb?_build_array | jsonb?(?:_build)?_object |
+            jsonb?_(?>
+              array_(?>length|elements(?:_text)?) | each(?:_text)? |
+              extract_path(?:_text)? | object_keys | populate_record(?:set)? |
+              typeof | to_record(?:set)? | strip_nulls
+            ) |
+            jsonb_(?>set|insert|pretty|path_exists|path_match|path_query(?>_array|_first)?)
+          ) |
+          # Should always be keywords, but SQL.sublime-syntax doesn't think so yet.
+          (any | over | not | i[sn]) |
+          (?:(nulls) \s+ (last)) |
+          # Some common (Postgres) functions.
+          (
+            now | (?>array|string|jsonb?)_agg | random | row_number |
+            to_ts(?>query|vector) | setweight | replace
+          )
+        )\b |
+        # Various Postgres operators.
+        (::|\|?\|/|!!?|<<|>>|[%^@|&#~]) |
+        # Postgres type cast identifier.
+        (?<=::)\s*((?!\d)\w+) |
+        # Postgres jsonb operators.
+        (\\\\)(\?[|&]?)? | (->>?|\#>>?|@[>@?]|<@|\#-) |
+        # Ecto argument placeholder.
+        ((?<!\w)\\?\?(?!\w))
+      captures:
+        1: support.function.psql
+        2: keyword.operator.sql
+        3: constant.language.sql
+        4: constant.language.sql
+        5: support.function.sql
+        6: keyword.operator.psql
+        7: storage.type.psql
+        8: constant.character.escape.sql
+        9: keyword.operator.jsonb.psql
+        10: keyword.operator.jsonb.psql
+        11: constant.other.placeholder.elixir
