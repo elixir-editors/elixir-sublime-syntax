@@ -292,7 +292,7 @@ contexts:
   binary_string_param:
     - include: stray_binary_end
     - match: <<(?![<~])
-      scope: punctuation.definition.string.binary.begin.elixir string.other.elixir
+      scope: string.other.binary.elixir punctuation.definition.string.begin.elixir
       push:
         - meta_scope: meta.string.binary.elixir
         - include: binary_string_body_pop
@@ -510,7 +510,7 @@ contexts:
   binary_string_type:
     - include: stray_binary_end
     - match: <<(?![<~])
-      scope: punctuation.definition.string.binary.begin.elixir string.other.elixir
+      scope: string.other.binary.elixir punctuation.definition.string.begin.elixir
       push:
         - meta_scope: meta.string.binary.elixir
         - include: binary_string_body_pop
@@ -534,7 +534,7 @@ contexts:
   binary_string:
     - include: stray_binary_end
     - match: <<(?![<~])
-      scope: punctuation.definition.string.binary.begin.elixir string.other.elixir
+      scope: string.other.binary.elixir punctuation.definition.string.begin.elixir
       push:
         - meta_scope: meta.string.binary.elixir
         - include: binary_string_body_pop
@@ -542,11 +542,11 @@ contexts:
 
   stray_binary_end:
     - match: '>>(?!>)'
-      scope: punctuation.definition.string.binary.end.elixir invalid.illegal.elixir
+      scope: punctuation.definition.string.end.elixir invalid.illegal.stray-closing-binary.elixir
 
   binary_string_body_pop:
     - match: '>>(?!>)'
-      scope: punctuation.definition.string.binary.end.elixir string.other.elixir
+      scope: string.other.binary.elixir punctuation.definition.string.end.elixir
       pop: true
     - match: (\,)\s*(\,)
       captures:
@@ -786,7 +786,7 @@ contexts:
       push:
         - match: (""")(.*)\n
           captures:
-            1: punctuation.definition.string.begin.elixir string.quoted.triple.double.elixir
+            1: string.quoted.triple.double.elixir punctuation.definition.string.begin.elixir
             2: invalid.illegal.opening-heredoc.elixir
           set:
             - meta_scope: meta.string.elixir
@@ -808,7 +808,7 @@ contexts:
       push:
         - match: (""")(.*)\n
           captures:
-            1: punctuation.definition.string.begin.elixir string.quoted.triple.double.elixir
+            1: string.quoted.triple.double.elixir punctuation.definition.string.begin.elixir
             2: invalid.illegal.opening-heredoc.elixir
           set:
             - meta_scope: meta.string.elixir
@@ -829,7 +829,7 @@ contexts:
       push:
         - match: (""")(.*)\n
           captures:
-            1: punctuation.definition.string.begin.elixir string.quoted.triple.double.elixir
+            1: string.quoted.triple.double.elixir punctuation.definition.string.begin.elixir
             2: invalid.illegal.opening-heredoc.elixir
           set:
             - meta_scope: meta.string.elixir
@@ -851,7 +851,7 @@ contexts:
       push:
         - match: (""")(.*)\n
           captures:
-            1: punctuation.definition.string.begin.elixir string.quoted.triple.double.elixir
+            1: string.quoted.triple.double.elixir punctuation.definition.string.begin.elixir
             2: invalid.illegal.opening-heredoc.elixir
           set:
             - meta_scope: meta.string.elixir
@@ -872,7 +872,7 @@ contexts:
       push:
         - match: (""")(.*)\n
           captures:
-            1: punctuation.definition.string.begin.elixir string.quoted.triple.double.elixir
+            1: string.quoted.triple.double.elixir punctuation.definition.string.begin.elixir
             2: invalid.illegal.opening-heredoc.elixir
           set:
             - meta_scope: meta.string.elixir
@@ -1508,7 +1508,7 @@ contexts:
   markdown_comment:
     - match: (""")(.*)\n
       captures:
-        1: punctuation.definition.string.begin.elixir string.quoted.triple.double.elixir
+        1: string.quoted.triple.double.elixir punctuation.definition.string.begin.elixir
         2: invalid.illegal.opening-heredoc.elixir
       push:
         - meta_scope: meta.string.elixir
@@ -1525,11 +1525,11 @@ contexts:
           escape: (?=^\s*"""|(?<=\s{4})(?:iex.*?>|```\s*elixir\b|(?>cond|receive|try)\s+do\b|def(?>module|impl|macro|p|){{not_id_key_suffix}})|\\|#{)
 
     - match: \"
-      scope: punctuation.definition.string.begin.elixir string.quoted.double.elixir
+      scope: string.quoted.double.elixir punctuation.definition.string.begin.elixir
       push:
         - meta_scope: meta.string.elixir
         - match: \"
-          scope: punctuation.definition.string.end.elixir string.quoted.double.elixir
+          scope: string.quoted.double.elixir punctuation.definition.string.end.elixir
           pop: true
         - include: escaped_or_interpolated
         - match: ''
@@ -1540,7 +1540,7 @@ contexts:
     - match: ~S(""")(.*)\n
       scope: meta.string.elixir storage.type.string.elixir
       captures:
-        1: punctuation.definition.string.begin.elixir string.quoted.triple.double.elixir
+        1: string.quoted.triple.double.elixir punctuation.definition.string.begin.elixir
         2: invalid.illegal.opening-heredoc.elixir
       push:
         - meta_scope: meta.string.elixir
@@ -1558,7 +1558,7 @@ contexts:
     - match: ~S(''')(.*)\n
       scope: meta.string.elixir storage.type.string.elixir
       captures:
-        1: punctuation.definition.string.begin.elixir string.quoted.triple.single.elixir
+        1: string.quoted.triple.single.elixir punctuation.definition.string.begin.elixir
         2: invalid.illegal.opening-heredoc.elixir
       push:
         - meta_scope: meta.string.elixir
@@ -1919,10 +1919,10 @@ contexts:
         - include: comment
         # TODO: add sigil strings?
         - match: '"""\n'
-          scope: punctuation.definition.string.begin.elixir string.quoted.double.elixir
+          scope: string.quoted.double.elixir punctuation.definition.string.begin.elixir
           set:
             - match: '"""'
-              scope: punctuation.definition.string.end.elixir string.quoted.double.elixir
+              scope: string.quoted.double.elixir punctuation.definition.string.end.elixir
               set: sql_fragment_args_pop
             - match: ''
               push: scope:source.sql
@@ -1932,10 +1932,10 @@ contexts:
                 - include: sql_embedded
                 - include: escaped_char
         - match: \"
-          scope: punctuation.definition.string.begin.elixir string.quoted.double.elixir
+          scope: string.quoted.double.elixir punctuation.definition.string.begin.elixir
           set:
             - match: \"
-              scope: punctuation.definition.string.end.elixir string.quoted.double.elixir
+              scope: string.quoted.double.elixir punctuation.definition.string.end.elixir
               set: sql_fragment_args_pop
             - match: ''
               push: scope:source.sql

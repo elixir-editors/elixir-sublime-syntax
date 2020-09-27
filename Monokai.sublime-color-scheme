@@ -83,6 +83,11 @@
       "name": "Darker pre-defined types",
       "scope": "support.type.elixir",
       "foreground": "color(var(blue) l(- 20%))"
+    },
+    {
+      "name": "Darker string punctuation",
+      "scope": "source.elixir & punctuation.definition.string",
+      "foreground": "color(var(yellow) l(- 15%))"
     }
   ]
 }
