@@ -16,7 +16,7 @@ variables:
   not_id_key_suffix: \b(?!{{atom_id_suffix}}:|[?!])
 
   closing_token: (?>[,;)}\]#]|%>|$|\b(?>catch|after|rescue|else|end){{not_id_key_suffix}})
-  binary_operator: (?>(?<!\s)[\[(]|<?<~|~>>?|<~>|[*=/|\\>.]|<(?!<[^<~])|\^\^|&&|(?<!\s)[-+]\S|[-+][-+>\s]|::|$|!=|(?>and|or|when|in|not\s+in){{not_id_key_suffix}})
+  binary_operator: (?>(?<!\s)[\[(]|<?<~|~>>?|<~>|[*=/|\\>.]|<(?!<[^<~]|%=)|\^\^|&&|(?<!\s)[-+]\S|[-+][-+>\s]|::|$|!=|(?>and|or|when|in|not\s+in){{not_id_key_suffix}})
   is_argument_token: (?!\s*(?>{{closing_token}}|{{binary_operator}}))
   has_arguments: (?=\(|{{is_argument_token}})
   no_suffix_then_arguments: \b(?![?!]){{has_arguments}}
@@ -138,7 +138,7 @@ contexts:
   function_header_first_arg_pop:
     - match: unquote(?=\s*\()
       scope: keyword.other.elixir
-      set: [function_params_pop, arguments_pop, spaces_pop]
+      set: [function_params_pop, arguments_pop]
     - include: do_block_pop
     - match: '{{identifier}}(?=\s){{is_argument_token}}'
       comment: "free-form header, e.g.: def func a, b do {a, b} end"
@@ -170,8 +170,7 @@ contexts:
     - include: if_non_space_or_eol_pop
 
   function_post_params_pop:
-    - match: \,
-      scope: punctuation.separator.elixir
+    - match: (?=,)
       set:
         # Commented out. May be annoying during typing.
         # - match: do{{not_id_key_suffix}}
@@ -182,6 +181,7 @@ contexts:
           captures:
             1: punctuation.definition.constant.elixir
           pop: true
+        - include: comma_and_skip_ws
         - include: if_closing_paren_pop
         - include: core_syntax
         - include: if_non_space_pop
@@ -210,7 +210,7 @@ contexts:
         2: variable.parameter.elixir
     - match: \,(?=\s*\))
       scope: invalid.illegal.separator.elixir
-    - include: comma
+    - include: comma_and_skip_ws
     - match: ::(?!:)
       scope: keyword.operator.colon.elixir
       push:
@@ -239,7 +239,7 @@ contexts:
         - match: \)
           scope: punctuation.definition.parameters.end.elixir
           pop: true
-        - include: comma
+        - include: comma_and_skip_ws
         - include: parameters
 
   tuple_param:
@@ -250,7 +250,7 @@ contexts:
         - match: \}
           scope: punctuation.section.sequence.end.elixir
           pop: true
-        - include: comma
+        - include: comma_and_skip_ws
         - include: parameters
 
   list_param:
@@ -261,7 +261,7 @@ contexts:
         - match: \]
           scope: punctuation.section.brackets.end.elixir
           pop: true
-        - include: comma
+        - include: comma_and_skip_ws
         - include: parameters
         - include: cons_operator
 
@@ -283,7 +283,7 @@ contexts:
         - match: \}
           scope: punctuation.section.mapping.end.elixir
           pop: true
-        - include: comma
+        - include: comma_and_skip_ws
         - include: parameters
         # No cons operator when parameter.
         # - include: cons_operator
@@ -377,7 +377,7 @@ contexts:
   unquote_type:
     - match: unquote(?=\s*\()
       scope: keyword.other.elixir
-      push: [arguments_pop, spaces_pop]
+      push: arguments_pop
 
   dot_type:
     - match: \.(?!\.)
@@ -409,12 +409,11 @@ contexts:
 
   next_types_pop:
     - include: optional_when_types_clause_pop
-    - match: \|
-      scope: keyword.operator.union.elixir
-      push: [if_non_space_pop, union_types_eol_pop, if_non_space_pop]
     - include: comments
-    - match: ::(?!:)
-      scope: keyword.operator.colon.elixir
+    - match: (\|)|(::(?!:))
+      captures:
+        1: keyword.operator.union.elixir
+        2: keyword.operator.colon.elixir
       push: [if_non_space_pop, union_types_eol_pop, if_non_space_pop]
     - include: if_non_space_or_eol_pop
 
@@ -429,9 +428,7 @@ contexts:
       set: [when_types_clause_pop, if_non_space_pop]
 
   when_types_clause_pop:
-    - match: \,
-      scope: punctuation.separator.sequence.elixir
-      push: if_non_space_pop
+    - include: comma_and_skip_ws
     - include: comments
     - match: \|
       scope: keyword.operator.union.elixir
@@ -456,7 +453,7 @@ contexts:
         - match: \)
           scope: punctuation.definition.parens.end.elixir
           pop: true
-        - include: comma
+        - include: comma_and_skip_ws
         - include: types
         - include: union_operator
 
@@ -468,7 +465,7 @@ contexts:
         - match: \}
           scope: punctuation.section.sequence.end.elixir
           pop: true
-        - include: comma
+        - include: comma_and_skip_ws
         - include: types
         - include: union_operator
 
@@ -480,7 +477,7 @@ contexts:
         - match: \]
           scope: punctuation.section.brackets.end.elixir
           pop: true
-        - include: comma
+        - include: comma_and_skip_ws
         - include: types
         - include: union_operator
 
@@ -502,7 +499,7 @@ contexts:
         - match: \}
           scope: punctuation.section.mapping.end.elixir
           pop: true
-        - include: comma
+        - include: comma_and_skip_ws
         - include: types
         - include: union_operator
     - include: if_non_space_or_eol_pop
@@ -548,11 +545,7 @@ contexts:
     - match: '>>(?!>)'
       scope: string.other.binary.elixir punctuation.definition.string.end.elixir
       pop: true
-    - match: (\,)\s*(\,)
-      captures:
-        1: invalid.illegal.separator.binary.elixir
-        2: invalid.illegal.separator.binary.elixir
-    - include: comma
+    - include: comma_and_skip_ws
     - match: ::(?!:)
       scope: keyword.operator.colon.elixir
       push:
@@ -1239,9 +1232,9 @@ contexts:
           push:
             - meta_scope: meta.function-call.arguments.elixir
             - include: arguments_closing_pop
-            - match: \,
-              scope: punctuation.separator.arguments.elixir
+            - match: (?=,)
               set:
+                - include: arg_comma_and_skip_ws
                 - include: arguments_closing_pop
                 - include: core_syntax
             - include: defmodule_1st_argument
@@ -1450,12 +1443,12 @@ contexts:
             - include: arguments_closing_pop
             - match: unquote(?=\s*\()
               scope: keyword.other.elixir
-              push: [spec_definition_pop, arguments_pop, spaces_pop]
+              push: [spec_definition_pop, arguments_pop]
             - match: (?={{identifier}}|{{operators}})
               push: spec_header_pop
         - match: unquote(?=\s*\()
           scope: keyword.other.elixir
-          set: [spec_definition_pop, arguments_pop, spaces_pop]
+          set: [spec_definition_pop, arguments_pop]
         - include: spec_header_pop
         - include: if_non_space_pop
     - match: (?>typep?|opaque){{no_suffix_then_arguments}}
@@ -1469,13 +1462,13 @@ contexts:
             - include: arguments_closing_pop
             - match: unquote(?=\s*\()
               scope: keyword.other.elixir
-              push: [type_definition_pop, arguments_pop, spaces_pop]
+              push: [type_definition_pop, arguments_pop]
             - match: '{{identifier}}'
               scope: entity.name.type.elixir
               push: type_definition_pop
         - match: unquote(?=\s*\()
           scope: keyword.other.elixir
-          set: [type_definition_pop, arguments_pop, spaces_pop]
+          set: [type_definition_pop, arguments_pop]
         - match: '{{identifier}}'
           scope: entity.name.type.elixir
           set: type_definition_pop
@@ -1634,9 +1627,21 @@ contexts:
       set: if_eol_pop
     - include: core_syntax
 
-  comma:
+  comma_and_skip_ws:
     - match: \,
       scope: punctuation.separator.sequence.elixir
+      push: invalid_comma_or_non_space_pop
+
+  arg_comma_and_skip_ws:
+    - match: \,
+      scope: punctuation.separator.arguments.elixir
+      push: invalid_comma_or_non_space_pop
+
+  invalid_comma_or_non_space_pop:
+    - include: comment
+    - match: \,
+      scope: invalid.illegal.separator.elixir
+    - include: if_non_space_pop
 
   operator:
     - match: '::'
@@ -1695,7 +1700,7 @@ contexts:
         - match: \}
           scope: punctuation.section.sequence.end.elixir
           pop: true
-        - include: comma
+        - include: comma_and_skip_ws
         - include: core_syntax
 
   list:
@@ -1708,7 +1713,7 @@ contexts:
         - match: \]
           scope: punctuation.section.brackets.end.elixir
           pop: true
-        - include: comma
+        - include: comma_and_skip_ws
         - include: core_syntax
         - include: cons_operator
 
@@ -1730,7 +1735,7 @@ contexts:
         - match: \}
           scope: punctuation.section.mapping.end.elixir
           pop: true
-        - include: comma
+        - include: comma_and_skip_ws
         - include: core_syntax
         - include: cons_operator
     - include: if_non_space_or_eol_pop
@@ -1757,11 +1762,10 @@ contexts:
           set:
             - include: arguments_closing_pop
             - include: alias_names
-            - match: \,
-              scope: punctuation.separator.arguments.elixir
+            - match: (?=,)
               set:
                 - include: alias_as_arg
-                - include: comma
+                - include: arg_comma_and_skip_ws
                 - include: arguments_closing_pop
                 - include: core_syntax
             - include: core_syntax
@@ -1769,18 +1773,15 @@ contexts:
           set:
             # alias X, as: Y
             - include: alias_names
-            - match: \,
-              scope: punctuation.separator.sequence.elixir
-              set: [alias_kw_args_pop, if_non_space_pop]
+            - match: (?=,)
+              set: alias_kw_args_pop
             - include: if_eol_pop
             - include: core_syntax
 
   alias_kw_args_pop:
     - include: comments
     - include: alias_as_arg
-    - match: \,
-      scope: punctuation.separator.sequence.elixir
-      push: if_non_space_pop
+    - include: arg_comma_and_skip_ws
     - include: if_eol_pop
     - include: core_syntax
 
@@ -1833,7 +1834,7 @@ contexts:
         - match: \}
           scope: punctuation.section.braces.end.elixir
           pop: true
-        - include: comma
+        - include: comma_and_skip_ws
         - match: '{{module_name}}{{not_id_key_suffix}}'
           scope: constant.other.module.elixir
           push: alias_dot_or_pop
@@ -2020,7 +2021,7 @@ contexts:
 
   arguments_or_empty_pop:
     - match: (?=\()
-      set: [arguments_pop, spaces_pop]
+      set: arguments_pop
     - include: arguments_ws_pop
 
   arguments_or_dot_accessor_pop:
@@ -2039,7 +2040,7 @@ contexts:
       set:
         - meta_scope: meta.function-call.arguments.elixir
         - include: arguments_closing_pop
-        - include: comma
+        - include: arg_comma_and_skip_ws
         - include: core_syntax
 
   arguments_closing_pop:
@@ -2054,10 +2055,8 @@ contexts:
       set:
         - meta_scope: meta.function-call.arguments.elixir
         - match: (\,)(?=\s*do{{not_id_key_suffix}})
-          scope: invalid.illegal.separator.arguments.elixir
-        - match: (\,)(?:\s*$)?
-          captures:
-            1: punctuation.separator.arguments.elixir
+          scope: invalid.illegal.separator.elixir
+        - include: arg_comma_and_skip_ws
         # NB: needed due to "... #{inspect x} ..." or Repo.all(from p in q, select: p.title)
         - match: \n|(?=[})\];]|%>|(?>else|end){{not_id_key_suffix}})
           scope: punctuation.section.arguments.end.elixir
