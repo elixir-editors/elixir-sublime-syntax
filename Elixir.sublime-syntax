@@ -127,11 +127,13 @@ contexts:
             3: entity.name.function.elixir
           set:
             - include: if_closing_paren_pop
+            - include: do_block_pop
             - include: parameters
             - include: if_non_space_or_eol_pop
         - match: (?=\()
           set: function_params_pop
         - include: if_closing_paren_pop
+        - include: do_block_pop
         - include: parameters
         - include: if_non_space_or_eol_pop
 
@@ -148,6 +150,7 @@ contexts:
           comment: break at first atom key (usually "do:")
           pop: true
         - include: if_closing_paren_pop
+        - include: do_block_pop
         - include: parameters
         - include: if_non_space_or_eol_pop
     - match: '{{identifier}}(?=\s*([(,]|do{{not_id_key_suffix}}|$))'
@@ -570,7 +573,7 @@ contexts:
       scope: constant.character.escape.unicode.elixir
     - match: \\u(?:{}|{?[^'"/)\]}>]{1,6}}?)
       scope: invalid.illegal.escape.unicode.elixir
-    - match: \\.
+    - match: \\.|\\\n
       scope: constant.character.escape.char.elixir
 
   interpolated_elixir:
@@ -2032,8 +2035,7 @@ contexts:
         - match: \n|(?=[})\];]|%>|(?>else|end){{not_id_key_suffix}})
           scope: punctuation.section.arguments.end.elixir
           pop: true
-        - match: (?=do{{not_id_key_suffix}})
-          set: do_block_pop
+        - include: do_block_pop
         - match: |
             (?x)
             (?=
