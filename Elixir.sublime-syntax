@@ -1939,7 +1939,7 @@ contexts:
           with_prototype:
             - match: (?=""")
               pop: true
-            - include: escaped_char
+            - include: sql_or_elixir_escaped
     - match: \"
       scope: string.quoted.double.elixir punctuation.definition.string.begin.elixir
       set:
@@ -1951,7 +1951,16 @@ contexts:
           with_prototype:
             - match: (?=")
               pop: true
-            - include: escaped_char
+            - include: sql_or_elixir_escaped
+    
+  sql_or_elixir_escaped:
+    - match: (?=\\(?!\\\?)(?!\?))
+      comment: let source.ex.sql match "\\?"
+      push: escaped_char
+      with_prototype:
+        - match: (?=\\\\?\?)
+          pop: true
+        - include: empty_pop
 
   sql_fragment_args_pop:
     - include: arguments_closing_pop

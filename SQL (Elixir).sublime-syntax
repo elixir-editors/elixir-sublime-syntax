@@ -24,11 +24,16 @@ contexts:
             jsonb_(?>set|insert|pretty|path_exists|path_match|path_query(?>_array|_first)?)
           ) |
           # Should always be keywords, but SQL.sublime-syntax doesn't think so yet.
-          (any | over | not | i[sn]) |
+          (
+            any|all|array|cast|cross|column|collat(?:e|ion)|create|distinct|except|
+            fetch|full|group|intersect|into|inner|isnull|i[sn]|ilike|
+            left|not|on|offset|outer|over|table|window
+          ) |
           (?:(nulls) \s+ (last)) |
           # Some common (Postgres) functions.
           (
-            now | (?>array|string|jsonb?)_agg | random | row_number |
+            now | coalesce | nullif | greatest | least |
+            (?>array|string|jsonb?)_agg | random | row_number |
             to_ts(?>query|vector) | setweight | replace
           )
         )\b |
@@ -37,7 +42,7 @@ contexts:
         # Postgres type cast identifier.
         (?<=::)\s*((?!\d)\w+) |
         # Postgres jsonb operators.
-        (\\\\)(\?[|&]?)? | (->>?|\#>>?|@[>@?]|<@|\#-) |
+        (\\\\)(\?[|&]?)? | (->>?|\#>>?|@[@>?]|<@|\#-) |
         # Ecto argument placeholder.
         ((?<!\w)\\?\?(?!\w))
       captures:
@@ -48,7 +53,7 @@ contexts:
         5: support.function.sql
         6: keyword.operator.psql
         7: storage.type.psql
-        8: constant.character.escape.sql
+        8: constant.character.escape.char.elixir
         9: keyword.operator.jsonb.psql
         10: keyword.operator.jsonb.psql
         11: constant.other.placeholder.elixir
