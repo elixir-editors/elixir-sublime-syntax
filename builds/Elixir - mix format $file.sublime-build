@@ -1,0 +1,5 @@
+{
+  "working_dir": "$folder",
+  "cmd": ["mix", "format", "$file", "--dot-formatter", "$folder/.formatter.exs"],
+  "selector": "source.elixir",
+}
