@@ -2,4 +2,7 @@
   "working_dir": "$folder",
   "cmd": ["mix", "format", "$file", "--dot-formatter", "$folder/.formatter.exs"],
   "selector": "source.elixir",
+  "windows": {
+    "cmd": ["mix.bat", "format", "$file", "--dot-formatter", "$folder/.formatter.exs"],
+  }
 }
