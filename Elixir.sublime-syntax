@@ -127,7 +127,7 @@ contexts:
     - include: interpolated_elixir
 
   regex_elixir:
-    - include: scope:source.regexp.elixir
+    - include: scope:source.pcree
 
   regex_or_interpolated:
     - include: interpolated_elixir
