@@ -16,7 +16,7 @@ variables:
   not_id_key_suffix: \b(?!{{atom_id_suffix}}:|[?!])
 
   closing_token: (?>[,;)}\]#]|%>|$|\b(?>catch|after|rescue|else|end){{not_id_key_suffix}})
-  binary_operator: (?>(?<!\s)[\[(]|<?<~|~>>?|<~>|[*=/|\\>.]|<(?!<[^<~]|%=)|\^\^|&&|(?<!\s)[-+]\S|[-+][-+>\s]|::|$|!=|(?>and|or|when|in|not\s+in){{not_id_key_suffix}})
+  binary_operator: (?>(?<!\s)[\[(]|<?<~|~>>?|<~>|[*=/|\\>.]|<(?!<[^<~]|%=)|\^\^|&&|(?<!\s)[-+]\S|[-+][-+>\s]|::(?!:)|$|!=|(?>and|or|when|in|not\s+in){{not_id_key_suffix}})
   is_argument_token: (?!\s*(?>{{closing_token}}|{{binary_operator}}))
   has_arguments: (?=\(|{{is_argument_token}})
   no_suffix_then_arguments: \b(?![?!]){{has_arguments}}
@@ -131,7 +131,7 @@ contexts:
             - include: parameters
             - include: if_non_space_or_eol_pop
         - match: (?=\()
-          set: function_params_pop
+          push: function_params_pop
         - include: if_closing_paren_pop
         - include: do_block_pop
         - include: parameters
@@ -227,17 +227,18 @@ contexts:
         - match: (?=[,)]|(?>when|do){{not_id_key_suffix}})
           pop: true
         - include: core_syntax
-    - include: paren_param
+    - match: (?=\()
+      set: paren_param_pop
     - include: tuple_param
     - include: list_param
     - include: map_param
     - include: binary_string_param
     - include: core_syntax
 
-  paren_param:
+  paren_param_pop:
     - match: \(
       scope: punctuation.definition.parameters.begin.elixir
-      push:
+      set:
         - meta_scope: meta.function.parameters.elixir
         - match: \)
           scope: punctuation.definition.parameters.end.elixir
@@ -305,12 +306,8 @@ contexts:
 
   spec_definition_pop:
     - match: (?=\()
-      set:
-        - include: paren_type
-        - include: return_types_pop
-        - include: if_non_space_pop
-    - include: return_types_pop
-    - include: if_non_space_or_eol_pop
+      set: [type_definition_next_pop, type_arguments_or_pop]
+    - include: type_definition_next_pop
 
   spec_op_definition_pop:
     # E.g.: @spec integer &&& integer :: integer
@@ -318,22 +315,24 @@ contexts:
         (?x)
         ((?!::|\.){{operators}} | (?>not|in|and|or){{not_id_key_suffix}})
       scope: variable.other.type.elixir
-      set:
-        - include: return_types_pop
-        - include: types
-        - include: if_non_space_pop
+      set: spec_op_definition_next_pop
+    - include: spec_op_definition_next_pop
+
+  spec_op_definition_next_pop:
+    - include: comments
     - include: return_types_pop
     - include: types
-    - include: if_non_space_or_eol_pop
+    - include: if_non_space_pop
 
   type_definition_pop:
     - match: (?=\()
-      set:
-        - include: paren_param
-        - include: return_types_pop
-        - include: if_non_space_or_eol_pop
+      set: [type_definition_next_pop, paren_param_pop]
+    - include: type_definition_next_pop
+
+  type_definition_next_pop:
+    - include: comments
     - include: return_types_pop
-    - include: if_non_space_or_eol_pop
+    - include: if_non_space_pop
 
   types:
     - include: unquote_type
