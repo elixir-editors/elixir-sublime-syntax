@@ -223,6 +223,25 @@
 #          ^^^^^^^^^^^^ storage.type.custom
 # ^^^^^^ storage.type.custom
 
+@type next_line
+#     ^^^^^^^^^ entity.name.type
+::
+ any
+#^^^ support.type
+
+@type next_line_w_params(a, b)
+#                        ^ variable.parameter
+#     ^^^^^^^^^^^^^^^^^^ entity.name.type
+::
+ any
+#^^^ support.type
+
+@type next_line
+#     ^^^^^^^^^ entity.name.type
+ any :::
+#    ^^^ constant.other.symbol
+#^^^ variable.function
+
 @type t :: fn -> any end
 #                    ^^^ punctuation.section.block.end keyword.context.block
 #          ^^ keyword.declaration.function punctuation.section.block.begin
@@ -290,12 +309,49 @@ def run(), do: nil
 "                      ^^^^ variable.other"
 
 @spec get(nil_container, any, default) :: default when default: var
-#                                                               ^^^ storage.type.custom
+#                                                               ^^^ support.type
+#                                                      ^^^^^^^^ constant.other.keyword
+#                                         ^^^^^^^ storage.type.custom
+#                             ^^^^^^^ storage.type.custom
+#                        ^^^ support.type
+#         ^^^^^^^^^^^^^ storage.type.custom
 
 @spec any!(any!) :: any!
 #                   ^^^^ storage.type.custom
 #          ^^^^ storage.type.custom
 #     ^^^^ variable.other.type
+
+@spec next_line
+#     ^^^^^^^^^ variable.other.type
+::
+ any
+#^^^ support.type
+@spec next_line_w_args(a, b)
+#                      ^ storage.type.custom
+#     ^^^^^^^^^^^^^^^^ variable.other.type
+::
+ any
+#^^^ support.type
+@spec next_line
+#     ^^^^^^^^^ variable.other.type
+ any :::
+#    ^^^ constant.other.symbol
+#^^^ variable.function
+
+@spec integer >>>
+#             ^^^ variable.other.type
+#     ^^^^^^^ support.type
+        integer ::
+#       ^^^^^^^ support.type
+        integer
+#       ^^^^^^^ support.type
+
+# Can't look ahead past newline unfortunately.
+@spec integer
+#     ^^^^^^^ variable.other.type
+              >>> integer :: integer
+#                 ^^^^^^^ variable.other
+#             ^^^ keyword.operator.bitwise
 
 @spec :when
 #     ^^^^^ constant.other.symbol
