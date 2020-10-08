@@ -362,12 +362,9 @@ contexts:
     - match: (?>optional|required){{not_id_key_suffix}}
       scope: keyword.other.elixir
       push: type_arguments_or_pop
-    # TODO: match names of types, e.g.: "@type color :: {red :: integer, green :: integer, blue :: integer}"
     - match: '{{identifier}}'
       scope: storage.type.custom.elixir
       push: type_arguments_or_pop
-    - match: ::(?!:)
-      scope: keyword.operator.colon.elixir
     - include: paren_type
     - include: tuple_type
     - include: list_type
@@ -401,8 +398,14 @@ contexts:
         - meta_scope: meta.function-call.arguments.elixir
         - include: arguments_closing_pop
         - include: arg_comma_and_skip_ws
+        - include: named_type
         - include: types
+        - include: union_operator
     - include: empty_pop
+
+  named_type:
+    - match: '{{identifier}}(?=\s*::(?!:))'
+      scope: variable.other.named-type.elixir
 
   return_types_pop:
     - match: ::(?!:)
@@ -469,6 +472,7 @@ contexts:
           scope: punctuation.definition.parens.end.elixir
           pop: true
         - include: comma_and_skip_ws
+        - include: named_type
         - include: types
         - include: union_operator
 
@@ -481,6 +485,7 @@ contexts:
           scope: punctuation.section.sequence.end.elixir
           pop: true
         - include: comma_and_skip_ws
+        - include: named_type
         - include: types
         - include: union_operator
 
@@ -493,6 +498,7 @@ contexts:
           scope: punctuation.section.brackets.end.elixir
           pop: true
         - include: comma_and_skip_ws
+        - include: named_type
         - include: types
         - include: union_operator
 
@@ -515,6 +521,7 @@ contexts:
           scope: punctuation.section.mapping.end.elixir
           pop: true
         - include: comma_and_skip_ws
+        - include: named_type
         - include: types
         - include: union_operator
     - include: if_non_space_or_eol_pop
@@ -526,6 +533,7 @@ contexts:
       push:
         - meta_scope: meta.string.binary.elixir
         - include: binary_string_body_pop
+        - include: named_type
         - include: types
         - include: union_operator
 
