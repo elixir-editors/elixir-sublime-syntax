@@ -132,10 +132,14 @@
 #         ^^^^ constant.language
 # ^^^^^ constant.other.symbol
 | <<>> | <<_::size>> | <<_::_*unit>> | <<_::size, _::_*unit>>
-#                                                 ^ storage.type.custom
-#                                        ^ storage.type.custom
-#                        ^ storage.type.custom
-#          ^ storage.type.custom
+#                                                    ^^^^^^ storage.type.binary
+#                                                 ^ variable.other.named-type
+#                                           ^^^^ storage.type.binary
+#                                        ^ variable.other.named-type
+#                           ^^^^^^ storage.type.binary
+#                        ^ variable.other.named-type
+#             ^^^^ storage.type.binary
+#          ^ variable.other.named-type
 #   ^^ punctuation.definition.string.end
 # ^^ punctuation.definition.string.begin
 | (-> type)
@@ -223,6 +227,11 @@
 #          ^^^^^^^^^^^^ storage.type.custom
 # ^^^^^^ storage.type.custom
 
+@type color :: {red :: integer, green :: integer, blue :: integer}
+#                                                 ^^^^ variable.other
+#                               ^^^^^ variable.other
+#               ^^^ variable.other
+
 @type next_line
 #     ^^^^^^^^^ entity.name.type
 ::
@@ -303,10 +312,43 @@ def run(), do: nil
 #          ^ storage.type.custom
 
 @spec days_since_epoch(year :: integer, month :: integer, day :: integer) :: integer
-# TODO:
-"                                                         ^^^ variable.other"
-"                                       ^^^^^ variable.other"
-"                      ^^^^ variable.other"
+#                                                         ^^^ variable.other
+#                                       ^^^^^ variable.other
+#                      ^^^^ variable.other
+
+@spec start_child(
+#                ^ punctuation.section.arguments.begin
+        Supervisor.supervisor(),
+#                              ^ punctuation.separator.arguments
+#                  ^^^^^^^^^^ storage.type.remote
+#       ^^^^^^^^^^ constant.other.module
+        Supervisor.child_spec()
+#                  ^^^^^^^^^^ storage.type.remote
+        | {module, term}
+#                      ^ punctuation.section.sequence.end
+#                  ^^^^ support.type
+#                ^ punctuation.separator.sequence
+#          ^^^^^^ support.type
+#         ^ punctuation.section.sequence.begin
+#       ^ keyword.operator.union
+        | module
+#         ^^^^^^ support.type
+#       ^ keyword.operator.union
+        | (old_erlang_child_spec :: :supervisor.child_spec())
+#                                                           ^ punctuation.definition.parens.end
+#                                               ^^^^^^^^^^ storage.type.remote
+#                                              ^ punctuation.accessor.dot
+#                                   ^^^^^^^^^^^ constant.other.symbol
+#                                ^^ keyword.operator.colon
+#          ^^^^^^^^^^^^^^^^^^^^^ variable.other
+#         ^ punctuation.definition.parens.begin
+#       ^ keyword.operator.union
+      ) ::
+#       ^^ keyword.operator.colon
+#     ^ punctuation.section.arguments.end
+        on_start_child()
+#                     ^ punctuation.section.arguments.begin
+#       ^^^^^^^^^^^^^^ storage.type.custom
 
 @spec get(nil_container, any, default) :: default when default: var
 #                                                               ^^^ support.type
