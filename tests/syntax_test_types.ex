@@ -27,17 +27,28 @@
 #    ^ punctuation.section.arguments.begin
 @type(name)
 #     ^^^^ entity.name.type
+@type(name :: any)
+#             ^^^ support.type
+#     ^^^^ entity.name.type
 
-@type any(any) :: any
-#                 ^^^ support.type
+@type any(any) :: any :: any
+#                        ^^^ support.type
+#                 ^^^ variable.other.named-type
 #         ^^^ variable.parameter
 #     ^^^ entity.name.type
 @type any!(any!) :: any!
 #                   ^^^^ storage.type.custom
 #          ^^^^ variable.parameter
 #     ^^^^ entity.name.type
-@type id(id) :: id
-#               ^^ storage.type.custom
+@type id(id) :: id :: id | id :: id
+#                                ^^ storage.type.custom
+#                             ^^ keyword.operator.colon
+#                          ^^ variable.other.named-type
+#                        ^ keyword.operator.union
+#                     ^^ storage.type.custom
+#                  ^^ keyword.operator.colon
+#               ^^ variable.other.named-type
+#            ^^ keyword.operator.colon
 #        ^^ variable.parameter
 #     ^^ entity.name.type
 @type dict(key, value) :: [{key, value}]
@@ -350,6 +361,14 @@ def run(), do: nil
 #                     ^ punctuation.section.arguments.begin
 #       ^^^^^^^^^^^^^^ storage.type.custom
 
+@spec get(named :: t) :: named :: t when t: named :: var
+#                                                    ^^^ storage.type.custom
+#                                           ^^^^^ variable.other.named-type
+#                                        ^^ constant.other.keyword
+#                                 ^ storage.type.custom
+#                        ^^^^^ variable.other.named-type
+#                  ^ storage.type.custom
+#         ^^^^^ variable.other.named-type
 @spec get(nil_container, any, default) :: default when default: var
 #                                                               ^^^ support.type
 #                                                      ^^^^^^^^ constant.other.keyword
