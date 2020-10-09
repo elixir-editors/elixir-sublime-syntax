@@ -200,8 +200,7 @@ contexts:
     - include: parameters
 
   parameters:
-    - include: atom_keyword
-    - include: elixir_keywords
+    - include: block_or_keyword
     - match: __MODULE__{{not_id_key_suffix}}
       scope: variable.language.special-form.elixir
     - match: |
@@ -214,13 +213,6 @@ contexts:
     - match: \,(?=\s*\))
       scope: invalid.illegal.separator.elixir
     - include: comma_and_skip_ws
-    - match: ::(?!:)
-      scope: keyword.operator.colon.elixir
-      push:
-        - match: (?=[,)])
-          pop: true
-        - include: union_operator
-        - include: types
     - match: \\\\(?!:)
       scope: keyword.operator.other.elixir
       push:
@@ -413,7 +405,6 @@ contexts:
       set: [first_and_next_types_pop, if_non_space_pop]
 
   first_and_next_types_pop:
-    - include: comments
     - match: (?=when{{not_id_key_suffix}})
       comment: no when clause directly after "::"
       pop: true
@@ -421,13 +412,16 @@ contexts:
       set:
         - include: comments
         # NB: we can't prevent matching more than one type expression.
+        - include: named_type
         - include: types
         - match: ''
           set: [next_types_pop, if_non_space_pop]
 
   next_types_pop:
-    - include: optional_when_types_clause_pop
     - include: comments
+    - match: when{{not_id_key_suffix}}
+      scope: keyword.other.when.elixir
+      set: [when_types_clause_pop, if_non_space_pop]
     - match: (\|)|(::(?!:))
       captures:
         1: keyword.operator.union.elixir
@@ -437,13 +431,9 @@ contexts:
 
   union_types_eol_pop:
     - include: comments
+    - include: named_type
     - include: types
     - include: if_non_space_or_eol_pop
-
-  optional_when_types_clause_pop:
-    - match: when{{not_id_key_suffix}}
-      scope: keyword.other.when.elixir
-      set: [when_types_clause_pop, if_non_space_pop]
 
   when_types_clause_pop:
     - include: comma_and_skip_ws
