@@ -1,4 +1,4 @@
-#// SYNTAX TEST "Packages/ElixirSyntax/Elixir.sublime-syntax"
+#// SYNTAX TEST "Elixir.sublime-syntax"
 
 # Quoted sequence:
 ~r"\Qnot terminating \Q is not an error"
