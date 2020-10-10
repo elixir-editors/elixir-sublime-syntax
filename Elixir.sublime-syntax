@@ -1968,7 +1968,7 @@ contexts:
           with_prototype:
             - match: (?=""")
               pop: true
-            - include: sql_or_elixir_escaped
+            - include: sql_or_elixir_escaped_pop
     - match: \"
       scope: string.quoted.double.elixir punctuation.definition.string.begin.elixir
       set:
@@ -1980,15 +1980,17 @@ contexts:
           with_prototype:
             - match: (?=")
               pop: true
-            - include: sql_or_elixir_escaped
-    
-  sql_or_elixir_escaped:
-    - match: (?=\\(?!\\\?)(?!\?))
-      comment: let source.ex.sql match "\\?"
-      push: escaped_char
-      with_prototype:
+            - include: sql_or_elixir_escaped_pop
+
+  sql_or_elixir_escaped_pop:
+    - match: (?=\\(?!\\?\?))
+      # NB: using push instead of set here breaks highlighting for ST3.
+      set:
+        - meta_scope: source.ex.sql
         - match: (?=\\\\?\?)
+          comment: let source.ex.sql match "\\?"
           pop: true
+        - include: escaped_char
         - include: empty_pop
 
   sql_fragment_args_pop:
