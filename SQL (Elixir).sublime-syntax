@@ -1,14 +1,15 @@
 %YAML 1.2
 ---
-# version: 2
+# NB: "extends" and "meta_prepend" are only supported by ST4.
+#     Not using them yet to still support ST3 for a while.
 name: SQL (Elixir)
 file_extensions: [ex.sql]
 scope: source.ex.sql
-extends: Packages/SQL/SQL.sublime-syntax
+# extends: Packages/SQL/SQL.sublime-syntax
 
 contexts:
   main:
-    - meta_prepend: true
+    # - meta_prepend: true
     - match: |
         (?xi)
         \b(?>
@@ -57,3 +58,5 @@ contexts:
         9: keyword.operator.jsonb.psql
         10: keyword.operator.jsonb.psql
         11: constant.other.placeholder.elixir
+
+    - include: scope:source.sql
