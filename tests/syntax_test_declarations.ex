@@ -2,6 +2,136 @@
 
 ## Declarations
 
+### defmodule
+
+defmodule
+#<- variable.other
+do defmodule end
+#            ^^^ keyword.context
+#  ^^^^^^^^^ variable.other
+#<- keyword.context
+defmodule Module
+#         ^^^^^^ entity.name.namespace
+#<- keyword.declaration.module
+defmodule App.Module
+#             ^^^^^^ entity.name.namespace
+#            ^ punctuation.accessor
+#         ^^^ constant.other.module
+defmodule :"Elixir.ModuleTest.RawModule"
+#         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ constant.other.symbol
+defmodule :Module
+#          ^^^^^^ entity.name.namespace
+defmodule :App.:Module
+#               ^^^^^^ entity.name.namespace
+#              ^ punctuation.definition.constant.begin
+#             ^ punctuation.accessor
+#         ^^^^ constant.other.symbol
+defmodule :<<>>
+#          ^^^^ entity.name.namespace
+defmodule :&&, do: def(a &&& b, do: a && b); :&&.&&&(:&, :&)
+#                                                        ^^ constant.other.symbol
+#                                                    ^^ constant.other.symbol
+#                                                ^^^ variable.function
+#                                            ^^^ constant.other.symbol
+#                                          ^ keyword.operator.semicolon
+#                        ^^^ entity.name.function
+#            ^ punctuation.separator.arguments
+#          ^^ entity.name.namespace
+#         ^ punctuation.definition.constant.begin
+#        ^ punctuation.section.arguments.begin
+defmodule _
+#         ^ variable.other.unused
+defmodule __MODULE__: __MODULE__
+#                     ^^^^^^^^^^ variable.language.special-form
+#         ^^^^^^^^^^^ constant.other.keyword
+defmodule: :Module
+#          ^^^^^^^ constant.other.symbol
+#<- constant.other.keyword
+defmodule __MODULE__.Nested do end
+#                    ^^^^^^ entity.name.namespace
+#                   ^ punctuation.accessor
+#         ^^^^^^^^^^ variable.language.special-form
+
+defmodule nil end; defmodule raise do end
+#                            ^^^^^ keyword.other
+#         ^^^ constant.language
+defmodule fn end; defmodule do end
+#                              ^^^ punctuation.section.block.end
+#                           ^^ keyword.context.block
+#            ^^^ punctuation.section.block.end
+#         ^^ punctuation.section.block.begin
+#<- keyword.declaration.module
+
+module = defmodule unquote(name) do
+#                                ^^ keyword.context.block
+#                              ^ punctuation.section.arguments.end
+#                          ^^^^ variable.other.elixir
+#                         ^ punctuation.section.arguments.begin
+#                  ^^^^^^^ keyword.other
+#        ^^^^^^^^^ keyword.declaration.module
+#      ^ keyword.operator.match
+#<- variable.other
+end
+#<- keyword.context.block
+
+defmodule User, do: defstruct [:name]
+#                              ^^^^^ constant.other.symbol
+#                   ^^^^^^^^^ keyword.other
+#               ^^^ constant.other.keyword
+#             ^ punctuation.separator.arguments
+#         ^^^^ entity.name.namespace
+
+defmodule(M, do end); defmodule(M, fn -> end) NotAnEntity
+#                                             ^^^^^^^^^^^ -entity.name.namespace
+#                                        ^^^ punctuation.section.block.end
+#                                  ^^ punctuation.section.block.begin
+#               ^^^ punctuation.section.block.end
+#            ^^ keyword.context.block
+
+defmodule(Dynamic, unquote(block))
+#                               ^^ punctuation.section.arguments.end
+#                          ^^^^^ variable.other
+#                         ^ punctuation.section.arguments.begin
+#                  ^^^^^^^ keyword.other
+#                ^ punctuation.separator.arguments
+#         ^^^^^^^ entity.name.namespace
+#        ^ punctuation.section.arguments.begin
+#<- keyword.declaration.module
+
+defmodule(Nil, do: (def get_nil() do nil end)) |> elem(1) |> apply(:get_nil, [])
+#                                                 ^^^^ variable.function.built-in
+#                                              ^^ keyword.operator.pipe
+#                                            ^ punctuation.section.arguments.end
+#                                           ^ punctuation.section.parens.end
+#                                        ^^^ keyword.context.block
+#                                 ^^ keyword.context.block
+#                       ^^^^^^^ entity.name.function
+#                   ^^^ keyword.declaration.function
+#                  ^ punctuation.section.parens.begin
+#              ^^^ constant.other.keyword
+
+defmodule (NotAModule, do: (import X))
+#                                     ^ punctuation.section.arguments.end
+#          ^^^^^^^^^^ -entity.name.namespace
+#        ^ punctuation.section.arguments.begin
+
+
+### defprotocol
+
+defprotocol IEx.Info do
+#               ^^^^ entity.name.namespace
+#           ^^^ constant.other.module
+#<- keyword.declaration.protocol
+
+defprotocol(NoBeam, do: nil)
+#                          ^ punctuation.section.arguments.end
+#                   ^^^ constant.other.keyword
+#                 ^ punctuation.separator.arguments
+#           ^^^^^^ entity.name.namespace
+#          ^ punctuation.section.arguments.begin
+#<- keyword.declaration.protocol
+
+
 ### alias
 alias List
 #     ^^^^ meta.path.modules.elixir constant.other.module.elixir
@@ -121,6 +251,11 @@ alias = alias X
 alias do end
 #     ^^ keyword.context.block.elixir
 #<- keyword.control.import.elixir
+
+(alias A)
+#       ^ punctuation.section.parens.end
+#      ^ constant.other.module
+#<- punctuation.section.parens.begin
 
 ### require
 require EEx.Tokenizer, as: T
