@@ -13,7 +13,7 @@ variables:
   atom_id_suffix: '[\w@]*[?!]?'
   atom_id: (?>[[:alpha:]_]{{atom_id_suffix}})
   identifier: (?>[[:lower:]_]\w*[?!]?)
-  not_id_key_suffix: \b(?!{{atom_id_suffix}}:|[?!])
+  not_id_key_suffix: \b(?!{{atom_id_suffix}}:(?!:)|[?!])
 
   closing_token: (?>[,;)}\]#]|%>|$|\b(?>catch|after|rescue|else|end){{not_id_key_suffix}})
   binary_operator: (?>(?<!\s)[\[(]|<?<~|~>>?|<~>|[*=/|\\>.]|<(?!<[^<~]|%=)|\^\^|&&|(?<!\s)[-+]\S|[-+][-+>\s]|::(?!:)|$|!=|(?>and|or|when|in|not\s+in){{not_id_key_suffix}})
@@ -61,60 +61,53 @@ contexts:
     - match: fn{{not_id_key_suffix}}
       scope: keyword.declaration.function.elixir punctuation.section.block.begin.elixir
       push:
-        - include: first_fn_header
-        # - match: |
-        #     (?x)
-        #     (?=
-        #       (?:
-        #         (
-        #           \( (?: [^()]++   | \g<-1> )* \) |
-        #           \[ (?: [^\[\]]++ | \g<-1> )* \] |
-        #           \{ (?: [^{}]++   | \g<-1> )* \}
-        #         ) |
-        #         [^{(\[]+
-        #       )*
-        #       =>
-        #     )
-        #   push: first_fn_header
-
-        # TODO: try to match parameters according to indentation:
-        # - match: (?=->)
-        #   set: first_fn_header
-        # - match: \s+\n?
-        #   set:
-        #     - match: (\s+)(?!\s)
-        #       set:
-        #         - match: \1
-        #           push:
-        #             - match: (?=->)
-        #               scope: punctuation.definition.parameters.end.elixir
-        #               set:
-        #                 - include: block_end_pop
-        #                 - include: core_syntax
-        #             - include: fn_parameters
-        # - include: block_end_pop
-        # - include: core_syntax
-
-  first_fn_header:
-    # - meta_scope: meta.function.parameters.elixir
-    - match: (?=->|when{{not_id_key_suffix}})
-      set:
+        # - meta_scope: meta.function.parameters.elixir
+        - match: (?=->|when{{not_id_key_suffix}})
+          set:
+            - include: block_end_pop
+            - include: core_syntax
         - include: block_end_pop
-        - include: core_syntax
-    - include: block_end_pop
-    - include: fn_parameters
+        - include: fn_parameters
 
   function_header_pop:
     - match: \(
       scope: punctuation.section.arguments.begin.elixir
       set:
-        - match: (?!\))
-          push: function_header_args_pop
+        - meta_scope: meta.function-call.arguments.elixir
         - include: arguments_closing_pop
-    - include: function_header_args_pop
+        - match: ''
+          push: function_header_args_pop
+    - match: \s?
+      scope: punctuation.section.arguments.begin.elixir
+      set:
+        - meta_scope: meta.function-call.arguments.elixir
+        - include: arguments_ws_closing_pop
+        - match: ''
+          push: function_header_args_pop
 
   function_header_args_pop:
-    - include: function_header_first_arg_pop
+    - match: unquote(?=\s*\()
+      scope: keyword.other.elixir
+      set: [function_params_or_eol_pop, arguments_pop]
+
+    - include: do_block_pop
+    - include: elixir_keywords
+
+    - match: '{{identifier}}(?=\s){{is_argument_token}}'
+      comment: free-form header, e.g. "def func a, b do {a, b} end"
+      scope: entity.name.function.elixir
+      set:
+        - match: (?={{atom_symbol}}:(?!:))
+          comment: break at first atom key (usually "do:")
+          set: function_post_params_pop
+        - include: arg_comma_and_skip_ws
+        - include: function_ws_params_pop
+
+    - match: '{{identifier}}(?=\s*([(),;]|do{{not_id_key_suffix}}|$))'
+      comment: e.g. "def func," OR "def func(a, b)" OR "def func do" OR "def func"
+      scope: entity.name.function.elixir
+      set: function_params_or_eol_pop
+
     - match: (?=\S)
       set:
         - match: |
@@ -122,46 +115,28 @@ contexts:
             (?>(_{{identifier}}?)|({{identifier}}))?
             \s*
             ({{operators}}|(?>in|and|or){{not_id_key_suffix}})
+          comment: e.g. x && y
           captures:
             1: variable.parameter.unused.elixir
             2: variable.parameter.elixir
             3: entity.name.function.elixir
           set:
-            - include: if_closing_paren_pop
-            - include: do_block_pop
-            - include: parameters
-            - include: if_non_space_or_eol_pop
-        - match: (?=\()
-          push: function_params_pop
-        - include: if_closing_paren_pop
-        - include: do_block_pop
+            - match: (?=,)
+              set: function_post_params_pop
+            - include: function_ws_params_pop
+        - include: if_closing_tokens_pop
+        - include: parens
         - include: parameters
-        - include: if_non_space_or_eol_pop
+        - include: function_params_or_eol_pop
 
-  function_header_first_arg_pop:
-    - match: unquote(?=\s*\()
-      scope: keyword.other.elixir
-      set: [function_params_pop, arguments_pop]
+  function_ws_params_pop:
+    - include: if_closing_tokens_pop
     - include: do_block_pop
-    - match: '{{identifier}}(?=\s){{is_argument_token}}'
-      comment: "free-form header, e.g.: def func a, b do {a, b} end"
-      scope: entity.name.function.elixir
-      set:
-        - match: (?={{atom_symbol}}:(?!:))
-          comment: break at first atom key (usually "do:")
-          pop: true
-        - include: if_closing_paren_pop
-        - include: do_block_pop
-        - include: parameters
-        - include: if_non_space_or_eol_pop
-    - match: '{{identifier}}(?=\s*([(,]|do{{not_id_key_suffix}}|$))'
-      comment: '"def func," OR "def func(a, b)" OR "def func do" OR "def func"'
-      scope: entity.name.function.elixir
-      set: function_params_pop
+    - include: parens
+    - include: parameters
+    - include: if_non_space_or_eol_pop
 
-  ## Parameters
-
-  function_params_pop:
+  function_params_or_eol_pop:
     - match: \(
       scope: punctuation.definition.parameters.begin.elixir
       set:
@@ -170,29 +145,21 @@ contexts:
           scope: punctuation.definition.parameters.end.elixir
           set: function_post_params_pop
         - include: parameters
-    - include: if_closing_paren_pop
-    - include: if_non_space_or_eol_pop
+    - include: if_closing_tokens_pop
+    - match: (?=,)
+      set: function_post_params_pop
+    - include: do_block_pop
+    - include: if_eol_pop
+    - include: if_non_space_pop
 
   function_post_params_pop:
-    - match: (?=,)
-      set:
-        # Commented out. May be annoying during typing.
-        # - match: do{{not_id_key_suffix}}
-        #   comment: compiler reports this as an unexpected token; doesn't try to find matching "end"
-        #   scope: invalid.illegal.keyword.elixir
-        - match: do(:)(?!:)|$
-          scope: constant.other.keyword.elixir
-          captures:
-            1: punctuation.definition.constant.elixir
-          pop: true
-        - include: comma_and_skip_ws
-        - include: if_closing_paren_pop
-        - include: core_syntax
-        - include: if_non_space_pop
     - include: do_block_pop
-    - include: if_closing_paren_pop
-    - include: if_eol_pop
+    - include: arg_comma_and_skip_ws
+    - include: if_closing_tokens_pop
     - include: core_syntax
+    - include: if_eol_pop
+
+  ## Parameters
 
   fn_parameters:
     # NB: no default parameters in fn blocks
@@ -1243,11 +1210,13 @@ contexts:
       push:
         - meta_scope: meta.namespace.implementation.elixir
         - include: arguments_ws_pop
-    - match: def(?>delegate|macro|guard|){{no_suffix_then_arguments}}
-      scope: keyword.declaration.function.public.elixir
-      push: function_header_pop
-    - match: def(?>delegate|macro|guard|)p{{no_suffix_then_arguments}}
-      scope: keyword.declaration.function.private.elixir
+    - match: |
+        (?x)
+        (?>(def(?>delegate|macro|guard|)p)
+         | (def(?>delegate|macro|guard|)) {{no_suffix_then_arguments}})
+      captures:
+        1: keyword.declaration.function.private.elixir
+        2: keyword.declaration.function.public.elixir
       push: function_header_pop
 
   defmodule_body_pop:
@@ -2047,6 +2016,15 @@ contexts:
       scope: punctuation.section.arguments.end.elixir
       pop: true
 
+  arguments_ws_closing_pop:
+    # NB: needed due to "... #{inspect x} ..." or Repo.all(from p in q, select: p.title)
+    - match: \n|(?=[})\];]|%>|(?>catch|after|rescue|else|end){{not_id_key_suffix}})
+      scope: punctuation.section.arguments.end.elixir
+      pop: true
+    - match: (?<=::\bend\b)|(?<=([^:])\bend\b)|(?<=^end\b)
+      scope: punctuation.section.arguments.end.elixir
+      pop: true
+
   arguments_ws_pop:
     - match: \s?
       comment: arguments list without parentheses
@@ -2056,10 +2034,7 @@ contexts:
         - match: (\,)(?=\s*do{{not_id_key_suffix}})
           scope: invalid.illegal.separator.elixir
         - include: arg_comma_and_skip_ws
-        # NB: needed due to "... #{inspect x} ..." or Repo.all(from p in q, select: p.title)
-        - match: \n|(?=[})\];]|%>|(?>else|end){{not_id_key_suffix}})
-          scope: punctuation.section.arguments.end.elixir
-          pop: true
+        - include: arguments_ws_closing_pop
         - include: do_block_pop
         - match: |
             (?x)
@@ -2118,6 +2093,10 @@ contexts:
 
   if_closing_token_pop:
     - match: (?=[})\]])
+      pop: true
+
+  if_closing_tokens_pop:
+    - match: (?=[})\];]|$|%>|(?>catch|after|rescue|else|end){{not_id_key_suffix}})
       pop: true
 
   if_closing_paren_pop:
