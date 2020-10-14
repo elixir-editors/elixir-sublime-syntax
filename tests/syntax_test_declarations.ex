@@ -131,8 +131,154 @@ defprotocol(NoBeam, do: nil)
 #          ^ punctuation.section.arguments.begin
 #<- keyword.declaration.protocol
 
+### def
+
+def
+#<- variable.other
+def()
+#   ^ punctuation.section.arguments.end
+#  ^ punctuation.section.arguments.begin -punctuation.definition.parameters.begin
+def(())
+#    ^ punctuation.section.parens.end
+#   ^ punctuation.section.parens.begin -punctuation.definition.parameters.begin
+def do end
+#         ^ punctuation.section.arguments.end
+#      ^^^ punctuation.section.block.end
+#   ^^ punctuation.section.block.begin
+#  ^ punctuation.section.arguments.begin
+#<- keyword.declaration.function
+def nil(no_param)
+#       ^^^^^^^^ -variable.parameter
+#   ^^^ constant.language
+def def
+#   ^^^ entity.name.function
+#<- keyword.declaration.function
+def def, do: def
+#            ^^^ variable.other
+#      ^ punctuation.separator.arguments
+#   ^^^ entity.name.function
+def def(def), do: def
+#                 ^^^ variable.other
+#           ^ punctuation.separator.arguments
+#          ^ punctuation.definition.parameters.end
+#       ^^^ variable.parameter
+#      ^ punctuation.definition.parameters.begin
+#   ^^^ entity.name.function
+def def;
+#      ^ keyword.operator.semicolon
+#   ^^^ entity.name.function
+def def params, do_body
+#               ^^^^^^^ variable.parameter
+#             ^ punctuation.separator.arguments
+#       ^^^^^^ variable.parameter
+#   ^^^ entity.name.function
+def def p, do: p
+#              ^ variable.other
+#            ^ punctuation.definition.constant
+#          ^^^ constant.other.keyword
+def def p,
+#         ^ -punctuation.definition.parameters.end -punctuation.section.arguments.end
+#        ^ punctuation.separator.arguments
+#       ^ variable.parameter
+  do: p
+#      ^ punctuation.section.arguments.end
+#     ^ variable.other
+# ^^^ constant.other.keyword
+
+def +value
+#   ^ entity.name.function
+def -value
+#   ^ entity.name.function
+def a + b, do: a - b
+#                  ^ -variable.parameter
+#              ^ -variable.parameter
+#     ^ entity.name.function
+def a <~ b, do: min(a, b)
+#     ^^ entity.name.function
+def a ~> b, do: max(a, b)
+#     ^^ entity.name.function
+def _ && _, do: :error
+#        ^ variable.parameter.unused
+#     ^^ entity.name.function
+#   ^ variable.parameter.unused
+def false && _, do: false
+#                   ^^^^^ constant.language
+#            ^ variable.parameter.unused
+#         ^^ entity.name.function
+def _ && false, do: false
+#        ^^^^^ constant.language
+#     ^^ entity.name.function
+#   ^ variable.parameter.unused
+def left =~ "" when is_binary(left), do: true
+#                                  ^ punctuation.separator.arguments
+#                             ^^^^ variable.other
+#                   ^^^^^^^^^ variable.function.built-in
+#              ^^^^ keyword.other
+#           ^^ string.quoted.double
+#        ^^ entity.name.function
+#   ^^^^ variable.parameter
+def (lhs) <> (rhs), do: true
+#             ^^^ variable.other
+#         ^^ entity.name.function
+#       ^ punctuation.section.parens.end
+#    ^^^  variable.other
+#   ^ punctuation.section.parens.begin
+def [left] ++ [_ | _] = right, do: [left | right]
+#                                   ^^^^ variable.other
+#                            ^ punctuation.separator.arguments
+#                       ^^^^^ variable.parameter
+#                  ^ variable.parameter
+#              ^ variable.parameter
+#    ^^^^ variable.parameter
+def unquote(head), do: :x
+#                ^ punctuation.separator.arguments
+#           ^^^^ variable.other
+def(unquote(head)(a))
+#                 ^ variable.parameter
+(def unquote(head)(a))
+#                  ^ variable.parameter
+def unquote(name)(a, b), do: :x
+#                 ^ variable.parameter
+#           ^^^^ variable.other
+
+def fun!() do end; def fun?() do end
+#                      ^^^^ entity.name.function
+#   ^^^^ entity.name.function
+def(line)
+#   ^^^^ entity.name.function
+def(line, do: __ENV__.line) var
+#                           ^^^ -variable.parameter
+#                         ^ punctuation.section.arguments.end
+#         ^^^ constant.other.keyword
+#   ^^^^ entity.name.function
+#  ^ punctuation.section.arguments.begin
+(def line)
+#    ^^^^ entity.name.function
+#<- punctuation.section.parens.begin
+(def line do 1 end)
+#                 ^ punctuation.section.parens.end
+#    ^^^^ entity.name.function
+(def line do: 1)
+#              ^ -invalid
+[def line, do: 1]
+#               ^ -invalid
+{def line, do: 1}
+#               ^ -invalid
+(def line, do: 1)
+#               ^ -invalid
+#        ^ punctuation.separator.arguments
+do def line do:::end end
+#                    ^^^ punctuation.section.block.end -invalid
+#                ^^^ punctuation.section.block.end -invalid
+#           ^^ keyword.context.block
+do def line, do: :::end
+#                   ^^^ punctuation.section.block.end -invalid
+#                ^^^ constant.other.symbol
+#<- punctuation.section.block.begin
+
 
 ### alias
+
 alias List
 #     ^^^^ meta.path.modules.elixir constant.other.module.elixir
 #<- keyword.control.import.elixir
