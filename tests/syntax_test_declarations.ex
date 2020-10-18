@@ -184,7 +184,17 @@ def def p,
 #      ^ punctuation.section.arguments.end
 #     ^ variable.other
 # ^^^ constant.other.keyword
-
+def plus(
+      a,
+#      ^ punctuation.separator.sequence
+#     ^ variable.parameter
+      b
+#     ^ variable.parameter
+    ),
+    do: a + b
+#            ^ punctuation.section.arguments.end
+#           ^ variable.other
+#       ^ variable.other
 def +value
 #   ^ entity.name.function
 def -value
@@ -280,7 +290,9 @@ do def line, do: :::end
 ### alias
 
 alias List
+#         ^ punctuation.section.arguments.end
 #     ^^^^ meta.path.modules.elixir constant.other.module.elixir
+#    ^ punctuation.section.arguments.begin
 #<- keyword.control.import.elixir
 alias List, as: L
 #               ^ meta.path.modules.elixir entity.name.namespace.elixir
@@ -289,6 +301,7 @@ alias List, as: L
 alias List,
 #         ^ punctuation.separator.arguments.elixir
       as: L
+#          ^ punctuation.section.arguments.end
 #         ^ entity.name.namespace.elixir
 alias List
 , as: L
@@ -398,10 +411,15 @@ alias do end
 #     ^^ keyword.context.block.elixir
 #<- keyword.control.import.elixir
 
+[alias A]
 (alias A)
 #       ^ punctuation.section.parens.end
 #      ^ constant.other.module
 #<- punctuation.section.parens.begin
+do alias A end
+#          ^^^ punctuation.section.block.end
+do alias A, as: B end
+#                 ^^^ punctuation.section.block.end
 
 ### require
 require EEx.Tokenizer, as: T

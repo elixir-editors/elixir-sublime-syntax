@@ -21,7 +21,6 @@
 @type name :: any
 #             ^^^ support.type
 #          ^^ keyword.operator.colon
-
 @type()
 #     ^ punctuation.section.arguments.end
 #    ^ punctuation.section.arguments.begin
@@ -89,7 +88,14 @@
 #               ^^^^^^ variable.other
 #       ^^^^^ variable.other
 #^^^^ variable.other
-
+@type :: any
+#        ^^^ variable.other -support.type
+#     ^^ keyword.operator.colon
+#^^^^ variable.other.constant
+@type t :: %_{}; @type t :: %_Struct{}; @type t :: %_struct{}
+#                                                   ^^^^^^^ invalid
+#                            ^^^^^^^ invalid
+#           ^ invalid
 @type do end
 #        ^^^ keyword.context.block
 #     ^^ keyword.context.block
