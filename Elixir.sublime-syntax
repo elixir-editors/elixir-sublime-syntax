@@ -9,7 +9,7 @@ first_line_match: ^#!\s*/.*\b(?:elixirc?|iex)
 scope: source.elixir
 
 variables:
-  module_name: \b[A-Z][a-zA-Z\d_]*\b
+  module_name: '[A-Z][a-zA-Z\d_]*\b'
   atom_id_suffix: '[\w@]*[?!]?'
   atom_id: (?>[[:alpha:]_]{{atom_id_suffix}})
   identifier: (?>[[:lower:]_]\w*[?!]?)
@@ -29,6 +29,9 @@ variables:
 contexts:
   main:
     - include: core_syntax
+    # NB: rules for type matching can only work when only they can match the union operator.
+    # We can still highlight "|" by including it here.
+    - include: union_operator
 
   core_syntax:
     - include: atom_keyword
@@ -233,8 +236,8 @@ contexts:
     - match: \%
       scope: punctuation.section.mapping.begin.elixir
       push:
-        - match: _{{not_id_key_suffix}}
-          scope: variable.parameter.unused.elixir
+        - match: _(?:{{module_name}}|{{identifier}})?
+          scope: variable.other.unused.elixir
           set: map_param_body_pop
         - include: alias_names
         - include: map_param_body_pop
@@ -332,7 +335,7 @@ contexts:
     - include: binary_string_type
     - include: dot_type
     - include: module_name
-    - include: if_closing_token_pop
+    - include: if_closing_tokens_no_eol_pop
     - include: core_syntax
 
   dot_type:
@@ -457,10 +460,10 @@ contexts:
     - match: \%
       scope: punctuation.section.mapping.begin.elixir
       push:
-        - match: _{{not_id_key_suffix}}
-          scope: variable.type.unused.elixir
-          set: map_type_body_pop
         - include: alias_names
+        - match: _(?:{{module_name}}|{{identifier}})?
+          scope: variable.type.unused.elixir invalid.illegal.struct.elixir
+          set: map_type_body_pop
         - include: map_type_body_pop
 
   map_type_body_pop:
@@ -1230,9 +1233,7 @@ contexts:
       scope: punctuation.section.arguments.begin.elixir
       set:
         - meta_scope: meta.function-call.arguments.elixir
-        - match: \n|(?=[})\];]|%>|(?>else|end){{not_id_key_suffix}})
-          scope: punctuation.section.arguments.end.elixir
-          pop: true
+        - include: arguments_ws_closing_pop
         - include: defmodule_arguments
 
   defmodule_arguments:
@@ -1287,13 +1288,12 @@ contexts:
         - include: module_accessor_or_pop
 
   module_accessor_or_pop:
-    - match: \s+(?!$)
     - match: \.(?!\.)
       scope: punctuation.accessor.elixir
-    - include: empty_pop
+    - include: if_non_space_or_eol_pop
 
   module_function_call_pop:
-    - match: ({{module_name}})\s*(\.)\s*(?={{identifier}}|{{operators}})
+    - match: ({{module_name}})\s*(\.(?!\.))\s*(?={{identifier}}|{{operators}})
       comment: always a function call after a module
       captures:
         1: constant.other.module.elixir
@@ -1705,10 +1705,10 @@ contexts:
     - match: \%
       scope: punctuation.section.mapping.begin.elixir
       push:
-        - match: _{{not_id_key_suffix}}
+        - include: alias_names
+        - match: _(?:{{module_name}}|{{identifier}})?
           scope: variable.other.unused.elixir
           set: map_body_pop
-        - include: alias_names
         - include: map_body_pop
 
   map_body_pop:
@@ -1753,21 +1753,25 @@ contexts:
                 - include: arguments_closing_pop
                 - include: core_syntax
             - include: core_syntax
-        - match: ''
+        - match: \s?
+          scope: punctuation.section.arguments.begin.elixir
           set:
             # alias X, as: Y
-            - include: alias_names
-            - match: (?=,)
-              set: alias_kw_args_pop
-            - include: if_closing_token_pop
-            - include: if_eol_pop
-            - include: core_syntax
+            - include: arguments_ws_closing_pop
+            - match: ''
+              push:
+                - include: alias_names
+                - match: (?=,)
+                  set: alias_kw_args_pop
+                - include: if_closing_tokens_pop
+                - include: if_eol_pop
+                - include: core_syntax
 
   alias_kw_args_pop:
     - include: comments
     - include: alias_as_arg
     - include: arg_comma_and_skip_ws
-    - include: if_closing_token_pop
+    - include: if_closing_tokens_pop
     - include: if_eol_pop
     - include: core_syntax
 
@@ -1783,7 +1787,7 @@ contexts:
       scope: meta.path.modules.elixir entity.name.namespace.elixir
     - match: ''
       set:
-        - include: if_closing_token_pop
+        - include: if_closing_tokens_pop
         - include: core_syntax
         - include: if_non_space_or_eol_pop
 
@@ -1804,7 +1808,7 @@ contexts:
       set: alias_dot_or_pop
 
   alias_dot_or_pop:
-    - match: \.
+    - match: \.(?!\.)
       scope: meta.path.modules.elixir punctuation.accessor.elixir
       set: alias_name_or_tuple_pop
     - include: if_non_space_or_eol_pop
@@ -1879,7 +1883,7 @@ contexts:
         - include: escaped_or_interpolated
 
   capture:
-    - match: \&(?=\s*(?>{{module_name}}\s*\.\s*)*(?>{{identifier}}|{{operators}})\s*/\s*\d)
+    - match: \&(?=\s*(?>{{module_name}}\s*\.(?!\.)\s*)*(?>{{identifier}}|{{operators}})\s*/\s*\d)
       scope: keyword.operator.capture.elixir
       push:
         - match: (/)\s*(\d+)
@@ -2051,6 +2055,7 @@ contexts:
               captures:
                 1: keyword.operator.attribute.elixir
                 2: variable.other.attribute.elixir
+            - include: elixir_keywords
             - include: special_form
             # Avoid matching "and"/"or" as an id.
             - include: operator
@@ -2058,7 +2063,7 @@ contexts:
               scope: variable.other.unused.elixir
             - match: '{{identifier}}'
               scope: variable.other.elixir
-            - match: \.
+            - match: \.(?!\.)
               scope: punctuation.accessor.dot.elixir
             - include: empty_pop
         - include: core_syntax
@@ -2090,13 +2095,13 @@ contexts:
     - match: \s*
       pop: true
 
-  if_closing_token_pop:
-    - match: (?=[})\]])
+  if_closing_tokens_no_eol_pop:
+    - match: (?=[})\];]|%>|(?>catch|after|rescue|else|end){{not_id_key_suffix}})
       pop: true
 
   if_closing_tokens_pop:
-    - match: (?=[})\];]|$|%>|(?>catch|after|rescue|else|end){{not_id_key_suffix}})
-      pop: true
+    - include: if_closing_tokens_no_eol_pop
+    - include: if_eol_pop
 
   if_closing_paren_pop:
     - match: (?=\))
