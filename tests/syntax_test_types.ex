@@ -2,6 +2,8 @@
 
 ## Types
 
+@type
+#^^^^ variable.other.constant -keyword.declaration.type
 # NB: invalid to the compiler without "::" but not worth it to syntactically check it.
 @type name
 #     ^^^^ entity.name.type
@@ -57,6 +59,16 @@
 #          ^^^ variable.parameter
 #         ^ punctuation.definition.parameters.begin
 #     ^^^^ entity.name.type
+
+@type paren :: ( any )
+#                    ^ punctuation.definition.parens.end -invalid
+#              ^ punctuation.definition.parens.begin
+@type list :: [ any ]
+#                   ^ punctuation.section.brackets.end -invalid
+#             ^ punctuation.section.brackets.begin
+@type tuple :: { any }
+#                    ^ punctuation.section.sequence.end -invalid
+#              ^ punctuation.section.sequence.begin
 
 ### unquote
 

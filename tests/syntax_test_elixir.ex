@@ -1,39 +1,5 @@
 #// SYNTAX TEST "Elixir.sublime-syntax"
 
-## Declarations:
-
-def func1() do
-#// ^^^^^ entity.name.function
-end
-
-defmodule Some.Module do
-#//            ^^^^^^ entity.name.namespace.elixir
-#//       ^^^^ constant.other.module.elixir
-  def func2() do
-  end
-end
-
-defimpl Utility.YAY, for: Some.Module do
-#//                            ^^^^^^ constant.other.module.elixir
-#//                       ^^^^ constant.other.module.elixir
-#//             ^^^ constant.other.module.elixir
-  def types(_value), do: nil
-end
-
-defmodule X do
-  defdelegate alive?(pid), to: :erlang, as: :is_process_alive
-#//           ^^^^^^ entity.name.function
-end
-
-defprotocol Utility.ABC do
-#//                 ^^^ entity.name.namespace.elixir
-   @spec type(t) :: String.t()
-   def type(value, opts)
-
-   def type(value, opts) do
-   end
-end
-
 ## Attributes:
 
    @M
@@ -249,7 +215,10 @@ heredoc text
 
 ## Captures:
 
-   &0; &1; &func/1; &Module.func/2
+   &0; &1; &func/1; &Module.func/2; &Kernel.<>/2
+#//                                            ^ constant.numeric
+#//                                           ^ punctuation.accessor.slash.elixir
+#//                                         ^^ variable.other.capture.elixir
 #//                              ^ constant.numeric
 #//                             ^ punctuation.accessor.slash.elixir
 #//                         ^^^^ variable.other.capture.elixir
@@ -262,86 +231,7 @@ heredoc text
 #//    ^^ constant.other.capture.elixir
 #//^^invalid.illegal.capture.elixir
 
-## Function calls:
 
-# TODO:
-kernel.<>()
-kernel.<>
-&Kernel.<>/2
-Kernel.<>()
-
-  (&String.starts_with?/2).("a", "a")
-
-   Mod.fun() Mod.fun.() mod.fun.()
-#//                         ^ variable.function.elixir
-#//              ^^^ variable.function.elixir
-#//    ^^^ variable.function.elixir
-
-   Module.a.b.c.d()
-#//             ^ variable.function.elixir
-#//           ^ variable.other.member.elixir
-#//         ^ variable.other.member.elixir
-#//       ^ variable.function.elixir
-
-## Operators:
-[
-  [[l | r], l \\ r, l |> r, l -> r, l <- r, l => r, l .. r, l ++ r, l -- r, l <> r],
-
-  [l != r, l == r, l !== r, l === r, l <= r, l < r, l >= r, l > r],
-
-  [l not in r, l :: r],
-
-  [l &&& r, l ||| r, l <<< r, l >>> r, l ~~~ r, l ^^^ r, l && r, l and r, l || r, l or r, l xor r],
-
-  [not l, !l, -l, +l],
-
-  [l - r, l + r, l * r, l / r],
-
-  [l = r, (l; r), l.r]
-]
-
-   l &r
-#//^ variable.function.elixir
-   l +r
-#//^ variable.function.elixir
-   l -r
-#//^ variable.function.elixir
-   l << >>
-#//^ variable.function.elixir
-
-   assert not Enum.all?(list, & &1)
-#//^^^^^^ variable.function
-   assert+x
-#//^^^^^^ variable.other
-   assert +x
-#//^^^^^^ variable.function
-   assert-x
-#//^^^^^^ variable.other
-   assert -x
-#//^^^^^^ variable.function
-   [x ++ y, x++y]
-   [x -- y, x--y]
-
-
-# TODO:
-   case A.aasd do
-   end
-   case a.bcd do
-   end
-
-   assert cond fn ->
-   end
-
-   assert cond do
-#//       ^^^^ variable.other.elixir
-#//^^^^^^ variable.function.elixir
-     cond -> cond
-#//          ^^^^ variable.other.elixir
-#//  ^^^^ variable.other.elixir
-     x.cond -> cond.x
-#//            ^^^^ variable.other.elixir
-#//    ^^^^ variable.other.member.elixir
-   end
 
 ## Special forms:
 

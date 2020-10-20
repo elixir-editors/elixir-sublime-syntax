@@ -121,7 +121,10 @@ defmodule (NotAModule, do: (import X))
 defprotocol IEx.Info do
 #               ^^^^ entity.name.namespace
 #           ^^^ constant.other.module
+#          ^ punctuation.section.arguments.begin
 #<- keyword.declaration.protocol
+end
+#  ^ punctuation.section.arguments.end
 
 defprotocol(NoBeam, do: nil)
 #                          ^ punctuation.section.arguments.end
@@ -130,6 +133,36 @@ defprotocol(NoBeam, do: nil)
 #           ^^^^^^ entity.name.namespace
 #          ^ punctuation.section.arguments.begin
 #<- keyword.declaration.protocol
+
+### defimpl
+
+defimpl List.Chars, for: Atom do
+#                        ^^^^ constant.other.module
+#                   ^^^^ constant.other.keyword
+#                 ^ punctuation.separator.arguments
+#            ^^^^^ constant.other.module
+#           ^ punctuation.accessor.dot
+#       ^^^^ constant.other.module
+#      ^ punctuation.section.arguments.begin
+#<- keyword.declaration.implementation
+end
+#  ^ punctuation.section.arguments.end
+defimpl(List.Chars, for: Atom, do: :end)
+#                                      ^ punctuation.section.arguments.end
+#                            ^ punctuation.separator.arguments
+#                 ^ punctuation.separator.arguments
+#      ^ punctuation.section.arguments.begin
+
+defimpl Derivable, for: unquote(module) do end
+#                               ^^^^^^ variable.other
+#                       ^^^^^^^ keyword.other
+defimpl IEx.Info, for: [Date, Time, NaiveDateTime] do end
+#                                                ^ punctuation.section.brackets.end
+#                                 ^ punctuation.separator.sequence
+#                           ^ punctuation.separator.sequence
+#                       ^^^^ constant.other.module
+#                      ^ punctuation.section.brackets.begin
+
 
 ### def
 
