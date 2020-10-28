@@ -31,9 +31,6 @@ variables:
 contexts:
   main:
     - include: core_syntax
-    # NB: rules for type matching can only work when only they can match the union operator.
-    # We can still highlight "|" by including it here.
-    - include: union_operator
 
   core_syntax:
     - include: atom_keyword
@@ -49,6 +46,7 @@ contexts:
     - include: map
     - include: merge_conflict
     - include: operator
+    - include: union_operator
     - include: capture
     - include: dot_accessor
     - include: alias
@@ -244,8 +242,8 @@ contexts:
           scope: punctuation.section.brackets.end.elixir
           pop: true
         - include: comma_and_skip_ws
-        - include: parameters
         - include: cons_operator
+        - include: parameters
 
   map_param:
     - match: \%
@@ -293,7 +291,7 @@ contexts:
     # E.g.: @spec integer &&& integer :: integer
     - match: |
         (?x)
-        ((?!::|\.){{operators}} | (?>not|in|and|or){{not_id_key_suffix}})
+        ((?!::|<<|\.){{operators}} | (?>not|in|and|or){{not_id_key_suffix}})
       scope: variable.other.type.elixir
       set: spec_op_definition_next_pop
     - include: spec_op_definition_next_pop
@@ -380,7 +378,6 @@ contexts:
         - include: arg_comma_and_skip_ws
         - include: named_type
         - include: types
-        - include: union_operator
     - include: empty_pop
 
   named_type:
@@ -409,16 +406,20 @@ contexts:
     - match: when{{not_id_key_suffix}}
       scope: keyword.other.when.elixir
       set: [when_types_clause_pop, if_non_space_pop]
-    - match: (\|)|(::(?!:))
+    - match: (\|(?![:|>]))|(::(?!:))
       captures:
         1: keyword.operator.union.elixir
         2: keyword.operator.colon.elixir
       push: [if_non_space_pop, union_types_eol_pop, if_non_space_pop]
+    - include: if_closing_tokens_pop
     - include: if_non_space_or_eol_pop
 
   union_types_eol_pop:
     - include: named_type
+    - match: (?=\|(?![:|>])|::(?!:)|when{{not_id_key_suffix}})
+      pop: true
     - include: types
+    - include: if_closing_tokens_pop
     - include: if_non_space_or_eol_pop
 
   when_types_clause_pop:
@@ -428,6 +429,7 @@ contexts:
     - match: (?<=[\w"'@]:)
       comment: skips to keyword value
       push: [when_var_pop, if_non_space_pop]
+    - include: if_closing_tokens_pop
     - include: if_non_space_or_eol_pop
 
   when_var_pop:
@@ -437,7 +439,7 @@ contexts:
     - include: first_and_next_types_pop
 
   union_operator:
-    - match: \|
+    - match: \|(?![:|>])
       scope: keyword.operator.union.elixir
 
   paren_type:
@@ -451,7 +453,6 @@ contexts:
         - include: comma_and_skip_ws
         - include: named_type
         - include: types
-        - include: union_operator
 
   tuple_type:
     - match: \{
@@ -464,7 +465,6 @@ contexts:
         - include: comma_and_skip_ws
         - include: named_type
         - include: types
-        - include: union_operator
 
   list_type:
     - match: \[
@@ -477,7 +477,6 @@ contexts:
         - include: comma_and_skip_ws
         - include: named_type
         - include: types
-        - include: union_operator
 
   map_type:
     - match: \%
@@ -500,7 +499,6 @@ contexts:
         - include: comma_and_skip_ws
         - include: named_type
         - include: types
-        - include: union_operator
     - include: if_non_space_or_eol_pop
 
   binary_string_type:
@@ -512,7 +510,6 @@ contexts:
         - include: binary_string_body_pop
         - include: named_type
         - include: types
-        - include: union_operator
 
   numeric:
     - match: |
@@ -1281,6 +1278,12 @@ contexts:
     - include: arg_comma_and_skip_ws
     - include: core_syntax
 
+  block_or_keyword:
+    - include: atom_keyword
+    - include: fn_block
+    - include: do_block
+    - include: elixir_keywords
+
   do_block_pop:
     - match: do{{not_id_key_suffix}}
       scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
@@ -1419,6 +1422,7 @@ contexts:
     - match: (?>derive|deprecated|impl|file|fallback_to_any|behaviour|vsn|(?>before_|after_)?compile|dialyzer|external_resource|on_(?>definition|load)){{no_suffix_then_arguments}}
       scope: support.attr.elixir
       pop: true
+
     - match: (?>spec|(?:macro)?callback)(?={{no_suffix_then_arguments}}|\s*{{operators}})
       scope: keyword.declaration.type.elixir
       set:
@@ -1426,19 +1430,20 @@ contexts:
           scope: punctuation.section.arguments.begin.elixir
           set:
             - include: arguments_closing_pop
+            - match: ''
+              push:
+                - match: (?=not{{not_id_key_suffix}})
+                  set: spec_header_pop
+                - include: block_or_keyword
+                - include: spec_header_pop
+        - match: \s?
+          scope: punctuation.section.arguments.begin.elixir
+          set:
+            - match: (?=not{{not_id_key_suffix}})
+              set: spec_header_pop
             - include: block_or_keyword
-            - match: unquote(?=\s*\()
-              scope: keyword.other.unquote.elixir
-              push: [spec_definition_pop, arguments_pop]
-            - match: (?={{identifier}}|{{operators}})
-              push: spec_header_pop
-            - include: core_syntax
-        - include: block_or_keyword
-        - match: unquote(?=\s*\()
-          scope: keyword.other.unquote.elixir
-          set: [spec_definition_pop, arguments_pop]
-        - include: spec_header_pop
-        - include: if_non_space_pop
+            - include: spec_header_pop
+            - include: if_non_space_pop
 
     - match: (?>typep?|opaque){{no_suffix_then_arguments}}
       scope: keyword.declaration.type.elixir
@@ -1448,6 +1453,7 @@ contexts:
         - match: \(
           scope: punctuation.section.arguments.begin.elixir
           set:
+            - meta_scope: meta.function-call.arguments.elixir
             - include: arguments_closing_pop
             - include: block_or_keyword
             - match: unquote(?=\s*\()
@@ -1457,14 +1463,18 @@ contexts:
               scope: entity.name.type.elixir
               push: type_definition_pop
             - include: core_syntax
-        - include: block_or_keyword
-        - match: unquote(?=\s*\()
-          scope: keyword.other.unquote.elixir
-          set: [type_definition_pop, arguments_pop]
-        - match: '{{identifier}}'
-          scope: entity.name.type.elixir
-          set: type_definition_pop
-        - include: if_non_space_pop
+        - match: \s?
+          scope: punctuation.section.arguments.begin.elixir
+          set:
+            - meta_scope: meta.function-call.arguments.elixir
+            - include: block_or_keyword
+            - match: unquote(?=\s*\()
+              scope: keyword.other.unquote.elixir
+              set: [type_definition_pop, arguments_pop]
+            - match: '{{identifier}}'
+              scope: entity.name.type.elixir
+              set: type_definition_pop
+            - include: if_non_space_pop
 
     - include: block_or_keyword
 
@@ -1474,31 +1484,28 @@ contexts:
       # FIXME: Sublime doesn't list it as a "Goto"-symbol for some reason.
       scope: entity.name.constant.elixir
       pop: true
+
     - match: '{{identifier}}'
       comment: reference
       # FIXME: "Goto Definition" doesn't work no matter which scope is used.
       scope: variable.other.constant.elixir
       pop: true
 
-  block_or_keyword:
-    - include: atom_keyword
-    - include: fn_block
-    - include: do_block
-    - include: elixir_keywords
+  spec_after_unquote_pop:
+    - match: (?=(?!::){{operators}})
+      set: spec_op_definition_pop
+    - match: ''
+      set: spec_definition_pop
 
   spec_header_pop:
-    # FIXME: try to handle "@spec (x | y) + z"?
-    - match: |
-        (?x)
-        (?=
-          ({{operators}}|not{{not_id_key_suffix}})
-        | ({{identifier}}) \s* ((?!::){{operators}} | (?>in|and|or){{not_id_key_suffix}})
-        | {{module_name}} #\s* \. {{identifier}}
-        )
-      set: spec_op_definition_pop
-    - match: '{{identifier}}'
+    - match: unquote(?=\s*\()
+      scope: keyword.other.unquote.elixir
+      set: [spec_after_unquote_pop, if_non_space_or_eol_pop, arguments_pop]
+    - match: '{{identifier}}(?!\s*(?!::){{operators}})'
       scope: variable.other.type.elixir
       set: spec_definition_pop
+    - match: (?=\S)
+      set: spec_op_definition_pop
 
   markdown_comment:
     - match: (""")(.*)\n
@@ -1690,7 +1697,7 @@ contexts:
 
   # Separate to make @type matching possible.
   cons_operator:
-    - match: \|
+    - match: \|(?![:|>])
       scope: keyword.operator.cons.elixir
 
   tuple:
@@ -1717,8 +1724,8 @@ contexts:
           scope: punctuation.section.brackets.end.elixir
           pop: true
         - include: comma_and_skip_ws
-        - include: core_syntax
         - include: cons_operator
+        - include: core_syntax
 
   map:
     - match: \%
