@@ -210,3 +210,233 @@ heredoc text
   a: {bc: "#{0}"}
   #//      ^^^^^ string.quoted.double.yaml
   """
+
+## LiveView
+
+~L"""
+<div><%= @var %></div>
+#         ^^^ variable.other.constant.elixir
+#   ^ -string
+#^^^ entity.name.tag.block.any.html
+#               ^^^^^^ meta.string.elixir
+#    ^^^^^^^^^^^ meta.interpolation.eex
+#^^^^ meta.string.elixir
+ \"""m
+#    ^ -storage.type.string
+#^^ constant.character.escape.char.elixir
+ """m
+#    ^ -meta.string.elixir
+#   ^ storage.type.string
+#^^^ punctuation.definition.string.end
+#^^^^ meta.string.elixir
+~L"<div>\"</div>"m
+#               ^ punctuation.definition.string.end
+#       ^^ constant.character.escape.char.elixir
+#   ^^^ entity.name.tag.block.any.html
+~L'<div>\'</div>'m
+# NB: inactive checks to support ST3 for now.
+                ^ punctuation.definition.string.end
+        ^^ constant.character.escape.char.elixir
+    ^^^ entity.name.tag.block.any.html
+~L/\//m ~L|\||m ~L{\}}m ~L[\]]m ~L<\>>m ~L(\))m
+
+~L'''
+ '''m
+# NB: inactive checks to support ST3 for now.
+    ^ storage.type.string
+ ^^^ punctuation.definition.string.end
+
+
+## YAML
+
+~y"""
+key: #{value}
+#      ^^^^^ variable.other.elixir
+ \"""m
+ """m
+#   ^ storage.type.string
+#^^^ punctuation.definition.string.end
+~y"\""m ~y'\''m ~y/\//m ~y|\||m ~y{\}}m ~y[\]]m ~y<\>>m ~y(\))m
+#                                                            ^ punctuation.definition.string.end
+#                                                    ^ punctuation.definition.string.end
+#                                            ^ punctuation.definition.string.end
+#                                    ^ punctuation.definition.string.end
+#                            ^ punctuation.definition.string.end
+#                    ^ punctuation.definition.string.end
+#            ^ punctuation.definition.string.end
+#    ^ punctuation.definition.string.end
+
+~Y"""
+key: "#{value}\"""
+#             ^^ constant.character.escape.char.elixir
+ \"""m
+ """m
+#   ^ storage.type.string
+#^^^ punctuation.definition.string.end
+~Y"\""m ~Y'\''m ~Y/\//m ~Y|\||m ~Y{\}}m ~Y[\]]m ~Y<\>>m ~Y(\))m
+#                                                            ^ punctuation.definition.string.end
+#                                                    ^ punctuation.definition.string.end
+#                                            ^ punctuation.definition.string.end
+#                                    ^ punctuation.definition.string.end
+#                            ^ punctuation.definition.string.end
+#                    ^ punctuation.definition.string.end
+#            ^ punctuation.definition.string.end
+#    ^ punctuation.definition.string.end
+
+
+## JSON
+
+~j"1234"m
+#       ^ storage.type.string
+#      ^ punctuation.definition.string.end.elixir
+#  ^^^^ constant.numeric
+# ^ punctuation.definition.string.begin.elixir
+# ^^^^^^ meta.string.elixir
+
+~j/\//m ~j|\||m ~j{\}}m ~j[\]]m ~j<\>>m ~j(\))m
+#                                            ^ punctuation.definition.string.end
+#                                    ^ punctuation.definition.string.end
+#                            ^ punctuation.definition.string.end
+#                    ^ punctuation.definition.string.end
+#            ^ punctuation.definition.string.end
+#    ^ punctuation.definition.string.end
+
+~J"1234"
+#      ^ punctuation.definition.string.end.elixir
+#  ^^^^ constant.numeric
+# ^ punctuation.definition.string.begin.elixir
+# ^^^^^^ meta.string.elixir
+
+# TODO: how to handle JSON double quotes when escaped by Elixir rules?
+~J"\"1234\""
+
+~J'"\u0000"'
+
+~J'"\'"'
+
+~J'"\""'
+
+~J"""
+{
+  "k\u0065y\"": "J"
+}
+ \"""
+#^^ constant.character.escape.char.elixir
+ """a
+#   ^ storage.type.string
+#^^^ punctuation.definition.string.end
+
+~J'''
+ '''m
+#   ^ storage.type.string
+#^^^ punctuation.definition.string.end
+
+~J/\//m ~J|\||m ~J{\}}m ~J[\]]m ~J<\>>m ~J(\))m
+#                                            ^ punctuation.definition.string.end
+#                                    ^ punctuation.definition.string.end
+#                            ^ punctuation.definition.string.end
+#                    ^ punctuation.definition.string.end
+#            ^ punctuation.definition.string.end
+#    ^ punctuation.definition.string.end
+
+
+## Regex
+
+~r"""
+\"""
+ """m
+#   ^ storage.type.string
+#^^^ punctuation.definition.string.end
+~r'''
+\'''
+ '''m
+#   ^ storage.type.string
+#^^^ punctuation.definition.string.end
+~r"\""m ~r'\''m ~r/\//m ~r|\||m ~r{\}}m ~r[\]]m ~r<\>>m ~r(\))m
+#                                                            ^ punctuation.definition.string.end
+#                                                    ^ punctuation.definition.string.end
+#                                            ^ punctuation.definition.string.end
+#                                    ^ punctuation.definition.string.end
+#                            ^ punctuation.definition.string.end
+#                    ^ punctuation.definition.string.end
+#            ^ punctuation.definition.string.end
+#    ^ punctuation.definition.string.end
+
+~R"""
+\"""
+ """m
+#   ^ storage.type.string
+#^^^ punctuation.definition.string.end
+~R'''
+\'''
+ '''m
+#   ^ storage.type.string
+#^^^ punctuation.definition.string.end
+
+~R"\""m ~R'\''m ~R/\//m ~R|\||m ~R{\}}m ~R[\]]m ~R<\>>m ~R(\))m
+#                                                            ^ punctuation.definition.string.end
+#                                                    ^ punctuation.definition.string.end
+#                                            ^ punctuation.definition.string.end
+#                                    ^ punctuation.definition.string.end
+#                            ^ punctuation.definition.string.end
+#                    ^ punctuation.definition.string.end
+#            ^ punctuation.definition.string.end
+#    ^ punctuation.definition.string.end
+
+
+## Other
+
+"""
+\"""
+ """var
+#   ^^^ variable.other
+#^^^ punctuation.definition.string.end
+'''
+\'''
+ '''var
+#   ^^^ variable.other
+#^^^ punctuation.definition.string.end
+
+"\""var
+#   ^^^ variable.other
+'\''var
+#   ^^^ variable.other
+
+~S"""
+\"""
+ """m
+#   ^ storage.type.string
+#^^^ punctuation.definition.string.end
+~S'''
+ \'''
+ '''m
+#   ^ storage.type.string
+#^^^ punctuation.definition.string.end
+
+~s"\""m ~s'\''m ~s/\//m ~s|\||m ~s{\}}m ~s[\]]m ~s<\>>m ~s(\))m
+#                                                            ^ punctuation.definition.string.end
+#                                                    ^ punctuation.definition.string.end
+#                                            ^ punctuation.definition.string.end
+#                                    ^ punctuation.definition.string.end
+#                            ^ punctuation.definition.string.end
+#                    ^ punctuation.definition.string.end
+#            ^ punctuation.definition.string.end
+#    ^ punctuation.definition.string.end
+
+~S"\""m ~S'\''m ~S/\//m ~S|\||m ~S{\}}m ~S[\]]m ~S<\>>m ~S(\))m
+#                                                            ^ punctuation.definition.string.end
+#                                                    ^ punctuation.definition.string.end
+#                                            ^ punctuation.definition.string.end
+#                                    ^ punctuation.definition.string.end
+#                            ^ punctuation.definition.string.end
+#                    ^ punctuation.definition.string.end
+#            ^ punctuation.definition.string.end
+#    ^ punctuation.definition.string.end
+
+~w"some words"
+#       ^^^^^ -constant.other.symbol.atom
+#  ^^^^ -constant.other.symbol.atom
+~w"some words"a
+#             ^ storage.type.string
+#       ^^^^^ constant.other.symbol.atom
+#  ^^^^ constant.other.symbol.atom

@@ -6,8 +6,13 @@
 @doc """
 Don't insert a comment between `x` and `"""`.
     iex> def x
-"""
-#<- punctuation.definition.string.end
+#   ^^^^^^^^^^^ markup.raw.block.markdown
+#^^^ meta.string.elixir
+ """m
+#   ^ variable.other
+#^^^ punctuation.definition.string.end
+#^^^ meta.string.elixir
+#   ^ -meta.string.elixir
 
 @doc """
 #^^^ support.attr.doc
@@ -26,8 +31,28 @@ Don't insert a comment between `x` and `"""`.
 @doc """
 Don't insert a comment between `X` and `"""`.
     defmodule X
-"""
-#<- punctuation.definition.string.end
+#   ^^^^^^^^^^^^ markup.raw.block.markdown
+ """m
+#   ^ variable.other
+#^^^ punctuation.definition.string.end
+#^^^ meta.string.elixir
+#   ^ -meta.string.elixir
+
+@doc ~S'''
+#    ^^^^^^ meta.string.elixir
+\'''m
+ '''m
+#   ^ storage.type.string
+#^^^ punctuation.definition.string.end
+#^^^^ meta.string.elixir
+
+@doc ~S"""
+#    ^^^^^^ meta.string.elixir
+\"""m
+ """m
+#   ^ storage.type.string
+#^^^ punctuation.definition.string.end
+#^^^^ meta.string.elixir
 
 @doc """
     defmodule X
