@@ -76,7 +76,7 @@ end
 
 defmodule User, do: defstruct [:name]
 #                              ^^^^^ constant.other.symbol
-#                   ^^^^^^^^^ keyword.other
+#                   ^^^^^^^^^ keyword.declaration
 #               ^^^ constant.other.keyword
 #             ^ punctuation.separator.arguments
 #         ^^^^ entity.name.namespace
@@ -162,6 +162,17 @@ defimpl IEx.Info, for: [Date, Time, NaiveDateTime] do end
 #                           ^ punctuation.separator.sequence
 #                       ^^^^ constant.other.module
 #                      ^ punctuation.section.brackets.begin
+
+ defimpl Collectable, for: List do end
+#^^^^^^^ keyword.declaration.implementation
+ defrecord :user, [:name, :age]
+#^^^^^^^^^ keyword.declaration
+ defstruct [:id, :name, :address]
+#^^^^^^^^^ keyword.declaration
+ defexception message: "error"
+#^^^^^^^^^^^^ keyword.declaration
+ defoverridable child_spec: 1
+#^^^^^^^^^^^^^^ keyword.declaration
 
 
 ### def
@@ -318,6 +329,42 @@ do def line, do: :::end
 #                   ^^^ punctuation.section.block.end -invalid
 #                ^^^ constant.other.symbol
 #<- punctuation.section.block.begin
+
+def ault(x \\
+#          ^^ keyword.operator.default
+#        ^ variable.parameter
+  x,
+#  ^ punctuation.separator.sequence
+# ^ variable.other
+  \\:
+# ^^^ constant.other.keyword -keyword.operator.default
+ y), do: {x, y}
+#  ^ punctuation.separator.arguments
+#^ variable.parameter
+def ault(x \\::: x), do: x
+#                ^ variable.other -variable.parameter
+#            ^^^ constant.other.symbol
+#          ^^ keyword.operator.default
+#        ^ variable.parameter
+def ault(x \\:x x, y \\:" " y) do end
+#                           ^ variable.other -variable.parameter
+#                      ^^^^ constant.other.symbol
+#               ^ variable.other -variable.parameter
+#            ^^ constant.other.symbol
+#          ^^ keyword.operator.default
+#        ^ variable.parameter
+
+def f(x) when x do end
+#             ^ variable.other -variable.parameter -variable.function
+def f(x) when x in @enum do
+#                   ^^^^ variable.other.constant -variable.parameter -entity.name.constant
+#             ^ variable.other -variable.parameter
+end
+
+def @attr do attr end
+#            ^^^^ variable.other
+#    ^^^^ variable.parameter
+#   ^ entity.name.function
 
 
 ### alias

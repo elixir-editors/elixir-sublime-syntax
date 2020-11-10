@@ -415,7 +415,23 @@ def run(), do: nil
 #     ^^^^^^^^^ variable.other.type
  any :::
 #    ^^^ constant.other.symbol
-#^^^ variable.function
+#^^^ variable.function -support.type
+
+@spec multiple_lines()
+        ::
+#       ^^ keyword.operator.colon
+        any
+#       ^^^ support.type
+        |
+#       ^ keyword.operator.union
+          any
+#         ^^^ support.type
+        | any
+#         ^^^ support.type
+#       ^ keyword.operator.union
+ any :::
+#    ^^^ constant.other.symbol
+#^^^ variable.function -support.type
 
 @spec integer >>>
 #             ^^^ variable.other.type
