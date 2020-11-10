@@ -158,6 +158,7 @@ contexts:
 
   function_post_params_pop:
     - include: arg_comma_and_skip_ws
+    - include: last_id_argument
     - include: do_block_pop
     - include: if_closing_tokens_pop
     - include: core_syntax
@@ -166,8 +167,8 @@ contexts:
 
   fn_parameters:
     # NB: no default parameters in fn blocks
-    - match: \\\\(?!:)
-      scope: keyword.operator.other.elixir invalid.illegal.default-operator.elixir
+    - match: \\\\(?!:(?![:'"[:alpha:]]))
+      scope: keyword.operator.default.elixir invalid.illegal.default-operator.elixir
     - include: parameters
 
   parameters:
@@ -184,8 +185,8 @@ contexts:
     - match: \,(?=\s*\))
       scope: invalid.illegal.separator.elixir
     - include: comma_and_skip_ws
-    - match: \\\\(?!:)
-      scope: keyword.operator.other.elixir
+    - match: \\\\(?!:(?![:'"[:alpha:]]))
+      scope: keyword.operator.default.elixir
       push:
         - match: (?=[,)]|(?>when|do){{not_id_key_suffix}})
           pop: true
@@ -374,14 +375,13 @@ contexts:
     - match: (?=when{{not_id_key_suffix}})
       comment: no when clause directly after "::"
       pop: true
-    - match: ''
+    - match: (?=\S)
       set:
         - include: named_type
-        - match: (?=\|(?![:|>])|::(?!:)|when{{not_id_key_suffix}})
-          set: next_types_pop
+        - match: (?=$|\|(?![:|>])|::(?!:)|when{{not_id_key_suffix}})
+          set: [next_types_pop, if_non_space_pop]
         # NB: we can't prevent matching more than one type expression.
         - include: types
-        - include: if_eol_pop
 
   next_types_pop:
     - include: comments
@@ -410,6 +410,7 @@ contexts:
     - include: if_non_space_or_eol_pop
 
   when_var_pop:
+    - include: if_eol_pop
     - match: var{{not_id_key_suffix}}
       scope: support.type.elixir
     - include: first_and_next_types_pop
@@ -1832,15 +1833,14 @@ contexts:
         1: punctuation.definition.constant.elixir
     - match: |
         (?x)
-        (?! ::: | %:(?:{{atom_id}}|['"]) ) # No ::: and %:XYZ{} (it's a map)
-        {{atom_symbol}}(:)(?!:)
+        (?! \?: | ::: | %:(?:{{atom_id}}|['"]) ) # No ::: and %:XYZ{} (it's a map)
+        {{atom_symbol}}(:)(?![:'"[:alpha:]])
       comment: keyword symbol
       scope: constant.other.keyword.elixir
       captures:
         1: punctuation.definition.constant.elixir
     # Look for ':' behind the closing apostrophe.
-    # TODO: doesn't work for: "abc #{"xyz"}": ...
-    - match: (?=(["'])(?>\\.|(?!\1).)*\1:(?!:))
+    - match: (?x)(?=(["']) (?>\\. | (?!\1).)* \1:(?![:'"[:alpha:]]))
       comment: keyword string
       push:
         - match: (.)
@@ -2025,36 +2025,40 @@ contexts:
         - match: (\,)(?=\s*do{{not_id_key_suffix}})
           scope: invalid.illegal.separator.elixir
         - include: arg_comma_and_skip_ws
+        - include: last_id_argument
         - include: do_block_pop
-        - match: |
-            (?x)
-            (?=
-              (?>
-                @\s*{{identifier}} |
-                {{identifier}}(?:\s*\.\s*{{identifier}})*
-              )
-              \s*do{{not_id_key_suffix}}
-            )
-          comment: prevent matching last argument as a function call
-          push:
-            - match: (@)\s*({{identifier}})
-              comment: reference
-              captures:
-                1: keyword.operator.attribute.elixir
-                2: variable.other.attribute.elixir
-            - include: elixir_keywords
-            - include: special_form
-            # Avoid matching "and"/"or" as an id.
-            - include: operator
-            - match: _{{identifier}}?
-              scope: variable.other.unused.elixir
-            - match: '{{identifier}}'
-              scope: variable.other.elixir
-            - match: \.(?!\.)
-              scope: punctuation.accessor.dot.elixir
-            - include: empty_pop
         - include: if_closing_tokens_pop
         - include: core_syntax
+
+  last_id_argument:
+    # E.g.: func first, second, last do end
+    - match: |
+        (?x)
+        (?=
+          (?>
+            @\s*{{identifier}}
+          | {{identifier}}(?:\s*\.\s*{{identifier}})*
+          )
+          \s*do{{not_id_key_suffix}}
+        )
+      comment: prevent matching last argument as a function call
+      push:
+        - match: (@)\s*({{identifier}})
+          comment: reference
+          captures:
+            1: keyword.operator.attribute.elixir
+            2: variable.other.constant.elixir
+        - include: elixir_keywords
+        - include: special_form
+        # Avoid matching "and"/"or" as an id.
+        - include: operator
+        - match: _{{identifier}}?
+          scope: variable.other.unused.elixir
+        - match: '{{identifier}}'
+          scope: variable.other.elixir
+        - match: \.(?!\.)
+          scope: punctuation.accessor.dot.elixir
+        - include: empty_pop
 
   special_form:
     - match: __(?>MODULE|ENV|DIR|CALLER|STACKTRACE)__{{not_id_key_suffix}}
@@ -2069,8 +2073,11 @@ contexts:
       scope: constant.language.elixir
 
   elixir_functions:
+    - match: (?>defrecord|defstruct|defexception|defoverridable){{no_suffix_then_arguments}}
+      scope: keyword.declaration.elixir
+      push: arguments_paren_or_ws_pop
     # TODO: separate and assign different scopes
-    - match: (?>case|for|if|cond|unless|try|receive|defrecord|defstruct|defexception|defoverridable|exit|raise|reraise|throw|import|require|use|using|quote|unquote|super|with){{no_suffix_then_arguments}}
+    - match: (?>case|for|if|cond|unless|try|receive|exit|raise|reraise|throw|import|require|use|using|quote|unquote_splicing|unquote|super|with){{no_suffix_then_arguments}}
       scope: keyword.other.elixir
       push: arguments_paren_or_ws_pop
 
