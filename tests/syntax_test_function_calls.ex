@@ -48,16 +48,23 @@ Kernel.<>(); kernel.<>()
 kernel.<>
 #      ^^ variable.other.member -variable.function
 
-   Mod.fun(); Mod.fun.(); mod.fun.()
-#//                          ^ variable.function
-#//               ^^^ variable.function
-#//    ^^^ variable.function
+ Mod.fun(); Mod.fun.(); mod.fun.()
+#                                ^ punctuation.section.arguments.end
+#                               ^ punctuation.section.arguments.begin
+#                              ^ punctuation.accessor.dot
+#                           ^^^ variable.function
+#                          ^ punctuation.accessor.dot
+#                  ^ punctuation.accessor.dot
+#               ^^^ variable.function
+#              ^ punctuation.accessor.dot
+#    ^^^ variable.function
+#   ^ punctuation.accessor.dot
 
-   Module.a.b.c.d()
-#//             ^ variable.function
-#//           ^ variable.other.member
-#//         ^ variable.other.member
-#//       ^ variable.function
+ Module.a.b.c.d()
+#             ^ variable.function
+#           ^ variable.other.member
+#         ^ variable.other.member
+#       ^ variable.function
 
 (&String.starts_with?/2).("a", "a")
 #                                 ^ punctuation.section.arguments.end
@@ -122,14 +129,17 @@ start(fn -> raise "stop"  end)
 #                            ^ punctuation.section.arguments.end
 #^^^^ variable.function
 
-  assert cond do
-#//       ^^^^ variable.other
-#//^^^^^^ variable.function
-     cond -> cond
-#//          ^^^^ variable.other
-#//  ^^^^ variable.other
-     x.cond -> cond.x
-#//            ^^^^ variable.other
-#//    ^^^^ variable.other.member
+ cond cond do
+#     ^^^^ variable.other
+#^^^^ keyword.other
+ cond -> cond
+#        ^^^^ variable.other
+#^^^^ variable.other
+ x.cond -> cond.x
+#              ^ punctuation.accessor.dot
+#          ^^^^ variable.other
+#  ^^^^ variable.other.member
+# ^ punctuation.accessor.dot
 end
+#  ^ punctuation.section.arguments.end
 #<- punctuation.section.block.end
