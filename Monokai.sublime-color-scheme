@@ -80,6 +80,12 @@
       "foreground": "color(var(yellow2))"
     },
     {
+      "name": "Labelled type",
+      "scope": "variable.other.named-type.elixir",
+      "font_style": "italic",
+      "foreground": "color(var(white) l(- 20%))"
+    },
+    {
       "name": "Darker pre-defined types",
       "scope": "support.type.elixir",
       "foreground": "color(var(blue) l(- 20%))"
