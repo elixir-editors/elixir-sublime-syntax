@@ -117,7 +117,7 @@ contexts:
       set:
         - match: |
             (?x)
-            (?>(_{{identifier}}?)|({{identifier}}))?
+            (?>((?=_){{identifier}})|({{identifier}}))?
             \s*
             ({{operators}}|(?>in|and|or){{not_id_key_suffix}})
           comment: e.g. x && y
@@ -177,8 +177,8 @@ contexts:
       scope: variable.language.special-form.elixir
     - match: |
         (?x)
-        (?>((?<![^.]\.)_{{identifier}}?)|({{identifier}}))
-        (?=\s*(?>[,;)}\]=|\\]|\.\.|::|->|(?>when|in|do){{not_id_key_suffix}}|$))
+        (?>((?=_){{identifier}})|({{identifier}}))
+        (?=\s*(?>[,;)}\]=|\\]|\.\.|::|->|<>|>>|(?>when|in|do){{not_id_key_suffix}}|$))
       captures:
         1: variable.parameter.unused.elixir
         2: variable.parameter.elixir
@@ -192,7 +192,7 @@ contexts:
           pop: true
         - include: core_syntax
     - match: (?=\()
-      set: paren_param_pop
+      push: paren_param_pop
     - include: tuple_param
     - include: list_param
     - include: map_param
@@ -237,10 +237,12 @@ contexts:
     - match: \%
       scope: punctuation.section.mapping.begin.elixir
       push:
-        - match: _(?:{{module_name}}|{{identifier}})?
-          scope: variable.other.unused.elixir
-          set: map_param_body_pop
         - include: alias_names
+        - match: ((?=_){{identifier}})|({{identifier}})
+          captures:
+            1: variable.parameter.unused.elixir
+            2: variable.parameter.elixir
+          set: map_param_body_pop
         - include: map_param_body_pop
 
   map_param_body_pop:
@@ -1344,11 +1346,10 @@ contexts:
         - match: '{{module_name}}'
           scope: constant.other.module.elixir
           pop: true
-        - match: _{{identifier}}?
-          scope: variable.other.unused.elixir
-          pop: true
-        - match: '{{identifier}}'
-          scope: variable.other.elixir
+        - match: ((?=_){{identifier}})|({{identifier}})
+          captures:
+            1: variable.other.unused.elixir
+            2: variable.other.elixir
           pop: true
 
   dot_accessor:
@@ -1700,8 +1701,10 @@ contexts:
       scope: punctuation.section.mapping.begin.elixir
       push:
         - include: alias_names
-        - match: _(?:{{module_name}}|{{identifier}})?
-          scope: variable.other.unused.elixir
+        - match: ((?=_){{identifier}})|({{identifier}})
+          captures:
+            1: variable.other.unused.elixir
+            2: invalid.illegal.struct-name.elixir
           set: map_body_pop
         - include: map_body_pop
 
@@ -2052,10 +2055,10 @@ contexts:
         - include: special_form
         # Avoid matching "and"/"or" as an id.
         - include: operator
-        - match: _{{identifier}}?
-          scope: variable.other.unused.elixir
-        - match: '{{identifier}}'
-          scope: variable.other.elixir
+        - match: ((?=_){{identifier}})|({{identifier}})
+          captures:
+            1: variable.other.unused.elixir
+            2: variable.other.elixir
         - match: \.(?!\.)
           scope: punctuation.accessor.dot.elixir
         - include: empty_pop
