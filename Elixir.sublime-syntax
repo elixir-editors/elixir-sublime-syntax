@@ -92,7 +92,7 @@ contexts:
 
   function_header_args_pop:
     - match: unquote(?=\s*\()
-      scope: keyword.other.elixir
+      scope: keyword.other.unquote.elixir
       set: [function_params_or_eol_pop, arguments_pop]
 
     - include: do_block_pop
@@ -301,7 +301,6 @@ contexts:
 
   types:
     - include: comments
-    - include: unquote_call
     - include: block_or_keyword
     - match: __MODULE__{{not_id_key_suffix}}
       scope: variable.language.special-form.elixir
@@ -347,6 +346,7 @@ contexts:
     - match: \.(?!\.)
       scope: punctuation.accessor.dot.elixir
       push:
+        - include: unquote_call_pop
         - match: '{{identifier}}'
           scope: storage.type.remote.elixir
           set: type_arguments_or_pop
@@ -531,7 +531,8 @@ contexts:
       scope: keyword.operator.colon.elixir
       push:
         - meta_scope: meta.type.binary.elixir
-        - include: unquote_call
+        - match: (?=unquote\()
+          push: unquote_call_pop
         - match: '{{identifier}}|[-*\d]+'
           scope: storage.type.binary.elixir
         - match: (?=\()
@@ -1255,6 +1256,8 @@ contexts:
         - include: special_form
         - include: module_name
         - include: atom_symbol
+        - match: (?=unquote\()
+          push: unquote_call_pop
         - include: module_accessor_or_pop
     - include: arg_comma_and_skip_ws
     - include: core_syntax
@@ -1293,7 +1296,7 @@ contexts:
 
   module_accessor_or_pop:
     - match: \.(?!\.)
-      scope: punctuation.accessor.elixir
+      scope: punctuation.accessor.dot.elixir
     - include: if_non_space_or_eol_pop
 
   module_function_call_pop:
@@ -1304,6 +1307,7 @@ contexts:
         2: punctuation.accessor.dot.elixir
       set:
         # NB: match separately so that <%%= Routes.<%= xyz %> %> is recognised correctly.
+        - include: unquote_call_pop
         - match: '{{identifier}}|{{operators}}'
           scope: variable.function.elixir
           set: arguments_or_pop
@@ -1356,6 +1360,7 @@ contexts:
     - match: \.(?!\.)
       scope: punctuation.accessor.dot.elixir
       push:
+        - include: unquote_call_pop
         - match: (?>{{identifier}}|{{operators}}){{not_id_key_suffix}}(?=\s*do{{not_id_key_suffix}})
           comment: avoids matching 'xyz' as a function call, e.g. "func 1, 2, map.xyz do ... end"
           scope: variable.other.member.elixir
@@ -1404,14 +1409,14 @@ contexts:
             - include: arguments_closing_pop
             - include: block_or_keyword
             - match: unquote(?=\s*\()
-              scope: keyword.other.elixir
+              scope: keyword.other.unquote.elixir
               push: [spec_definition_pop, arguments_pop]
             - match: (?={{identifier}}|{{operators}})
               push: spec_header_pop
             - include: core_syntax
         - include: block_or_keyword
         - match: unquote(?=\s*\()
-          scope: keyword.other.elixir
+          scope: keyword.other.unquote.elixir
           set: [spec_definition_pop, arguments_pop]
         - include: spec_header_pop
         - include: if_non_space_pop
@@ -1427,7 +1432,7 @@ contexts:
             - include: arguments_closing_pop
             - include: block_or_keyword
             - match: unquote(?=\s*\()
-              scope: keyword.other.elixir
+              scope: keyword.other.unquote.elixir
               push: [type_definition_pop, arguments_pop]
             - match: '{{identifier}}'
               scope: entity.name.type.elixir
@@ -1435,7 +1440,7 @@ contexts:
             - include: core_syntax
         - include: block_or_keyword
         - match: unquote(?=\s*\()
-          scope: keyword.other.elixir
+          scope: keyword.other.unquote.elixir
           set: [type_definition_pop, arguments_pop]
         - match: '{{identifier}}'
           scope: entity.name.type.elixir
@@ -1793,6 +1798,7 @@ contexts:
       push:
         - meta_scope: meta.path.modules.elixir
         - include: alias_module_name_pop
+        - include: unquote_call_pop
         - match: __MODULE__
           scope: variable.language.special-form.elixir
           set: alias_dot_or_pop
@@ -1800,13 +1806,14 @@ contexts:
         - include: alias_dot_or_pop
 
   alias_module_name_pop:
+    - include: unquote_call_pop
     - match: '{{module_name}}{{not_id_key_suffix}}'
       scope: constant.other.module.elixir
       set: alias_dot_or_pop
 
   alias_dot_or_pop:
     - match: \.(?!\.)
-      scope: meta.path.modules.elixir punctuation.accessor.elixir
+      scope: meta.path.modules.elixir punctuation.accessor.dot.elixir
       set: alias_name_or_tuple_pop
     - include: if_non_space_or_eol_pop
 
@@ -2076,19 +2083,31 @@ contexts:
       scope: constant.language.elixir
 
   elixir_functions:
-    - match: (?>defrecord|defstruct|defexception|defoverridable){{no_suffix_then_arguments}}
-      scope: keyword.declaration.elixir
-      push: arguments_paren_or_ws_pop
     # TODO: separate and assign different scopes
-    - match: (?>case|for|if|cond|unless|try|receive|exit|raise|reraise|throw|import|require|use|using|quote|unquote_splicing|unquote|super|with){{no_suffix_then_arguments}}
-      scope: keyword.other.elixir
+    - match: |-
+        (?x)
+        (?>
+          (unquote_splicing|unquote)
+        | (defrecord|defstruct|defexception|defoverridable)
+        | (case|for|if|cond|unless|try|receive|exit|raise|reraise
+          |throw|import|require|use|using|quote|super|with)
+        ){{no_suffix_then_arguments}}
+      captures:
+        1: keyword.other.unquote.elixir
+        2: keyword.declaration.elixir
+        3: keyword.other.elixir
       push: arguments_paren_or_ws_pop
 
-  unquote_call:
-    - match: unquote(?=\s*\()
-      scope: keyword.other.elixir
-      push: arguments_paren_or_ws_pop
-  
+  unquote_call_pop:
+    - match: unquote(?=\()
+      scope: keyword.other.unquote.elixir
+      set: [unquote_post_args_pop, arguments_pop]
+
+  unquote_post_args_pop:
+    - match: (?=\()
+      set: arguments_pop
+    - include: empty_pop
+
   spaces_pop:
     - match: \s*
       pop: true
