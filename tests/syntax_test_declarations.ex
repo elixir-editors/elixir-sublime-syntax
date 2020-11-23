@@ -294,6 +294,15 @@ def(unquote(head)(a))
 def unquote(name)(a, b), do: :x
 #                 ^ variable.parameter
 #           ^^^^ variable.other
+def unquote(name)(unquote_splicing(args)), do: unquote(compiled)
+#                                                      ^^^^^^^^ variable.other
+#                                              ^^^^^^^ keyword.other
+#                                       ^ punctuation.definition.parameters.end
+#                                  ^^^^ variable.other
+#                 ^^^^^^^^^^^^^^^^ keyword.other
+#                ^ punctuation.definition.parameters.begin
+#           ^^^^ variable.other
+#   ^^^^^^^ keyword.other
 
 def fun!() do end; def fun?() do end
 #                      ^^^^ entity.name.function
@@ -365,6 +374,61 @@ def @attr do attr end
 #            ^^^^ variable.other
 #    ^^^^ variable.parameter
 #   ^ entity.name.function
+
+def changeset(%__MODULE__{} = model \\ %__MODULE__{}, params)
+#                                       ^^^^^^^^^^ variable.language.special-form
+#                             ^^^^^ variable.parameter
+#              ^^^^^^^^^^ variable.language.special-form
+
+def handle_info({__MODULE__, :done}, state)
+#                                    ^^^^^ variable.parameter
+#                ^^^^^^^^^^ variable.language.special-form
+def handle_info(@update_counter_message, state)
+#                ^^^^^^^^^^^^^^^^^^^^^^ variable.other.constant
+#               ^ keyword.operator.attribute
+def message(%module{__exception__: true} = exception)
+#                                          ^^^^^^^^^ variable.parameter
+#                                  ^^^^ constant.language
+#                   ^^^^^^^^^^^^^^ constant.other.keyword
+#            ^^^^^^ variable.parameter
+
+def unused(_, %_{}, {_}, [_], [_ | _], (_), <<_>>, <<_, _::_>>, _ <> _, _.._)
+#                                                                           ^ punctuation.definition.parameters.end
+#                                                                          ^ variable.parameter.unused
+#                                                                        ^^ keyword.operator.range
+#                                                                       ^ variable.parameter.unused
+#                                                                    ^ variable.parameter.unused
+#                                                                 ^^ keyword.operator.binary-concat
+#                                                               ^ variable.parameter.unused
+#                                                           ^^ punctuation.definition.string.end
+#                                                          ^ storage.type.binary
+#                                                       ^ variable.parameter.unused
+#                                                    ^ variable.parameter.unused
+#                                                  ^^ punctuation.definition.string.begin
+#                                              ^^ punctuation.definition.string.end
+#                                             ^ variable.parameter.unused
+#                                           ^^ punctuation.definition.string.begin
+#                                        ^ punctuation.definition.parameters.end
+#                                       ^ variable.parameter.unused
+#                                      ^ punctuation.definition.parameters.begin
+#                                   ^ punctuation.section.brackets.end
+#                                  ^ variable.parameter.unused
+#                                ^ keyword.operator.cons
+#                              ^ variable.parameter.unused
+#                             ^ punctuation.section.brackets.begin
+#                          ^ punctuation.section.brackets.end
+#                         ^ variable.parameter.unused
+#                        ^ punctuation.section.brackets.begin
+#                     ^ punctuation.section.sequence.end
+#                    ^ variable.parameter.unused
+#                   ^ punctuation.section.sequence.begin
+#                ^ punctuation.section.mapping.end
+#               ^ punctuation.section.mapping.begin
+#              ^ variable.parameter.unused
+#             ^ punctuation.section.mapping.begin
+#           ^ punctuation.separator.sequence
+#          ^ variable.parameter.unused
+#         ^ punctuation.definition.parameters.begin
 
 
 ### alias
