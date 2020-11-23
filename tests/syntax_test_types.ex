@@ -84,6 +84,12 @@
 @type(unquote())
 #     ^^^^^^^ keyword.other
 
+@type enum :: Enum.unquote(:t)
+#                            ^ punctuation.section.arguments.end
+#                         ^ punctuation.section.arguments.begin
+#                  ^^^^^^^ keyword.other
+#                 ^ punctuation.accessor.dot
+
 @type unquote :: any
 #     ^^^^^^^ entity.name.type
 

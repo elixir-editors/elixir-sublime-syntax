@@ -62,12 +62,16 @@ defmodule fn end; defmodule do end
 #         ^^ punctuation.section.block.begin
 #<- keyword.declaration.module
 
+defmodule Dynamic.unquote(name).Module do end
+#                               ^^^^^^ entity.name.namespace
+#                 ^^^^^^^ keyword.other.unquote
+
 module = defmodule unquote(name) do
 #                                ^^ keyword.context.block
 #                              ^ punctuation.section.arguments.end
 #                          ^^^^ variable.other.elixir
 #                         ^ punctuation.section.arguments.begin
-#                  ^^^^^^^ keyword.other
+#                  ^^^^^^^ keyword.other.unquote
 #        ^^^^^^^^^ keyword.declaration.module
 #      ^ keyword.operator.match
 #<- variable.other
@@ -92,7 +96,7 @@ defmodule(Dynamic, unquote(block))
 #                               ^^ punctuation.section.arguments.end
 #                          ^^^^^ variable.other
 #                         ^ punctuation.section.arguments.begin
-#                  ^^^^^^^ keyword.other
+#                  ^^^^^^^ keyword.other.unquote
 #                ^ punctuation.separator.arguments
 #         ^^^^^^^ entity.name.namespace
 #        ^ punctuation.section.arguments.begin
@@ -155,7 +159,7 @@ defimpl(List.Chars, for: Atom, do: :end)
 
 defimpl Derivable, for: unquote(module) do end
 #                               ^^^^^^ variable.other
-#                       ^^^^^^^ keyword.other
+#                       ^^^^^^^ keyword.other.unquote
 defimpl IEx.Info, for: [Date, Time, NaiveDateTime] do end
 #                                                ^ punctuation.section.brackets.end
 #                                 ^ punctuation.separator.sequence
@@ -461,16 +465,16 @@ alias __MODULE__.B.{ C }
 alias unquote(path), as: Alias
 #                        ^^^^^ entity.name.namespace.elixir
 #             ^^^^ variable.other.elixir
-#     ^^^^^^^ keyword.other.elixir
+#     ^^^^^^^ keyword.other.unquote
 alias unquote(path), as: unquote(alias)
 #                                ^^^^^ variable.other.elixir
-#                        ^^^^^^^ keyword.other.elixir
+#                        ^^^^^^^ keyword.other.unquote
 #             ^^^^ variable.other.elixir
-#     ^^^^^^^ keyword.other.elixir
+#     ^^^^^^^ keyword.other.unquote
 alias unquote(path).Live, as: L
 #                             ^ entity.name.namespace.elixir
 #             ^^^^ variable.other.elixir
-#     ^^^^^^^ keyword.other.elixir
+#     ^^^^^^^ keyword.other.unquote
 alias ExUnit.EventManager, as: EM
 #                              ^^ entity.name.namespace.elixir
 #     ^^^^^^^^^^^^^^^^^^^ meta.path.modules.elixir
@@ -478,12 +482,12 @@ alias A.B.{C, D}
 #              ^ punctuation.section.braces.end.elixir
 #          ^ constant.other.module.elixir
 #         ^ punctuation.section.braces.begin.elixir
-#        ^ punctuation.accessor.elixir
+#        ^ punctuation.accessor.dot
 alias A. { B . { C , D } }
 #                    ^ constant.other.module.elixir
 #                ^ constant.other.module.elixir
-#            ^ punctuation.accessor.elixir
-#      ^ punctuation.accessor.elixir
+#            ^ punctuation.accessor.dot
+#      ^ punctuation.accessor.dot
 #     ^^^^^^^^^^^^^^^^^^^^ meta.path.modules.elixir
 alias A.B.{
 #         ^ punctuation.section.braces.begin.elixir
@@ -564,6 +568,14 @@ do alias A end
 #          ^^^ punctuation.section.block.end
 do alias A, as: B end
 #                 ^^^ punctuation.section.block.end
+
+alias Elixir.unquote(Kernel), as: K
+#                                 ^ entity.name.namespace
+#                          ^ punctuation.section.arguments.end
+#                    ^^^^^^ constant.other.module
+#                   ^ punctuation.section.arguments.begin
+#            ^^^^^^^ keyword.other.unquote
+#           ^ punctuation.accessor.dot
 
 ### require
 require EEx.Tokenizer, as: T
