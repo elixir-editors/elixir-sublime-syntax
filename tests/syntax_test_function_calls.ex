@@ -131,7 +131,7 @@ start(fn -> raise "stop"  end)
 
  cond cond do
 #     ^^^^ variable.other
-#^^^^ keyword.other
+#^^^^ keyword.control
  cond -> cond
 #        ^^^^ variable.other
 #^^^^ variable.other

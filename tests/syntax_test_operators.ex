@@ -134,7 +134,7 @@
 #                                 ^^ keyword.operator.colon
 #                               ^ variable.other
 #                            ^ variable.other
-#                         ^^ keyword.other
+#                         ^^ keyword.operator.logical
 #                     ^^^ keyword.operator.logical
 #                   ^ variable.other
 #                ^ variable.other

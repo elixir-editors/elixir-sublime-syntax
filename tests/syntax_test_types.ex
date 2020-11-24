@@ -73,25 +73,44 @@
 ### unquote
 
 @type unquote()
-#     ^^^^^^^ keyword.other
+#     ^^^^^^^ keyword.other.unquote
+@type unquote()()
+#               ^ punctuation.definition.parameters.end
+#              ^ punctuation.definition.parameters.begin
+#             ^ punctuation.section.arguments.end
+#            ^ punctuation.section.arguments.begin
 @type unquote(name)
 #             ^^^^ variable.other
-#     ^^^^^^^ keyword.other
+#     ^^^^^^^ keyword.other.unquote
 @type unquote(quote(do: name)) :: any
 #                       ^^^^ variable.other
-#             ^^^^^ keyword.other
-#     ^^^^^^^ keyword.other
-@type(unquote())
-#     ^^^^^^^ keyword.other
-
+#             ^^^^^ keyword.other.quote
+#     ^^^^^^^ keyword.other.unquote
+@type(unquote()())
+#              ^ punctuation.definition.parameters.begin
+#            ^ punctuation.section.arguments.begin
+#     ^^^^^^^ keyword.other.unquote
 @type enum :: Enum.unquote(:t)
 #                            ^ punctuation.section.arguments.end
 #                         ^ punctuation.section.arguments.begin
-#                  ^^^^^^^ keyword.other
+#                  ^^^^^^^ keyword.other.unquote
 #                 ^ punctuation.accessor.dot
-
-@type unquote :: any
+@type unquote(name)(t) :: unquote(ast)(any) | {unquote_splicing(asts)} | t
+#                                                                        ^ storage.type.custom
+#                                                               ^^^^ variable.other
+#                                              ^^^^^^^^^^^^^^^^ keyword.other.unquote
+#                                           ^ keyword.operator.union
+#                                      ^^^ support.type
+#                                 ^^^ variable.other
+#                         ^^^^^^^ keyword.other.unquote
+#                    ^ punctuation.definition.parameters.end
+#                   ^ variable.parameter
+#                  ^ punctuation.definition.parameters.begin
+@type unquote :: unquote
+#                ^^^^^^^ storage.type.custom
 #     ^^^^^^^ entity.name.type
+
+### Special cases
 
 @type case; @type for; @type if
 #                            ^^ entity.name.type
@@ -118,7 +137,7 @@
 #        ^^^ keyword.context.block
 #     ^^ keyword.context.block
 @type else
-#     ^^^^ keyword.other
+#     ^^^^ keyword.control
 #^^^^ variable.other
 
 @type when; @type not; @type in; @type or; @type and; @type fn -> end;
@@ -453,6 +472,8 @@ def run(), do: nil
               >>> integer :: integer
 #                 ^^^^^^^ variable.other
 #             ^^^ keyword.operator.bitwise
+
+### Special cases
 
 @spec :when
 #     ^^^^^ constant.other.symbol

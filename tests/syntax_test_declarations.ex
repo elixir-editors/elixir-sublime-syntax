@@ -53,7 +53,7 @@ defmodule __MODULE__.Nested do end
 #         ^^^^^^^^^^ variable.language.special-form
 
 defmodule nil end; defmodule raise do end
-#                            ^^^^^ keyword.other
+#                            ^^^^^ keyword.control
 #         ^^^ constant.language
 defmodule fn end; defmodule do end
 #                              ^^^ punctuation.section.block.end
@@ -271,7 +271,7 @@ def left =~ "" when is_binary(left), do: true
 #                                  ^ punctuation.separator.arguments
 #                             ^^^^ variable.other
 #                   ^^^^^^^^^ variable.function.built-in
-#              ^^^^ keyword.other
+#              ^^^^ keyword.operator
 #           ^^ string.quoted.double
 #        ^^ entity.name.function
 #   ^^^^ variable.parameter
@@ -556,7 +556,8 @@ alias = alias X
 
 # Semantically invalid, but shouldn't break highlighting.
 alias do end
-#     ^^ keyword.context.block.elixir
+#        ^^^ keyword.context.block
+#     ^^ keyword.context.block
 #<- keyword.control.import.elixir
 
 [alias A]
