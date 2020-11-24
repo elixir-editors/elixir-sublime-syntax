@@ -301,6 +301,11 @@ contexts:
 
   types:
     - include: comments
+    - match: unquote(?=\()
+      scope: keyword.other.unquote.elixir
+      push: [type_arguments_or_pop, arguments_pop]
+    - match: (?=unquote(?:_splicing)?\()
+      push: unquote_call_pop
     - include: block_or_keyword
     - match: __MODULE__{{not_id_key_suffix}}
       scope: variable.language.special-form.elixir
@@ -531,7 +536,7 @@ contexts:
       scope: keyword.operator.colon.elixir
       push:
         - meta_scope: meta.type.binary.elixir
-        - match: (?=unquote\()
+        - match: (?=unquote(?:_splicing)?\()
           push: unquote_call_pop
         - match: '{{identifier}}|[-*\d]+'
           scope: storage.type.binary.elixir
@@ -1264,7 +1269,7 @@ contexts:
 
   do_block_pop:
     - match: do{{not_id_key_suffix}}
-      scope: punctuation.section.block.begin.elixir keyword.context.block.elixir
+      scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
       set:
         - meta_scope: meta.block.elixir
         - include: block_end_pop
@@ -1279,7 +1284,7 @@ contexts:
 
   block_end_pop:
     - match: end{{not_id_key_suffix}}
-      scope: punctuation.section.block.end.elixir keyword.context.block.elixir
+      scope: punctuation.section.block.end.elixir keyword.context.block.end.elixir
       pop: true
 
   module_name:
@@ -1656,7 +1661,7 @@ contexts:
       scope: keyword.operator.comparison.elixir
     - match: xor{{not_id_key_suffix}}
       scope: invalid.deprecated.operator.elixir
-    - match: (?>not|and|or){{not_id_key_suffix}}|!|\|\||&&
+    - match: (?>in|not|and|or){{not_id_key_suffix}}|!|\|\||&&
       scope: keyword.operator.logical.elixir
     - match: '[-+*/]'
       scope: keyword.operator.arithmetic.elixir
@@ -2075,31 +2080,60 @@ contexts:
       scope: variable.language.special-form.elixir
 
   elixir_keywords:
-    # TODO: separate and assign different scopes
-    - match: (?>when|not|in|or|and|fn|catch|after|rescue|do|else|end)\b(?![?!])
+    - match: |-
+        (?x)
+        (?>
+          (when)
+        | (in|not|and|or)
+        | (catch|after|rescue)
+        | (fn)
+        | (else)
+        | (do|end)
+        )\b(?![?!])
       comment: fully reserved keywords
-      scope: keyword.other.elixir
+      captures:
+        1: keyword.operator.word.elixir
+        2: keyword.operator.logical.elixir
+        3: keyword.control.exception.catch.elixir
+        4: keyword.declaration.function.elixir
+        5: keyword.control.conditional.else.elixir
+        6: keyword.context.block.do.elixir
+        7: keyword.context.block.end.elixir
     - match: (?>nil|true|false)\b(?![?!])
       scope: constant.language.elixir
 
   elixir_functions:
-    # TODO: separate and assign different scopes
     - match: |-
         (?x)
         (?>
-          (unquote_splicing|unquote)
-        | (defrecord|defstruct|defexception|defoverridable)
-        | (case|for|if|cond|unless|try|receive|exit|raise|reraise
-          |throw|import|require|use|using|quote|super|with)
+          (if|unless|case|cond|with)
+        | (for)
+        | (quote)
+        | (unquote_splicing|unquote)
+        | (defstruct|defrecord|defexception|defoverridable)
+        | (import|require|use)
+        | (receive)
+        | (try)
+        | (raise|reraise|throw)
+        | (exit)
+        | (super)
         ){{no_suffix_then_arguments}}
       captures:
-        1: keyword.other.unquote.elixir
-        2: keyword.declaration.elixir
-        3: keyword.other.elixir
+        1: keyword.control.conditional.elixir
+        2: keyword.control.loop.for.elixir
+        3: keyword.other.quote.elixir
+        4: keyword.other.unquote.elixir
+        5: keyword.declaration.elixir
+        6: keyword.control.import.elixir
+        7: keyword.control.loop.receive.elixir
+        8: keyword.control.exception.try.elixir
+        9: keyword.control.flow.throw.elixir
+        10: keyword.control.flow.exit.elixir
+        11: keyword.other.super.elixir
       push: arguments_paren_or_ws_pop
 
   unquote_call_pop:
-    - match: unquote(?=\()
+    - match: unquote(?:_splicing)?(?=\()
       scope: keyword.other.unquote.elixir
       set: [unquote_post_args_pop, arguments_pop]
 
