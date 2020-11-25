@@ -41,6 +41,7 @@
 #                   ^^^^ storage.type.custom
 #          ^^^^ variable.parameter
 #     ^^^^ entity.name.type
+
 @type id(id) :: id :: id | id :: id
 #                                ^^ storage.type.custom
 #                             ^^ keyword.operator.colon
@@ -52,6 +53,28 @@
 #            ^^ keyword.operator.colon
 #        ^^ variable.parameter
 #     ^^ entity.name.type
+
+@type id(
+#       ^ punctuation.definition.parameters.begin
+        id
+#       ^^ variable.parameter
+      )
+#     ^ punctuation.definition.parameters.end
+ ::
+#^^ keyword.operator.colon
+   id ::
+#     ^^ keyword.operator.colon
+#  ^^ variable.other.named-type
+    id
+#   ^^ storage.type.custom
+    |
+#   ^ keyword.operator.union
+     id ::
+#       ^^ keyword.operator.colon
+#    ^^ variable.other.named-type
+     id
+#    ^^ storage.type.custom
+
 @type dict(key, value) :: [{key, value}]
 #                                ^^^^^ storage.type.custom
 #                           ^^^ storage.type.custom
@@ -60,14 +83,26 @@
 #         ^ punctuation.definition.parameters.begin
 #     ^^^^ entity.name.type
 
-@type paren :: ( any )
-#                    ^ punctuation.definition.parens.end -invalid
+@type paren :: ( any | () )
+#                         ^ punctuation.definition.parens.end -invalid
+#                       ^ punctuation.definition.parens.end -invalid
+#                      ^ punctuation.definition.parens.begin
+#                    ^ keyword.operator.union
+#                ^^^ support.type
 #              ^ punctuation.definition.parens.begin
-@type list :: [ any ]
-#                   ^ punctuation.section.brackets.end -invalid
+@type list :: [ any | [] ]
+#                        ^ punctuation.section.brackets.end -invalid
+#                      ^ punctuation.section.brackets.end -invalid
+#                     ^ punctuation.section.brackets.begin
+#                   ^ keyword.operator.union
+#               ^^^ support.type
 #             ^ punctuation.section.brackets.begin
-@type tuple :: { any }
-#                    ^ punctuation.section.sequence.end -invalid
+@type tuple :: { any | {} }
+#                         ^ punctuation.section.sequence.end -invalid
+#                       ^ punctuation.section.sequence.end -invalid
+#                      ^ punctuation.section.sequence.begin
+#                    ^ keyword.operator.union
+#                ^^^ support.type
 #              ^ punctuation.section.sequence.begin
 
 ### unquote
@@ -129,6 +164,10 @@
 #        ^^^ variable.other -support.type
 #     ^^ keyword.operator.colon
 #^^^^ variable.other.constant
+@type ::: any
+#         ^^^ variable.other -support.type
+#     ^^^ constant.other.symbol
+#^^^^ keyword.declaration.type
 @type t :: %_{}; @type t :: %_Struct{}; @type t :: %_struct{}
 #                                                   ^^^^^^^ invalid
 #                            ^^^^^^^ invalid
@@ -319,12 +358,25 @@
 #     ^^^ variable.other.type
 def run(), do: nil
 #<- keyword.declaration.function
+@spec spec :: spec
+#             ^^^^ storage.type.custom
+#     ^^^^ variable.other.type
+@spec :: any
+#        ^^^ support.type
 
 @spec -0 :: 0
 #           ^ constant.numeric
 #        ^^ keyword.operator.colon
 #      ^ constant.numeric
 #     ^ variable.other.type
+@spec not true :: false
+#                 ^^^^^ constant.language
+#         ^^^^ constant.language
+#     ^^^ variable.other.type
+@spec not false :: true
+#                  ^^^^ constant.language
+#         ^^^^^ constant.language
+#     ^^^ variable.other.type
 @spec !any :: boolean
 #          ^^ keyword.operator.colon
 #      ^^^ support.type
@@ -341,7 +393,16 @@ def run(), do: nil
 #             ^^^^ support.type
 #          ^^ variable.other.type
 #     ^^^^ support.type
-
+@spec any | any :: any
+#                  ^^^ support.type
+#           ^^^ support.type
+#         ^ variable.other.type
+#     ^^^ support.type
+@spec @any :: any
+#             ^^^ support.type
+#      ^^^ support.type
+#     ^ variable.other.type
+#^^^^ keyword.declaration.type
 @spec String.t() =~ (String.t() | Regex.t()) :: boolean
 #                                               ^^^^^^^ support.type
 #                                            ^^ keyword.operator.colon
@@ -472,14 +533,66 @@ def run(), do: nil
               >>> integer :: integer
 #                 ^^^^^^^ variable.other
 #             ^^^ keyword.operator.bitwise
+@spec <<>> <> <<>> :: <<>>
+#                     ^^^^ string.other.binary
+#                  ^^ keyword.operator.colon
+#             ^^^^ string.other.binary
+#          ^^ variable.other.type
+#     ^^^^ string.other.binary
+@spec <<_::8>> <> <<_::8>> :: <<_::8>>
+#                               ^ variable.other.named-type
+#                   ^ variable.other.named-type
+#              ^^ variable.other.type
+#       ^ variable.other.named-type
+@spec unquote
+#     ^^^^^^^ variable.other.type
+@spec unquote(q)
+#     ^^^^^^^ keyword.other
+@spec unquote(q) :: any
+#                   ^^^ support.type
+#     ^^^^^^^ keyword.other
+@spec unquote(q)(a, b)
+#                    ^ punctuation.section.arguments.end
+#               ^ punctuation.section.arguments.begin
+@spec unquote(q)(a, b) :: any
+#                         ^^^ support.type
+@spec unquote(q) + unquote(q) :: number
+#                                ^^^^^^ support.type
+#                          ^ variable.other
+#                  ^^^^^^^ keyword.other
+#                ^ variable.other.type
+#             ^ variable.other
+#     ^^^^^^^ keyword.other
+@spec (w | x) + (y | z) :: w | x | y | z
+#                  ^ keyword.operator.union
+#               ^ punctuation.definition.parens.begin
+#             ^ variable.other.type
+#        ^ keyword.operator.union
+#     ^ punctuation.definition.parens.begin
+@spec [x | y] ++ z :: list
+#             ^^ variable.other.type
+#        ^ keyword.operator.union
+#     ^ punctuation.section.brackets.begin
+@spec {x | y} ++ tuple :: tuple
+#             ^^ variable.other.type
+#        ^ keyword.operator.union
+#     ^ punctuation.section.sequence.begin
+
+@spec integer + integer :: integer
+
 
 ### Special cases
 
-@spec :when
+@spec 0
+#     ^ constant.numeric
+@spec "not a spec"
+#     ^^^^^^^^^^^^ string.quoted
+
+@spec :when :: :any
 #     ^^^^^ constant.other.symbol
-@spec when:
+@spec when: :: when: :when
 #     ^^^^^ constant.other.keyword
-@spec func: :invalid
+@spec func: :invalid :: none
 #     ^^^^^ constant.other.keyword
-@spec: :invalid
+@spec: :invalid :: none
 #^^^^^ constant.other.keyword

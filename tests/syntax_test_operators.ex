@@ -170,3 +170,6 @@
 #     ^ variable.other
 #   ^ keyword.operator.match
 # ^ variable.other
+
+|
+#<- keyword.operator.union
