@@ -95,18 +95,19 @@ contexts:
       scope: keyword.other.unquote.elixir
       set: [function_params_or_eol_pop, arguments_pop]
 
+    - match: not{{is_argument_token}}
+      scope: entity.name.function.elixir
+      set: function_free_form_header_pop
+
     - include: do_block_pop
     - include: elixir_keywords
 
+    - match: (?=\()
+      push: paren_param_pop
+
     - match: '{{identifier}}(?=\s){{is_argument_token}}'
-      comment: free-form header, e.g. "def func a, b do {a, b} end"
       scope: entity.name.function.elixir
-      set:
-        - match: (?={{atom_symbol}}:(?!:))
-          comment: break at first atom key (usually "do:")
-          set: function_post_params_pop
-        - include: arg_comma_and_skip_ws
-        - include: function_ws_params_pop
+      set: function_free_form_header_pop
 
     - match: '{{identifier}}(?=\s*([(),;]|do{{not_id_key_suffix}}|$))'
       comment: e.g. "def func," OR "def func(a, b)" OR "def func do" OR "def func"
@@ -128,11 +129,24 @@ contexts:
           set:
             - match: (?=,)
               set: function_post_params_pop
-            - include: function_ws_params_pop
+            - include: do_block_pop
+            - include: if_closing_tokens_pop
+            - match: (?=\()
+              push: paren_param_pop
+            - include: parameters
+            - include: if_non_space_pop
         - include: if_closing_tokens_pop
         - include: parens
         - include: parameters
         - include: function_params_or_eol_pop
+
+  function_free_form_header_pop:
+    # E.g.: "def func a, b do {a, b} end"
+    - match: (?={{atom_symbol}}:(?!:))
+      comment: break at first atom key (usually "do:")
+      set: function_post_params_pop
+    - include: arg_comma_and_skip_ws
+    - include: function_ws_params_pop
 
   function_ws_params_pop:
     - include: do_block_pop
