@@ -111,23 +111,23 @@ heredoc text
 
 ~r"\""i ~r'\''i ~r/\//i ~r|\||i ~r<<\>>i ~r{{\}}i ~r[[\]]i ~r((\))i
 #                                                                 ^ string.quoted.modifiers.elixir
-#                                                              ^^ constant.character.escape.regexp.elixir
-#                                                             ^ punctuation.definition.group.begin.regexp.elixir
+#                                                              ^^ constant.character.escape.pcree
+#                                                             ^ punctuation.definition.group.begin.pcree
 #                                                        ^ string.quoted.modifiers.elixir
-#                                                     ^^ constant.character.escape.regexp.elixir
-#                                                    ^ punctuation.definition.set.begin.regexp.elixir
+#                                                     ^^ constant.character.escape.pcree
+#                                                    ^ punctuation.definition.set.begin.pcree
 #                                               ^ string.quoted.modifiers.elixir
-#                                            ^^ constant.character.escape.regexp.elixir
+#                                            ^^ constant.character.escape.pcree
 #                                      ^ string.quoted.modifiers.elixir
-#                                   ^^ constant.character.escape.regexp.elixir
+#                                   ^^ constant.character.escape.pcree
 #                             ^ string.quoted.modifiers.elixir
-#                          ^^ constant.character.escape.regexp.elixir
+#                          ^^ constant.character.escape.pcree
 #                     ^ string.quoted.modifiers.elixir
-#                  ^^ constant.character.escape.regexp.elixir
+#                  ^^ constant.character.escape.pcree
 #             ^ string.quoted.modifiers.elixir
-#          ^^ constant.character.escape.regexp.elixir
+#          ^^ constant.character.escape.pcree
 #     ^ string.quoted.modifiers.elixir
-#  ^^ constant.character.escape.regexp.elixir
+#  ^^ constant.character.escape.pcree
 
 ~r"""   *
 #    ^^^^ invalid.illegal.opening-heredoc.elixir
@@ -143,21 +143,21 @@ heredoc text
 
 ~R"\""i ~R'\''i ~R/\//i ~R|\||i ~R<<\>>i ~R{{\}}i ~R[[\]]i ~R((\))i
 #                                                                 ^ string.quoted.modifiers.elixir
-#                                                              ^^ constant.character.escape.regexp.elixir
+#                                                              ^^ constant.character.escape.pcree
 #                                                        ^ string.quoted.modifiers.elixir
-#                                                     ^^ constant.character.escape.regexp.elixir
+#                                                     ^^ constant.character.escape.pcree
 #                                               ^ string.quoted.modifiers.elixir
-#                                            ^^ constant.character.escape.regexp.elixir
+#                                            ^^ constant.character.escape.pcree
 #                                      ^ string.quoted.modifiers.elixir
-#                                   ^^ constant.character.escape.regexp.elixir
+#                                   ^^ constant.character.escape.pcree
 #                             ^ string.quoted.modifiers.elixir
-#                          ^^ constant.character.escape.regexp.elixir
+#                          ^^ constant.character.escape.pcree
 #                     ^ string.quoted.modifiers.elixir
-#                  ^^ constant.character.escape.regexp.elixir
+#                  ^^ constant.character.escape.pcree
 #             ^ string.quoted.modifiers.elixir
-#          ^^ constant.character.escape.regexp.elixir
+#          ^^ constant.character.escape.pcree
 #     ^ string.quoted.modifiers.elixir
-#  ^^ constant.character.escape.regexp.elixir
+#  ^^ constant.character.escape.pcree
 
 ~R"""   *
 #    ^^^^ invalid.illegal.opening-heredoc.elixir
