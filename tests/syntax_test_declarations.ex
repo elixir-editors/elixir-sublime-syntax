@@ -187,8 +187,8 @@ def()
 #   ^ punctuation.section.arguments.end
 #  ^ punctuation.section.arguments.begin -punctuation.definition.parameters.begin
 def(())
-#    ^ punctuation.section.parens.end
-#   ^ punctuation.section.parens.begin -punctuation.definition.parameters.begin
+#    ^ -punctuation.section.parens.end
+#   ^ -punctuation.section.parens.begin punctuation.definition.parameters.begin
 def do end
 #         ^ punctuation.section.arguments.end
 #      ^^^ punctuation.section.block.end
@@ -196,7 +196,7 @@ def do end
 #  ^ punctuation.section.arguments.begin
 #<- keyword.declaration.function
 def nil(no_param)
-#       ^^^^^^^^ -variable.parameter
+#       ^^^^^^^^ variable.parameter
 #   ^^^ constant.language
 def def
 #   ^^^ entity.name.function
@@ -267,6 +267,21 @@ def _ && false, do: false
 #        ^^^^^ constant.language
 #     ^^ entity.name.function
 #   ^ variable.parameter.unused
+def not x, do: not x
+#              ^^^ keyword.operator.logical
+#       ^ variable.parameter
+#   ^^^ entity.name.function
+def !x, do: !x
+#   ^ entity.name.function
+def +x, do: x
+#   ^ entity.name.function
+def +(x), do: x
+#   ^ entity.name.function
+def @(x), do: x
+#   ^ entity.name.function
+def x | y, do: {x, y}
+#     ^ entity.name.function
+
 def left =~ "" when is_binary(left), do: true
 #                                  ^ punctuation.separator.arguments
 #                             ^^^^ variable.other
@@ -275,12 +290,15 @@ def left =~ "" when is_binary(left), do: true
 #           ^^ string.quoted.double
 #        ^^ entity.name.function
 #   ^^^^ variable.parameter
-def (lhs) <> (rhs), do: true
-#             ^^^ variable.other
+def (lhs) <> (rhs), do: lhs <> rhs
+#                              ^^^ variable.other
+#                           ^^ keyword.operator.binary-concat
+#                       ^^^ variable.other
+#             ^^^ -variable.other
 #         ^^ entity.name.function
-#       ^ punctuation.section.parens.end
-#    ^^^  variable.other
-#   ^ punctuation.section.parens.begin
+#       ^ -punctuation.section.parens.end
+#    ^^^  -variable.other
+#   ^ -punctuation.section.parens.begin
 def [left] ++ [_ | _] = right, do: [left | right]
 #                                   ^^^^ variable.other
 #                            ^ punctuation.separator.arguments
