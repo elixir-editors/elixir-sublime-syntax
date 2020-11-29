@@ -28,6 +28,14 @@ variables:
   special_atom: (?><<>>|%?{}|%|\[\]|\^\^\^?)
   atom_symbol: (?>{{atom_id}}|{{special_atom}}|{{operators}})
 
+  is_markdown_elixir: |
+    (?x)
+    (?>
+      case | unquote_splicing | unquote
+    | (?>cond|receive|try|quote)\s+do\b
+    | def(?>module|impl|macro|guard|struct|delegate|protocol|p|)
+    ){{not_id_key_suffix}}
+
 contexts:
   main:
     - include: core_syntax
@@ -1415,13 +1423,27 @@ contexts:
     - match: (?>(?>module|type|short)?doc){{no_suffix_then_arguments}}
       scope: support.attr.doc.elixir
       set:
-        - meta_content_scope: comment.block.documentation.elixir
-        - include: markdown_comment
-        - include: if_non_space_or_eol_pop
+        - match: \(
+          scope: punctuation.section.arguments.begin.elixir
+          set:
+            - include: arguments_closing_pop
+            - match: ''
+              push:
+                - include: if_closing_tokens_no_eol_pop
+                - include: arg_comma_and_skip_ws
+                - include: markdown_comment
+                - include: core_syntax
+        - match: \s?
+          scope: punctuation.section.arguments.begin.elixir
+          set:
+            - include: arguments_ws_closing_pop
+            - include: arg_comma_and_skip_ws
+            - include: markdown_comment
+            - include: core_syntax
 
     - match: (?>derive|deprecated|impl|file|fallback_to_any|behaviour|vsn|(?>before_|after_)?compile|dialyzer|external_resource|on_(?>definition|load)){{no_suffix_then_arguments}}
       scope: support.attr.elixir
-      pop: true
+      set: arguments_paren_or_ws_pop
 
     - match: (?>spec|(?:macro)?callback)(?={{no_suffix_then_arguments}}|\s*{{operators}})
       scope: keyword.declaration.type.elixir
@@ -1483,7 +1505,7 @@ contexts:
       comment: definition
       # FIXME: Sublime doesn't list it as a "Goto"-symbol for some reason.
       scope: entity.name.constant.elixir
-      pop: true
+      set: arguments_paren_or_ws_pop
 
     - match: '{{identifier}}'
       comment: reference
@@ -1508,10 +1530,12 @@ contexts:
       set: spec_op_definition_pop
 
   markdown_comment:
-    - match: (""")(.*)\n
+    # NB: no need to support `~s"""` which is basically `"""`.
+    - match: (""")(.*)(\n)
       captures:
         1: string.quoted.triple.double.elixir punctuation.definition.string.begin.elixir
         2: invalid.illegal.opening-heredoc.elixir
+        3: string.quoted.triple.double.elixir
       push:
         - meta_scope: meta.string.elixir
         - match: (?=^\s*""")
@@ -1522,8 +1546,8 @@ contexts:
         - include: elixir_in_markdown
         - match: ''
           embed: scope:text.html.markdown
-          embed_scope: text.html.eex source.elixir.embedded.html
-          escape: (?=^\s*"""|(?<=\s{4})(?:iex.*?>|```\s*elixir\b|(?>cond|receive|try)\s+do\b|def(?>module|impl|macro|guard|delegate|protocol|p|){{not_id_key_suffix}})|\\|#{)
+          embed_scope: source.markdown.embedded.elixir
+          escape: (?=^\s*"""|\\|#{|(?<=\s{4})(?:iex.*?>|```\s*elixir\b|{{is_markdown_elixir}}))
 
     - match: \"
       scope: string.quoted.double.elixir punctuation.definition.string.begin.elixir
@@ -1535,45 +1559,55 @@ contexts:
         - include: escaped_or_interpolated
         - match: ''
           embed: scope:text.html.markdown
-          embed_scope: text.html.eex source.elixir.embedded.html
+          embed_scope: source.markdown.embedded.elixir
           escape: (?="|\\|#{)
 
-    - match: ~S(""")(.*)\n
-      scope: meta.string.elixir storage.type.string.elixir
+    - match: (~S)(""")(.*)(\n)
       captures:
-        1: string.quoted.triple.double.elixir punctuation.definition.string.begin.elixir
-        2: invalid.illegal.opening-heredoc.elixir
+        1: storage.type.string.elixir
+        2: string.quoted.triple.double.elixir punctuation.definition.string.begin.elixir
+        3: invalid.illegal.opening-heredoc.elixir
+        4: string.quoted.triple.double.elixir
       push:
         - meta_scope: meta.string.elixir
+        - match: (?<=""")
+          set: string_modifiers_and_pop
         - match: (?=^\s*""")
-          set:
-            - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
+          push:
+            - meta_scope: string.quoted.triple.double.elixir
             - include: heredoc_string_closing_double_pop
+        - match: \\"
+          scope: constant.character.escape.char.elixir
         - include: elixir_in_markdown
         - match: ''
           embed: scope:text.html.markdown
-          embed_scope: text.html.eex source.elixir.embedded.html
-          escape: (?=^\s*"""|(?<=\s{4})(?:iex.*?>|```\s*elixir\b|(?>cond|receive|try)\s+do\b|def(?>module|impl|macro|guard|delegate|protocol|p|){{not_id_key_suffix}}))
+          embed_scope: source.markdown.embedded.elixir
+          escape: (?=^\s*"""|\\"|(?<=\s{4})(?:iex.*?>|```\s*elixir\b|{{is_markdown_elixir}}))
 
-    - match: ~S(''')(.*)\n
-      scope: meta.string.elixir storage.type.string.elixir
+    - match: (~S)(''')(.*)(\n)
       captures:
-        1: string.quoted.triple.single.elixir punctuation.definition.string.begin.elixir
-        2: invalid.illegal.opening-heredoc.elixir
+        1: storage.type.string.elixir
+        2: string.quoted.triple.single.elixir punctuation.definition.string.begin.elixir
+        3: invalid.illegal.opening-heredoc.elixir
+        4: string.quoted.triple.single.elixir
       push:
         - meta_scope: meta.string.elixir
+        - match: (?<=''')
+          set: string_modifiers_and_pop
         - match: (?=^\s*''')
-          set:
-            - meta_scope: meta.string.elixir string.quoted.triple.single.elixir
+          push:
+            - meta_scope: string.quoted.triple.single.elixir
             - include: heredoc_string_closing_single_pop
+        - match: \\'
+          scope: constant.character.escape.char.elixir
         - include: elixir_in_markdown
         - match: ''
           embed: scope:text.html.markdown
-          embed_scope: text.html.eex source.elixir.embedded.html
-          escape: (?=^\s*'''|(?<=\s{4})(?:iex.*?>|```\s*elixir\b|(?>cond|receive|try)\s+do\b|def(?>module|impl|macro|guard|delegate|protocol|p|){{not_id_key_suffix}}))
+          embed_scope: source.markdown.embedded.elixir
+          escape: (?=^\s*'''|\\'|(?<=\s{4})(?:iex.*?>|```\s*elixir\b|{{is_markdown_elixir}}))
 
   elixir_in_markdown:
-    - match: (?<=\s{4})(?=(?>(?>cond|receive|try)\s+do|def(?>module|impl|macro|guard|delegate|protocol|p|)){{not_id_key_suffix}})
+    - match: (?<=\s{4})(?={{is_markdown_elixir}})
       push:
         - clear_scopes: true
         - meta_scope: meta.interpolation.elixir markup.raw.block.markdown markup.raw.block.elixir
@@ -1614,6 +1648,15 @@ contexts:
         #       scope: punctuation.definition.code-block.end.markdown
         #       pop: true
         - include: core_syntax
+
+    # TODO: maybe highlight `:atom`, `identifier`, `Module.X`, `M.func/1`
+    # - match: \`
+    #   scope: punctuation.definition.raw.begin.markdown
+    #   push:
+    #     - match: \`
+    #       scope: punctuation.definition.raw.end.markdown
+    #       pop: true
+    #     - include: core_syntax
 
   merge_conflict:
     # NB: should use with_prototype but the context limit seems to be exhausted. :(
