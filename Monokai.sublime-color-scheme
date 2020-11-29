@@ -20,6 +20,11 @@
       "foreground": "var(yellow5)"
     },
     {
+      "name": "Doc string",
+      "scope": "source.markdown.embedded.elixir",
+      "foreground": "var(yellow5)"
+    },
+    {
       "name": "Support attributes",
       "scope": "support.attr.elixir",
       "foreground": "var(blue)"
