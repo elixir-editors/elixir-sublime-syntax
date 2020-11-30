@@ -163,56 +163,6 @@ heredoc text
    ~s()r~s[]s~s<>a~s{}c~s||p~s//s~s""d~s''s~S()r~S[]s~S<>a~S{}c~S||p~S//s~S""d~S''s
 #//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.string.elixir
 
-## Atom words string:
-
-# TODO:
-~w"abc  xyz"a
-~w"aaa\" #{asd} bbb"a
-
-## Character literals:
-
-   ?	? ?
-#//   ^^ invalid.illegal.character-literal.elixir
-#// ^ invalid.illegal.character-literal.elixir
-   ?\\ ?a ?? ?\
-#//          ^^^ constant.numeric.elixir
-#//       ^^ constant.numeric.elixir
-#//    ^^ constant.numeric.elixir
-#//^^^ constant.numeric.elixir
-
-## Atoms as keywords and symbols.
-[
-  "": :"", "\\": :"\\", "\"": :"\"", "a \#{:b} c\":": :"a \#{:b} c\":", "#{''}": :"#{""}",
-  Enum: :Enum, Kö: :Kö, Ö: :Ö, ö: :ö, Ä@: :Ä@, me@home@work: :me@home@work,
-  =~: :=~, =: :=, ==: :==, ===: :===, !: :!, !=: :!=, !==: :!==, <<>>: :<<>>,
-  <<<: :<<<, >>>: :>>>, ~~~: :~~~, <~>: :<~>, <~: :<~, <<~: :<<~, ~>: :~>,
-  ~>>: :~>>, |>: :|>, <|>: :<|>, /: :/, \\: :\\, *: :*, ..: :.., ...: :...,
-  >=: :>=, <=: :<=, <: :<, <-: :<-, <>: :<>, -: :-, --: :--, ->: :->, >: :>,
-  &: :&, &&: :&&, &&&: :&&&, +: :+, ++: :++, |: :|, ||: :||, |||: :|||, @: :@,
-  {}: :{}, %{}: :%{}, %: :%, ^: :^, ^^^: :^^^, "::": :::
-]
-
-# Atom symbol exceptions:
-[
-   :: ::,
-#//   ^^ keyword.operator.colon.elixir
-#//^^ keyword.operator.colon.elixir
-   **: :**,
-#//      ^ keyword.operator.arithmetic.elixir
-#//    ^^ constant.other.symbol.elixir
-#//^^^ invalid.illegal.atom-keyword.elixir
-   .: :.,
-#//   ^^ constant.other.symbol.elixir
-#//^^ invalid.illegal.atom-keyword.elixir
-   ^^: :^^,
-#//    ^^^ constant.other.symbol.elixir
-#//^^^ invalid.illegal.atom-keyword.elixir
-   []: :[],
-#//    ^^^ constant.other.symbol.elixir
-#//^^^ invalid.illegal.atom-keyword.elixir
-]
-
-
 ## Captures:
 
    &0; &1; &func/1; &Module.func/2; &Kernel.<>/2
