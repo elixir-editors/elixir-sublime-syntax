@@ -55,6 +55,11 @@
       "foreground": "color(var(white) a(0.65))"
     },
     {
+      "name": "Numeric punctuation",
+      "scope": "punctuation.separator.numeric.elixir | punctuation.separator.decimal.elixir",
+      "foreground": "color(var(purple) s(- 30%))"
+    },
+    {
       "name": "Escapes in remote function call",
       "scope": "variable.function.elixir constant.character.escape.char.elixir",
       "foreground": "color(var(blue) l(- 30%))"
