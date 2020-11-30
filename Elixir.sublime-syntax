@@ -522,16 +522,25 @@ contexts:
   numeric:
     - match: |
         (?x)
-        (
-          0x\h[\h_]* |
-          0b[01](?:_?[01])* |
-          0o[0-7](?:_?[0-7])* |
-          \d(?:_?\d)*(?:\.\d(?:_?\d)*)?(?:[eE][-+]?\d(?:_?\d)*)?
+        (?>
+          (0 (x) \h (?:_?\h)*)
+        | (0 (b) [01] (?:_?[01])*)
+        | (0 (o) [0-7] (?:_?[0-7])*)
+        | (\d(?:_?\d)* (\.) \d(?:_?\d)* (?:[eE] [-+]? \d(?:_?\d)*)?)
+        | (\d(?:_?\d)*)
         )(\w*)
       comment: (?:_?\d)* because double or trailing '_' are invalid
       captures:
-        1: constant.numeric.elixir
-        2: invalid.illegal.numeric.elixir
+        1: constant.numeric.hex.elixir
+        2: punctuation.separator.numeric.elixir
+        3: constant.numeric.binary.elixir
+        4: punctuation.separator.numeric.elixir
+        5: constant.numeric.octal.elixir
+        6: punctuation.separator.numeric.elixir
+        7: constant.numeric.float.elixir
+        8: punctuation.separator.decimal.elixir
+        9: constant.numeric.integer.elixir
+        10: invalid.illegal.numeric.elixir
 
   binary_string:
     - include: stray_binary_end
@@ -2046,11 +2055,12 @@ contexts:
   char_literal:
     - match: \?$
       scope: invalid.illegal.character-literal.elixir
-    - match: \?(?>\\(?>.|\n)|\S|(\s))
+    - match: (\?)(?>\\(?>.|\n)|\S|(\s))
       comment: character literal as an integer
-      scope: constant.numeric.elixir
+      scope: constant.numeric.char.elixir
       captures:
-        1: invalid.illegal.character-literal.elixir
+        1: punctuation.definition.numeric.elixir
+        2: invalid.illegal.character-literal.elixir
 
   built_ins:
     - match: |
