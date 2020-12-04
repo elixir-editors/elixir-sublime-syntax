@@ -1,0 +1,62 @@
+{
+  "name": "Mariana for Elixir",
+  "rules":
+  [
+    {
+      "name": "EEx tag",
+      "scope": "eex-tag.elixir",
+      "foreground": "#777a68",
+      "background": "color(var(white) a(0.03))"
+    },
+    {
+      "name": "EEx embedded",
+      "scope": "source.elixir.embedded.html",
+      "background": "color(var(white) a(0.03))"
+    },
+    {
+      "name": "Doc attribute",
+      "scope": "support.attr.doc.elixir",
+      "foreground": "var(blue6)"
+    },
+    {
+      "name": "Doc string",
+      "scope": "source.markdown.embedded.elixir",
+      "foreground": "var(blue6)"
+    },
+    {
+      "name": "Unused variable",
+      "scope": "variable.other.unused.elixir",
+      "foreground": "color(var(white) a(0.6))"
+    },
+    {
+      "name": "Unused parameter",
+      "scope": "variable.parameter.unused.elixir",
+      "foreground": "color(var(orange) a(0.6))"
+    },
+    {
+      "name": "Spec name",
+      "scope": "variable.other.type.elixir",
+      "foreground": "color(var(blue5) s(- 50%))"
+    },
+    {
+      "name": "Module atom",
+      "scope": "constant.other.module.elixir",
+      "foreground": "color(var(orange) s(+ 50%) l(- 20%))"
+    },
+    {
+      "name": "Atom keyword",
+      "scope": "constant.other.keyword.elixir",
+      "foreground": "color(var(pink) s(- 10%) l(- 15%))"
+    },
+    {
+      "name": "Atom keyword punctuation",
+      "scope": "punctuation.definition.constant",
+      "foreground": "color(var(white) a(0.65))"
+    },
+    {
+      "name": "Function punctuation",
+      "scope": "keyword.declaration.function.elixir punctuation.section",
+      "foreground": "var(pink)"
+    }
+  ]
+}
