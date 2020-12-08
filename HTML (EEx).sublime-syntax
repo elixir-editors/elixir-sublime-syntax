@@ -15,9 +15,11 @@ contexts:
 
   eex_tags:
     - match: <%#
+      scope: punctuation.definition.comment.begin.eex
       push:
         - meta_scope: comment.eex
         - match: '%>'
+          scope: punctuation.definition.comment.end.eex
           pop: true
 
     - match: (?=<%)
@@ -25,10 +27,11 @@ contexts:
         - clear_scopes: true
         - meta_scope: meta.interpolation.eex
         - match: '%>'
-          scope: text.html.eex keyword.other.eex punctuation.section.embedded.end.eex
+          scope: text.html.eex punctuation.section.embedded.end.eex
           pop: true
+        # Tags <%/ and <%| are parsed but have no functionality in EEx yet.
         - match: <%(?>%=?|[=/|]?)
-          scope: text.html.eex keyword.other.eex punctuation.section.embedded.begin.eex
+          scope: text.html.eex punctuation.section.embedded.begin.eex
           embed: scope:source.elixir
           embed_scope: text.html.eex source.elixir.embedded.eex
           escape: (?=%>|<%)
@@ -43,7 +46,7 @@ contexts:
         #   https://github.com/phoenixframework/phoenix/blob/master/installer/templates/phx_live/templates/layout/root.html.leex
 
         # - match: <%(?>%=?|[=/|]?)
-        #   scope: text.html.eex keyword.other.eex punctuation.section.embedded.begin.eex
+        #   scope: text.html.eex punctuation.section.embedded.begin.eex
         #   push: scope:source.eex
         #   with_prototype:
         #     - match: (?=%>)
