@@ -139,7 +139,8 @@ _123.456
 
  ??
 #^^ constant.numeric.char
- ?: ?. ?x ?\x ?\
+ ?: ?. ?x ?\x ?\\ ?\
+#                 ^^^ constant.numeric
 #             ^^^ constant.numeric
 #         ^^^ constant.numeric
 #      ^^ constant.numeric

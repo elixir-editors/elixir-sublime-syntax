@@ -596,3 +596,13 @@ def run(), do: nil
 #     ^^^^^ constant.other.keyword
 @spec: :invalid :: none
 #^^^^^ constant.other.keyword
+
+ @spec func() ::
+#      ^^^^ variable.other.type
+ def func()
+#    ^^^^ entity.name.function
+#^^^ keyword.declaration.function -storage.type -support.type
+ @spec func() ::
+#      ^^^^ variable.other.type
+ when name: type
+#           ^^^^ variable.other -storage.type -support.type

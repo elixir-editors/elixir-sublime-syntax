@@ -37,6 +37,16 @@ m."quoted" arg
 raise ArgumentError, "msg"
 #                         ^ punctuation.section.arguments.end
 #    ^ punctuation.section.arguments.begin
+#<- keyword.control.flow.throw
+
+raise"msg"
+#         ^ punctuation.section.arguments.end
+#    ^^^^^ string.quoted.double
+#<- keyword.control.flow.throw
+ raise?me?
+#      ^^^ variable.other
+#^^^^^^ variable.function
+
 
 %{} |> Kernel.|> Map.put(:key, :value)
 #                                     ^ punctuation.section.arguments.end

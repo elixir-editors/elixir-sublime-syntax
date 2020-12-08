@@ -15,8 +15,10 @@
 @after_compile
 @deprecated "..."
 
-@typedoc "Supported strategies"
-@type strategy :: :one_for_one | :one_for_all | :rest_for_one
+ _.._ = 1..3
+#   ^ variable.other.unused
+#^ variable.other.unused
+
 
 ## YAML, JSON, LiveView:
 
@@ -263,3 +265,34 @@ heredoc text
    *'''x
 #//    ^ string.quoted.modifiers.elixir
 #//^ invalid.illegal.closing-heredoc.elixir
+
+
+# Reserved keywords with variable punctuation suffix:
+ and? + or? + xor? + when? + not? + in? + fn? + catch? + after? + rescue? + do? + else? + end?
+#                                                                                         ^^^^ variable.other
+#                                                                                 ^^^^^ variable.other
+#                                                                           ^^^ variable.other
+#                                                                 ^^^^^^^ variable.other
+#                                                        ^^^^^^ variable.other
+#                                               ^^^^^^ variable.other
+#                                         ^^^ variable.other
+#                                   ^^^ variable.other
+#                            ^^^^ variable.other
+#                    ^^^^^ variable.other
+#             ^^^^ variable.other
+#       ^^^ variable.other
+#^^^^ variable.other
+ and! + or! + xor! + when! + not! + in! + fn! + catch! + after! + rescue! + do! + else! + end!
+#                                                                                         ^^^^ variable.other
+#                                                                                 ^^^^^ variable.other
+#                                                                           ^^^ variable.other
+#                                                                 ^^^^^^^ variable.other
+#                                                        ^^^^^^ variable.other
+#                                               ^^^^^^ variable.other
+#                                         ^^^ variable.other
+#                                   ^^^ variable.other
+#                            ^^^^ variable.other
+#                    ^^^^^ variable.other
+#             ^^^^ variable.other
+#       ^^^ variable.other
+#^^^^ variable.other

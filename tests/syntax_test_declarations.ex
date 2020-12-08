@@ -69,7 +69,7 @@ defmodule Dynamic.unquote(name).Module do end
 module = defmodule unquote(name) do
 #                                ^^ keyword.context.block
 #                              ^ punctuation.section.arguments.end
-#                          ^^^^ variable.other.elixir
+#                          ^^^^ variable.other
 #                         ^ punctuation.section.arguments.begin
 #                  ^^^^^^^ keyword.other.unquote
 #        ^^^^^^^^^ keyword.declaration.module
@@ -282,6 +282,20 @@ def @(x), do: x
 def x | y, do: {x, y}
 #     ^ entity.name.function
 
+def invalid, arg, do: :nothing
+#               ^ punctuation.separator.arguments
+#            ^^^ variable.other
+#          ^ punctuation.separator.arguments
+#   ^^^^^^^ entity.name.function
+def no_params do
+#   ^^^^^^^^^ entity.name.function
+end
+
+def string?("" <> _rest)
+#                       ^ punctuation.section.arguments.end
+#                 ^^^^^ variable.parameter.unused
+#              ^^ keyword.operator.binary-concat
+#           ^^ string.quoted.double
 def left =~ "" when is_binary(left), do: true
 #                                  ^ punctuation.separator.arguments
 #                             ^^^^ variable.other
@@ -457,126 +471,126 @@ def unused(_, %_{}, {_}, [_], [_ | _], (_), <<_>>, <<_, _::_>>, _ <> _, _.._)
 
 alias List
 #         ^ punctuation.section.arguments.end
-#     ^^^^ meta.path.modules.elixir constant.other.module.elixir
+#     ^^^^ meta.path.modules constant.other.module
 #    ^ punctuation.section.arguments.begin
-#<- keyword.control.import.elixir
+#<- keyword.control.import
 alias List, as: L
-#               ^ meta.path.modules.elixir entity.name.namespace.elixir
-#         ^ punctuation.separator.arguments.elixir
-#     ^^^^ meta.path.modules.elixir constant.other.module.elixir
+#               ^ meta.path.modules entity.name.namespace
+#         ^ punctuation.separator.arguments
+#     ^^^^ meta.path.modules constant.other.module
 alias List,
-#         ^ punctuation.separator.arguments.elixir
+#         ^ punctuation.separator.arguments
       as: L
 #          ^ punctuation.section.arguments.end
-#         ^ entity.name.namespace.elixir
+#         ^ entity.name.namespace
 alias List
 , as: L
-#     ^ constant.other.module.elixir
+#     ^ constant.other.module
 alias __MODULE__, as: MODULE
-#                     ^^^^^^ entity.name.namespace.elixir
-#     ^^^^^^^^^^ variable.language.special-form.elixir
+#                     ^^^^^^ entity.name.namespace
+#     ^^^^^^^^^^ variable.language.special-form
 alias MODULE, as: __MODULE__
-#                 ^^^^^^^^^^ variable.language.special-form.elixir
+#                 ^^^^^^^^^^ variable.language.special-form
 alias __MODULE__.B.{ C }
-#     ^^^^^^^^^^ variable.language.special-form.elixir
-#     ^^^^^^^^^^^^^^^^^^ meta.path.modules.elixir
+#     ^^^^^^^^^^ variable.language.special-form
+#     ^^^^^^^^^^^^^^^^^^ meta.path.modules
 alias unquote(path), as: Alias
-#                        ^^^^^ entity.name.namespace.elixir
-#             ^^^^ variable.other.elixir
+#                        ^^^^^ entity.name.namespace
+#             ^^^^ variable.other
 #     ^^^^^^^ keyword.other.unquote
 alias unquote(path), as: unquote(alias)
-#                                ^^^^^ variable.other.elixir
+#                                ^^^^^ variable.other
 #                        ^^^^^^^ keyword.other.unquote
-#             ^^^^ variable.other.elixir
+#             ^^^^ variable.other
 #     ^^^^^^^ keyword.other.unquote
 alias unquote(path).Live, as: L
-#                             ^ entity.name.namespace.elixir
-#             ^^^^ variable.other.elixir
+#                             ^ entity.name.namespace
+#             ^^^^ variable.other
 #     ^^^^^^^ keyword.other.unquote
 alias ExUnit.EventManager, as: EM
-#                              ^^ entity.name.namespace.elixir
-#     ^^^^^^^^^^^^^^^^^^^ meta.path.modules.elixir
+#                              ^^ entity.name.namespace
+#     ^^^^^^^^^^^^^^^^^^^ meta.path.modules
 alias A.B.{C, D}
-#              ^ punctuation.section.braces.end.elixir
-#          ^ constant.other.module.elixir
-#         ^ punctuation.section.braces.begin.elixir
+#              ^ punctuation.section.braces.end
+#          ^ constant.other.module
+#         ^ punctuation.section.braces.begin
 #        ^ punctuation.accessor.dot
 alias A. { B . { C , D } }
-#                    ^ constant.other.module.elixir
-#                ^ constant.other.module.elixir
+#                    ^ constant.other.module
+#                ^ constant.other.module
 #            ^ punctuation.accessor.dot
 #      ^ punctuation.accessor.dot
-#     ^^^^^^^^^^^^^^^^^^^^ meta.path.modules.elixir
+#     ^^^^^^^^^^^^^^^^^^^^ meta.path.modules
 alias A.B.{
-#         ^ punctuation.section.braces.begin.elixir
+#         ^ punctuation.section.braces.begin
    # X
 #  ^ comment
    C,
-#   ^ punctuation.separator.sequence.elixir
-#  ^ constant.other.module.elixir
+#   ^ punctuation.separator.sequence
+#  ^ constant.other.module
    # D,
 #  ^ comment
    E,
-#  ^ constant.other.module.elixir
+#  ^ constant.other.module
 # Nesting is semantically invalid, but it's simpler to just highlight it.
    F.{
-#    ^ punctuation.section.braces.begin.elixir
+#    ^ punctuation.section.braces.begin
      G,
      H
    }
-#  ^ punctuation.section.braces.end.elixir
+#  ^ punctuation.section.braces.end
 }
-#<- punctuation.section.braces.end.elixir
+#<- punctuation.section.braces.end
 alias A.B, as: C, warn: false
-#              ^ entity.name.namespace.elixir
-#       ^ constant.other.module.elixir
-#     ^ constant.other.module.elixir
+#              ^ entity.name.namespace
+#       ^ constant.other.module
+#     ^ constant.other.module
 alias A.B, warn: false, as: C
-#                           ^ entity.name.namespace.elixir
-#                ^^^^^ constant.language.elixir
+#                           ^ entity.name.namespace
+#                ^^^^^ constant.language
 alias nil, as: Null
-#              ^^^^ entity.name.namespace.elixir
-#     ^^^ constant.language.elixir
+#              ^^^^ entity.name.namespace
+#     ^^^ constant.language
 alias false, as: False
-#                ^^^^^ entity.name.namespace.elixir
-#     ^^^^^ constant.language.elixir
+#                ^^^^^ entity.name.namespace
+#     ^^^^^ constant.language
 alias true, as: True
-#               ^^^^ entity.name.namespace.elixir
-#     ^^^^ constant.language.elixir
+#               ^^^^ entity.name.namespace
+#     ^^^^ constant.language
 alias :erlang, as: Erlang
-#                  ^^^^^^ entity.name.namespace.elixir
-#     ^^^^^^^ constant.other.symbol.elixir
+#                  ^^^^^^ entity.name.namespace
+#     ^^^^^^^ constant.other.symbol
 alias :lists, as: List
-#     ^^^^^^ meta.path.modules.elixir constant.other.symbol.elixir
+#     ^^^^^^ meta.path.modules constant.other.symbol
 alias :"Hello.World", as: HW, warn: false
 
 alias(:hello, as: )
-#                 ^ punctuation.section.arguments.end.elixir
-#    ^ punctuation.section.arguments.begin.elixir
+#                 ^ punctuation.section.arguments.end
+#    ^ punctuation.section.arguments.begin
 alias(:hello, as: Hello)
-#                 ^^^^^ entity.name.namespace.elixir
+#                 ^^^^^ entity.name.namespace
 alias(:hello, warn: false, as: Hello)
-#                                   ^ punctuation.section.arguments.end.elixir
-#                              ^^^^^ entity.name.namespace.elixir
-#                   ^^^^^ constant.language.elixir
-#     ^^^^^^ constant.other.symbol.elixir
-#    ^ punctuation.section.arguments.begin.elixir
+#                                   ^ punctuation.section.arguments.end
+#                              ^^^^^ entity.name.namespace
+#                   ^^^^^ constant.language
+#     ^^^^^^ constant.other.symbol
+#    ^ punctuation.section.arguments.begin
 
 alias (A), as: A
-#              ^ entity.name.namespace.elixir
-#       ^ punctuation.section.parens.end.elixir
-#     ^ punctuation.section.parens.begin.elixir
+#              ^ entity.name.namespace
+#       ^ punctuation.section.parens.end
+#     ^ punctuation.section.parens.begin
 
 alias = alias X
-#             ^ constant.other.module.elixir
-#       ^^^^^ keyword.control.import.elixir
-#<- variable.other.elixir
+#             ^ constant.other.module
+#       ^^^^^ keyword.control.import
+#<- variable.other
 
 # Semantically invalid, but shouldn't break highlighting.
 alias do end
 #        ^^^ keyword.context.block
 #     ^^ keyword.context.block
-#<- keyword.control.import.elixir
+#<- keyword.control.import
 
 [alias A]
 (alias A)
@@ -598,9 +612,9 @@ alias Elixir.unquote(Kernel), as: K
 
 ### require
 require EEx.Tokenizer, as: T
-#                          ^ entity.name.namespace.elixir
-#       ^^^^^^^^^^^^^ meta.path.modules.elixir
-#<- keyword.control.import.elixir
+#                          ^ entity.name.namespace
+#       ^^^^^^^^^^^^^ meta.path.modules
+#<- keyword.control.import
 require :"Elixir.Stream.Reducers", as: R
-#                                      ^ entity.name.namespace.elixir
-#       ^^^^^^^^^^^^^^^^^^^^^^^^^ constant.other.symbol.double-quoted.elixir
+#                                      ^ entity.name.namespace
+#       ^^^^^^^^^^^^^^^^^^^^^^^^^ constant.other.symbol.double-quoted
