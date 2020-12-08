@@ -1,0 +1,46 @@
+<!-- SYNTAX TEST "HTML (EEx).sublime-syntax" -->
+
+   <!DOCTYPE html>
+<!-- ^^^^^^^ keyword.declaration.doctype.html -->
+<html lang="<%= "en" %>">
+<!--                   ^ punctuation.definition.string.end.html -->
+<!--                 ^^ punctuation.section.embedded.end.eex -->
+<!--            ^^^^ string.quoted.double.elixir -->
+<!--        ^^^ punctuation.section.embedded.begin.eex -->
+<!--       ^ punctuation.definition.string.begin.html -->
+
+     <%# Comment %>
+<!--             ^^ punctuation.definition.comment.end.eex -->
+<!--     ^^^^^^^ -constant -->
+<!-- ^^^^^^^^^^^^^^ text.html.basic comment.eex -->
+<!-- ^^^ punctuation.definition.comment.begin.eex -->
+
+     <% func arg %>
+<!--             ^^ punctuation.section.embedded.end.eex -->
+<!--         ^^^ variable.other.elixir -->
+<!--    ^^^^ variable.function.elixir -->
+<!-- ^^ punctuation.section.embedded.begin.eex -->
+
+     <%= if true? do %>
+<!--                 ^^ punctuation.section.embedded.end.eex -->
+<!--              ^^ keyword.context.block.do.elixir -->
+<!--        ^^^^^ variable.other.elixir -->
+<!--     ^^ keyword.control.conditional.elixir -->
+<!-- ^^^ punctuation.section.embedded.begin.eex -->
+     <% end %>
+<!--        ^^ punctuation.section.embedded.end.eex -->
+<!--    ^^^ keyword.context.block.end.elixir -->
+<!-- ^^ punctuation.section.embedded.begin.eex -->
+
+     <%% quoted :code %>
+<!--                  ^^ punctuation.section.embedded.end.eex -->
+<!--            ^^^^^ constant.other.symbol.elixir -->
+<!--     ^^^^^^ variable.function.elixir -->
+<!-- ^^^ punctuation.section.embedded.begin.eex -->
+
+     <%%= quoted :result %>
+<!--                     ^^ punctuation.section.embedded.end.eex -->
+<!--             ^^^^^^^ constant.other.symbol.elixir -->
+<!--      ^^^^^^ variable.function.elixir -->
+<!-- ^^^^ punctuation.section.embedded.begin.eex -->
+</html>
