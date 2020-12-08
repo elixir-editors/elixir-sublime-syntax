@@ -398,6 +398,7 @@ contexts:
       set: [first_and_next_types_pop, if_non_space_pop]
 
   first_and_next_types_pop:
+    - include: comments
     # Avoid matching e.g. "def func" while typing the return types.
     - match: (?=when{{not_id_key_suffix}}|{{identifier}}\s{{has_arguments}})
       comment: no when clause directly after "::"
@@ -2163,7 +2164,8 @@ contexts:
         | (catch|after|rescue)
         | (fn)
         | (else)
-        | (do|end)
+        | (do)
+        | (end)
         )\b(?![?!])
       comment: fully reserved keywords
       captures:
