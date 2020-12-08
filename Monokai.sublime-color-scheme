@@ -4,14 +4,13 @@
   [
     {
       "name": "EEx tag",
-      "scope": "eex-tag.elixir",
-      "foreground": "#777a68",
-      "background": "color(var(white) a(0.03))"
+      "scope": "punctuation.section.embedded.begin.eex | punctuation.section.embedded.end.eex",
+      "foreground": "var(yellow5)"
     },
     {
       "name": "EEx embedded",
       "scope": "source.elixir.embedded.html",
-      "background": "color(var(white) a(0.03))"
+      "background": "color(var(white) a(0.05))"
     },
     {
       "name": "Doc attribute",
