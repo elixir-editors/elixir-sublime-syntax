@@ -400,7 +400,7 @@ contexts:
   first_and_next_types_pop:
     - include: comments
     # Avoid matching e.g. "def func" while typing the return types.
-    - match: (?=when{{not_id_key_suffix}}|{{identifier}}\s{{has_arguments}})
+    - match: (?=when{{not_id_key_suffix}}|@?{{identifier}}{{not_id_key_suffix}}\s{{has_arguments}})
       comment: no when clause directly after "::"
       pop: true
     - match: (?=\S)
@@ -1255,8 +1255,11 @@ contexts:
         - include: arguments_paren_or_ws_pop
     - match: |
         (?x)
-        (?>(def(?>delegate|macro|guard|)p)
-         | (def(?>delegate|macro|guard|)) {{no_suffix_then_arguments}})
+        (?>
+          (def(?>delegate|macro|guard|)p)
+        | (def(?>delegate|macro|guard|))
+        )
+        {{no_suffix_then_arguments}}
       captures:
         1: keyword.declaration.function.private.elixir
         2: keyword.declaration.function.public.elixir
@@ -2147,8 +2150,10 @@ contexts:
           captures:
             1: variable.other.unused.elixir
             2: variable.other.elixir
-        - match: \.(?!\.)
-          scope: punctuation.accessor.dot.elixir
+        - match: (?=\.(?!\.))
+          set:
+            - include: dot_accessor
+            - include: empty_pop
         - include: empty_pop
 
   special_form:
