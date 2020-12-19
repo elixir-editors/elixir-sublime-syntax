@@ -606,3 +606,9 @@ def run(), do: nil
 #      ^^^^ variable.other.type
  when name: type
 #           ^^^^ variable.other -storage.type -support.type
+ @spec func() ::
+ @const ant
+#       ^^^ variable.other -storage.type -support.type
+ @spec func() :: @const | type
+#                         ^^^^ storage.type.custom
+#                 ^^^^^ variable.other.constant
