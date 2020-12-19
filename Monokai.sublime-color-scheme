@@ -5,7 +5,7 @@
     {
       "name": "EEx tag",
       "scope": "punctuation.section.embedded.begin.eex | punctuation.section.embedded.end.eex",
-      "foreground": "var(yellow5)"
+      "foreground": "color(var(red) s(- 30%))"
     },
     {
       "name": "EEx embedded",
