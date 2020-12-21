@@ -61,6 +61,16 @@
       "name": "Escapes in remote function call",
       "scope": "variable.function.elixir constant.character.escape.char.elixir",
       "foreground": "color(var(blue) l(+ 10%))"
+    },
+    {
+      "name": "Item access brackets",
+      "scope": "punctuation.section.access.begin.elixir | punctuation.section.access.end.elixir",
+      "foreground": "var(red)"
+    },
+    {
+      "name": "Line continuation",
+      "scope": "punctuation.separator.continuation.elixir",
+      "foreground": "color(var(white) a(0.3))"
     }
   ]
 }

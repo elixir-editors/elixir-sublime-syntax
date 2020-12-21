@@ -102,6 +102,16 @@
       "name": "Darker string punctuation",
       "scope": "source.elixir & punctuation.definition.string",
       "foreground": "color(var(yellow) l(- 15%))"
+    },
+    {
+      "name": "Item access brackets",
+      "scope": "punctuation.section.access.begin.elixir | punctuation.section.access.end.elixir",
+      "foreground": "var(red)"
+    },
+    {
+      "name": "Line continuation",
+      "scope": "punctuation.separator.continuation.elixir",
+      "foreground": "color(var(white) a(0.3))"
     }
   ]
 }
