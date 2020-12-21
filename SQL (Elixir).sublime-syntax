@@ -27,7 +27,7 @@ contexts:
           # Should always be keywords, but SQL.sublime-syntax doesn't think so yet.
           (
             any|all|array|cast|cross|column|collat(?:e|ion)|create|distinct|except|
-            fetch|full|group|intersect|into|inner|isnull|i[sn]|ilike|
+            fetch|full|group(?:\s+by)?|intersect|into|inner|isnull|i[sn]|ilike|
             left|not|on|offset|outer|over|table|window
           ) |
           (?:(nulls) \s+ (last)) |
