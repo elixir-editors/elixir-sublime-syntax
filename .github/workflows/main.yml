@@ -13,13 +13,13 @@ on:
       - '**.tmPreferences'
 
 jobs:
-  st4_syntax_tests:
-    name: Run ST4 Syntax Tests
+  st3_syntax_tests:
+    name: Run ST3 Syntax Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: SublimeText/syntax-test-action@v2
         with:
-          build: 4093
-          default_packages: master
+          build: 3210 # or 'latest' for the latest ST3 build
+          default_packages: st3
           package_name: ElixirSyntax
