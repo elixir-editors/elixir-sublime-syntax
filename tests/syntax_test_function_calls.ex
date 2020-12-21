@@ -32,7 +32,7 @@ assert true
 m."quoted" arg
 #             ^ punctuation.section.arguments.end
 #         ^ punctuation.section.arguments.begin
-#  ^^^^^^ variable.function.elixir
+#  ^^^^^^ variable.function
 
 raise ArgumentError, "msg"
 #                         ^ punctuation.section.arguments.end
@@ -135,7 +135,7 @@ start(fn -> raise "stop"  end)
 #  ^^^^^^^ variable.function
 #^^ punctuation.section.interpolation.begin
 (from p in q, select: p.title )
-#                             ^ punctuation.section.parens.end
+#                             ^ punctuation.section.group.end
 #                            ^ punctuation.section.arguments.end
 #^^^^ variable.function
 
@@ -153,3 +153,101 @@ start(fn -> raise "stop"  end)
 end
 #  ^ punctuation.section.arguments.end
 #<- punctuation.section.block.end
+
+
+## Built-ins
+
+ is_atom(x)
+#       ^ punctuation.section.arguments.begin
+#^^^^^^^ variable.function.built-in
+ is_binary(x)
+#         ^ punctuation.section.arguments.begin
+#^^^^^^^^^ variable.function.built-in
+ is_bitstring(x)
+#            ^ punctuation.section.arguments.begin
+#^^^^^^^^^^^^ variable.function.built-in
+ is_boolean(x)
+#          ^ punctuation.section.arguments.begin
+#^^^^^^^^^^ variable.function.built-in
+ is_float(x)
+#        ^ punctuation.section.arguments.begin
+#^^^^^^^^ variable.function.built-in
+ is_function(x)
+#           ^ punctuation.section.arguments.begin
+#^^^^^^^^^^^ variable.function.built-in
+ is_integer(x)
+#          ^ punctuation.section.arguments.begin
+#^^^^^^^^^^ variable.function.built-in
+ is_list(x)
+#       ^ punctuation.section.arguments.begin
+#^^^^^^^ variable.function.built-in
+ is_map(x)
+#      ^ punctuation.section.arguments.begin
+#^^^^^^ variable.function.built-in
+ is_nil(x)
+#      ^ punctuation.section.arguments.begin
+#^^^^^^ variable.function.built-in
+ is_number(x)
+#         ^ punctuation.section.arguments.begin
+#^^^^^^^^^ variable.function.built-in
+ is_pid(x)
+#      ^ punctuation.section.arguments.begin
+#^^^^^^ variable.function.built-in
+ is_port(x)
+#       ^ punctuation.section.arguments.begin
+#^^^^^^^ variable.function.built-in
+ is_record(x)
+#         ^ punctuation.section.arguments.begin
+#^^^^^^^^^ variable.function.built-in
+ is_reference(x)
+#            ^ punctuation.section.arguments.begin
+#^^^^^^^^^^^^ variable.function.built-in
+ is_tuple(x)
+#        ^ punctuation.section.arguments.begin
+#^^^^^^^^ variable.function.built-in
+ is_exception(x)
+#            ^ punctuation.section.arguments.begin
+#^^^^^^^^^^^^ variable.function.built-in
+
+ abs(x)
+#   ^ punctuation.section.arguments.begin
+#^^^ variable.function.built-in
+ bit_size(x)
+#        ^ punctuation.section.arguments.begin
+#^^^^^^^^ variable.function.built-in
+ byte_size(x)
+#         ^ punctuation.section.arguments.begin
+#^^^^^^^^^ variable.function.built-in
+ div(x)
+#   ^ punctuation.section.arguments.begin
+#^^^ variable.function.built-in
+ elem(x)
+#    ^ punctuation.section.arguments.begin
+#^^^^ variable.function.built-in
+ hd(x)
+#  ^ punctuation.section.arguments.begin
+#^^ variable.function.built-in
+ length(x)
+#      ^ punctuation.section.arguments.begin
+#^^^^^^ variable.function.built-in
+ map_size(x)
+#        ^ punctuation.section.arguments.begin
+#^^^^^^^^ variable.function.built-in
+ node(x)
+#    ^ punctuation.section.arguments.begin
+#^^^^ variable.function.built-in
+ rem(x)
+#   ^ punctuation.section.arguments.begin
+#^^^ variable.function.built-in
+ round(x)
+#     ^ punctuation.section.arguments.begin
+#^^^^^ variable.function.built-in
+ tl(x)
+#  ^ punctuation.section.arguments.begin
+#^^ variable.function.built-in
+ trunc(x)
+#     ^ punctuation.section.arguments.begin
+#^^^^^ variable.function.built-in
+ tuple_size(x)
+#          ^ punctuation.section.arguments.begin
+#^^^^^^^^^^ variable.function.built-in

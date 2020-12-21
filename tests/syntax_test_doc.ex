@@ -84,8 +84,8 @@ Don't insert a comment between `X` and `"""`.
 #    ^^^^^ constant.language
 #   ^ punctuation.section.arguments.begin
  (@doc false)
-#           ^ punctuation.section.parens.end
-#^ punctuation.section.parens.begin
+#           ^ punctuation.section.group.end
+#^ punctuation.section.group.begin
 
 @doc "doc"
 #         ^ punctuation.section.arguments.end
@@ -145,7 +145,7 @@ quote(do: @doc guard: false)
 @doc == "doc"
 #       ^^^^^ -source.markdown.embedded.elixir
 #    ^^ keyword.operator.comparison
-#   ^ -punctuation.section.parens.begin
+#   ^ -punctuation.section.group.begin
 #^^^ variable.other.constant - support.attr.doc
 
 @moduledoc ""

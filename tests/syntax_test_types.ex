@@ -580,6 +580,22 @@ def run(), do: nil
 
 @spec integer + integer :: integer
 
+### Other
+
+@callback init(opts :: keyword) :: state
+#                                  ^^^^^ storage.type.custom
+#                               ^^ keyword.operator.colon
+#                      ^^^^^^^ support.type
+#              ^^^^ variable.other.named-type
+#         ^^^^ variable.other.type
+#^^^^^^^^ keyword.declaration.type
+
+@macrocallback required(atom) :: Macro.t()
+#                                      ^ storage.type.remote
+#                             ^^ keyword.operator.colon
+#                       ^^^^ support.type
+#              ^^^^^^^^ variable.other.type
+#^^^^^^^^^^^^^ keyword.declaration.type
 
 ### Special cases
 

@@ -106,12 +106,12 @@ defmodule(Nil, do: (def get_nil() do nil end)) |> elem(1) |> apply(:get_nil, [])
 #                                                 ^^^^ variable.function.built-in
 #                                              ^^ keyword.operator.pipe
 #                                            ^ punctuation.section.arguments.end
-#                                           ^ punctuation.section.parens.end
+#                                           ^ punctuation.section.group.end
 #                                        ^^^ keyword.context.block
 #                                 ^^ keyword.context.block
 #                       ^^^^^^^ entity.name.function
 #                   ^^^ keyword.declaration.function
-#                  ^ punctuation.section.parens.begin
+#                  ^ punctuation.section.group.begin
 #              ^^^ constant.other.keyword
 
 defmodule (NotAModule, do: (import X))
@@ -187,8 +187,8 @@ def()
 #   ^ punctuation.section.arguments.end
 #  ^ punctuation.section.arguments.begin -punctuation.definition.parameters.begin
 def(())
-#    ^ -punctuation.section.parens.end
-#   ^ -punctuation.section.parens.begin punctuation.definition.parameters.begin
+#    ^ -punctuation.section.group.end
+#   ^ -punctuation.section.group.begin punctuation.definition.parameters.begin
 def do end
 #         ^ punctuation.section.arguments.end
 #      ^^^ punctuation.section.block.end
@@ -310,9 +310,9 @@ def (lhs) <> (rhs), do: lhs <> rhs
 #                       ^^^ variable.other
 #             ^^^ -variable.other
 #         ^^ entity.name.function
-#       ^ -punctuation.section.parens.end
+#       ^ -punctuation.section.group.end
 #    ^^^  -variable.other
-#   ^ -punctuation.section.parens.begin
+#   ^ -punctuation.section.group.begin
 def [left] ++ [_ | _] = right, do: [left | right]
 #                                   ^^^^ variable.other
 #                            ^ punctuation.separator.arguments
@@ -353,9 +353,9 @@ def(line, do: __ENV__.line) var
 #  ^ punctuation.section.arguments.begin
 (def line)
 #    ^^^^ entity.name.function
-#<- punctuation.section.parens.begin
+#<- punctuation.section.group.begin
 (def line do 1 end)
-#                 ^ punctuation.section.parens.end
+#                 ^ punctuation.section.group.end
 #    ^^^^ entity.name.function
 (def line do: 1)
 #              ^ -invalid
@@ -465,6 +465,29 @@ def unused(_, %_{}, {_}, [_], [_ | _], (_), <<_>>, <<_, _::_>>, _ <> _, _.._)
 #           ^ punctuation.separator.sequence
 #          ^ variable.parameter.unused
 #         ^ punctuation.definition.parameters.begin
+
+ defp func(), do: nil
+#     ^^^^ entity.name.function
+#^^^^ keyword.declaration.function.private
+
+ defmacro l + r, do: l + r
+#           ^ entity.name.function
+#^^^^^^^^ keyword.declaration.function.public
+ defmacrop l + r, do: l + r
+#            ^ entity.name.function
+#^^^^^^^^^ keyword.declaration.function.private
+ defguard is_x(x), do: x == :x
+#         ^^^^ entity.name.function
+#^^^^^^^^ keyword.declaration.function.public
+ defguardp is_x(x), do: x == :x
+#          ^^^^ entity.name.function
+#^^^^^^^^^ keyword.declaration.function.private
+ defdelegate func(), to: Other, as: :func
+#            ^^^^ entity.name.function
+#^^^^^^^^^^^ keyword.declaration.function.public
+ defdelegatep func(), to: Other, as: :func
+#             ^^^^ entity.name.function
+#^^^^^^^^^^^^ keyword.declaration.function.private
 
 
 ### alias
@@ -578,8 +601,8 @@ alias(:hello, warn: false, as: Hello)
 
 alias (A), as: A
 #              ^ entity.name.namespace
-#       ^ punctuation.section.parens.end
-#     ^ punctuation.section.parens.begin
+#       ^ punctuation.section.group.end
+#     ^ punctuation.section.group.begin
 
 alias = alias X
 #             ^ constant.other.module
@@ -594,9 +617,9 @@ alias do end
 
 [alias A]
 (alias A)
-#       ^ punctuation.section.parens.end
+#       ^ punctuation.section.group.end
 #      ^ constant.other.module
-#<- punctuation.section.parens.begin
+#<- punctuation.section.group.begin
 do alias A end
 #          ^^^ punctuation.section.block.end
 do alias A, as: B end

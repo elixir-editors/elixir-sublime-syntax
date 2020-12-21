@@ -10,6 +10,10 @@
 %_{}
 #^ variable.other.unused
 
+ _.._ = 1..3
+#   ^ variable.other.unused
+#^ variable.other.unused
+
 
 ### Keywords or built-in functions as variables
 
@@ -292,7 +296,6 @@ x.exit
 x.super
 # ^^^^^ variable.other.member
 
-
 x.is_atom
 # ^^^^^^^ variable.other.member
 x.is_binary
@@ -401,7 +404,12 @@ x.__DIR__
 x.__STACKTRACE__
 # ^^^^^^^^^^^^^^ variable.other.member
 
+
 ### Before do-block
+
+case __MODULE__ do
+#    ^^^^^^^^^^ variable.language.special-form -variable.other.unused
+end
 
 case case do
 #    ^^^^ variable.other
@@ -430,8 +438,6 @@ end
 #^^^^^^^^^^ variable.language.special-form
  __ENV__
 #^^^^^^^ variable.language.special-form
- __MODULE__
-#^^^^^^^^^^ variable.language.special-form
  __DIR__
 #^^^^^^^ variable.language.special-form
  __STACKTRACE__
