@@ -904,7 +904,7 @@ contexts:
                 2: string.quoted.modifiers.elixir storage.type.string.elixir
               pop: true
 
-    - match: ~L(?=["'])(?!''')
+    - match: ~L(?=""")
       comment: LiveView
       scope: meta.string.elixir storage.type.string.elixir
       push:
@@ -925,28 +925,6 @@ contexts:
               push: scope:text.html.eex
               with_prototype:
                 - match: (?=^(?>\\.|[^"])*?""")
-                  pop: true
-        - match: \"
-          scope: punctuation.definition.string.begin.elixir
-          set:
-            - meta_scope: meta.string.elixir
-            - include: string_closing_dquote
-            - match: ''
-              push: scope:text.html.eex
-              with_prototype:
-                - match: \\"
-                - match: (?=")
-                  pop: true
-        - match: \'
-          scope: punctuation.definition.string.begin.elixir
-          set:
-            - meta_scope: meta.string.elixir
-            - include: string_closing_squote
-            - match: ''
-              push: scope:text.html.eex
-              with_prototype:
-                - match: \\'
-                - match: (?=')
                   pop: true
 
     - match: ~y(?=""")
@@ -990,7 +968,7 @@ contexts:
                 - match: (?=^(?>\\.|[^"])*?""")
                   pop: true
 
-    - match: ~j(?=["'])(?!''')
+    - match: ~j(?=")
       comment: JSON with interpolation
       scope: meta.string.elixir storage.type.string.elixir
       push:
@@ -1020,59 +998,6 @@ contexts:
               with_prototype:
                 - include: escaped_or_interpolated
                 - match: (?=")
-                  pop: true
-        - match: \'
-          scope: punctuation.definition.string.begin.elixir
-          set:
-            - meta_scope: meta.string.elixir
-            - include: string_closing_squote
-            - match: ''
-              push: scope:source.json
-              with_prototype:
-                - include: escaped_or_interpolated
-                - match: (?=')
-                  pop: true
-
-    - match: ~J(?=["'])(?!''')
-      comment: JSON raw
-      scope: meta.string.elixir storage.type.string.elixir
-      push:
-        - match: (""")(.*)\n
-          captures:
-            1: punctuation.definition.string.begin.elixir
-            2: invalid.illegal.opening-heredoc.elixir
-          set:
-            - meta_scope: meta.string.elixir
-            - match: (?<=""")
-              set: string_modifiers_and_pop
-            - match: (?=^(?>\\.|[^"])*?""")
-              push: heredoc_string_closing_double_pop
-            - match: ''
-              push: scope:source.json
-              with_prototype:
-                - match: (?=^(?>\\.|[^"])*?""")
-                  pop: true
-        - match: \"
-          scope: punctuation.definition.string.begin.elixir
-          set:
-            - meta_scope: meta.string.elixir
-            - include: string_closing_dquote
-            - match: ''
-              push: scope:source.json
-              with_prototype:
-                - match: \\"
-                - match: (?=")
-                  pop: true
-        - match: \'
-          scope: punctuation.definition.string.begin.elixir
-          set:
-            - meta_scope: meta.string.elixir
-            - include: string_closing_squote
-            - match: ''
-              push: scope:source.json
-              with_prototype:
-                - match: \\'
-                - match: (?=')
                   pop: true
 
     - match: ~r
