@@ -1505,11 +1505,14 @@ contexts:
         - include: module_function_call_pop
         - include: id_or_operator_call_pop
         - include: module_name_pop
-        - match: ((?=_){{identifier}})|({{identifier}})
-          captures:
-            1: variable.other.unused.elixir
-            2: variable.other.elixir
-          pop: true
+        - include: identifier_pop
+
+  identifier_pop:
+    - match: ((?=_){{identifier}})|({{identifier}})
+      captures:
+        1: variable.other.unused.elixir
+        2: variable.other.elixir
+      pop: true
 
   id_member_pop:
     - match: '{{id_or_operator}}'
@@ -2267,10 +2270,7 @@ contexts:
         - include: special_form
         # Avoid matching (in|not|and|or) as an id.
         - include: operator
-        - match: ((?=_){{identifier}})|({{identifier}})
-          captures:
-            1: variable.other.unused.elixir
-            2: variable.other.elixir
+        - include: identifier_pop
         - match: \.(?!\.)
           scope: punctuation.accessor.dot.elixir
           set:
