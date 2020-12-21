@@ -51,6 +51,7 @@ contexts:
     - include: fn_block
     - include: tuple
     - include: parens
+    - include: item_access
     - include: list
     - include: map
     - include: merge_conflict
@@ -68,6 +69,7 @@ contexts:
     - include: modules_or_identifiers_or_calls
     - include: comment
     - include: char_literal
+    - include: line_continuation
 
   fn_block:
     - match: fn{{not_id_key_suffix}}
@@ -1793,6 +1795,18 @@ contexts:
         - include: comma_and_skip_ws
         - include: core_syntax
 
+  item_access:
+    - match: (?<!^|[\s(\[{])\[
+      scope: punctuation.section.access.begin.elixir
+      push:
+        - meta_scope: meta.access.elixir
+        - match: \]
+          scope: punctuation.section.access.end.elixir
+          pop: true
+        - match: \,
+          scope: invalid.illegal.separator.elixir
+        - include: core_syntax
+
   list:
     - match: \]
       scope: invalid.illegal.stray-closing-bracket.elixir
@@ -1836,11 +1850,11 @@ contexts:
     - match: \)
       scope: invalid.illegal.stray-closing-parenthesis.elixir
     - match: \(
-      scope: punctuation.section.parens.begin.elixir
+      scope: punctuation.section.group.begin.elixir
       push:
         - meta_scope: meta.parens.elixir
         - match: \)
-          scope: punctuation.section.parens.end.elixir
+          scope: punctuation.section.group.end.elixir
           pop: true
         - include: core_syntax
 
@@ -2065,11 +2079,11 @@ contexts:
     - include: core_syntax
 
   comment:
-    - match: (##).*
+    - match: (##).*\n?
       scope: comment.line.number-sign.section.elixir
       captures:
         1: punctuation.definition.comment.elixir
-    - match: (#).*
+    - match: (#).*\n?
       scope: comment.line.number-sign.elixir
       captures:
         1: punctuation.definition.comment.elixir
@@ -2248,6 +2262,10 @@ contexts:
     - match: (?=\()
       set: arguments_pop
     - include: empty_pop
+
+  line_continuation:
+    - match: \\\n
+      scope: punctuation.separator.continuation.elixir
 
   spaces_pop:
     - match: \s*
