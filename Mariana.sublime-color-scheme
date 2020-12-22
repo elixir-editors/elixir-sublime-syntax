@@ -34,7 +34,7 @@
     },
     {
       "name": "Spec name",
-      "scope": "variable.other.type.elixir",
+      "scope": "variable.other.spec.elixir",
       "foreground": "color(var(blue5) s(- 50%))"
     },
     {
@@ -66,6 +66,11 @@
       "name": "Interpolation",
       "scope": "source.elixir.embedded",
       "background": "color(var(white) a(0.03))"
+    },
+    {
+      "name": "Group parentheses",
+      "scope": "punctuation.section.group.begin.elixir | punctuation.section.group.end.elixir",
+      "foreground": "color(var(white) a(0.7))"
     },
     {
       "name": "Item access brackets",

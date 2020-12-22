@@ -84,7 +84,7 @@
     },
     {
       "name": "Spec name",
-      "scope": "variable.other.type.elixir",
+      "scope": "variable.other.spec.elixir",
       "foreground": "color(var(yellow2) s(- 50%))"
     },
     {
@@ -102,6 +102,11 @@
       "name": "Darker string punctuation",
       "scope": "source.elixir & punctuation.definition.string",
       "foreground": "color(var(yellow) l(- 15%))"
+    },
+    {
+      "name": "Group parentheses",
+      "scope": "punctuation.section.group.begin.elixir | punctuation.section.group.end.elixir",
+      "foreground": "color(var(white) a(0.7))"
     },
     {
       "name": "Item access brackets",
