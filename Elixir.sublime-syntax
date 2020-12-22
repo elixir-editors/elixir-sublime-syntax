@@ -1861,6 +1861,9 @@ contexts:
       scope: keyword.operator.match.elixir
     - match: ;
       scope: keyword.operator.semicolon.elixir
+    - include: pin_operator
+
+  pin_operator:
     - match: \^
       scope: keyword.operator.pin.elixir
 
@@ -1917,10 +1920,11 @@ contexts:
       scope: punctuation.section.mapping.begin.elixir
       push:
         - include: alias_names
+        - include: pin_operator
         - match: ((?=_){{identifier}})|({{identifier}})
           captures:
             1: variable.other.unused.elixir
-            2: invalid.illegal.struct-name.elixir
+            2: variable.other.elixir
           set: map_body_pop
         - include: map_body_pop
 
