@@ -8,41 +8,40 @@
 #  ^ punctuation.section.mapping.end
 # ^ punctuation.section.mapping.begin
 #^ punctuation.section.mapping.begin
+%{%{}: %{}}."%{}"
+#            ^^^ variable.other.member
+#       ^ punctuation.section.mapping.begin
+# ^^^^ constant.other.keyword
  %__MODULE__{}
 #           ^ punctuation.section.mapping.begin
 # ^^^^^^^^^^ variable.language.special-form
 #^ punctuation.section.mapping.begin
 
- {}
+ {} {{}} ({}) [{}]
+#              ^ punctuation.section.sequence.begin
+#         ^ punctuation.section.sequence.begin
+#    ^ punctuation.section.sequence.begin
 # ^ punctuation.section.sequence.end
 #^ punctuation.section.sequence.begin
 
- (expression; expression)
+ (expression; expression) (()) {()} [()]
+#                                    ^ punctuation.section.group.begin
+#                               ^ punctuation.section.group.begin
+#                          ^ punctuation.section.group.begin
 #                       ^ punctuation.section.group.end
 #           ^ keyword.operator.semicolon
 #^ punctuation.section.group.begin
 
-[]
-#<- punctuation.section.brackets.begin
- []
+ [] [[]] ([]) {[]}
+#              ^ punctuation.section.brackets.begin
+#         ^ punctuation.section.brackets.begin
+#      ^ punctuation.section.brackets.end
+#     ^ punctuation.section.brackets.end
+#    ^ punctuation.section.brackets.begin
+#   ^ punctuation.section.brackets.begin
 # ^ punctuation.section.brackets.end
 #^ punctuation.section.brackets.begin
- [a: :a][:a]
-#          ^ punctuation.section.access.end
-#       ^^^^ meta.access
-#       ^ punctuation.section.access.begin
-#      ^ punctuation.section.brackets.end
-#^ punctuation.section.brackets.begin
- [][:a, :b]
-#     ^ invalid.illegal.separator
-#  ^ punctuation.section.access.begin
 
-[[]]
-#^ punctuation.section.brackets.begin
-([])
-#^ punctuation.section.brackets.begin
-{[]}
-#^ punctuation.section.brackets.begin
  ]
 #^ invalid.illegal.stray-closing-bracket
  )
@@ -73,6 +72,7 @@
 #               ^ variable.other
 #          ^ variable.other -variable.parameter
 #   ^ variable.parameter
+
 
 ## Do-block
 
@@ -158,6 +158,117 @@ case Kernel.|| do
 #          ^ punctuation.accessor.dot
 #    ^^^^^^ constant.other.module
 end
+
+
+## Item access
+
+[]
+#<- -punctuation.section.access.end
+ [a: :a][:a]
+#          ^ punctuation.section.access.end
+#       ^^^^ meta.access
+#       ^ punctuation.section.access.begin
+#      ^ punctuation.section.brackets.end
+#^ punctuation.section.brackets.begin
+ [][:a, :b]
+#     ^ invalid.illegal.separator
+#  ^ punctuation.section.access.begin
+
+%{}[] [][] ()[] ([])[] [[]][] [_:[]][] {[]}[]
+#                                          ^ punctuation.section.access.begin
+#                                   ^ punctuation.section.access.begin
+#                          ^ punctuation.section.access.begin
+#                   ^ punctuation.section.access.begin
+#            ^ punctuation.section.access.begin
+#       ^ punctuation.section.access.begin
+#  ^ punctuation.section.access.begin
+
+ x[] x?[] x![] _[] _?[] _![]
+#                         ^ punctuation.section.access.begin
+#                    ^ punctuation.section.access.begin
+#               ^ punctuation.section.access.begin
+#           ^ punctuation.section.access.begin
+#      ^ punctuation.section.access.begin
+# ^ punctuation.section.access.begin
+
+0[] 1[] 2[] 3[] 4[] 5[] 6[] 7[] 8[] 9[]
+#                                    ^ punctuation.section.access.begin
+#                                ^ punctuation.section.access.begin
+#                            ^ punctuation.section.access.begin
+#                        ^ punctuation.section.access.begin
+#                    ^ punctuation.section.access.begin
+#                ^ punctuation.section.access.begin
+#            ^ punctuation.section.access.begin
+#        ^ punctuation.section.access.begin
+#    ^ punctuation.section.access.begin
+#^ punctuation.section.access.begin
+
+""[] ''[] :[] ??[]
+#               ^ punctuation.section.brackets.begin
+#         ^^^ constant.other.symbol
+#      ^ punctuation.section.access.begin
+# ^ punctuation.section.access.begin
+
+when?[] when![] end?[] end![] else?[] else![]
+#                                          ^ punctuation.section.access.begin
+#                                  ^ punctuation.section.access.begin
+#                          ^ punctuation.section.access.begin
+#                   ^ punctuation.section.access.begin
+#            ^ punctuation.section.access.begin
+#    ^ punctuation.section.access.begin
+after?[] after![] rescue?[] rescue![] catch?[] catch![]
+#                                                    ^ punctuation.section.access.begin
+#                                           ^ punctuation.section.access.begin
+#                                  ^ punctuation.section.access.begin
+#                        ^ punctuation.section.access.begin
+#              ^ punctuation.section.access.begin
+#     ^ punctuation.section.access.begin
+not?[] not![] and?[] and![] in?[] in![] or?[] or![]
+#                                                ^ punctuation.section.access.begin
+#                                          ^ punctuation.section.access.begin
+#                                    ^ punctuation.section.access.begin
+#                              ^ punctuation.section.access.begin
+#                        ^ punctuation.section.access.begin
+#                 ^ punctuation.section.access.begin
+#          ^ punctuation.section.access.begin
+#   ^ punctuation.section.access.begin
+
+when[] end[] else[] after[] rescue[]
+#                                 ^ punctuation.section.brackets.begin
+#                        ^ punctuation.section.brackets.begin
+#                ^ punctuation.section.brackets.begin
+#         ^ punctuation.section.brackets.begin
+#   ^ punctuation.section.brackets.begin
+catch[] not[] and[] in[] or[]
+#                          ^ punctuation.section.brackets.begin
+#                     ^ punctuation.section.brackets.begin
+#                ^ punctuation.section.brackets.begin
+#          ^ punctuation.section.brackets.begin
+#    ^ punctuation.section.brackets.begin
+
+![] $[] %[] &[] *[] +[] ,[] -[] .[] /[]
+#                                    ^ punctuation.section.brackets.begin
+#                                ^ punctuation.section.brackets.begin
+#                            ^ punctuation.section.brackets.begin
+#                        ^ punctuation.section.brackets.begin
+#                    ^ punctuation.section.brackets.begin
+#                ^ punctuation.section.brackets.begin
+#            ^ punctuation.section.brackets.begin
+#        ^ punctuation.section.brackets.begin
+#    ^ punctuation.section.brackets.begin
+#^ punctuation.section.brackets.begin
+
+;[] <[] =[] >[] @[] \\[] ^[] `[] |[] ~[]
+#                                     ^ punctuation.section.brackets.begin
+#                                 ^ punctuation.section.brackets.begin
+#                             ^ punctuation.section.brackets.begin
+#                         ^ punctuation.section.brackets.begin
+#                     ^ punctuation.section.brackets.begin
+#                ^ punctuation.section.brackets.begin
+#            ^ punctuation.section.brackets.begin
+#        ^ punctuation.section.brackets.begin
+#    ^ punctuation.section.brackets.begin
+#^ punctuation.section.brackets.begin
 
 
 ## Captures
