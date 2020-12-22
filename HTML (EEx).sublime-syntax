@@ -17,7 +17,7 @@ contexts:
     - match: <%#
       scope: punctuation.definition.comment.begin.eex
       push:
-        - meta_scope: comment.eex
+        - meta_scope: text.html.eex comment.block.eex
         - match: '%>'
           scope: punctuation.definition.comment.end.eex
           pop: true
@@ -26,12 +26,18 @@ contexts:
       push:
         - clear_scopes: true
         - meta_scope: meta.interpolation.eex
-        - match: '%>'
-          scope: text.html.eex punctuation.section.embedded.end.eex
+        - match: (%)(>)
+          scope: text.html.eex
+          captures:
+             1: entity.name.tag.eex
+             2: punctuation.section.embedded.end.eex
           pop: true
         # Tags <%/ and <%| are parsed but have no functionality in EEx yet.
-        - match: <%(?>%=?|[=/|]?)
-          scope: text.html.eex punctuation.section.embedded.begin.eex
+        - match: (<)(%(?>%=?|[=/|]?))
+          scope: text.html.eex
+          captures:
+             1: punctuation.section.embedded.begin.eex
+             2: entity.name.tag.eex
           embed: scope:source.elixir
           embed_scope: text.html.eex source.elixir.embedded.eex
           escape: (?=%>|<%)
