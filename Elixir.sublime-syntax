@@ -100,9 +100,8 @@ contexts:
           push: function_header_args_pop
 
   function_header_args_pop:
-    - match: unquote(?=\s*\()
-      scope: keyword.other.unquote.elixir
-      set: [function_params_or_eol_pop, arguments_pop]
+    - match: (?=unquote\()
+      set: [function_params_or_eol_pop, arguments_pop, unquote_pop]
 
     - match: not{{is_argument_token}}
       scope: entity.name.function.elixir
@@ -324,11 +323,8 @@ contexts:
 
   types:
     - include: comments
-    - match: unquote(?=\()
-      scope: keyword.other.unquote.elixir
-      push: [type_arguments_or_pop, arguments_pop]
     - match: (?=unquote(?:_splicing)?\()
-      push: unquote_call_pop
+      push: [type_arguments_or_pop, arguments_pop, unquote_pop]
     - include: block_or_keyword
     - match: __MODULE__{{not_id_key_suffix}}
       scope: variable.language.special-form.elixir
@@ -569,8 +565,7 @@ contexts:
       scope: keyword.operator.colon.elixir
       push:
         - meta_scope: meta.type.binary.elixir
-        - match: (?=unquote(?:_splicing)?\()
-          push: unquote_call_pop
+        - include: unquote_call
         - match: '{{identifier}}|[-*\d]+'
           scope: storage.type.binary.elixir
         - match: (?=\()
@@ -1381,8 +1376,7 @@ contexts:
         - include: special_form
         - include: module_name
         - include: atom_symbol
-        - match: (?=unquote\()
-          push: unquote_call_pop
+        - include: unquote_call
         - include: module_accessor_or_pop
     - include: arg_comma_and_skip_ws
     - include: core_syntax
@@ -1604,9 +1598,8 @@ contexts:
             - meta_scope: meta.function-call.arguments.elixir
             - include: arguments_closing_pop
             - include: block_or_keyword
-            - match: unquote(?=\s*\()
-              scope: keyword.other.unquote.elixir
-              push: [type_definition_pop, arguments_pop]
+            - match: (?=unquote\()
+              push: [type_definition_pop, arguments_pop, unquote_pop]
             - match: '{{identifier}}'
               scope: entity.name.type.elixir
               push: type_definition_pop
@@ -1616,9 +1609,8 @@ contexts:
           set:
             - meta_scope: meta.function-call.arguments.elixir
             - include: block_or_keyword
-            - match: unquote(?=\s*\()
-              scope: keyword.other.unquote.elixir
-              set: [type_definition_pop, arguments_pop]
+            - match: (?=unquote\()
+              set: [type_definition_pop, arguments_pop, unquote_pop]
             - match: '{{identifier}}'
               scope: entity.name.type.elixir
               set: type_definition_pop
@@ -1646,9 +1638,8 @@ contexts:
       set: spec_definition_pop
 
   spec_header_pop:
-    - match: unquote(?=\s*\()
-      scope: keyword.other.unquote.elixir
-      set: [spec_after_unquote_pop, if_non_space_or_eol_pop, arguments_pop]
+    - match: (?=unquote\()
+      set: [spec_after_unquote_pop, if_non_space_or_eol_pop, arguments_pop, unquote_pop]
     - match: '{{identifier}}(?!\s*(?!::){{operators}})'
       scope: variable.other.type.elixir
       set: spec_definition_pop
@@ -1919,6 +1910,8 @@ contexts:
     - match: \%
       scope: punctuation.section.mapping.begin.elixir
       push:
+        - match: (?=unquote\()
+          set: [map_body_pop, arguments_pop, unquote_pop]
         - include: alias_names
         - include: pin_operator
         - match: ((?=_){{identifier}})|({{identifier}})
@@ -2316,13 +2309,13 @@ contexts:
       scope: constant.language.elixir
 
   elixir_functions:
+    - include: unquote_call
     - match: |-
         (?x)
         (?>
           (if|unless|case|cond|with)
         | (for)
         | (quote)
-        | (unquote_splicing|unquote)
         | (defstruct|defrecord|defexception|defoverridable)
         | (import|require|use)
         | (receive)
@@ -2335,25 +2328,32 @@ contexts:
         1: keyword.control.conditional.elixir
         2: keyword.control.loop.for.elixir
         3: keyword.other.quote.elixir
-        4: keyword.other.unquote.elixir
-        5: keyword.declaration.elixir
-        6: keyword.control.import.elixir
-        7: keyword.control.loop.receive.elixir
-        8: keyword.control.exception.try.elixir
-        9: keyword.control.flow.throw.elixir
-        10: keyword.control.flow.exit.elixir
-        11: keyword.other.super.elixir
+        4: keyword.declaration.elixir
+        5: keyword.control.import.elixir
+        6: keyword.control.loop.receive.elixir
+        7: keyword.control.exception.try.elixir
+        8: keyword.control.flow.throw.elixir
+        9: keyword.control.flow.exit.elixir
+        10: keyword.other.super.elixir
       push: arguments_paren_or_ws_pop
 
-  unquote_call_pop:
-    - match: unquote(?:_splicing)?(?=\()
+  unquote_pop:
+    - match: unquote(?:_splicing)?
       scope: keyword.other.unquote.elixir
-      set: [unquote_post_args_pop, arguments_pop]
+      pop: true
+
+  unquote_call_pop:
+    - match: (?=unquote(?:_splicing)?\()
+      set: [unquote_post_args_pop, arguments_pop, unquote_pop]
 
   unquote_post_args_pop:
     - match: (?=\()
       set: arguments_pop
     - include: empty_pop
+
+  unquote_call:
+    - match: (?=unquote(?:_splicing)?\()
+      push: unquote_call_pop
 
   line_continuation:
     - match: \\\n
