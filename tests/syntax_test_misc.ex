@@ -163,7 +163,11 @@ end
 ## Item access
 
 []
-#<- -punctuation.section.access.end
+#<- -punctuation.section.access
+["[]":[]][[]]
+#         ^ punctuation.section.brackets.begin
+#        ^ punctuation.section.access.begin
+#     ^ punctuation.section.brackets.begin
  [a: :a][:a]
 #          ^ punctuation.section.access.end
 #       ^^^^ meta.access
@@ -203,9 +207,8 @@ end
 #    ^ punctuation.section.access.begin
 #^ punctuation.section.access.begin
 
-""[] ''[] :[] ??[]
-#               ^ punctuation.section.brackets.begin
-#         ^^^ constant.other.symbol
+""[] ''[] ??[]
+#           ^ punctuation.section.brackets.begin
 #      ^ punctuation.section.access.begin
 # ^ punctuation.section.access.begin
 
@@ -258,12 +261,13 @@ catch[] not[] and[] in[] or[]
 #    ^ punctuation.section.brackets.begin
 #^ punctuation.section.brackets.begin
 
-;[] <[] =[] >[] @[] \\[] ^[] `[] |[] ~[]
+:[] ;[] <[] =[] >[] @[] \\[] ^[] `[] |[] ~[]
+#                                         ^ punctuation.section.brackets.begin
 #                                     ^ punctuation.section.brackets.begin
 #                                 ^ punctuation.section.brackets.begin
 #                             ^ punctuation.section.brackets.begin
 #                         ^ punctuation.section.brackets.begin
-#                     ^ punctuation.section.brackets.begin
+#                    ^ punctuation.section.brackets.begin
 #                ^ punctuation.section.brackets.begin
 #            ^ punctuation.section.brackets.begin
 #        ^ punctuation.section.brackets.begin
@@ -272,6 +276,13 @@ catch[] not[] and[] in[] or[]
 
 
 ## Captures
+
+ &Module.{}/0
+#          ^ punctuation.accessor.slash
+#        ^^ variable.other.capture
+ &//2
+#  ^ punctuation.accessor.slash
+# ^ variable.other.capture
 
  &Module.Sub.SubSub.func/2
 #                   ^^^^ variable.other.capture

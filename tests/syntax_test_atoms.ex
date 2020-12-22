@@ -207,6 +207,7 @@
 #    ^^ -constant.other.symbol
 # ^^ constant.numeric -constant.other.keyword
   :::,
+#    ^ punctuation.separator.sequence
 # ^^^ constant.other.symbol
   :: ::,
 #    ^^ keyword.operator.colon
@@ -219,9 +220,13 @@
 #    ^^ constant.other.symbol
 # ^^ invalid.illegal.atom-keyword
   ^^: :^^,
-#     ^^^ constant.other.symbol
+#       ^ keyword.operator.pin
+#     ^^ constant.other.symbol
 # ^^^ invalid.illegal.atom-keyword
   []: :[],
-#     ^^^ constant.other.symbol
+#     ^^^ -constant.other.symbol
 # ^^^ invalid.illegal.atom-keyword
+  "[]": :"[]",
+#       ^^^^^ constant.other.symbol
+# ^^^^^ constant.other.keyword
 ]

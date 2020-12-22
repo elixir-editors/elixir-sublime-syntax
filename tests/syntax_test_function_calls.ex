@@ -21,14 +21,18 @@ elem x, n
 #        ^ punctuation.section.arguments.end
 #     ^ punctuation.separator.arguments
 #   ^ punctuation.section.arguments.begin
+#<- variable.function.built-in
 is_atom :a
 #         ^ punctuation.section.arguments.end
 #      ^ punctuation.section.arguments.begin
+#<- variable.function.built-in
 non_builtin x
 #            ^ punctuation.section.arguments.end
 #          ^ punctuation.section.arguments.begin
+#<- -variable.function.built-in
 assert true
 #     ^ punctuation.section.arguments.begin
+#<- variable.function
 m."quoted" arg
 #             ^ punctuation.section.arguments.end
 #         ^ punctuation.section.arguments.begin
@@ -57,6 +61,10 @@ Kernel.<>(); kernel.<>()
 #      ^^ variable.function
 kernel.<>
 #      ^^ variable.other.member -variable.function
+
+ Mod.{} map.{}
+#           ^^ variable.other.member
+#    ^^ variable.function
 
  Mod.fun(); Mod.fun.(); mod.fun.()
 #                                ^ punctuation.section.arguments.end

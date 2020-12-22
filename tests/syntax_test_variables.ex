@@ -404,6 +404,162 @@ x.__DIR__
 x.__STACKTRACE__
 # ^^^^^^^^^^^^^^ variable.other.member
 
+x.=~ x.=~
+#      ^^ variable.other.member
+# ^^ variable.function
+x.= x.=
+#     ^ variable.other.member
+# ^ variable.function
+x.== x.==
+#      ^^ variable.other.member
+# ^^ variable.function
+x.=== x.===
+#       ^^^ variable.other.member
+# ^^^ variable.function
+x.! x.!
+#     ^ variable.other.member
+# ^ variable.function
+x.!= x.!=
+#      ^^ variable.other.member
+# ^^ variable.function
+x.!== x.!==
+#       ^^^ variable.other.member
+# ^^^ variable.function
+x.<<< x.<<<
+#       ^^^ variable.other.member
+# ^^^ variable.function
+x.>>> x.>>>
+#       ^^^ variable.other.member
+# ^^^ variable.function
+x.~~~ x.~~~
+#       ^^^ variable.other.member
+# ^^^ variable.function
+x.:: x.::
+#      ^^ variable.other.member
+# ^^ variable.function
+x.<~> x.<~>
+#       ^^^ variable.other.member
+# ^^^ variable.function
+x.<~ x.<~
+#      ^^ variable.other.member
+# ^^ variable.function
+x.<<~ x.<<~
+#       ^^^ variable.other.member
+# ^^^ variable.function
+x.~> x.~>
+#      ^^ variable.other.member
+# ^^ variable.function
+x.~>> x.~>>
+#       ^^^ variable.other.member
+# ^^^ variable.function
+x.|> x.|>
+#      ^^ variable.other.member
+# ^^ variable.function
+x.<|> x.<|>
+#       ^^^ variable.other.member
+# ^^^ variable.function
+x./ x./
+#     ^ variable.other.member
+# ^ variable.function
+x.\\ x.\\
+#      ^^ variable.other.member
+# ^^ variable.function
+x.* x.*
+#     ^ variable.other.member
+# ^ variable.function
+x.<= x.<=
+#      ^^ variable.other.member
+# ^^ variable.function
+x.>= x.>=
+#      ^^ variable.other.member
+# ^^ variable.function
+x.< x.<
+#     ^ variable.other.member
+# ^ variable.function
+x.> x.>
+#     ^ variable.other.member
+# ^ variable.function
+x.- x.-
+#     ^ variable.other.member
+# ^ variable.function
+x.-- x.--
+#      ^^ variable.other.member
+# ^^ variable.function
+x.--- x.---
+#       ^^^ variable.other.member
+# ^^^ variable.function
+x.+ x.+
+#     ^ variable.other.member
+# ^ variable.function
+x.++ x.++
+#      ^^ variable.other.member
+# ^^ variable.function
+x.+++ x.+++
+#       ^^^ variable.other.member
+# ^^^ variable.function
+x.-> x.->
+#      ^^ variable.other.member
+# ^^ variable.function
+x.<- x.<-
+#      ^^ variable.other.member
+# ^^ variable.function
+x.<> x.<>
+#      ^^ variable.other.member
+# ^^ variable.function
+x.& x.&
+#     ^ variable.other.member
+# ^ variable.function
+x.&& x.&&
+#      ^^ variable.other.member
+# ^^ variable.function
+x.&&& x.&&&
+#       ^^^ variable.other.member
+# ^^^ variable.function
+x.| x.|
+#     ^ variable.other.member
+# ^ variable.function
+x.|| x.||
+#      ^^ variable.other.member
+# ^^ variable.function
+x.||| x.|||
+#       ^^^ variable.other.member
+# ^^^ variable.function
+x.@ x.@
+#     ^ variable.other.member
+# ^ variable.function
+x.^^^ x.^^^
+#       ^^^ variable.other.member
+# ^^^ variable.function
+x.^ x.^
+#     ^ variable.other.member
+# ^ variable.function
+
+x.{} x.{}
+#      ^^ variable.other.member
+# ^^ variable.function
+
+x.^^
+#  ^ keyword.operator.pin
+# ^ variable.function
+x..
+#^^ keyword.operator.range
+x...
+#^^^ keyword.operator.ellipsis
+x....y
+#    ^ variable.other.member
+#   ^ punctuation.accessor.dot
+#^^^ keyword.operator.ellipsis
+
+x.%
+# ^ punctuation.section.mapping.begin
+x.%{}
+# ^ punctuation.section.mapping.begin
+
+x.""
+# ^^ meta.member
+x.''
+# ^^ meta.member
+
 
 ### Before do-block
 
