@@ -1883,7 +1883,11 @@ contexts:
         - include: core_syntax
 
   item_access:
-    - match: (?<!^|[\s(\[{])\[
+    - match: |
+        (?x)
+        (?<=["'\w\])}]|\w[?!])
+        (?<!\bwhen|\bend|\belse|\bafter|\brescue|\bcatch|\bnot|\band|\bin|\bor)
+        \[
       scope: punctuation.section.access.begin.elixir
       push:
         - meta_scope: meta.access.elixir
