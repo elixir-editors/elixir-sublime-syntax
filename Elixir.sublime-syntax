@@ -302,7 +302,7 @@ contexts:
     - match: |
         (?x)
         ((?!::|<<|\.){{operators}} | (?>not|in|and|or){{not_id_key_suffix}})
-      scope: variable.other.type.elixir
+      scope: variable.other.spec.elixir
       set: spec_op_definition_next_pop
     - include: spec_op_definition_next_pop
 
@@ -1641,7 +1641,7 @@ contexts:
     - match: (?=unquote\()
       set: [spec_after_unquote_pop, if_non_space_or_eol_pop, arguments_pop, unquote_pop]
     - match: '{{identifier}}(?!\s*(?!::){{operators}})'
-      scope: variable.other.type.elixir
+      scope: variable.other.spec.elixir
       set: spec_definition_pop
     - match: (?=\S)
       set: spec_op_definition_pop
