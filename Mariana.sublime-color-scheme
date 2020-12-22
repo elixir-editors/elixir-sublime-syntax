@@ -63,6 +63,11 @@
       "foreground": "color(var(blue) l(+ 10%))"
     },
     {
+      "name": "Interpolation",
+      "scope": "source.elixir.embedded",
+      "background": "color(var(white) a(0.03))"
+    },
+    {
       "name": "Item access brackets",
       "scope": "punctuation.section.access.begin.elixir | punctuation.section.access.end.elixir",
       "foreground": "var(red)"
