@@ -355,12 +355,12 @@
 ## Specifications
 
 @spec run
-#     ^^^ variable.other.type
+#     ^^^ variable.other.spec
 def run(), do: nil
 #<- keyword.declaration.function
 @spec spec :: spec
 #             ^^^^ storage.type.custom
-#     ^^^^ variable.other.type
+#     ^^^^ variable.other.spec
 @spec :: any
 #        ^^^ support.type
 
@@ -368,40 +368,40 @@ def run(), do: nil
 #           ^ constant.numeric
 #        ^^ keyword.operator.colon
 #      ^ constant.numeric
-#     ^ variable.other.type
+#     ^ variable.other.spec
 @spec not true :: false
 #                 ^^^^^ constant.language
 #         ^^^^ constant.language
-#     ^^^ variable.other.type
+#     ^^^ variable.other.spec
 @spec not false :: true
 #                  ^^^^ constant.language
 #         ^^^^^ constant.language
-#     ^^^ variable.other.type
+#     ^^^ variable.other.spec
 @spec !any :: boolean
 #          ^^ keyword.operator.colon
 #      ^^^ support.type
-#     ^ variable.other.type
+#     ^ variable.other.spec
 @spec +integer :: integer
 #                 ^^^^^^^ support.type
 #      ^^^^^^^ support.type
-#     ^ variable.other.type
+#     ^ variable.other.spec
 @spec ~~~ integer :: integer
 #                    ^^^^^^^ support.type
 #         ^^^^^^^ support.type
-#     ^^^ variable.other.type
+#     ^^^ variable.other.spec
 @spec list -- list :: list
 #             ^^^^ support.type
-#          ^^ variable.other.type
+#          ^^ variable.other.spec
 #     ^^^^ support.type
 @spec any | any :: any
 #                  ^^^ support.type
 #           ^^^ support.type
-#         ^ variable.other.type
+#         ^ variable.other.spec
 #     ^^^ support.type
 @spec @any :: any
 #             ^^^ support.type
 #      ^^^ support.type
-#     ^ variable.other.type
+#     ^ variable.other.spec
 #^^^^ keyword.declaration.type
 @spec String.t() =~ (String.t() | Regex.t()) :: boolean
 #                                               ^^^^^^^ support.type
@@ -415,7 +415,7 @@ def run(), do: nil
 #                            ^ punctuation.section.arguments.begin
 #                           ^ storage.type.remote
 #                   ^ punctuation.definition.parens.begin
-#                ^^ variable.other.type
+#                ^^ variable.other.spec
 #              ^ punctuation.section.arguments.end
 #             ^ punctuation.section.arguments.begin
 #            ^ storage.type.remote
@@ -484,21 +484,21 @@ def run(), do: nil
 @spec any!(any!) :: any!
 #                   ^^^^ storage.type.custom
 #          ^^^^ storage.type.custom
-#     ^^^^ variable.other.type
+#     ^^^^ variable.other.spec
 
 @spec next_line
-#     ^^^^^^^^^ variable.other.type
+#     ^^^^^^^^^ variable.other.spec
 ::
  any
 #^^^ support.type
 @spec next_line_w_args(a, b)
 #                      ^ storage.type.custom
-#     ^^^^^^^^^^^^^^^^ variable.other.type
+#     ^^^^^^^^^^^^^^^^ variable.other.spec
 ::
  any
 #^^^ support.type
 @spec next_line
-#     ^^^^^^^^^ variable.other.type
+#     ^^^^^^^^^ variable.other.spec
  any :::
 #    ^^^ constant.other.symbol
 #^^^ variable.function -support.type
@@ -520,7 +520,7 @@ def run(), do: nil
 #^^^ variable.function -support.type
 
 @spec integer >>>
-#             ^^^ variable.other.type
+#             ^^^ variable.other.spec
 #     ^^^^^^^ support.type
         integer ::
 #       ^^^^^^^ support.type
@@ -529,7 +529,7 @@ def run(), do: nil
 
 # Can't look ahead past newline unfortunately.
 @spec integer
-#     ^^^^^^^ variable.other.type
+#     ^^^^^^^ variable.other.spec
               >>> integer :: integer
 #                 ^^^^^^^ variable.other
 #             ^^^ keyword.operator.bitwise
@@ -537,15 +537,15 @@ def run(), do: nil
 #                     ^^^^ string.other.binary
 #                  ^^ keyword.operator.colon
 #             ^^^^ string.other.binary
-#          ^^ variable.other.type
+#          ^^ variable.other.spec
 #     ^^^^ string.other.binary
 @spec <<_::8>> <> <<_::8>> :: <<_::8>>
 #                               ^ variable.other.named-type
 #                   ^ variable.other.named-type
-#              ^^ variable.other.type
+#              ^^ variable.other.spec
 #       ^ variable.other.named-type
 @spec unquote
-#     ^^^^^^^ variable.other.type
+#     ^^^^^^^ variable.other.spec
 @spec unquote(q)
 #     ^^^^^^^ keyword.other
 @spec unquote(q) :: any
@@ -560,21 +560,21 @@ def run(), do: nil
 #                                ^^^^^^ support.type
 #                          ^ variable.other
 #                  ^^^^^^^ keyword.other
-#                ^ variable.other.type
+#                ^ variable.other.spec
 #             ^ variable.other
 #     ^^^^^^^ keyword.other
 @spec (w | x) + (y | z) :: w | x | y | z
 #                  ^ keyword.operator.union
 #               ^ punctuation.definition.parens.begin
-#             ^ variable.other.type
+#             ^ variable.other.spec
 #        ^ keyword.operator.union
 #     ^ punctuation.definition.parens.begin
 @spec [x | y] ++ z :: list
-#             ^^ variable.other.type
+#             ^^ variable.other.spec
 #        ^ keyword.operator.union
 #     ^ punctuation.section.brackets.begin
 @spec {x | y} ++ tuple :: tuple
-#             ^^ variable.other.type
+#             ^^ variable.other.spec
 #        ^ keyword.operator.union
 #     ^ punctuation.section.sequence.begin
 
@@ -587,14 +587,14 @@ def run(), do: nil
 #                               ^^ keyword.operator.colon
 #                      ^^^^^^^ support.type
 #              ^^^^ variable.other.named-type
-#         ^^^^ variable.other.type
+#         ^^^^ variable.other.spec
 #^^^^^^^^ keyword.declaration.type
 
 @macrocallback required(atom) :: Macro.t()
 #                                      ^ storage.type.remote
 #                             ^^ keyword.operator.colon
 #                       ^^^^ support.type
-#              ^^^^^^^^ variable.other.type
+#              ^^^^^^^^ variable.other.spec
 #^^^^^^^^^^^^^ keyword.declaration.type
 
 ### Special cases
@@ -614,12 +614,12 @@ def run(), do: nil
 #^^^^^ constant.other.keyword
 
  @spec func() ::
-#      ^^^^ variable.other.type
+#      ^^^^ variable.other.spec
  def func()
 #    ^^^^ entity.name.function
 #^^^ keyword.declaration.function -storage.type -support.type
  @spec func() ::
-#      ^^^^ variable.other.type
+#      ^^^^ variable.other.spec
  when name: type
 #           ^^^^ variable.other -storage.type -support.type
  @spec func() ::
