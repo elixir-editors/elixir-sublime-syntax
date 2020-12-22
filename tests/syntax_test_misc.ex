@@ -8,14 +8,18 @@
 #  ^ punctuation.section.mapping.end
 # ^ punctuation.section.mapping.begin
 #^ punctuation.section.mapping.begin
-%{%{}: %{}}."%{}"
-#            ^^^ variable.other.member
-#       ^ punctuation.section.mapping.begin
+%{%{}: :%{}}."%{}"
+#             ^^^ variable.other.member
+#      ^^^^ constant.other.symbol
 # ^^^^ constant.other.keyword
  %__MODULE__{}
 #           ^ punctuation.section.mapping.begin
 # ^^^^^^^^^^ variable.language.special-form
 #^ punctuation.section.mapping.begin
+%module{}
+#^^^^^^ variable.other
+%^module{}
+#^ keyword.operator.pin
 
  {} {{}} ({}) [{}]
 #              ^ punctuation.section.sequence.begin

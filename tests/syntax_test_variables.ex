@@ -7,7 +7,8 @@
  _unused
 #^^^^^^^ variable.other.unused
 
-%_{}
+%_{} %_module{}
+#     ^^^^^^^ variable.other.unused
 #^ variable.other.unused
 
  _.._ = 1..3
@@ -598,9 +599,3 @@ end
 #^^^^^^^ variable.language.special-form
  __STACKTRACE__
 #^^^^^^^^^^^^^^ variable.language.special-form
-
-
-### Syntax errors
-
-%invalid{}
-#^^^^^^^ invalid.illegal
