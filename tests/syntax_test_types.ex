@@ -144,6 +144,10 @@
 @type unquote :: unquote
 #                ^^^^^^^ storage.type.custom
 #     ^^^^^^^ entity.name.type
+@type unquote :: %unquote(struct_name){id: binary}
+#                                          ^^^^^^ support.type
+#                         ^^^^^^^^^^^ variable.other
+#                 ^^^^^^^ keyword.other.unquote
 
 ### Special cases
 
@@ -563,6 +567,10 @@ def run(), do: nil
 #                ^ variable.other.spec
 #             ^ variable.other
 #     ^^^^^^^ keyword.other
+@spec unquote :: %unquote(struct_name){id: binary}
+#                                          ^^^^^^ support.type
+#                         ^^^^^^^^^^^ variable.other
+#                 ^^^^^^^ keyword.other.unquote
 @spec (w | x) + (y | z) :: w | x | y | z
 #                  ^ keyword.operator.union
 #               ^ punctuation.definition.parens.begin

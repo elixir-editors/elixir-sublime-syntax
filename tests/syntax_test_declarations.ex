@@ -339,6 +339,13 @@ def unquote(name)(unquote_splicing(args)), do: unquote(compiled)
 #                ^ punctuation.definition.parameters.begin
 #           ^^^^ variable.other
 #   ^^^^^^^ keyword.other
+def f(%unquote(struct_name){id: id} = struct)
+#                                     ^^^^^^ variable.parameter
+#                               ^^ variable.parameter
+#                          ^ punctuation.section.mapping.begin
+#              ^^^^^^^^^^^ variable.other
+#      ^^^^^^^ keyword.other.unquote
+#     ^ punctuation.section.mapping.begin
 
 def fun!() do end; def fun?() do end
 #                      ^^^^ entity.name.function
