@@ -259,6 +259,8 @@ contexts:
     - match: \%
       scope: punctuation.section.mapping.begin.elixir
       push:
+        - match: (?=unquote\()
+          set: [map_param_body_pop, arguments_pop, unquote_pop]
         - include: alias_names
         - match: ((?=_){{identifier}})|({{identifier}})
           captures:
@@ -491,6 +493,8 @@ contexts:
     - match: \%
       scope: punctuation.section.mapping.begin.elixir
       push:
+        - match: (?=unquote\()
+          set: [map_type_body_pop, arguments_pop, unquote_pop]
         - include: alias_names
         - match: _(?:{{module_name}}|{{identifier}})?
           scope: variable.type.unused.elixir invalid.illegal.struct.elixir
