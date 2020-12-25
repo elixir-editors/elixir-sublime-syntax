@@ -386,6 +386,40 @@ catch[] not[] and[] in[] or[]
 #^^^^^ keyword.other.super
 
 
+## Git merge conflicts
+
+[
+<<<<<<< HEAD
+#^^^^^^ -souce.elixir text.git.conflict punctuation.section.block.begin
+#<- punctuation.section.block.begin
+#^^^^^^^^^^^^ text.git.conflict
+  key: (
+=======
+#^^^^^^ -souce.elixir text.git.conflict punctuation.section.block.middle
+#<- punctuation.section.block.middle
+#^^^^^^^ text.git.conflict
+    :value
+  )
+# ^ -invalid
+]
+#<- -invalid
+>>>>>>> conflicting-branch
+#^^^^^^ -souce.elixir text.git.conflict punctuation.section.block.end
+#<- punctuation.section.block.end
+#^^^^^^^^^^^^^^^^^^^^^^^^^^ text.git.conflict
+
+"""
+<<<<<<<
+#^^^^^^ punctuation.section.block.begin.git.conflict
+AAAA
+=======
+#^^^^^^ punctuation.section.block.middle.git.conflict
+BBBB
+>>>>>>>
+#^^^^^^ punctuation.section.block.end.git.conflict
+"""
+
+
 ## Other
 
 x = \
