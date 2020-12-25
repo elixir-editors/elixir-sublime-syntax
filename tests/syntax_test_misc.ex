@@ -423,10 +423,25 @@ BBBB
 ## Other
 
 x = \
-#   ^ punctuation.separator.continuation
+#   ^ punctuation.separator.continuation -constant
 1
+
+~S"\
+#  ^^ -constant.character.escape
+"
+
+~s"\
+#  ^^ punctuation.separator.continuation -constant
+"
+
+"\
+#^^ punctuation.separator.continuation -constant
+"
+
+~r"\
+#  ^^ punctuation.separator.continuation -constant
+"
 
  # Comment
 #^^^^^^^^^^ comment.line.number-sign
 #^ punctuation.definition.comment
-
