@@ -41,6 +41,9 @@ contexts:
   main:
     - include: core_syntax
 
+  prototype:
+    - include: merge_conflict
+
   core_syntax:
     - include: atom_keyword
     - include: atom_symbol
@@ -54,7 +57,6 @@ contexts:
     - include: item_access
     - include: list
     - include: map
-    - include: merge_conflict
     - include: operator
     - include: union_operator
     - include: capture
@@ -70,6 +72,21 @@ contexts:
     - include: comment
     - include: char_literal
     - include: line_continuation
+
+  merge_conflict:
+    - match: ^(?=<{7}|={7}|>{7})
+      push:
+        - clear_scopes: true
+        - match: (?>(<+)(.*\n)|(=+)(.*\n)|(>+)(.*\n))
+          scope: text.git.conflict
+          captures:
+            1: punctuation.section.block.begin.git.conflict
+            2: comment.line.current.git.conflict
+            3: punctuation.section.block.middle.git.conflict
+            4: comment.line.middle.git.conflict
+            5: punctuation.section.block.end.git.conflict
+            6: comment.line.incoming.git.conflict
+          pop: true
 
   fn_block:
     - match: fn{{not_id_key_suffix}}
@@ -1778,26 +1795,6 @@ contexts:
     #       scope: punctuation.definition.raw.end.markdown
     #       pop: true
     #     - include: core_syntax
-
-  merge_conflict:
-    # NB: should use with_prototype but the context limit seems to be exhausted. :(
-    - match: ^<<<<<<<
-      scope: source.git keyword.control.git
-      push: [existing_code_pop, if_eol_pop]
-
-  existing_code_pop:
-    # - meta_content_scope: meta.existing_code.git
-    - match: ^=======
-      scope: source.git keyword.control.git
-      set: [incoming_code_pop, if_eol_pop]
-    - include: core_syntax
-
-  incoming_code_pop:
-    # - meta_content_scope: meta.incoming_code.git
-    - match: ^>>>>>>>
-      scope: source.git keyword.control.git
-      set: if_eol_pop
-    - include: core_syntax
 
   comma_and_skip_ws:
     - match: \,
