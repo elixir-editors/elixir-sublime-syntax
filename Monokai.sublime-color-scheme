@@ -117,6 +117,45 @@
       "name": "Line continuation",
       "scope": "punctuation.separator.continuation.elixir",
       "foreground": "color(var(white) a(0.3))"
+    },
+    {
+      "name": "Git merge conflict current",
+      "scope": "punctuation.section.block.begin.git.conflict",
+      "background": "#454",
+      "font_style": "bold",
+      "foreground": "var(white)"
+    },
+    {
+      "name": "Git merge conflict current",
+      "scope": "comment.line.current.git.conflict",
+      "background": "#343",
+      "foreground": "color(var(white) a(0.8))"
+    },
+    {
+      "name": "Git merge conflict middle",
+      "scope": "punctuation.section.block.middle.git.conflict",
+      "background": "color(var(white) a(0.1))",
+      "font_style": "bold",
+      "foreground": "var(white)"
+    },
+    {
+      "name": "Git merge conflict middle",
+      "scope": "comment.line.middle.git.conflict",
+      "background": "color(var(white) a(0.05))",
+      "foreground": "color(var(white) a(0.8))"
+    },
+    {
+      "name": "Git merge conflict incoming",
+      "scope": "punctuation.section.block.end.git.conflict",
+      "background": "#446",
+      "font_style": "bold",
+      "foreground": "var(white)"
+    },
+    {
+      "name": "Git merge conflict incoming",
+      "scope": "comment.line.incoming.git.conflict",
+      "background": "#335",
+      "foreground": "color(var(white) a(0.8))"
     }
   ]
 }
