@@ -1,10 +1,9 @@
 %YAML 1.2
 ---
+version: 2
 # http://www.sublimetext.com/docs/3/syntax.html
 name: Elixir
-file_extensions:
-  - ex
-  - exs
+file_extensions: [ex, exs]
 first_line_match: ^#!\s*/.*\b(?:elixirc?|iex)
 scope: source.elixir
 
@@ -1384,7 +1383,7 @@ contexts:
 
   defmodule_arguments:
     - include: block_or_keyword
-    - match: (?={{module_name}}|__MODULE__{{not_id_key_suffix}}|:{{atom_symbol}})
+    - match: (?=\.?(?>{{module_name}}|__MODULE__){{not_id_key_suffix}}|:{{atom_symbol}})
       push:
         - meta_scope: meta.namespace.elixir
         - match: (:)({{atom_symbol}})(?!\s*\.)
@@ -2003,7 +2002,7 @@ contexts:
         - include: if_non_space_pop
 
   alias_names:
-    - match: (?=(?>{{module_name}}|__MODULE__){{not_id_key_suffix}}|:(?>{{atom_id}}|['"]))
+    - match: (?=\.?(?>{{module_name}}|__MODULE__){{not_id_key_suffix}}|:(?>{{atom_id}}|['"]))
       push:
         - meta_scope: meta.path.modules.elixir
         - include: alias_module_name_pop
@@ -2072,8 +2071,7 @@ contexts:
               pop: true
 
   atom_symbol:
-    - match: (:){{atom_symbol}}
-      comment: atom symbols
+    - match: (:)((?=<%)|{{atom_symbol}})
       scope: constant.other.symbol.elixir
       captures:
         1: punctuation.definition.constant.begin.elixir
@@ -2207,7 +2205,7 @@ contexts:
   arguments_paren_or_ws_pop:
     - include: arguments_pop
     - match: ''
-      set: [arguments_ws_closing_pop, arguments_ws_pop]
+      set: [arguments_ws_closing_or_empty_pop, arguments_ws_pop]
 
   arguments_or_pop:
     - match: '{{has_arguments}}'
@@ -2235,6 +2233,10 @@ contexts:
     - match: (?<=::\bend\b)|(?<=([^:])\bend\b)|(?<=^end\b)
       scope: punctuation.section.arguments.end.elixir
       pop: true
+
+  arguments_ws_closing_or_empty_pop:
+    - include: arguments_ws_closing_pop
+    - include: empty_pop
 
   arguments_ws_pop:
     - match: \s?

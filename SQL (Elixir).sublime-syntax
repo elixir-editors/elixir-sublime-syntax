@@ -1,15 +1,11 @@
 %YAML 1.2
 ---
-# NB: "extends" and "meta_prepend" are only supported by ST4.
-#     Not using them yet to still support ST3 for a while.
 name: SQL (Elixir)
 file_extensions: [ex.sql]
 scope: source.ex.sql
-# extends: Packages/SQL/SQL.sublime-syntax
 
 contexts:
   main:
-    # - meta_prepend: true
     - match: |
         (?xi)
         \b(?>

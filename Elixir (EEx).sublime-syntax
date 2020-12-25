@@ -1,61 +1,33 @@
 %YAML 1.2
 ---
-# TODO: uncomment when on separate ST4 branch in the future.
-# version: 2
+version: 2
 name: Elixir (EEx)
-file_extensions:
-  - ex.eex
-  - exs.eex
+file_extensions: [ex.eex, exs.eex]
 first_line_match: ^#\s*exs?\.eex
-scope: source.ex.eex
+scope: source.elixir.eex
 extends: Elixir.sublime-syntax
 
 contexts:
-  main:
-    - include: core_syntax
+  # Use prototype to work around the "context sanity limit" error.
+  # An issue that remains is that "<% ... %>" embeds are not independent
+  # of the surroundings.
+  prototype:
+    - include: eex_begin_tag
+    - include: eex_end_tag
 
-  # Commented out because ST3 complains.
-  # TODO: uncomment when on separate ST4 branch in the future.
+  eex_begin_tag:
+    - match: (<)(%(?>%=?|[=/|]?))
+      captures:
+        1: punctuation.section.embedded.begin.ex.eex
+        2: entity.name.tag.ex.eex
+      # # NB: causes "context sanity limit" error.
+      # push: core_syntax
+      # with_prototype:
+      #   - match: (?=%>|<%)
+      #     pop: true
 
-  # # prototype:
-  # core_syntax:
-  #   - meta_prepend: true
-  #   - include: eex
-
-  # defmodule_1st_argument:
-  #   - meta_prepend: true
-  #   - include: eex
-
-  # # FIXME: doesn't highlight inside doc comments yet.
-  # markdown_comment:
-  #   - meta_prepend: true
-  #   - include: eex
-
-  # simple_string:
-  #   - meta_prepend: true
-  #   - include: eex
-
-  # block_end_pop:
-  #   - meta_prepend: true
-  #   - include: eex
-
-  # module_function_call_pop:
-  #   - meta_prepend: true
-  #   - include: eex
-
-  # identifier_operator_call_pop:
-  #   - meta_prepend: true
-  #   - include: eex
-
-  # dot_accessor:
-  #   - meta_prepend: true
-  #   - include: eex
-
-  # eex:
-  #   - match: <%(?>%=?|[=/|]?)
-  #     scope: keyword.other.ex.eex punctuation.section.embedded.begin.ex.eex
-  #     push:
-  #       - match: '%>'
-  #         scope: text.html.ex.eex keyword.other.ex.eex punctuation.section.embedded.end.ex.eex
-  #         pop: true
-  #       - include: core_syntax
+  eex_end_tag:
+    - match: \s*(%)(>)
+      captures:
+        1: entity.name.tag.ex.eex
+        2: punctuation.section.embedded.end.ex.eex
