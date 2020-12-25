@@ -630,16 +630,16 @@ contexts:
             - include: core_syntax
 
   escaped_or_interpolated:
+    - include: line_continuation
     - include: escaped_char
     - include: interpolated_elixir
 
-  regex_elixir:
+  pcre_erlang:
     - include: scope:source.pcree
 
-  regex_or_interpolated:
+  elixir_in_regex:
+    - include: line_continuation
     - include: interpolated_elixir
-    - include: regex_elixir
-
 
   simple_string:
     - match: \'
@@ -671,9 +671,9 @@ contexts:
         - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
         - include: heredoc_string_closing_double_pop
         - match: ''
-          push: regex_elixir
+          push: pcre_erlang
           with_prototype:
-            - include: interpolated_elixir
+            - include: elixir_in_regex
             - match: (?=^(?>\\.|[^"])*?""")
               pop: true
 
@@ -685,9 +685,9 @@ contexts:
         - meta_scope: meta.string.elixir string.quoted.triple.single.elixir
         - include: heredoc_string_closing_single_pop
         - match: ''
-          push: regex_elixir
+          push: pcre_erlang
           with_prototype:
-            - include: interpolated_elixir
+            - include: elixir_in_regex
             - match: (?=^(?>\\.|[^'])*?''')
               pop: true
 
@@ -701,7 +701,7 @@ contexts:
         - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
         - include: heredoc_string_closing_double_pop
         - match: ''
-          push: regex_elixir
+          push: pcre_erlang
           with_prototype:
             - match: (?=^(?>\\.|[^"])*?""")
               pop: true
@@ -715,7 +715,7 @@ contexts:
         - meta_scope: meta.string.elixir string.quoted.triple.single.elixir
         - include: heredoc_string_closing_single_pop
         - match: ''
-          push: regex_elixir
+          push: pcre_erlang
           with_prototype:
             - match: (?=^(?>\\.|[^'])*?''')
               pop: true
@@ -1003,9 +1003,9 @@ contexts:
             - meta_scope: meta.string.elixir string.interpolated.elixir
             - include: string_closing_dquote
             - match: ''
-              push: regex_elixir
+              push: pcre_erlang
               with_prototype:
-                - include: interpolated_elixir
+                - include: elixir_in_regex
                 - match: (?=")
                   pop: true
         - match: \'
@@ -1014,9 +1014,9 @@ contexts:
             - meta_scope: meta.string.elixir string.interpolated.elixir
             - include: string_closing_squote
             - match: ''
-              push: regex_elixir
+              push: pcre_erlang
               with_prototype:
-                - include: interpolated_elixir
+                - include: elixir_in_regex
                 - match: (?=')
                   pop: true
         - match: /
@@ -1025,9 +1025,9 @@ contexts:
             - meta_scope: meta.string.elixir string.interpolated.elixir
             - include: string_closing_slash
             - match: ''
-              push: regex_elixir
+              push: pcre_erlang
               with_prototype:
-                - include: interpolated_elixir
+                - include: elixir_in_regex
                 - match: (?=/)
                   pop: true
         - match: \|
@@ -1036,9 +1036,9 @@ contexts:
             - meta_scope: meta.string.elixir string.interpolated.elixir
             - include: string_closing_pipe
             - match: ''
-              push: regex_elixir
+              push: pcre_erlang
               with_prototype:
-                - include: interpolated_elixir
+                - include: elixir_in_regex
                 - match: (?=\|)
                   pop: true
         - match: \{
@@ -1047,9 +1047,9 @@ contexts:
             - meta_scope: meta.string.elixir string.interpolated.elixir
             - include: string_closing_curly
             - match: ''
-              push: regex_elixir
+              push: pcre_erlang
               with_prototype:
-                - include: interpolated_elixir
+                - include: elixir_in_regex
                 - match: (?=})
                   pop: true
         - match: \[
@@ -1058,9 +1058,9 @@ contexts:
             - meta_scope: meta.string.elixir string.interpolated.elixir
             - include: string_closing_square
             - match: ''
-              push: regex_elixir
+              push: pcre_erlang
               with_prototype:
-                - include: interpolated_elixir
+                - include: elixir_in_regex
                 - match: (?=])
                   pop: true
         - match: \<
@@ -1069,9 +1069,9 @@ contexts:
             - meta_scope: meta.string.elixir string.interpolated.elixir
             - include: string_closing_angle
             - match: ''
-              push: regex_elixir
+              push: pcre_erlang
               with_prototype:
-                - include: interpolated_elixir
+                - include: elixir_in_regex
                 - match: (?=>)
                   pop: true
         - match: \(
@@ -1080,9 +1080,9 @@ contexts:
             - meta_scope: meta.string.elixir string.interpolated.elixir
             - include: string_closing_round
             - match: ''
-              push: regex_elixir
+              push: pcre_erlang
               with_prototype:
-                - include: interpolated_elixir
+                - include: elixir_in_regex
                 - include: if_closing_paren_pop
 
     - match: ~R
@@ -1101,7 +1101,7 @@ contexts:
         #       set: string_modifiers_and_pop
         #     - match: ([/|"'])
         #       scope: punctuation.definition.string.begin.elixir
-        #       push: regex_elixir
+        #       push: pcre_erlang
         #       with_prototype:
         #         - match: \1
         #           scope: punctuation.definition.string.end.elixir
@@ -1112,7 +1112,7 @@ contexts:
             - meta_scope: meta.string.elixir string.quoted.other.literal.regex.elixir
             - include: string_closing_dquote
             - match: ''
-              push: regex_elixir
+              push: pcre_erlang
               with_prototype:
                 - match: (?=")
                   pop: true
@@ -1122,7 +1122,7 @@ contexts:
             - meta_scope: meta.string.elixir string.quoted.other.literal.regex.elixir
             - include: string_closing_squote
             - match: ''
-              push: regex_elixir
+              push: pcre_erlang
               with_prototype:
                 - match: (?=')
                   pop: true
@@ -1132,7 +1132,7 @@ contexts:
             - meta_scope: meta.string.elixir string.quoted.other.literal.regex.elixir
             - include: string_closing_slash
             - match: ''
-              push: regex_elixir
+              push: pcre_erlang
               with_prototype:
                 - match: (?=/)
                   pop: true
@@ -1142,7 +1142,7 @@ contexts:
             - meta_scope: meta.string.elixir string.quoted.other.literal.regex.elixir
             - include: string_closing_pipe
             - match: ''
-              push: regex_elixir
+              push: pcre_erlang
               with_prototype:
                 - match: (?=\|)
                   pop: true
@@ -1152,7 +1152,7 @@ contexts:
             - meta_scope: meta.string.elixir string.quoted.other.literal.regex.elixir
             - include: string_closing_curly
             - match: ''
-              push: regex_elixir
+              push: pcre_erlang
               with_prototype:
                 - match: (?=})
                   pop: true
@@ -1162,7 +1162,7 @@ contexts:
             - meta_scope: meta.string.elixir string.quoted.other.literal.regex.elixir
             - include: string_closing_square
             - match: ''
-              push: regex_elixir
+              push: pcre_erlang
               with_prototype:
                 - match: (?=])
                   pop: true
@@ -1172,7 +1172,7 @@ contexts:
             - meta_scope: meta.string.elixir string.quoted.other.literal.regex.elixir
             - include: string_closing_angle
             - match: ''
-              push: regex_elixir
+              push: pcre_erlang
               with_prototype:
                 - match: (?=>)
                   pop: true
@@ -1182,7 +1182,7 @@ contexts:
             - meta_scope: meta.string.elixir string.quoted.other.literal.regex.elixir
             - include: string_closing_round
             - match: ''
-              push: regex_elixir
+              push: pcre_erlang
               with_prototype:
                 - include: if_closing_paren_pop
 
