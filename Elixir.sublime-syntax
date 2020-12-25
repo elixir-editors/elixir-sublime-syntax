@@ -1,10 +1,9 @@
 %YAML 1.2
 ---
-version: 2
 # http://www.sublimetext.com/docs/3/syntax.html
 name: Elixir
 scope: source.elixir
-file_extensions: [ex, exs]
+file_extensions: [ex, exs, ex.eex, exs.eex]
 first_line_match: ^#!\s*/.*\b(?:elixirc?|iex)
 authors:
   # Contributed several times and later on finished a complete rewrite with lots of new features.
@@ -64,6 +63,8 @@ contexts:
   prototype:
     # NB: rules in the prototype context will always match before any other.
     - include: merge_conflict # Merge conflict markers can occur anywhere.
+    - include: eex_tag
+    - include: eex_end_tag
 
   core_syntax:
     # The rules are approximately ordered by their likeliness of occurrence
@@ -112,7 +113,27 @@ contexts:
             6: comment.line.incoming.git.conflict
           pop: true
 
-  ## Functions
+  # Use prototype as a workaround to the "context sanity limit" error.
+  # An issue that remains is that "<% ... %>" embeds are not independent
+  # of the surroundings.
+  eex_tag:
+    - match: (<)(%(?>%=?|[=/|]?))
+      scope: source.elixir.eex
+      captures:
+        1: punctuation.section.embedded.begin.ex.eex
+        2: entity.name.tag.ex.eex
+      # NB: causes "context sanity limit" error.
+      # push: core_syntax
+      # with_prototype:
+      #   - match: (?=%>|<%)
+      #     pop: true
+
+  eex_end_tag:
+    - match: \s*(%)(>)
+      scope: source.elixir.eex
+      captures:
+        1: entity.name.tag.ex.eex
+        2: punctuation.section.embedded.end.ex.eex
 
   fn_block:
     - match: fn{{no_id_key_suffix}}
