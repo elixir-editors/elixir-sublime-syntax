@@ -1,0 +1,37 @@
+# SYNTAX TEST "Elixir (EEx).sublime-syntax"
+
+# EEx inside Elixir code
+
+[
+<%= if @ecto do %>
+#      ^ keyword.operator.attribute
+  :ecto,
+<% end %><%= if @html do %>
+#  ^^^ keyword.context.block.end
+#            ^^ keyword.control.conditional
+  :html
+<% end %>
+#  ^^^ keyword.context.block.end
+]
+#<- -invalid
+
+defmodule <%= @module %>.View do
+#                        ^^^^ entity.name.namespace
+#                       ^ punctuation.accessor.dot
+#                     ^ entity.name.tag.ex.eex
+#             ^ keyword.operator.attribute
+#          ^^ entity.name.tag.ex.eex
+end
+
+alias <%= @web_namespace %>.Router.Helpers, as: Routes
+#                                               ^^^^^^ entity.name.namespace
+#                          ^ punctuation.accessor.dot
+#      ^^ entity.name.tag.ex.eex
+
+
+# NB: due to the workaround in the syntax file EEx tags
+#     are also highlighted inside strings.
+# FIXME: make negative check with "-entity" when solved.
+"<%= string %>"
+#           ^ entity.name.tag.ex.eex
+# ^^ entity.name.tag.ex.eex
