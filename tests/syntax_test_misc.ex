@@ -56,7 +56,7 @@
  fn -> end
 #      ^^^ punctuation.section.block.end keyword.context.block.end
 #   ^^ keyword.operator.arrow
-#^^ keyword.declaration.function punctuation.section.block.begin
+#^^ punctuation.section.block.begin keyword.declaration.function
  fn x -> x end
 #        ^ variable.other
 #   ^ variable.parameter

@@ -392,18 +392,24 @@ x.else
 x.end
 # ^^^ variable.other.member
 
-x.__MODULE__
-# ^^^^^^^^^^ variable.other.member
-x.__CALLER__
-# ^^^^^^^^^^ variable.other.member
-x.__ENV__
-# ^^^^^^^ variable.other.member
-x.__MODULE__
-# ^^^^^^^^^^ variable.other.member
-x.__DIR__
-# ^^^^^^^ variable.other.member
-x.__STACKTRACE__
-# ^^^^^^^^^^^^^^ variable.other.member
+x.__MODULE__ x.__MODULE__
+#              ^^^^^^^^^^ variable.other.member
+# ^^^^^^^^^^ variable.function
+x.__CALLER__ x.__CALLER__
+#              ^^^^^^^^^^ variable.other.member
+# ^^^^^^^^^^ variable.function
+x.__ENV__ x.__ENV__
+#           ^^^^^^^ variable.other.member
+# ^^^^^^^ variable.function
+x.__MODULE__ x.__MODULE__
+#              ^^^^^^^^^^ variable.other.member
+# ^^^^^^^^^^ variable.function
+x.__DIR__ x.__DIR__
+#           ^^^^^^^ variable.other.member
+# ^^^^^^^ variable.function
+x.__STACKTRACE__ x.__STACKTRACE__
+#                  ^^^^^^^^^^^^^^ variable.other.member
+# ^^^^^^^^^^^^^^ variable.function
 
 x.=~ x.=~
 #      ^^ variable.other.member
@@ -539,6 +545,34 @@ x.{} x.{}
 #      ^^ variable.other.member
 # ^^ variable.function
 
+x."" x.""
+#      ^^ meta.member
+# ^^ meta.function-call
+x.'' x.''
+#      ^^ meta.member
+# ^^ meta.function-call
+
+x."\\\"\m\"\\" x."\\\"\m\"\\"
+#                     ^^ -constant.character.escape
+#                 ^^^^ constant.character.escape
+#                 ^^^^^^^^^^ variable.other.member
+#                ^^^^^^^^^^^^ meta.member
+#      ^^ -constant.character.escape
+#  ^^^^ constant.character.escape
+#  ^^^^^^ variable.function
+# ^^^^^^^^^^^^ meta.function-call
+x.'\\\'\m\'\\' x.'\\\'\m\'\\'
+#                     ^^ -constant.character.escape
+#                 ^^^^ constant.character.escape
+#                 ^^^^^^^^^^ variable.other.member
+#                ^^^^^^^^^^^^ meta.member
+#      ^^ -constant.character.escape
+#  ^^^^ constant.character.escape
+#  ^^^^^^ variable.function
+# ^^^^^^^^^^^^ meta.function-call
+
+# * Exceptions
+
 x.^^
 #  ^ keyword.operator.pin
 # ^ variable.function
@@ -552,14 +586,21 @@ x....y
 #^^^ keyword.operator.ellipsis
 
 x.%
-# ^ punctuation.section.mapping.begin
+# ^ punctuation.section.mapping.begin -variable.other.member
 x.%{}
-# ^ punctuation.section.mapping.begin
+# ^ punctuation.section.mapping.begin -variable.other.member
 
-x.""
-# ^^ meta.member
-x.''
-# ^^ meta.member
+# * Don't match past end of line
+x.
+if ok? do
+#<- keyword.control.conditional -variable.other.member
+  x.
+end
+#<- keyword.context.block.end -variable.other.member
+  x.end
+#   ^^^ variable.other.member
+  x. end
+#    ^^^ variable.other.member
 
 
 ### Before do-block
@@ -577,14 +618,22 @@ case case.case do
 #    ^^^^ variable.other
 end
 
-def f() when def do
-#            ^^^ variable.other
+x."\"quoted\"" do end
+#  ^^^^^^^^^^ variable.function
+case x."\"quoted\"" do
+#       ^^ constant.character.escape.char
+#       ^^^^^^^^^^ variable.other.member
 end
 
-def f() when def.def do
+def f() when x."def" do end
+#               ^^^ variable.other.member
+
+def f() when def do end
+#            ^^^ variable.other
+
+def f() when def.def do end
 #                ^^^ variable.other.member
 #            ^^^ variable.other
-end
 
 
 ### Special forms
