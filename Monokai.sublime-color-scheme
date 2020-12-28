@@ -85,6 +85,7 @@
     {
       "name": "Spec name",
       "scope": "variable.other.spec.elixir",
+      "font_style": "italic",
       "foreground": "color(var(yellow2) s(- 50%))"
     },
     {
