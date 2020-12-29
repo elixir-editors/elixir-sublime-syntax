@@ -18,7 +18,7 @@ variables:
   closing_keywords: (?>end|else|after|rescue|catch){{not_id_key_suffix}}
   closing_token: (?>[,;)}\]#]|%>|$|{{closing_keywords}})
   binary_operator: (?>(?<!\s)[\[(]|<?<~|~>>?|<~>|[*=/|\\>.]|<(?!<[^<~]|%=)|\^\^|&&|(?<!\s)[-+]\S|[-+][-+>\s]|::(?!:)|$|!=|(?>and|or|when|in|not\s+in){{not_id_key_suffix}})
-  is_argument_token: (?!\s*(?>{{closing_token}}|{{binary_operator}}))
+  is_argument_token: (?:\s*\.{3}|(?!\s*(?>{{closing_token}}|{{binary_operator}})))
   has_arguments: (?=\(|{{is_argument_token}})
   no_suffix_then_arguments: \b(?![?!]){{has_arguments}}
 
@@ -26,7 +26,7 @@ variables:
 
   special_atom: (?><<>>|%?{}|%|\^\^\^|\^)
   atom_symbol: (?>{{atom_id}}|{{special_atom}}|{{operators}})
-  id_or_operator: '{{identifier}}|{{operators}}|{}'
+  member: (?>{{identifier}}|{{operators}}|{})
 
   is_markdown_elixir: |
     (?x)
@@ -121,7 +121,7 @@ contexts:
     - match: (?=unquote\()
       set: [function_params_or_eol_pop, arguments_pop, unquote_pop]
 
-    - match: not{{is_argument_token}}
+    - match: not{{has_arguments}}
       scope: entity.name.function.elixir
       set: function_free_form_header_pop
 
@@ -131,7 +131,7 @@ contexts:
     - match: (?=\()
       push: paren_param_pop
 
-    - match: '{{identifier}}(?=\s){{is_argument_token}}'
+    - match: '{{identifier}}(?=\s){{has_arguments}}'
       scope: entity.name.function.elixir
       set: function_free_form_header_pop
 
@@ -1394,7 +1394,8 @@ contexts:
         - include: module_name
         - include: atom_symbol
         - include: unquote_call
-        - include: module_accessor_or_pop
+        - include: dot_operator
+        - include: if_non_space_or_eol_pop
     - include: arg_comma_and_skip_ws
     - include: core_syntax
 
@@ -1433,31 +1434,20 @@ contexts:
       scope: constant.other.module.elixir
       pop: true
 
-  module_names:
-    - match: (?={{module_name}}{{not_id_key_suffix}})
-      push: [module_accessor_or_pop, module_name_pop]
-
-  module_accessor_or_pop:
-    - match: \.(?!\.)
-      scope: punctuation.accessor.dot.elixir
-    - include: module_name
-    - include: if_non_space_or_eol_pop
-
   module_function_call_pop:
-    - match: ({{module_name}})\s*(\.(?!\.))\s*(?={{id_or_operator}})
+    - match: ({{module_name}})\s*(\.(?!\.))\s*(?={{member}})
       comment: always a function call after a module
       captures:
         1: constant.other.module.elixir
         2: punctuation.accessor.dot.elixir
       set:
-        # NB: match separately so that <%%= Routes.<%= xyz %> %> is recognised correctly.
         - include: unquote_call_pop
-        - match: '{{id_or_operator}}'
+        - match: '{{member}}'
           scope: variable.function.elixir
           set: arguments_or_pop
 
   id_or_operator_call_pop:
-    - match: ({{id_or_operator}})(?=\s*\.\s*\(|{{has_arguments}})
+    - match: ({{member}})(?=\s*\.\s*\(|{{has_arguments}})
       scope: variable.function.elixir
       set: arguments_paren_or_ws_pop
 
@@ -1526,7 +1516,7 @@ contexts:
       pop: true
 
   id_member_pop:
-    - match: '{{id_or_operator}}'
+    - match: '{{member}}'
       scope: variable.other.member.elixir
       pop: true
 
@@ -1847,6 +1837,10 @@ contexts:
     - match: \|(?![:|>])
       scope: keyword.operator.cons.elixir
 
+  dot_operator:
+    - match: \.(?!\.)
+      scope: punctuation.accessor.dot.elixir
+
   tuple:
     - match: \}
       scope: invalid.illegal.stray-closing-brace.elixir
@@ -2077,22 +2071,31 @@ contexts:
         - include: escaped_or_interpolated
 
   capture:
-    - match: \&(?=\s*(?>{{module_name}}\s*\.(?!\.)\s*)*(?>{{id_or_operator}})\s*/\s*\d)
-      scope: keyword.operator.capture.elixir
-      push:
-        - match: (/)\s*(\d+)
-          captures:
-            1: punctuation.accessor.slash.elixir
-            2: constant.numeric.integer.decimal.elixir
-          pop: true
-        - include: module_names
-        - match: '{{id_or_operator}}'
-          scope: variable.other.capture.elixir
-    - match: (\&0)|(\&\d+)|(\&)
+    - match: (&0+(?!\d))|(&\d+)
       captures:
         1: invalid.illegal.capture.elixir
         2: constant.other.capture.elixir
-        3: keyword.operator.capture.elixir
+    - match: \&
+      scope: keyword.operator.capture.elixir
+      push: func_capture_pop
+
+  func_capture_pop:
+    - include: atom_symbol
+    - include: module_name
+    - include: unquote_call
+    - include: dot_operator
+    - include: func_arity_pop
+    - match: '{{member}}(?=\s*(/)\s*(\d+))'
+      scope: variable.other.capture.elixir
+      set: func_arity_pop
+    - include: if_non_space_or_eol_pop
+
+  func_arity_pop:
+    - match: (/)\s*(\d+)
+      captures:
+        1: punctuation.accessor.arity.elixir
+        2: constant.numeric.integer.decimal.elixir
+      pop: true
 
   sql_fragment:
     - match: (fragment)\s*(\()
@@ -2242,7 +2245,7 @@ contexts:
         (?=
           (?>
             @?\s*{{identifier}}
-          | \.\s*(?:{{id_or_operator}} | "(?>\\[\\"]|.)*" | '(?>\\[\\']|.)*')
+          | \.\s*(?:{{member}} | "(?>\\[\\"]|.)*" | '(?>\\[\\']|.)*')
           )
           \s*do{{not_id_key_suffix}}
         )
