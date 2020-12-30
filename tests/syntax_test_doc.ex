@@ -8,11 +8,15 @@ Don't insert a comment between `x` and `"""`.
     iex> def x
 #   ^^^^^^^^^^^ markup.raw.block.markdown
 #^^^ meta.string.elixir
+    ...(1)> {:ok, _} = Repo.insert(post)
+#                      ^^^^ constant.other.module.elixir
+#           ^^^^^^^^ meta.sequence.tuple.elixir
+#   ^^^ keyword.operator.ellipsis
+#^^^ meta.string.elixir
  """m
-#   ^ variable.other
+#   ^ variable.other -meta.string.elixir
 #^^^ punctuation.definition.string.end
 #^^^ meta.string.elixir
-#   ^ -meta.string.elixir
 
 @doc """
 #^^^ support.attr.doc
@@ -33,10 +37,9 @@ Don't insert a comment between `X` and `"""`.
     defmodule X
 #   ^^^^^^^^^^^^ markup.raw.block.markdown
  """m
-#   ^ variable.other
+#   ^ variable.other -meta.string.elixir
 #^^^ punctuation.definition.string.end
 #^^^ meta.string.elixir
-#   ^ -meta.string.elixir
 
 @doc ~S'''
 #    ^^^^^^ meta.string.elixir
@@ -166,12 +169,12 @@ quote(do: @doc guard: false)
 
 @doc # comment
 #    ^^^^^^^^^ comment.line
-#^^^ variable.other.constant - support.attr.doc
+#^^^ variable.other.constant -support.attr.doc
 @doc == "doc"
 #       ^^^^^ -source.markdown.embedded.elixir
 #    ^^ keyword.operator.comparison
 #   ^ -punctuation.section.group.begin
-#^^^ variable.other.constant - support.attr.doc
+#^^^ variable.other.constant -support.attr.doc
 
 @moduledoc ""
 #^^^^^^^^^ support.attr.doc

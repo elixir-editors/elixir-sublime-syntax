@@ -10,6 +10,13 @@ do defmodule end
 #            ^^^ keyword.context
 #  ^^^^^^^^^ variable.other
 #<- keyword.context
+defmodule do end
+#               ^ punctuation.section.arguments.end
+#        ^ punctuation.section.arguments.begin
+defmodule do: Module
+#                   ^ punctuation.section.arguments.end
+#             ^^^^^^ constant.other.module
+#        ^ punctuation.section.arguments.begin
 defmodule Module
 #         ^^^^^^ entity.name.namespace
 #<- keyword.declaration.module
@@ -195,8 +202,13 @@ def do end
 #   ^^ punctuation.section.block.begin
 #  ^ punctuation.section.arguments.begin
 #<- keyword.declaration.function
-def nil(no_param)
-#       ^^^^^^^^ variable.parameter
+def do: x
+#        ^ punctuation.section.arguments.end
+#       ^ variable.other -entity.name.function -variable.parameter
+#   ^^^ constant.other.keyword
+#  ^ punctuation.section.arguments.begin
+def nil(param)
+#       ^^^^^ variable.parameter
 #   ^^^ constant.language
 def def
 #   ^^^ entity.name.function
@@ -267,11 +279,25 @@ def _ && false, do: false
 #        ^^^^^ constant.language
 #     ^^ entity.name.function
 #   ^ variable.parameter.unused
+def not@: x, do: not x
+#   ^^^^^ constant.other.keyword
+def not false, do: true
+#       ^^^^^ constant.language
+#   ^^^ entity.name.function
+def when(x), do: x
+#   ^^^^ keyword.operator.word -entity.name.function
+def not x when x, do: false
+#              ^ variable.other -variable.parameter
 def not x, do: not x
 #              ^^^ keyword.operator.logical
 #       ^ variable.parameter
 #   ^^^ entity.name.function
+def not(x), do: not(x)
+#   ^^^ entity.name.function
+def notx, do: :notx
+#   ^^^^ entity.name.function
 def !x, do: !x
+#           ^ -entity.name.function
 #   ^ entity.name.function
 def +x, do: x
 #   ^ entity.name.function
@@ -281,7 +307,15 @@ def @(x), do: x
 #   ^ entity.name.function
 def x | y, do: {x, y}
 #     ^ entity.name.function
-
+def .. a do a end
+#   ^^ keyword.operator.range
+def ..(a) do a end
+#     ^ punctuation.section.group.begin
+#   ^^ keyword.operator.range
+def ... a do a end
+#   ^^^ entity.name.function
+def ...(a) do a end
+#   ^^^ entity.name.function
 def invalid, arg, do: :nothing
 #               ^ punctuation.separator.arguments
 #            ^^^ variable.other
@@ -472,6 +506,22 @@ def unused(_, %_{}, {_}, [_], [_ | _], (_), <<_>>, <<_, _::_>>, _ <> _, _.._)
 #           ^ punctuation.separator.sequence
 #          ^ variable.parameter.unused
 #         ^ punctuation.definition.parameters.begin
+
+def __MODULE__(), do: __MODULE__
+#                     ^^^^^^^^^^ variable.language
+#   ^^^^^^^^^^ entity.name.function
+def __CALLER__(), do: __CALLER__
+#                     ^^^^^^^^^^ variable.language
+#   ^^^^^^^^^^ entity.name.function
+def __ENV__(), do: __ENV__
+#                  ^^^^^^^ variable.language
+#   ^^^^^^^ entity.name.function
+def __DIR__(), do: __DIR__
+#                  ^^^^^^^ variable.language
+#   ^^^^^^^ entity.name.function
+def __STACKTRACE__(), do: __STACKTRACE__
+#                         ^^^^^^^^^^^^^^ variable.language
+#   ^^^^^^^^^^^^^^ entity.name.function
 
  defp func(), do: nil
 #     ^^^^ entity.name.function

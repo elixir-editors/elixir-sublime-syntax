@@ -54,6 +54,22 @@
 @on_definition {Hooks, :on_def}
 #              ^^^^^^^^^^^^^^^^ meta.sequence.tuple.elixir
 #^^^^^^^^^^^^^ support.attr
+@__MODULE__ __MODULE__
+#           ^^^^^^^^^^ variable.language
+#^^^^^^^^^^ entity.name.constant
+@__CALLER__ __CALLER__
+#           ^^^^^^^^^^ variable.language
+#^^^^^^^^^^ entity.name.constant
+@__ENV__ __ENV__
+#        ^^^^^^^ variable.language
+#^^^^^^^ entity.name.constant
+@__DIR__ __DIR__
+#        ^^^^^^^ variable.language
+#^^^^^^^ entity.name.constant
+@__STACKTRACE__ __STACKTRACE__
+#               ^^^^^^^^^^^^^^ variable.language
+#^^^^^^^^^^^^^^ entity.name.constant
+
 
 @derive
 #^^^^^^ variable.other.constant
@@ -83,6 +99,17 @@
 #^^^^^^^ variable.other.constant
 @on_definition
 #^^^^^^^^^^^^^ variable.other.constant
+
+@__MODULE__
+#^^^^^^^^^^ variable.other.constant
+@__CALLER__
+#^^^^^^^^^^ variable.other.constant
+@__ENV__
+#^^^^^^^ variable.other.constant
+@__DIR__
+#^^^^^^^ variable.other.constant
+@__STACKTRACE__
+#^^^^^^^^^^^^^^ variable.other.constant
 
 
 ## Invalid

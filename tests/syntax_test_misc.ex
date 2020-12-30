@@ -77,6 +77,41 @@
 #          ^ variable.other -variable.parameter
 #   ^ variable.parameter
 
+(fn x -> fn y -> x + y end end).(1).(2)
+#                                   ^ punctuation.section.arguments.begin
+#                                  ^ punctuation.accessor.dot
+#                               ^ punctuation.section.arguments.begin
+#                              ^ punctuation.accessor.dot
+#                             ^ punctuation.section.group.end
+#                          ^^^ keyword.context.block.end
+#                      ^^^ keyword.context.block.end
+#                    ^ variable.other
+#                  ^ keyword.operator.arithmetic
+#                ^ variable.other
+#             ^^ keyword.operator.arrow
+#           ^ variable.parameter
+#        ^^ keyword.declaration.function
+#     ^^ keyword.operator.arrow
+#   ^ variable.parameter
+#^^ keyword.declaration.function
+#<- punctuation.section.group.begin
+
+"(((())))"
+|> to_charlist()
+|> Stream.scan(0, fn ?(, x -> x+1; ?), x -> x-1; _, x -> x end)
+#                                                        ^ variable.other
+#                                              ^ keyword.operator.semicolon
+#                                           ^ variable.other
+#                                        ^^ keyword.operator.arrow
+#                                  ^^ constant.numeric.char
+#                                ^ keyword.operator.semicolon
+#                             ^ variable.other
+#                          ^^ keyword.operator.arrow
+#                        ^ variable.parameter
+#                      ^ punctuation.separator.sequence
+#                    ^^ constant.numeric.char
+#                 ^^ keyword.declaration.function
+
 
 ## Do-block
 
@@ -281,11 +316,34 @@ catch[] not[] and[] in[] or[]
 
 ## Captures
 
+ &01; &1; &22; &333
+#              ^^^^ constant.other.capture
+#         ^^^ constant.other.capture
+#     ^^ constant.other.capture
+#^^^ constant.other.capture
+
+ & &1..&2
+#      ^^ constant.other.capture
+#    ^^ keyword.operator.range
+#  ^^ constant.other.capture
+
+ &:erlang.apply/2
+#              ^ punctuation.accessor.arity
+#         ^^^^^ variable.other.capture
+#        ^ punctuation.accessor.dot
+
  &Module.{}/0
-#          ^ punctuation.accessor.slash
+#          ^ punctuation.accessor.arity
 #        ^^ variable.other.capture
- &//2
-#  ^ punctuation.accessor.slash
+
+ &//2; &</2; &<>/2; &../2; &.../2
+#                      ^ punctuation.accessor.arity
+#                    ^^ variable.other.capture
+#               ^ punctuation.accessor.arity
+#             ^^ variable.other.capture
+#        ^ punctuation.accessor.arity
+#       ^ variable.other.capture
+#  ^ punctuation.accessor.arity
 # ^ variable.other.capture
 
  &Module.Sub.SubSub.func/2
@@ -298,20 +356,39 @@ catch[] not[] and[] in[] or[]
 # ^^^^^^ constant.other.module
 #^ keyword.operator.capture
 
- &0; &1; &func/1; &Module.func/2; &Kernel.<>/2
-#                                            ^ constant.numeric
-#                                           ^ punctuation.accessor.slash
-#                                         ^^ variable.other.capture
-#                              ^ constant.numeric
-#                             ^ punctuation.accessor.slash
-#                         ^^^^ variable.other.capture
-#                  ^^^^^^ constant.other.module
-#                 ^ keyword.operator.capture
-#              ^ constant.numeric
-#             ^ punctuation.accessor.slash
-#         ^^^^ variable.other.capture
-#        ^ keyword.operator.capture
-#    ^^ constant.other.capture
+ &func/11; &Module.func/22; &Kernel.<>/2
+#                                      ^ constant.numeric
+#                                     ^ punctuation.accessor.arity
+#                                   ^^ variable.other.capture
+#                       ^^ constant.numeric
+#                      ^ punctuation.accessor.arity
+#                  ^^^^ variable.other.capture
+#           ^^^^^^ constant.other.module
+#          ^ keyword.operator.capture
+#      ^^ constant.numeric
+#     ^ punctuation.accessor.arity
+# ^^^^ variable.other.capture
+#^ keyword.operator.capture
+
+ &unquote(:apply)/2
+#                ^ punctuation.accessor.arity
+ &:erlang.unquote(:apply)/2
+#                        ^ punctuation.accessor.arity
+ &unquote(:erlang).apply/2
+#                       ^ punctuation.accessor.arity
+
+# These are semantically invalid, but it complicates the rules to do it correctly.
+  &./2
+#   ^ punctuation.accessor.arity
+#  ^ punctuation.accessor.dot
+ &:erlang/2
+         ^ keyword.operator -punctuation.accessor
+ &Module.Sub/0
+            ^ keyword.operator -punctuation.accessor
+        ^ punctuation.accessor.dot
+
+ &0; &000
+#    ^^^^invalid.illegal.capture
 #^^invalid.illegal.capture
 
 
@@ -420,11 +497,40 @@ BBBB
 """
 
 
+## Opaque structs
+
+try to do
+#<>
+#decimal<>
+
+#Decimal<>
+#Decimal<0>
+#PID<>
+#PID<
+#>
+#PID<0.1.0>
+
+# {:ok, #PID<0.11.0>}
+
+#Ecto.Schema.Metadata<:built, "my schema", <<0>>>
+
+#Ecto.Association.NotLoaded<association :comment_main_author is not loaded>
+end
+
+
 ## Other
 
 x = \
 #   ^ punctuation.separator.continuation -constant
 1
+
+:"\
+# ^ punctuation.separator.continuation
+"
+
+:'\
+# ^ punctuation.separator.continuation
+'
 
 ~S"\
 #  ^^ -constant.character.escape

@@ -119,11 +119,11 @@
 #                       ^ variable.other
 #                    ^ variable.other
 #                ^^^ keyword.operator.ellipsis
-#              ^ variable.other
+#              ^ variable.function
 #           ^ variable.other
 #          ^ keyword.operator.attribute
 #       ^ constant.numeric.integer.decimal
-#      ^ punctuation.accessor.slash
+#      ^ punctuation.accessor.arity
 #     ^ variable.other.capture
 #    ^ keyword.operator.capture
 # ^ variable.other

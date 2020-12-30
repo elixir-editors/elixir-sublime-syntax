@@ -573,6 +573,12 @@ x.'\\\'\m\'\\' x.'\\\'\m\'\\'
 
 # * Exceptions
 
+x.<< x.>>
+#       ^ keyword.operator.comparison
+#      ^ variable.other.member
+#  ^ keyword.operator.comparison
+# ^ variable.other.member
+
 x.^^
 #  ^ keyword.operator.pin
 # ^ variable.function
