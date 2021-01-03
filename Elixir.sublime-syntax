@@ -90,6 +90,8 @@ contexts:
             6: comment.line.incoming.git.conflict
           pop: true
 
+  ## Functions
+
   fn_block:
     - match: fn{{not_id_key_suffix}}
       scope: punctuation.section.block.begin.elixir keyword.declaration.function.elixir
@@ -394,7 +396,7 @@ contexts:
         - include: arg_comma_and_skip_ws
         - include: named_type
         - include: types_pop
-    - include: empty_pop
+    - include: if_empty_pop
 
   named_type:
     - match: '{{identifier}}(?=\s*::(?!:))'
@@ -531,6 +533,8 @@ contexts:
         - include: named_type
         - include: types_pop
 
+  # Numeric
+
   numeric:
     - match: |
         (?x)
@@ -553,6 +557,8 @@ contexts:
         8: punctuation.separator.decimal.elixir
         9: constant.numeric.integer.elixir
         10: invalid.illegal.numeric.elixir
+
+  ## Strings
 
   binary_string:
     - include: stray_binary_end
@@ -796,7 +802,7 @@ contexts:
             - match: \s+
               push:
                 - clear_scopes: 1
-                - include: empty_pop
+                - include: if_empty_pop
             - include: escaped_or_interpolated
             - match: (\2)(a)
               captures:
@@ -1327,8 +1333,9 @@ contexts:
 
   string_modifiers_and_pop:
     - include: string_modifiers
-    - include: empty_pop
+    - include: if_empty_pop
 
+  ## Declarations
 
   def_blocks:
     - match: defmodule{{no_suffix_then_arguments}}
@@ -1420,6 +1427,8 @@ contexts:
     - match: end{{not_id_key_suffix}}
       scope: punctuation.section.block.end.elixir keyword.context.block.end.elixir
       pop: true
+
+  ## Identifiers
 
   module_name:
     - match: '{{module_name}}{{not_id_key_suffix}}'
@@ -1530,6 +1539,8 @@ contexts:
         - include: module_name_pop
         - include: if_non_space_or_eol_pop
 
+  ## Module attributes
+
   module_attribute:
     - match: '@'
       scope: keyword.operator.attribute.elixir
@@ -1540,7 +1551,7 @@ contexts:
       set:
         - match: '[A-Z]'
           scope: invalid.illegal.attribute.elixir
-        - include: empty_pop
+        - include: if_empty_pop
 
     # Special attributes:
     - match: (?>(?>module|type|short)?doc){{no_suffix_then_arguments}}
@@ -1646,6 +1657,8 @@ contexts:
       set: spec_definition_pop
     - match: (?=\S)
       set: spec_op_definition_pop
+
+  ## Documentation in Markdown
 
   markdown_comment:
     # NB: no need to support `~s"""` which is basically `"""`.
@@ -1781,6 +1794,8 @@ contexts:
       scope: invalid.illegal.separator.elixir
     - include: if_non_space_pop
 
+  ## Operators
+
   operator:
     - match: '::'
       scope: keyword.operator.colon.elixir
@@ -1836,6 +1851,8 @@ contexts:
   dot_operator:
     - match: \.(?!\.)
       scope: punctuation.accessor.dot.elixir
+
+  ## Literals
 
   tuple:
     - match: \}
@@ -1919,6 +1936,8 @@ contexts:
           scope: punctuation.section.group.end.elixir
           pop: true
         - include: core_syntax
+
+  ## Alias statement
 
   alias:
     - match: (?>alias|require){{no_suffix_then_arguments}}
@@ -2016,6 +2035,8 @@ contexts:
         - include: if_non_space_pop
     - include: if_non_space_or_eol_pop
 
+  ## Atoms
+
   atom_keyword:
     - match: (?>\*\*|\[\]|\^\^|\.)(:)(?!:)
       scope: invalid.illegal.atom-keyword.elixir
@@ -2066,6 +2087,8 @@ contexts:
           pop: true
         - include: escaped_or_interpolated
 
+  ## Captures
+
   capture:
     - match: (&0+(?!\d))|(&\d+)
       captures:
@@ -2092,6 +2115,8 @@ contexts:
         1: punctuation.accessor.arity.elixir
         2: constant.numeric.integer.decimal.elixir
       pop: true
+
+  ## SQL
 
   sql_fragment:
     - match: (fragment)\s*(\()
@@ -2141,7 +2166,7 @@ contexts:
           comment: let source.ex.sql match "\\?"
           pop: true
         - include: escaped_char
-        - include: empty_pop
+        - include: if_empty_pop
 
   sql_fragment_args_pop:
     - include: arguments_closing_pop
@@ -2149,6 +2174,22 @@ contexts:
     - include: core_syntax
 
   comment:
+    # Attempt highlighting e.g. #PID<0.1.0>, #Decimal<1.0> etc.
+    # Disabled for now using (?=_).
+    - match: '(?=_)#(?={{module_name}}(?:\s*\.\s*{{module_name}})*<)'
+      scope: punctuation.section.mapping.elixir
+      comment: opaque struct
+      push:
+        - include: module_name
+        - include: dot_operator
+        - match: \<
+          scope: punctuation.section.mapping.begin.elixir
+          set:
+            - match: (?<=\S|^)\>
+              scope: punctuation.section.mapping.end.elixir
+              pop: true
+            # Text between <> brackets isn't always valid Elixir code.
+            # - include: core_syntax
     - match: (##).*\n?
       scope: comment.line.number-sign.section.elixir
       captures:
@@ -2184,6 +2225,8 @@ contexts:
       scope: variable.function.built-in.elixir
       push: arguments_paren_or_ws_pop
 
+  ## Arguments
+
   arguments_paren_or_ws_pop:
     - include: arguments_pop
     - match: ''
@@ -2192,7 +2235,7 @@ contexts:
   arguments_or_pop:
     - match: '{{has_arguments}}'
       set: arguments_paren_or_ws_pop
-    - include: empty_pop
+    - include: if_empty_pop
 
   arguments_pop:
     - match: \(
@@ -2218,7 +2261,7 @@ contexts:
 
   arguments_ws_closing_or_empty_pop:
     - include: arguments_ws_closing_pop
-    - include: empty_pop
+    - include: if_empty_pop
 
   arguments_ws_pop:
     - match: \s?
@@ -2265,8 +2308,8 @@ contexts:
           set:
             - include: id_member_pop
             - include: quoted_member_pop
-            - include: empty_pop
-        - include: empty_pop
+            - include: if_empty_pop
+        - include: if_empty_pop
 
   special_form:
     - match: __(?>MODULE|ENV|DIR|CALLER|STACKTRACE)__{{not_id_key_suffix}}
@@ -2337,7 +2380,7 @@ contexts:
   unquote_post_args_pop:
     - match: (?=\()
       set: arguments_pop
-    - include: empty_pop
+    - include: if_empty_pop
 
   unquote_call:
     - match: (?=unquote(?:_splicing)?\()
@@ -2346,6 +2389,8 @@ contexts:
   line_continuation:
     - match: \\\n
       scope: punctuation.separator.continuation.elixir
+
+  ## Helpers
 
   if_closing_tokens_no_eol_pop:
     - match: (?=\s*(?>[})\];]|%>|{{closing_keywords}}))
@@ -2371,6 +2416,6 @@ contexts:
     - match: $
       pop: true
 
-  empty_pop:
+  if_empty_pop:
     - match: ''
       pop: true
