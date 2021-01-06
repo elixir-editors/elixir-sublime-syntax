@@ -149,6 +149,12 @@ x."quoted_func" arg
 #             ^ variable.other.member
 #            ^ punctuation.definition.constant.begin
 #           ^ punctuation.accessor.dot
+%{>: 1}.>>0
+#        ^ keyword.operator.comparison
+#       ^ variable.other.member
+%{>>>: 1}.>>>>0
+#            ^ keyword.operator.comparison
+#         ^^^ variable.other.member
 
  and do end
 #^^^ keyword.operator.logical
@@ -551,3 +557,209 @@ x = \
  # Comment
 #^^^^^^^^^^ comment.line.number-sign
 #^ punctuation.definition.comment
+
+
+## Stray closing tokens
+
+( ( ) )
+#     ^ punctuation.section.group.end
+#   ^ punctuation.section.group.end
+( [ ) ]
+#     ^ invalid.illegal.stray-closing-bracket
+#   ^ punctuation.section.group.end
+( { ) }
+#     ^ invalid.illegal.stray-closing-brace
+#   ^ punctuation.section.group.end
+( %{ ) }
+#      ^ invalid.illegal.stray-closing-brace
+#    ^ punctuation.section.group.end
+( << ) >>
+#      ^^ invalid.illegal.stray-closing-binary
+#    ^ punctuation.section.group.end
+( do ) end )
+#          ^ punctuation.section.group.end
+#    ^ invalid.illegal.stray-closing-parenthesis
+( fn -> ) end )
+#             ^ punctuation.section.group.end
+#       ^ invalid.illegal.stray-closing-parenthesis
+
+[ ( ] )
+#     ^ invalid.illegal.stray-closing-parenthesis
+#   ^ punctuation.section.brackets.end
+[ [ ] ]
+#     ^ punctuation.section.brackets.end
+#   ^ punctuation.section.brackets.end
+[ { ] }
+#     ^ invalid.illegal.stray-closing-brace
+#   ^ punctuation.section.brackets.end
+[ %{ ] }
+#      ^ invalid.illegal.stray-closing-brace
+#    ^ punctuation.section.brackets.end
+[ << ] >>
+#      ^^ invalid.illegal.stray-closing-binary
+#    ^ punctuation.section.brackets.end
+[ do ] end ]
+#          ^ punctuation.section.brackets.end
+#    ^ invalid.illegal.stray-closing-bracket
+[ fn -> ] end ]
+#             ^ punctuation.section.brackets.end
+#       ^ invalid.illegal.stray-closing-bracket
+
+{ ( } )
+#     ^ invalid.illegal.stray-closing-parenthesis
+#   ^ punctuation.section.sequence.end
+{ [ } ]
+#     ^ invalid.illegal.stray-closing-bracket
+#   ^ punctuation.section.sequence.end
+{ { } }
+#     ^ punctuation.section.sequence.end
+#   ^ punctuation.section.sequence.end
+{ %{ } }
+#      ^ punctuation.section.sequence.end
+#    ^ punctuation.section.mapping.end
+{ << } >>
+#      ^^ invalid.illegal.stray-closing-binary
+#    ^ punctuation.section.sequence.end
+{ do } end }
+#          ^ punctuation.section.sequence.end
+#    ^ invalid.illegal.stray-closing-brace
+{ fn -> } end }
+#             ^ punctuation.section.sequence.end
+#       ^ invalid.illegal.stray-closing-brace
+
+%{ ( } )
+#      ^ invalid.illegal.stray-closing-parenthesis
+#    ^ punctuation.section.mapping.end
+%{ [ } ]
+#      ^ invalid.illegal.stray-closing-bracket
+#    ^ punctuation.section.mapping.end
+%{ { } }
+#      ^ punctuation.section.mapping.end
+#    ^ punctuation.section.sequence.end
+%{ %{ } }
+#       ^ punctuation.section.mapping.end
+#     ^ punctuation.section.mapping.end
+%{ << } >>
+#       ^^ invalid.illegal.stray-closing-binary
+#     ^ punctuation.section.mapping.end
+%{ do } end }
+#           ^ punctuation.section.mapping.end
+#     ^ invalid.illegal.stray-closing-brace
+%{ fn -> } end }
+#              ^ punctuation.section.mapping.end
+#        ^ invalid.illegal.stray-closing-brace
+
+<< ( >> )
+#       ^ invalid.illegal.stray-closing-parenthesis
+#    ^^ punctuation.definition.string.end
+<< [ >> ]
+#       ^ invalid.illegal.stray-closing-bracket
+#    ^^ punctuation.definition.string.end
+<< { >> }
+#       ^ invalid.illegal.stray-closing-brace
+#    ^^ punctuation.definition.string.end
+<< %{ >> }
+#        ^ invalid.illegal.stray-closing-brace
+#     ^^ punctuation.definition.string.end
+<< << >> >>
+#        ^^ punctuation.definition.string.end
+#     ^^ punctuation.definition.string.end
+<< do >> end >>
+#            ^^ punctuation.definition.string.end
+#     ^^ invalid.illegal.stray-closing-binary
+<< fn -> >> end >>
+#               ^^ punctuation.definition.string.end
+#        ^^ invalid.illegal.stray-closing-binary
+
+do ( end )
+#        ^ invalid.illegal.stray-closing-parenthesis
+do [ end ]
+#        ^ invalid.illegal.stray-closing-bracket
+do { end }
+#        ^ invalid.illegal.stray-closing-brace
+do %{ end }
+#         ^ invalid.illegal.stray-closing-brace
+do << end >>
+#         ^^ invalid.illegal.stray-closing-binary
+
+fn -> ( end )
+#           ^ invalid.illegal.stray-closing-parenthesis
+fn -> [ end ]
+#           ^ invalid.illegal.stray-closing-bracket
+fn -> { end }
+#           ^ invalid.illegal.stray-closing-brace
+fn -> %{ end }
+#            ^ invalid.illegal.stray-closing-brace
+fn -> << end >>
+#            ^^ invalid.illegal.stray-closing-binary
+
+def f(<< ( >>) )
+#              ^ invalid.illegal.stray-closing-parenthesis
+def f(<< [ >>) ]
+#              ^ invalid.illegal.stray-closing-bracket
+def f(<< { >>) }
+#              ^ invalid.illegal.stray-closing-brace
+def f(<< %{ >>) }
+#               ^ invalid.illegal.stray-closing-brace
+def f(<< << >>) >>
+#               ^^ invalid.illegal.stray-closing-binary
+
+def f(( ( )) )
+#            ^ punctuation.definition.parameters.end
+def f(( [ )) ]
+#            ^ invalid.illegal.stray-closing-bracket
+def f(( { )) }
+#            ^ invalid.illegal.stray-closing-brace
+def f(( %{ )) }
+#             ^ invalid.illegal.stray-closing-brace
+def f(( << )) >>
+#             ^^ invalid.illegal.stray-closing-binary
+
+def f([ ( ]) )
+#            ^ invalid.illegal.stray-closing-parenthesis
+def f([ [ ]) ]
+#            ^ invalid.illegal.stray-closing-bracket
+def f([ { ]) }
+#            ^ invalid.illegal.stray-closing-brace
+def f([ %{ ]) }
+#             ^ invalid.illegal.stray-closing-brace
+def f([ << ]) >>
+#             ^^ invalid.illegal.stray-closing-binary
+
+def f({ ( }) )
+#            ^ invalid.illegal.stray-closing-parenthesis
+def f({ [ }) ]
+#            ^ invalid.illegal.stray-closing-bracket
+def f({ { }) }
+#            ^ invalid.illegal.stray-closing-brace
+def f({ %{ }) }
+#             ^ invalid.illegal.stray-closing-brace
+def f({ << }) >>
+#             ^^ invalid.illegal.stray-closing-binary
+
+def f(%{ ( }) )
+#             ^ invalid.illegal.stray-closing-parenthesis
+def f(%{ [ }) ]
+#             ^ invalid.illegal.stray-closing-bracket
+def f(%{ { }) }
+#             ^ invalid.illegal.stray-closing-brace
+def f(%{ %{ }) }
+#              ^ invalid.illegal.stray-closing-brace
+def f(%{ << }) >>
+#              ^^ invalid.illegal.stray-closing-binary
+
+<%= ( %> <% ) %>
+#           ^ punctuation.section.group.end
+#   ^ punctuation.section.group.begin
+<%= [ %> <% ] %>
+#           ^ punctuation.section.brackets.end
+#   ^ punctuation.section.brackets.begin
+<%= { %> <% } %>
+#           ^ punctuation.section.sequence.end
+#   ^ punctuation.section.sequence.begin
+<%= %{ %> <% } %>
+#            ^ punctuation.section.mapping.end
+#    ^ punctuation.section.mapping.begin
+<%= << %> <% >> %>
+#            ^^ punctuation.definition.string.end
+#   ^^ punctuation.definition.string.begin

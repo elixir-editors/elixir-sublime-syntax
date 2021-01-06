@@ -26,6 +26,15 @@
 #     ^^^^^^^^ meta.interpolation.elixir
 #^^^^^
 
+[a@?: :a@?]
+#     ^^^^ constant.other.symbol
+#^^^^ constant.other.keyword
+[a?@: :a?@]
+#        ^ keyword.operator.attribute
+#     ^^^ constant.other.symbol
+#  ^^ constant.other.keyword
+#^^ variable.function
+
 
 ### Atoms as keywords and equivalent symbols.
 

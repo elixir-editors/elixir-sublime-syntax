@@ -5,6 +5,10 @@
 f()
 #<- variable.function
 f ()
+#   ^ punctuation.section.arguments.end
+#  ^ punctuation.section.group.end
+# ^ punctuation.section.group.begin
+#^ punctuation.section.arguments.begin
 #<- variable.function
 f.()
 #  ^ punctuation.section.arguments.end
@@ -55,6 +59,8 @@ raise"msg"
 %{} |> Kernel.|> Map.put(:key, :value)
 #                                     ^ punctuation.section.arguments.end
 #               ^ punctuation.section.arguments.begin
+#             ^^ variable.function
+#   ^^ keyword.operator.pipe
 
 Kernel.<>(); kernel.<>()
 #                   ^^ variable.function
@@ -177,6 +183,9 @@ end
  is_boolean(x)
 #          ^ punctuation.section.arguments.begin
 #^^^^^^^^^^ variable.function.built-in
+ is_exception(x)
+#            ^ punctuation.section.arguments.begin
+#^^^^^^^^^^^^ variable.function.built-in
  is_float(x)
 #        ^ punctuation.section.arguments.begin
 #^^^^^^^^ variable.function.built-in
@@ -192,6 +201,9 @@ end
  is_map(x)
 #      ^ punctuation.section.arguments.begin
 #^^^^^^ variable.function.built-in
+ is_map_key(x)
+#          ^ punctuation.section.arguments.begin
+#^^^^^^^^^^ variable.function.built-in
  is_nil(x)
 #      ^ punctuation.section.arguments.begin
 #^^^^^^ variable.function.built-in
@@ -204,58 +216,105 @@ end
  is_port(x)
 #       ^ punctuation.section.arguments.begin
 #^^^^^^^ variable.function.built-in
- is_record(x)
-#         ^ punctuation.section.arguments.begin
-#^^^^^^^^^ variable.function.built-in
  is_reference(x)
 #            ^ punctuation.section.arguments.begin
 #^^^^^^^^^^^^ variable.function.built-in
+ is_struct(x)
+#         ^ punctuation.section.arguments.begin
+#^^^^^^^^^ variable.function.built-in
  is_tuple(x)
 #        ^ punctuation.section.arguments.begin
 #^^^^^^^^ variable.function.built-in
- is_exception(x)
-#            ^ punctuation.section.arguments.begin
-#^^^^^^^^^^^^ variable.function.built-in
+
 
  abs(x)
 #   ^ punctuation.section.arguments.begin
 #^^^ variable.function.built-in
+ apply(x)
+#^^^^^ variable.function.built-in
+ binary_part(x)
+#^^^^^^^^^^^ variable.function.built-in
  bit_size(x)
-#        ^ punctuation.section.arguments.begin
 #^^^^^^^^ variable.function.built-in
  byte_size(x)
-#         ^ punctuation.section.arguments.begin
 #^^^^^^^^^ variable.function.built-in
+ ceil(x)
+#^^^^ variable.function.built-in
  div(x)
-#   ^ punctuation.section.arguments.begin
 #^^^ variable.function.built-in
  elem(x)
-#    ^ punctuation.section.arguments.begin
 #^^^^ variable.function.built-in
- hd(x)
-#  ^ punctuation.section.arguments.begin
-#^^ variable.function.built-in
- length(x)
-#      ^ punctuation.section.arguments.begin
+ exit(x)
+#^^^^ keyword.control.flow.exit
+ floor(x)
+#^^^^^ variable.function.built-in
+ function_exported(x)
+#^^^^^^^^^^^^^^^^^ -variable.function.built-in
+ function_exported?(x)
+#^^^^^^^^^^^^^^^^^^ variable.function.built-in
+ get_in(x)
 #^^^^^^ variable.function.built-in
- map_size(x)
-#        ^ punctuation.section.arguments.begin
+ get_and_update_in(x)
+#^^^^^^^^^^^^^^^^^ variable.function.built-in
+ hd(x)
+#^^ variable.function.built-in
+ inspect(x)
+#^^^^^^^ variable.function.built-in
+ length(x)
+#^^^^^^ variable.function.built-in
+ macro_exported(x)
+#^^^^^^^^^^^^^^ -variable.function.built-in
+ macro_exported?(x)
+#^^^^^^^^^^^^^^^ variable.function.built-in
+ make_ref(x)
 #^^^^^^^^ variable.function.built-in
+ map_size(x)
+#^^^^^^^^ variable.function.built-in
+ max(x)
+#^^^ variable.function.built-in
+ min(x)
+#^^^ variable.function.built-in
  node(x)
-#    ^ punctuation.section.arguments.begin
 #^^^^ variable.function.built-in
+ pop_in(x)
+#^^^^^^ variable.function.built-in
+ put_elem(x)
+#^^^^^^^^ variable.function.built-in
+ put_in(x)
+#^^^^^^ variable.function.built-in
  rem(x)
-#   ^ punctuation.section.arguments.begin
 #^^^ variable.function.built-in
  round(x)
-#     ^ punctuation.section.arguments.begin
 #^^^^^ variable.function.built-in
+ self(x)
+#^^^^ variable.function.built-in
+ send(x)
+#^^^^ variable.function.built-in
+ spawn(x)
+#^^^^^ variable.function.built-in
+ spawn_link(x)
+#^^^^^^^^^^ variable.function.built-in
+ spawn_monitor(x)
+#^^^^^^^^^^^^^ variable.function.built-in
+ struct(x)
+#^^^^^^ variable.function.built-in
+ struct!(x)
+#^^^^^^^ variable.function.built-in
+ struct?(x)
+#^^^^^^^ -variable.function.built-in
+ sum(x)
+#^^^ variable.function.built-in
+ tap(x)
+#^^^ variable.function.built-in
+ then(x)
+#^^^^ variable.function.built-in
+ throw(x)
+#^^^^^ keyword.control.flow.throw
  tl(x)
-#  ^ punctuation.section.arguments.begin
 #^^ variable.function.built-in
  trunc(x)
-#     ^ punctuation.section.arguments.begin
 #^^^^^ variable.function.built-in
  tuple_size(x)
-#          ^ punctuation.section.arguments.begin
 #^^^^^^^^^^ variable.function.built-in
+ update_in(x)
+#^^^^^^^^^ variable.function.built-in

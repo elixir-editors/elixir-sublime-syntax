@@ -523,6 +523,10 @@ def run(), do: nil
 #    ^^^ constant.other.symbol
 #^^^ variable.function -support.type
 
+@spec ::: >= ::: :: boolean
+#            ^^^ constant.other.symbol
+#     ^^^ constant.other.symbol
+
 @spec integer >>>
 #             ^^^ variable.other.spec
 #     ^^^^^^^ support.type
@@ -537,6 +541,9 @@ def run(), do: nil
               >>> integer :: integer
 #                 ^^^^^^^ variable.other
 #             ^^^ keyword.operator.bitwise
+@spec integer <<< integer :: integer
+#                 ^^^^^^^ support.type
+#             ^^^ variable.other.spec
 @spec <<>> <> <<>> :: <<>>
 #                     ^^^^ string.other.binary
 #                  ^^ keyword.operator.colon
@@ -636,3 +643,10 @@ def run(), do: nil
  @spec func() :: @const | type
 #                         ^^^^ storage.type.custom
 #                 ^^^^^ variable.other.constant
+
+@spec >> ;
+#     ^^ invalid.illegal.stray-closing-binary
+@spec integer >> integer;
+#             ^^ invalid.illegal.stray-closing-binary
+@spec unquote(ltlt) >> ;
+#                   ^^ invalid.illegal.stray-closing-binary

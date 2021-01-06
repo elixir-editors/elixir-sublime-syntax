@@ -8,6 +8,17 @@
 @other @attribute
 #       ^^^^^^^^^ variable.other.constant
 
+@attr? :attr?
+#^^^^^ entity.name.constant
+@attr! :attr!
+#^^^^^ entity.name.constant
+@attr
+#^^^^ variable.other.constant
+@attr?
+#^^^^^ variable.other.constant
+@attr!
+#^^^^^ variable.other.constant
+
 @_ :_
 #  ^^ constant.other.symbol
 #^ entity.name.constant
