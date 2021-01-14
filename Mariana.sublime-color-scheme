@@ -23,6 +23,11 @@
       "foreground": "var(blue6)"
     },
     {
+      "name": "Support attributes",
+      "scope": "support.attr.elixir",
+      "foreground": "var(blue)"
+    },
+    {
       "name": "Unused variable",
       "scope": "variable.other.unused.elixir",
       "foreground": "color(var(white) a(0.6))"
@@ -37,6 +42,11 @@
       "scope": "variable.other.spec.elixir",
       "font_style": "italic",
       "foreground": "color(var(blue5) s(- 50%))"
+    },
+    {
+      "name": "Capture name",
+      "scope": "variable.other.capture.elixir",
+      "foreground": "color(var(blue))"
     },
     {
       "name": "Module atom",
@@ -54,9 +64,9 @@
       "foreground": "color(var(white) a(0.65))"
     },
     {
-      "name": "Function punctuation",
-      "scope": "keyword.declaration.function.elixir punctuation.section",
-      "foreground": "var(pink)"
+      "name": "Numeric punctuation",
+      "scope": "punctuation.separator.numeric.elixir | punctuation.definition.numeric.elixir | punctuation.separator.decimal.elixir",
+      "foreground": "color(var(pink) s(- 30%))"
     },
     {
       "name": "Escapes in remote function call",
@@ -64,10 +74,47 @@
       "foreground": "color(var(blue) l(+ 10%))"
     },
     {
+      "name": "Function punctuation",
+      "scope": "keyword.declaration.function.elixir punctuation.section",
+      "foreground": "var(pink)"
+    },
+    {
       "name": "Interpolation",
       "scope": "source.elixir.embedded",
       "background": "color(var(white) a(0.03))"
     },
+    {
+      "name": "SQL boolean",
+      "scope": "constant.boolean.sql",
+      "font_style": "italic",
+      "foreground": "color(var(red))"
+    },
+    {
+      "name": "SQL embedded",
+      "scope": "source.elixir source.sql",
+      "background": "color(var(white) a(0.03))"
+    },
+    {
+      "name": "Labelled type",
+      "scope": "variable.other.named-type.elixir",
+      "font_style": "italic",
+      "foreground": "color(var(white) l(- 20%))"
+    },
+    {
+      "name": "Darker pre-defined types",
+      "scope": "support.type.elixir",
+      "foreground": "color(var(blue) l(- 20%))"
+    },
+    {
+      "name": "Italic binary type",
+      "scope": "meta.type.binary.elixir -keyword.operator.colon.elixir",
+      "font_style": "italic"
+    },
+    // {
+    //   "name": "Darker string punctuation",
+    //   "scope": "source.elixir & punctuation.definition.string",
+    //   "foreground": "color(var(blue) l(- 15%))"
+    // },
     {
       "name": "Group parentheses",
       "scope": "punctuation.section.group.begin.elixir | punctuation.section.group.end.elixir",

@@ -2,6 +2,7 @@
   "name": "Monokai for Elixir",
   "rules":
   [
+    // NB: commented out to keep it similar to the style of HTML tags.
     // {
     //   "name": "EEx tag",
     //   "scope": "punctuation.section.embedded.begin.eex | punctuation.section.embedded.end.eex",
@@ -38,6 +39,17 @@
       "foreground": "color(var(orange) a(0.6))"
     },
     {
+      "name": "Spec name",
+      "scope": "variable.other.spec.elixir",
+      "font_style": "italic",
+      "foreground": "color(var(yellow2) s(- 50%))"
+    },
+    {
+      "name": "Capture name",
+      "scope": "variable.other.capture.elixir",
+      "foreground": "color(var(blue))"
+    },
+    {
       "name": "Module atom",
       "scope": "constant.other.module.elixir",
       "foreground": "color(var(yellow2) s(+ 50%) l(- 20%))"
@@ -54,7 +66,7 @@
     },
     {
       "name": "Numeric punctuation",
-      "scope": "punctuation.separator.numeric.elixir | punctuation.separator.decimal.elixir",
+      "scope": "punctuation.separator.numeric.elixir | punctuation.definition.numeric.elixir | punctuation.separator.decimal.elixir",
       "foreground": "color(var(purple) s(- 30%))"
     },
     {
@@ -83,12 +95,6 @@
       "background": "color(var(white) a(0.03))"
     },
     {
-      "name": "Spec name",
-      "scope": "variable.other.spec.elixir",
-      "font_style": "italic",
-      "foreground": "color(var(yellow2) s(- 50%))"
-    },
-    {
       "name": "Labelled type",
       "scope": "variable.other.named-type.elixir",
       "font_style": "italic",
@@ -98,6 +104,11 @@
       "name": "Darker pre-defined types",
       "scope": "support.type.elixir",
       "foreground": "color(var(blue) l(- 20%))"
+    },
+    {
+      "name": "Italic binary type",
+      "scope": "meta.type.binary.elixir -keyword.operator.colon.elixir",
+      "font_style": "italic"
     },
     {
       "name": "Darker string punctuation",
