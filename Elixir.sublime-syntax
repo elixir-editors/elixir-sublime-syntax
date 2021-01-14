@@ -15,9 +15,10 @@ variables:
   not_id_key_suffix: (?=\b(?!{{atom_id_suffix}}:(?!:)|[?!])|(?<=[?!])(?!:(?!:)))
 
   # NB: the keywords are ordered by number of occurrences in the compiler source code of Elixir.
+  # Stats produced using Makeup.Lexers.ElixirLexer.lex(): `[end: 21828, do: 17758, fn: 4070, when: 2364, true: 2232, false: 1625, nil: 1405, and: 1066, in: 821, else: 753, after: 408, or: 258, rescue: 211, not: 198, catch: 113]`
   closing_keyword: (?>end|else|after|rescue|catch){{not_id_key_suffix}}
   closing_token: (?>[,;)}\]#]|>>(?!>)|%>|$|{{closing_keyword}})
-  binary_operator: (?>(?<!\s)\[|<?<~|~>>?|<~>|[*=/|\\>.]|<(?!<[^<~]|%=)|\^\^|&&|(?<!\s)[-+]\S|[-+][-+>\s]|::(?!:)|$|!=|(?>and|or|when|in|not\s+in){{not_id_key_suffix}})
+  binary_operator: (?>(?<!\s)\[|<?<~|~>>?|<~>|[*=/|\\>.]|<(?!<[^<~]|%=)|\^\^|&&|(?<!\s)[-+]\S|[-+][-+>\s]|::(?!:)|$|!=|(?>when|and|in|or|not\s+in){{not_id_key_suffix}})
   has_arguments: (?=\(|\s*\.{3}|(?!\s*(?>{{closing_token}}|{{binary_operator}})))
   no_suffix_then_arguments: '{{not_id_key_suffix}}{{has_arguments}}'
 
@@ -46,31 +47,30 @@ contexts:
     - include: merge_conflict
 
   core_syntax:
+    - include: dot_accessor
+    - include: item_access
+    - include: list
     - include: atom_keyword
+    - include: tuple
     - include: atom_symbol
-    - include: numeric
-    - include: string
     - include: def_blocks
     - include: do_block
     - include: fn_block
-    - include: tuple
-    - include: parens
-    - include: item_access
-    - include: list
-    - include: map
     - include: operator
-    - include: union_operator
-    - include: capture
-    - include: dot_accessor
     - include: alias
     - include: elixir_keywords
     - include: elixir_functions
     - include: special_form
-    - include: sql_fragment
     - include: built_ins
-    - include: module_attribute
+    - include: sql_fragment
     - include: modules_or_identifiers_or_calls
+    - include: numeric
+    - include: map
+    - include: paren
     - include: comment
+    - include: string
+    - include: capture
+    - include: module_attribute
     - include: char_literal
     - include: line_continuation
 
@@ -152,7 +152,7 @@ contexts:
             (?x)
             (?>((?=_){{identifier}})|({{identifier}}))?
             \s*
-            ((?!>>(?!>)){{operator}}|(?>in|and|or){{not_id_key_suffix}})
+            ((?!>>(?!>)){{operator}}|(?>and|in|or){{not_id_key_suffix}})
           comment: e.g. x && y
           captures:
             1: variable.parameter.unused.elixir
@@ -167,7 +167,7 @@ contexts:
             - include: parameters
             - include: if_non_space_pop
         - include: if_closing_tokens_pop
-        - include: parens
+        - include: paren
         - include: parameters
         - include: function_params_or_eol_pop
 
@@ -182,7 +182,7 @@ contexts:
   function_ws_params_pop:
     - include: do_block_pop
     - include: if_closing_tokens_pop
-    - include: parens
+    - include: paren
     - include: parameters
     - include: if_non_space_pop
 
@@ -223,8 +223,8 @@ contexts:
           pop: true
         - include: core_syntax
     - include: paren_param
-    - include: tuple_param
     - include: list_param
+    - include: tuple_param
     - include: map_param
     - include: binary_string_param
     - include: core_syntax
@@ -315,7 +315,7 @@ contexts:
     # E.g.: @spec integer &&& integer :: integer
     - match: |
         (?x)
-        ((?!::|<<(?!<)|>>(?!>)|\.){{operator}} | (?>not|in|and|or){{not_id_key_suffix}})
+        ((?!::|<<(?!<)|>>(?!>)|\.){{operator}} | (?>and|in|or|not){{not_id_key_suffix}})
       scope: variable.other.spec.elixir
       set: spec_op_definition_next_pop
     - include: spec_op_definition_next_pop
@@ -366,8 +366,8 @@ contexts:
       scope: storage.type.custom.elixir
       push: type_arguments_or_pop
     - include: paren_type
-    - include: tuple_type
     - include: list_type
+    - include: tuple_type
     - include: map_type
     - include: binary_string_type
     - include: dot_type
@@ -460,10 +460,6 @@ contexts:
     - match: var{{not_id_key_suffix}}
       scope: support.type.elixir
     - include: first_and_next_types_pop
-
-  union_operator:
-    - match: \|(?![:|>])
-      scope: keyword.operator.union.elixir
 
   paren_type:
     - match: \(
@@ -1579,10 +1575,6 @@ contexts:
             - include: markdown_comment
             - include: core_syntax
 
-    - match: (?>derive|deprecated|impl|file|fallback_to_any|behaviour|vsn|(?>before_|after_)?compile|dialyzer|external_resource|on_(?>definition|load)){{no_suffix_then_arguments}}
-      scope: support.attr.elixir
-      set: arguments_paren_or_ws_pop
-
     - match: (?>spec|(?:macro)?callback)(?={{no_suffix_then_arguments}}|\s*{{operator}})
       scope: keyword.declaration.type.elixir
       set:
@@ -1631,6 +1623,10 @@ contexts:
               scope: entity.name.type.elixir
               set: type_definition_pop
             - include: if_non_space_pop
+
+    - match: (?>derive|deprecated|impl|file|fallback_to_any|behaviour|vsn|(?>before_|after_)?compile|dialyzer|external_resource|on_(?>definition|load)){{no_suffix_then_arguments}}
+      scope: support.attr.elixir
+      set: arguments_paren_or_ws_pop
 
     - include: block_or_keyword
 
@@ -1801,46 +1797,49 @@ contexts:
   ## Operators
 
   operator:
-    - match: '::'
-      scope: keyword.operator.colon.elixir
-    - match: <-|->
-      scope: keyword.operator.arrow.elixir
-    - match: <>
-      scope: keyword.operator.binary-concat.elixir
-    - match: <?\|>|<~>|<?<~|~>>?
-      comment: operators with pipe precedence
-      scope: keyword.operator.pipe.elixir
-    - match: ---|\+\+\+
-      scope: keyword.operator.reserved.elixir
-    - match: --
-      scope: keyword.operator.list-diff.elixir
-    - match: \+\+
-      scope: keyword.operator.list-concat.elixir
-    - match: \.\.\.
-      comment: can appear in @type declarations
-      scope: keyword.operator.ellipsis.elixir
-    - match: \.\.
-      scope: keyword.operator.range.elixir
-    - match: =>
-      scope: keyword.operator.map-pair.elixir
-    - match: (?>\|\|\||&&&|\^\^\^|<<<|>>>|~~~)
-      scope: keyword.operator.bitwise.elixir
-    - match: \\\\
-      scope: keyword.operator.default.elixir
-    - match: (?>[!=]=|[<>])=?
-      scope: keyword.operator.comparison.elixir
-    - match: xor{{not_id_key_suffix}}
-      scope: invalid.deprecated.operator.elixir
-    - match: (?>in|not|and|or){{not_id_key_suffix}}|!|\|\||&&
-      scope: keyword.operator.logical.elixir
-    - match: '[-+*/]'
-      scope: keyword.operator.arithmetic.elixir
-    - match: =~
-      scope: keyword.operator.regex.elixir
-    - match: =
-      scope: keyword.operator.match.elixir
-    - match: ;
-      scope: keyword.operator.semicolon.elixir
+    - match: |
+        (?x)
+        (?>
+          (=(?![=>~]))
+        | (->|<-)
+        | ((?>[!=]=|[<>])(?![<>~|])=?)
+        | (::)
+        | (\|(?![|>]))
+        | (<?\|>|<~>|<?<~|~>>?) # operators with pipe precedence
+        | (<>)
+        | (---|\+\+\+)
+        | (--)
+        | (\+\+)
+        | ([-+*/])
+        | (=>)
+        | (\|\|(?!\|)|&&(?!&)|!)
+        | (=~)
+        | (\.\.\.) # can appear in @type declarations
+        | (\.\.)
+        | (\\\\)
+        | (<<<|>>>|&&&|\|\|\||~~~|\^\^\^)
+        | (;)
+        )
+      captures:
+        1: keyword.operator.match.elixir
+        2: keyword.operator.arrow.elixir
+        3: keyword.operator.comparison.elixir
+        4: keyword.operator.colon.elixir
+        5: keyword.operator.union.elixir
+        6: keyword.operator.pipe.elixir
+        7: keyword.operator.binary-concat.elixir
+        8: keyword.operator.reserved.elixir
+        9: keyword.operator.list-diff.elixir
+        10: keyword.operator.list-concat.elixir
+        11: keyword.operator.arithmetic.elixir
+        12: keyword.operator.map-pair.elixir
+        13: keyword.operator.logical.elixir
+        14: keyword.operator.regex.elixir
+        15: keyword.operator.ellipsis.elixir
+        16: keyword.operator.range.elixir
+        17: keyword.operator.default.elixir
+        18: keyword.operator.bitwise.elixir
+        19: keyword.operator.semicolon.elixir
     - include: pin_operator
 
   pin_operator:
@@ -1876,7 +1875,7 @@ contexts:
     - match: |
         (?x)
         (?<=["'\w\])}]|\w[?!])
-        (?<!\bwhen|\bend|\belse|\bafter|\brescue|\bcatch|\bnot|\band|\bin|\bor)
+        (?<!\bdo|\bwhen|\band|\bin|\belse|\bafter|\bor|\brescue|\bnot|\bcatch)
         \[
       scope: punctuation.section.access.begin.elixir
       push:
@@ -1885,9 +1884,9 @@ contexts:
           scope: punctuation.section.access.end.elixir
           pop: true
         - include: if_closing_token_pop
+        - include: core_syntax
         - match: \,
           scope: invalid.illegal.separator.elixir
-        - include: core_syntax
 
   list:
     - match: \]
@@ -1929,11 +1928,11 @@ contexts:
           pop: true
         - include: if_closing_token_pop
         - include: comma_and_skip_ws
-        - include: core_syntax
         - include: cons_operator
+        - include: core_syntax
     - include: if_non_space_or_eol_pop
 
-  parens:
+  paren:
     - match: \)
       scope: invalid.illegal.stray-closing-parenthesis.elixir
     - match: \(
@@ -2047,10 +2046,6 @@ contexts:
   ## Atoms
 
   atom_keyword:
-    - match: (?>\*\*|\[\]|\^\^|\.)(:)(?!:)
-      scope: invalid.illegal.atom-keyword.elixir
-      captures:
-        1: punctuation.definition.constant.end.elixir
     - match: |
         (?x)
         (?! \?: | ::: | %:(?:{{atom_id}}|['"]) ) # No ::: and %:XYZ{} (it's a map)
@@ -2281,7 +2276,7 @@ contexts:
         - include: arguments_rest_pop
 
   arguments_rest_pop:
-    - match: (\,)(?=\s*do{{not_id_key_suffix}})
+    - match: \,(?=\s*do{{not_id_key_suffix}})
       scope: invalid.illegal.separator.elixir
     - include: arg_comma_and_skip_ws
     - include: last_id_argument
@@ -2309,7 +2304,7 @@ contexts:
             2: variable.other.constant.elixir
         - include: elixir_keywords
         - include: special_form
-        # Avoid matching (in|not|and|or) as an id.
+        # Avoid matching (and|in|or|not) as an id.
         - include: operator
         - include: identifier_pop
         - match: \.(?!\.)
@@ -2328,25 +2323,25 @@ contexts:
     - match: |-
         (?x)
         (?>
-          (when)
-        | (in|not|and|or)
-        | (catch|after|rescue)
-        | (fn)
-        | (else)
+          (end)
         | (do)
-        | (end)
+        | (fn)
+        | (when)
+        | (true|false|nil)
+        | (and|in|or|not)
+        | (else)
+        | (after|rescue|catch)
         )\b(?![?!])
       comment: fully reserved keywords
       captures:
-        1: keyword.operator.word.elixir
-        2: keyword.operator.logical.elixir
-        3: keyword.control.exception.catch.elixir
-        4: keyword.declaration.function.elixir
-        5: keyword.control.conditional.else.elixir
-        6: keyword.context.block.do.elixir
-        7: keyword.context.block.end.elixir
-    - match: (?>nil|true|false)\b(?![?!])
-      scope: constant.language.elixir
+        1: keyword.context.block.end.elixir
+        2: keyword.context.block.do.elixir
+        3: keyword.declaration.function.elixir
+        4: keyword.operator.word.elixir
+        5: constant.language.elixir
+        6: keyword.operator.logical.elixir
+        7: keyword.control.conditional.else.elixir
+        8: keyword.control.exception.catch.elixir
 
   elixir_functions:
     - include: unquote_call
