@@ -29,15 +29,15 @@ variables:
 
   is_markdown_elixir: |
     (?x)
-    (?<=\s{4})(?>
-      iex.*?>
-    | \.{3}.*?>
-    | ```\s*elixir\b
-    | (?>
-        def(?>module|impl|macro|guard|struct|delegate|protocol|p)?
-      | if|unless|case|cond|with|try|receive|unquote(?:_splicing)?
-      ){{not_id_key_suffix}}
-    )
+    ```\s*elixir\b
+    | (?<=\s{4})(?>
+        iex.*?>
+      | \.{3}.*?>
+      | (?>
+          def(?>module|impl|macro|guard|struct|delegate|protocol|p)?
+        | if|unless|case|cond|with|try|receive|unquote(?:_splicing)?
+        ){{not_id_key_suffix}}
+      )
 
 contexts:
   main:
