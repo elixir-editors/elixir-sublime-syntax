@@ -582,12 +582,31 @@ contexts:
       scope: keyword.operator.colon.elixir
       push:
         - meta_scope: meta.type.binary.elixir
-        - include: unquote_call
-        - match: '{{identifier}}|[-*\d]+'
-          scope: storage.type.binary.elixir
-        - match: (?=\()
-          push: arguments_pop
+        - include: bitstring_type
         - include: if_non_space_pop
+
+  bitstring_type:
+    - include: atom_symbol
+    - include: block_or_keyword
+    - include: unquote_call
+    - match: -(?![->])|\*|(?>\d(?:_?\d)*)
+      scope: storage.type.binary.elixir
+    - match: '{{identifier}}'
+      scope: storage.type.binary.elixir
+      push: arguments_or_pop
+    - include: paren_binary
+
+  paren_binary:
+    - match: \(
+      scope: punctuation.section.group.begin.elixir
+      push:
+        - meta_scope: meta.parens.elixir
+        - match: \)
+          scope: punctuation.section.group.end.elixir
+          pop: true
+        - include: bitstring_type
+        - include: if_closing_token_pop
+        - include: core_syntax
 
   escaped_char:
     - match: \\x\h{2}
