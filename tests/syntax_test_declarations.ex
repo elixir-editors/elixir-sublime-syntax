@@ -527,6 +527,18 @@ def __STACKTRACE__(), do: __STACKTRACE__
 #     ^^^^ entity.name.function
 #^^^^ keyword.declaration.function.private
 
+ defmacro l and r, do: l and r
+#               ^ variable.parameter.elixir
+#           ^^^ entity.name.function.elixir
+#         ^ variable.parameter.elixir
+ defmacro l in r, do: l in r
+#              ^ variable.parameter.elixir
+#           ^^ entity.name.function.elixir
+#         ^ variable.parameter.elixir
+ defmacro l or r, do: l or r
+#              ^ variable.parameter.elixir
+#           ^^ entity.name.function.elixir
+#         ^ variable.parameter.elixir
  defmacro l + r, do: l + r
 #           ^ entity.name.function
 #^^^^^^^^ keyword.declaration.function.public
@@ -691,6 +703,7 @@ alias Elixir.unquote(Kernel), as: K
 #           ^ punctuation.accessor.dot
 
 ### require
+
 require EEx.Tokenizer, as: T
 #                          ^ entity.name.namespace
 #       ^^^^^^^^^^^^^ meta.path.modules

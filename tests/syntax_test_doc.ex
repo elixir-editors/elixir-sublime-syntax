@@ -34,12 +34,27 @@ Don't insert a comment between `x` and `"""`.
 # NB: Check that defmodule doesn't match past the newline and consumes the closing `"""`.
 @doc """
 Don't insert a comment between `X` and `"""`.
+   defmodule X
+#  ^^^^^^^^^ -keyword.declaration.module
     defmodule X
+#   ^^^^^^^^^ keyword.declaration.module
 #   ^^^^^^^^^^^^ markup.raw.block.markdown
  """m
 #   ^ variable.other -meta.string.elixir
 #^^^ punctuation.definition.string.end
 #^^^ meta.string.elixir
+
+  @doc """
+  ```elixir
+#    ^^^^^^ constant.other.language-name.elixir
+# ^^^ punctuation.definition.code-block.begin.markdown
+  @type t :: term
+  ```
+# ^^^^ punctuation.definition.code-block.end.markdown
+  Text.
+# ^^^^^^ source.markdown.embedded.elixir
+# ^^^^^^ meta.string.elixir
+  """
 
 @doc ~S'''
 #    ^^^^^^ meta.string.elixir

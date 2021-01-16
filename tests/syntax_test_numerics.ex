@@ -31,13 +31,13 @@ _123
 
  0.0 1.23
 #    ^^^^ constant.numeric.float
+# ^ punctuation.separator.decimal -punctuation.separator.numeric
 #^^^ constant.numeric.float
 
  0.0 0.0e0 0.0e+0 0.0e-0
 #                 ^^^^^^ constant.numeric.float
 #          ^^^^^^ constant.numeric.float
 #    ^^^^^ constant.numeric.float
-# ^ punctuation.separator.decimal
 #^^^ constant.numeric.float
 
  0.
@@ -74,6 +74,7 @@ _123.456
  0b0 0b0_0 0b0_1
 #          ^^^^^ constant.numeric
 #    ^^^^^ constant.numeric
+# ^ punctuation.separator.numeric
 #^^^ constant.numeric.binary
 
  0b 0b_ 0b0_ 0b0_0__0 0b0__0 0b2 0b0_2
@@ -94,6 +95,7 @@ _123.456
 ### Hex
 
  0x0123456789abcdefABCDEF
+# ^ punctuation.separator.numeric
 #^^^^^^^^^^^^^^^^^^^^^^^^ constant.numeric.hex
  0x0_1_2_a_b_c_D_E_F
 #^^^^^^^^^^^^^^^^^^^ constant.numeric
@@ -114,6 +116,7 @@ _123.456
 ### Octal
 
  0o01234567
+# ^ punctuation.separator.numeric
 #^^^^^^^^^^ constant.numeric.octal
  0o0 0o0_0 0o1 0o1_2_3
 #              ^^^^^^^ constant.numeric
@@ -138,20 +141,38 @@ _123.456
 ### Character
 
  ??
+#^ punctuation.definition.numeric
 #^^ constant.numeric.char
+
  ?: ?. ?x ?\x ?\\ ?\
-#                 ^^^ constant.numeric
-#             ^^^ constant.numeric
-#         ^^^ constant.numeric
-#      ^^ constant.numeric
-#   ^^ constant.numeric
-#^^ constant.numeric
+#                 ^^^ constant.numeric.char
+#             ^^^ constant.numeric.char
+#         ^^^ constant.numeric.char
+#      ^^ constant.numeric.char
+#   ^^ constant.numeric.char
+#^^ constant.numeric.char
+
+ ?" ?' ?< ?>
+#         ^^ constant.numeric.char
+#      ^^ constant.numeric.char
+#   ^^ constant.numeric.char
+#^^ constant.numeric.char
+
+ ?( ?) ?[ ?] ?{ ?}
+#               ^^ constant.numeric.char
+#            ^^ constant.numeric.char
+#         ^^ constant.numeric.char
+#      ^^ constant.numeric.char
+#   ^^ constant.numeric.char
+#^^ constant.numeric.char
+
+ ?...?.
+#    ^^ constant.numeric.char
+#  ^^ keyword.operator.range
+#^^ constant.numeric.char
 
  ?  ? ?
 #    ^^ invalid.illegal.character-literal
+#   ^^ constant.numeric.char
 # ^ invalid.illegal.character-literal
-
- ?...?.
-#    ^^ constant.numeric
-#  ^^ keyword.operator.range
-#^^ constant.numeric
+#^^ constant.numeric.char

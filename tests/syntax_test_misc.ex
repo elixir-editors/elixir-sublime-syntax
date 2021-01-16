@@ -20,6 +20,10 @@
 #^^^^^^ variable.other
 %^module{}
 #^ keyword.operator.pin
+%{map | a: :b}
+#            ^ punctuation.section.mapping.end
+#     ^ keyword.operator.cons
+# ^^^ variable.other
 
  {} {{}} ({}) [{}]
 #              ^ punctuation.section.sequence.begin
@@ -53,6 +57,10 @@
  }
 #^ invalid.illegal.stray-closing-brace
 
+# TODO: ?
+ (fn ) (fn -> )
+              ^ punctuation.section.group.end
+     ^ punctuation.section.group.end
  fn -> end
 #      ^^^ punctuation.section.block.end keyword.context.block.end
 #   ^^ keyword.operator.arrow
@@ -208,7 +216,7 @@ end
 ## Item access
 
 []
-#<- -punctuation.section.access
+#<- punctuation.section.brackets -punctuation.section.access
 ["[]":[]][[]]
 #         ^ punctuation.section.brackets.begin
 #        ^ punctuation.section.access.begin
@@ -257,13 +265,15 @@ end
 #      ^ punctuation.section.access.begin
 # ^ punctuation.section.access.begin
 
-when?[] when![] end?[] end![] else?[] else![]
-#                                          ^ punctuation.section.access.begin
-#                                  ^ punctuation.section.access.begin
-#                          ^ punctuation.section.access.begin
-#                   ^ punctuation.section.access.begin
-#            ^ punctuation.section.access.begin
-#    ^ punctuation.section.access.begin
+do?[] do![] when?[] when![] end?[] end![] else?[] else![]
+#                                                      ^ punctuation.section.access.begin
+#                                              ^ punctuation.section.access.begin
+#                                      ^ punctuation.section.access.begin
+#                               ^ punctuation.section.access.begin
+#                        ^ punctuation.section.access.begin
+#                ^ punctuation.section.access.begin
+#        ^ punctuation.section.access.begin
+#  ^ punctuation.section.access.begin
 after?[] after![] rescue?[] rescue![] catch?[] catch![]
 #                                                    ^ punctuation.section.access.begin
 #                                           ^ punctuation.section.access.begin
@@ -281,18 +291,21 @@ not?[] not![] and?[] and![] in?[] in![] or?[] or![]
 #          ^ punctuation.section.access.begin
 #   ^ punctuation.section.access.begin
 
-when[] end[] else[] after[] rescue[]
-#                                 ^ punctuation.section.brackets.begin
-#                        ^ punctuation.section.brackets.begin
-#                ^ punctuation.section.brackets.begin
-#         ^ punctuation.section.brackets.begin
-#   ^ punctuation.section.brackets.begin
-catch[] not[] and[] in[] or[]
+do[] when[] else[] after[] rescue[]
+#                                ^ punctuation.section.brackets.begin
+#                       ^ punctuation.section.brackets.begin
+#               ^ punctuation.section.brackets.begin
+#        ^ punctuation.section.brackets.begin
+# ^ punctuation.section.brackets.begin
+catch[] not[] and[] in[] or[] fn[]->end
+#                               ^ punctuation.section.brackets.begin
 #                          ^ punctuation.section.brackets.begin
 #                     ^ punctuation.section.brackets.begin
 #                ^ punctuation.section.brackets.begin
 #          ^ punctuation.section.brackets.begin
 #    ^ punctuation.section.brackets.begin
+end[]
+#  ^ punctuation.section.access.begin
 
 ![] $[] %[] &[] *[] +[] ,[] -[] .[] /[]
 #                                    ^ punctuation.section.brackets.begin

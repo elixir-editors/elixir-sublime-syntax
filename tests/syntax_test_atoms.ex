@@ -224,17 +224,20 @@
   **: :**,
 #       ^ keyword.operator.arithmetic
 #     ^^ constant.other.symbol
-# ^^^ invalid.illegal.atom-keyword
+#  ^^ constant.other.keyword
+# ^ -constant.other.keyword
   .: :.,
 #    ^^ constant.other.symbol
-# ^^ invalid.illegal.atom-keyword
+# ^ punctuation.accessor.dot
+# ^^ -constant.other.keyword
   ^^: :^^,
 #       ^ keyword.operator.pin
 #     ^^ constant.other.symbol
-# ^^^ invalid.illegal.atom-keyword
+#  ^^ constant.other.keyword
+# ^ -constant.other.keyword
   []: :[],
 #     ^^^ -constant.other.symbol
-# ^^^ invalid.illegal.atom-keyword
+# ^^^ -constant.other.keyword
   "[]": :"[]",
 #       ^^^^^ constant.other.symbol
 # ^^^^^ constant.other.keyword
