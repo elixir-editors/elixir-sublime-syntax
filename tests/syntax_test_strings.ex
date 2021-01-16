@@ -191,22 +191,8 @@ heredoc text
 #   ^ storage.type.string
 #^^^ punctuation.definition.string.end
 #^^^^ meta.string.elixir
-~L"<div>\"</div>"m
-#               ^ punctuation.definition.string.end
-#       ^^ -constant.character.escape.char.elixir
-#   ^^^ entity.name.tag.block.any.html
-~L'<div>\'</div>'m
-#               ^ punctuation.definition.string.end
-#       ^^ -constant.character.escape.char.elixir
-#   ^^^ entity.name.tag.block.any.html
 
- ~L/\//m ~L|\||m ~L{\}}m ~L[\]]m ~L<\>>m ~L(\))m
-#                                              ^ string.quoted.modifiers
-#                                      ^ string.quoted.modifiers
-#                              ^ string.quoted.modifiers
-#                      ^ string.quoted.modifiers
-#              ^ string.quoted.modifiers
-#      ^ string.quoted.modifiers
+~L/\//m ~L|\||m ~L{\}}m ~L[\]]m ~L<\>>m ~L(\))m
 
 ~L'''
  \
@@ -275,14 +261,6 @@ key: "#{value}\"""
 #//  ^^^^^^ meta.interpolation.elixir
   }
   """
-~J"""
-  {
-    "key": "#{value}",
-#//         ^^^^^^^^ string.quoted.double.json
-    "#{key}": "value"
-#// ^^^^^^^^ string.quoted.double.json
-  }
-  """
 
 ~j"1234"m
 #       ^ storage.type.string
@@ -292,46 +270,6 @@ key: "#{value}\"""
 # ^^^^^^ meta.string.elixir
 
 ~j/\//m ~j|\||m ~j{\}}m ~j[\]]m ~j<\>>m ~j(\))m
-#                                            ^ punctuation.definition.string.end
-#                                    ^ punctuation.definition.string.end
-#                            ^ punctuation.definition.string.end
-#                    ^ punctuation.definition.string.end
-#            ^ punctuation.definition.string.end
-#    ^ punctuation.definition.string.end
-
-~J"1234"
-#      ^ punctuation.definition.string.end.elixir
-#  ^^^^ constant.numeric
-# ^ punctuation.definition.string.begin.elixir
-# ^^^^^^ meta.string.elixir
-
-# TODO: how to handle JSON double quotes when escaped by Elixir rules?
-~J"\"1234\""
-
-~J'"\u0000"'
-
-~J'"\'"'
-
-~J'"\""'
-
-~J"""
-{
-  "k\u0065y\"": "J"
-}
- \"""
-#^^ -constant.character.escape.char.elixir
- """a
-#   ^ storage.type.string
-#^^^ punctuation.definition.string.end
-
-~J'''
- \'''
-#^^ -constant.character.escape.char
- '''m
-#   ^ storage.type.string
-#^^^ punctuation.definition.string.end
-
-~J/\//m ~J|\||m ~J{\}}m ~J[\]]m ~J<\>>m ~J(\))m
 #                                            ^ punctuation.definition.string.end
 #                                    ^ punctuation.definition.string.end
 #                            ^ punctuation.definition.string.end
