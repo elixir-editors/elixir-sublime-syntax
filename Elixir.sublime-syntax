@@ -609,19 +609,16 @@ contexts:
         - include: core_syntax
 
   escaped_char:
-    - match: \\x\h{2}
-      scope: constant.character.escape.hex.elixir
-    # Avoid possibly matching closing string delimiter: [^'"/)\]}>]
-    - match: \\x(?:\h|([^'"/)\]}>])){1,2}
+    # Avoid possibly matching closing string delimiter: [^'"/\\)\]}>#]
+    - match: (?x) \\x (?> \h{2} | (?>\h|([^'"/\\)\]}>#])){1,2} | )
       scope: constant.character.escape.hex.elixir
       captures:
         1: invalid.illegal.escape.hex.elixir
-        2: invalid.illegal.escape.hex.elixir
-    - match: \\u(?:\h{4}|{\h{1,6}})
+    - match: (?x) \\u (?> (?>\h{4}|{\h{1,6}}) | ({}|{?[^'"/\\)\]}>#]{1,6}}?))
       scope: constant.character.escape.unicode.elixir
-    - match: \\u(?:{}|{?[^'"/)\]}>]{1,6}}?)
-      scope: invalid.illegal.escape.unicode.elixir
-    - match: \\.|\\\n
+      captures:
+        1: invalid.illegal.escape.unicode.elixir
+    - match: \\.
       scope: constant.character.escape.char.elixir
 
   escape_squote:
@@ -2181,6 +2178,8 @@ contexts:
             - include: sql_or_elixir_escaped_pop
 
   sql_or_elixir_escaped_pop:
+    - include: interpolated_elixir
+    - include: line_continuation
     - match: (?=\\(?!\\?\?))
       # NB: using push instead of set here breaks highlighting for ST3.
       set:
@@ -2213,10 +2212,6 @@ contexts:
               pop: true
             # Text between <> brackets isn't always valid Elixir code.
             # - include: core_syntax
-    - match: (##).*\n?
-      scope: comment.line.number-sign.section.elixir
-      captures:
-        1: punctuation.definition.comment.elixir
     - match: (#).*\n?
       scope: comment.line.number-sign.elixir
       captures:
