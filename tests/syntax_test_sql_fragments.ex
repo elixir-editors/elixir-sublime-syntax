@@ -31,6 +31,19 @@ fragment("ASC NULLS LAST")
 #             ^^^^^ source.ex.sql constant.language.sql
 #         ^^^ keyword.other.order.sql
 
+fragment("\
+#         ^^ source.ex.sql punctuation.separator.continuation
+  SELECT *\
+#         ^^ source.ex.sql punctuation.separator.continuation
+#        ^ variable.language.star.sql
+# ^^^^^^ keyword.other.DML.sql
+-- Interpolations are not accepted by fragment(), but we match them anyway:
+  FROM #{:posts}
+#        ^^^^^^ constant.other.symbol.elixir
+#      ^^^^^^^^^ meta.interpolation.elixir
+# ^^^^ keyword.other.DML.sql
+")
+
 fragment(
 #       ^ punctuation.section.arguments.begin
 #<- support.function
@@ -51,8 +64,8 @@ fragment(
 #<- punctuation.section.arguments.end
 
 fragment("""
-   jsonb_to_tsvector('simple', content, '["string", "numeric"]')
---#^^^^^^^^^^^^^^^^^ support.function.psql
+  jsonb_to_tsvector('simple', content, '["string", "numeric"]')
+# ^^^^^^^^^^^^^^^^^ support.function.psql
 """)
 
 @sql "..."

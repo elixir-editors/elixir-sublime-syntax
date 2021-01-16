@@ -132,19 +132,6 @@ heredoc text
  """mods
 #   ^^^^ string.quoted.modifiers
 
-# Escape chars, including invalid hex escapes.
- ~s/\u{1}\u{122222}\u1234/
- ~s/\u{1}\u{122222}\u/
- ~s/\usd \u{ssa01133} \uasa /
- ~s/\xaf\xa \xws/aasd w\s\//escapes
- ~s/\xaf\xa \xww\s\//escapes
-#                    ^^^^^^^ storage.type.string.elixir
-#               ^^^^ constant.character.escape.char.elixir
-#              ^ invalid.illegal
-#          ^ invalid.illegal
-#   ^^^^^^^ constant.character.escape.hex.elixir
-#^^ storage.type.string.elixir
-
 # Brackets are not balanced.
 ~s<<>angle ~s{{}curly ~s[[]square ~s(()round
 #                                     ^ punctuation.definition.string.end
@@ -446,6 +433,51 @@ key: "#{value}\"""
  '''m
 #   ^ storage.type.string
 #^^^ punctuation.definition.string.end
+
+
+## Escape chars
+
+"\.\"\!\X\U\n\#{}"
+#^^^^^^^^^^^^^^ constant.character.escape.char
+
+"\x00\xFF"
+#^^^^^^^^ constant.character.escape.hex
+"\x"
+#^^ constant.character.escape.hex
+"\x1G"
+#   ^ invalid.illegal.escape.hex
+"\xH"
+#  ^ invalid.illegal.escape.hex
+"\xIJ\x\\\x#{}"
+#          ^^^ meta.interpolation
+#      ^^ constant.character.escape.char
+#   ^ invalid.illegal.escape.hex
+
+"\u1234"
+#^^^^^^ constant.character.escape.unicode
+"\u{0}\u{01}\u{012}\u{0123}\u{01234}\u{012345}\u{012346}"
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ constant.character.escape.unicode
+"\u"
+#^^ constant.character.escape.char
+"\uG\uHI\uJKL\uMNOP\uQRSTU\uVWXYZGH"
+#                                 ^ -invalid.illegal.escape.unicode
+#                           ^^^^^^ invalid.illegal.escape.unicode
+#                    ^^^^^ invalid.illegal.escape.unicode
+#              ^^^^ invalid.illegal.escape.unicode
+#         ^^^ invalid.illegal.escape.unicode
+#     ^^ invalid.illegal.escape.unicode
+#  ^ invalid.illegal.escape.unicode
+"\u0\u01\u012\u012G"
+#              ^^^^ invalid.illegal.escape.unicode
+#         ^^^ invalid.illegal.escape.unicode
+#     ^^ invalid.illegal.escape.unicode
+#  ^ invalid.illegal.escape.unicode
+"\u{"
+#  ^ invalid.illegal.escape.unicode
+"\u{}"
+#  ^^ invalid.illegal.escape.unicode
+"\u{0123467}"
+#  ^^^^^^^ invalid.illegal.escape.unicode
 
 
 ## Binary
