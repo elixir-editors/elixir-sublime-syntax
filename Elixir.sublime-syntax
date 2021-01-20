@@ -2152,11 +2152,14 @@ contexts:
           set: sql_fragment_args_pop
 
   sql_string_pop:
-    - match: '"""\n'
-      scope: string.quoted.double.elixir punctuation.definition.string.begin.elixir
+    - match: (""")(.*)\n
+      captures:
+        1: string.quoted.triple.double.elixir punctuation.definition.string.begin.elixir
+        2: invalid.illegal.opening-heredoc.elixir
       set:
+        - meta_scope: meta.string.elixir
         - match: '"""'
-          scope: string.quoted.double.elixir punctuation.definition.string.end.elixir
+          scope: string.quoted.triple.double.elixir punctuation.definition.string.end.elixir
           pop: true
         - match: ''
           push: scope:source.ex.sql
@@ -2167,6 +2170,7 @@ contexts:
     - match: \"
       scope: string.quoted.double.elixir punctuation.definition.string.begin.elixir
       set:
+        - meta_scope: meta.string.elixir
         - match: \"
           scope: string.quoted.double.elixir punctuation.definition.string.end.elixir
           pop: true
