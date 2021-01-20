@@ -98,12 +98,12 @@
       "name": "Labelled type",
       "scope": "variable.other.named-type.elixir",
       "font_style": "italic",
-      "foreground": "color(var(white) l(- 20%))"
+      "foreground": "color(var(white) l(- 40%))"
     },
     {
       "name": "Darker pre-defined types",
       "scope": "support.type.elixir",
-      "foreground": "color(var(blue) l(- 20%))"
+      "foreground": "color(var(pink) l(- 10%))"
     },
     {
       "name": "Italic binary type",

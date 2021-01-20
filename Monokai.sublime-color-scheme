@@ -98,7 +98,7 @@
       "name": "Labelled type",
       "scope": "variable.other.named-type.elixir",
       "font_style": "italic",
-      "foreground": "color(var(white) l(- 20%))"
+      "foreground": "color(var(white) l(- 40%))"
     },
     {
       "name": "Darker pre-defined types",
