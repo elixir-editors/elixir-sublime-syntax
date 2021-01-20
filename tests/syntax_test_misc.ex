@@ -8,14 +8,20 @@
 #  ^ punctuation.section.mapping.end
 # ^ punctuation.section.mapping.begin
 #^ punctuation.section.mapping.begin
-%{%{}: :%{}}."%{}"
-#             ^^^ variable.other.member
-#      ^^^^ constant.other.symbol
-# ^^^^ constant.other.keyword
+ %{%{}: :%{}}."%{}"
+#              ^^^ variable.other.member
+#       ^^^^ constant.other.symbol
+#  ^^^^ constant.other.keyword
  %__MODULE__{}
 #           ^ punctuation.section.mapping.begin
 # ^^^^^^^^^^ variable.language.special-form
 #^ punctuation.section.mapping.begin
+ %__MODULE__.Nested{}
+#                  ^ punctuation.section.mapping.begin
+#            ^^^^^^ constant.other.module
+#           ^ punctuation.accessor.dot
+# ^^^^^^^^^^ variable.language.special-form
+
 %module{}
 #^^^^^^ variable.other
 %^module{}
@@ -57,10 +63,8 @@
  }
 #^ invalid.illegal.stray-closing-brace
 
-# TODO: ?
- (fn ) (fn -> )
-              ^ punctuation.section.group.end
-     ^ punctuation.section.group.end
+ (fn -> ) end)
+#       ^ invalid.illegal.stray-closing-parenthesis
  fn -> end
 #      ^^^ punctuation.section.block.end keyword.context.block.end
 #   ^^ keyword.operator.arrow
@@ -80,10 +84,25 @@
 #  ^ variable.other
  end
 
+  list =
+    Enum.map(fn )
+#            ^^ keyword.declaration.function
+#               ^ punctuation.section.arguments.end
+#           ^ punctuation.section.arguments.begin
+  list
+# ^^^^ -variable.parameter
+
  fn x when x -> x end
 #               ^ variable.other
 #          ^ variable.other -variable.parameter
 #   ^ variable.parameter
+
+fn
+   [], acc -> acc
+#    ^ punctuation.separator.sequence
+   x, acc -> [x | acc]
+#   ^ punctuation.separator.sequence
+end
 
 (fn x -> fn y -> x + y end end).(1).(2)
 #                                   ^ punctuation.section.arguments.begin
@@ -567,9 +586,13 @@ x = \
 #  ^^ punctuation.separator.continuation -constant
 "
 
- # Comment
+# Not a continuation \
+#                    ^^ comment.line.number-sign -punctuation.separator.continuation
+
+
+## Comment
 #^^^^^^^^^^ comment.line.number-sign
-#^ punctuation.definition.comment
+#<- punctuation.definition.comment
 
 
 ## Stray closing tokens

@@ -434,6 +434,9 @@ key: "#{value}\"""
 #   ^ storage.type.string
 #^^^ punctuation.definition.string.end
 
+~r/function #Function<[0-9]\.[0-9]*\/
+#                                   ^ punctuation.definition.string.end
+
 
 ## Escape chars
 

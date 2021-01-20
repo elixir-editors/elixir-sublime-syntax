@@ -381,6 +381,23 @@ def f(%unquote(struct_name){id: id} = struct)
 #      ^^^^^^^ keyword.other.unquote
 #     ^ punctuation.section.mapping.begin
 
+def bool?(bool) when is_boolean(bool),
+#                                    ^ punctuation.separator.arguments
+    do: bool
+def bool?(bool)
+    when is_boolean(bool),
+# FIXME:
+                         ^ punctuation.separator.arguments
+    do: bool
+
+defp inspectable_end?(<<char, rest::binary>>)
+     when char in ?A..?Z
+     when char in ?a..?z
+     when char in ?0..?9
+     when char == ?_,
+                    ^ punctuation.separator.arguments
+     do: inspectable_end?(rest)
+
 def fun!() do end; def fun?() do end
 #                      ^^^^ entity.name.function
 #   ^^^^ entity.name.function
@@ -552,9 +569,13 @@ def __STACKTRACE__(), do: __STACKTRACE__
 #          ^^^^ entity.name.function
 #^^^^^^^^^ keyword.declaration.function.private
  defdelegate func(), to: Other, as: :func
+#                             ^ punctuation.separator.arguments
+#                  ^ punctuation.separator.arguments
 #            ^^^^ entity.name.function
 #^^^^^^^^^^^ keyword.declaration.function.public
  defdelegatep func(), to: Other, as: :func
+#                              ^ punctuation.separator.arguments
+#                   ^ punctuation.separator.arguments
 #             ^^^^ entity.name.function
 #^^^^^^^^^^^^ keyword.declaration.function.private
 
@@ -655,6 +676,8 @@ alias :erlang, as: Erlang
 alias :lists, as: List
 #     ^^^^^^ meta.path.modules constant.other.symbol
 alias :"Hello.World", as: HW, warn: false
+#                           ^ punctuation.separator.arguments
+#                   ^ punctuation.separator.arguments
 
 alias(:hello, as: )
 #                 ^ punctuation.section.arguments.end
@@ -664,12 +687,15 @@ alias(:hello, as: Hello)
 alias(:hello, warn: false, as: Hello)
 #                                   ^ punctuation.section.arguments.end
 #                              ^^^^^ entity.name.namespace
+#                        ^ punctuation.separator.arguments
 #                   ^^^^^ constant.language
+#           ^ punctuation.separator.arguments
 #     ^^^^^^ constant.other.symbol
 #    ^ punctuation.section.arguments.begin
 
 alias (A), as: A
 #              ^ entity.name.namespace
+#        ^ punctuation.separator.arguments
 #       ^ punctuation.section.group.end
 #     ^ punctuation.section.group.begin
 

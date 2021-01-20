@@ -84,12 +84,12 @@
 #     ^^^^ entity.name.type
 
 @type paren :: ( any | () )
-#                         ^ punctuation.definition.parens.end -invalid
-#                       ^ punctuation.definition.parens.end -invalid
-#                      ^ punctuation.definition.parens.begin
+#                         ^ punctuation.section.group.end -invalid
+#                       ^ punctuation.section.group.end -invalid
+#                      ^ punctuation.section.group.begin
 #                    ^ keyword.operator.union
 #                ^^^ support.type
-#              ^ punctuation.definition.parens.begin
+#              ^ punctuation.section.group.begin
 @type list :: [ any | [] ]
 #                        ^ punctuation.section.brackets.end -invalid
 #                      ^ punctuation.section.brackets.end -invalid
@@ -410,7 +410,7 @@ def run(), do: nil
 @spec String.t() =~ (String.t() | Regex.t()) :: boolean
 #                                               ^^^^^^^ support.type
 #                                            ^^ keyword.operator.colon
-#                                          ^ punctuation.definition.parens.end
+#                                          ^ punctuation.section.group.end
 #                                         ^ punctuation.section.arguments.end
 #                                        ^ punctuation.section.arguments.begin
 #                                       ^ storage.type.remote
@@ -418,7 +418,7 @@ def run(), do: nil
 #                             ^ punctuation.section.arguments.end
 #                            ^ punctuation.section.arguments.begin
 #                           ^ storage.type.remote
-#                   ^ punctuation.definition.parens.begin
+#                   ^ punctuation.section.group.begin
 #                ^^ variable.other.spec
 #              ^ punctuation.section.arguments.end
 #             ^ punctuation.section.arguments.begin
@@ -454,13 +454,13 @@ def run(), do: nil
 #         ^^^^^^ support.type
 #       ^ keyword.operator.union
         | (old_erlang_child_spec :: :supervisor.child_spec())
-#                                                           ^ punctuation.definition.parens.end
+#                                                           ^ punctuation.section.group.end
 #                                               ^^^^^^^^^^ storage.type.remote
 #                                              ^ punctuation.accessor.dot
 #                                   ^^^^^^^^^^^ constant.other.symbol
 #                                ^^ keyword.operator.colon
 #          ^^^^^^^^^^^^^^^^^^^^^ variable.other
-#         ^ punctuation.definition.parens.begin
+#         ^ punctuation.section.group.begin
 #       ^ keyword.operator.union
       ) ::
 #       ^^ keyword.operator.colon
@@ -468,6 +468,9 @@ def run(), do: nil
         on_start_child()
 #                     ^ punctuation.section.arguments.begin
 #       ^^^^^^^^^^^^^^ storage.type.custom
+
+@spec max(first, second) :: first | second when first: term, second: term
+#                                                          ^ punctuation.separator.sequence
 
 @spec get(named :: t) :: named :: t when t: named :: var
 #                                                    ^^^ storage.type.custom
@@ -580,10 +583,10 @@ def run(), do: nil
 #                 ^^^^^^^ keyword.other.unquote
 @spec (w | x) + (y | z) :: w | x | y | z
 #                  ^ keyword.operator.union
-#               ^ punctuation.definition.parens.begin
+#               ^ punctuation.section.group.begin
 #             ^ variable.other.spec
 #        ^ keyword.operator.union
-#     ^ punctuation.definition.parens.begin
+#     ^ punctuation.section.group.begin
 @spec [x | y] ++ z :: list
 #             ^^ variable.other.spec
 #        ^ keyword.operator.union
@@ -643,6 +646,11 @@ def run(), do: nil
  @spec func() :: @const | type
 #                         ^^^^ storage.type.custom
 #                 ^^^^^ variable.other.constant
+
+# FIXME:
+@spec "not a spec"
+ assert_raise CompileError, ~r"invalid"
+ ^^^^^^^^^^^^ -storage.type.custom
 
 @spec >> ;
 #     ^^ invalid.illegal.stray-closing-binary

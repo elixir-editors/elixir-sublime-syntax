@@ -168,6 +168,23 @@ end
 #  ^ punctuation.section.arguments.end
 #<- punctuation.section.block.end
 
+with _ <- 0,
+#          ^ punctuation.separator.arguments
+     {:ok, p} <-
+       Repo.insert(cs),
+#                     ^ punctuation.separator.arguments
+     title =
+       p.title,
+#             ^ punctuation.separator.arguments
+     "T" <> _ <- title do
+end
+
+quote(do: (acc, x -> x))
+#             ^ punctuation.separator.sequence
+quote(do: (1, 2, 3 when 4 when 5 -> 6))
+#              ^ punctuation.separator.sequence
+#           ^ punctuation.separator.sequence
+
 
 ## Built-ins
 
