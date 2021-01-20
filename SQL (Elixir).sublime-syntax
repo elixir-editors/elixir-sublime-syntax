@@ -11,37 +11,45 @@ contexts:
         \b(?>
           # Postgres jsonb functions.
           (
-            jsonb_to_tsvector | to_jsonb? | (?>array|row)_to_json |
-            jsonb?_build_array | jsonb?(?:_build)?_object |
-            jsonb?_(?>
-              array_(?>length|elements(?:_text)?) | each(?:_text)? |
-              extract_path(?:_text)? | object_keys | populate_record(?:set)? |
-              typeof | to_record(?:set)? | strip_nulls
-            ) |
-            jsonb_(?>set|insert|pretty|path_exists|path_match|path_query(?>_array|_first)?)
-          ) |
-          # Should always be keywords, but SQL.sublime-syntax doesn't think so yet.
-          (
-            any|all|array|cast|cross|column|collat(?:e|ion)|create|distinct|except|
-            fetch|full|group(?:\s+by)?|intersect|into|inner|isnull|i[sn]|ilike|
-            left|not|on|offset|outer|over|table|window
-          ) |
-          (?:(nulls) \s+ (last)) |
-          # Some common (Postgres) functions.
-          (
-            now | coalesce | nullif | greatest | least |
-            (?>array|string|jsonb?)_agg | random | row_number |
-            to_ts(?>query|vector) | setweight | replace
+            jsonb_to_tsvector|to_jsonb?|(?>array|row)_to_json
+          | jsonb?_build_array|jsonb?(?:_build)?_object
+          | jsonb?_(?>
+              array_(?>length|elements(?:_text)?)|each(?:_text)?
+            | extract_path(?:_text)?|object_keys|populate_record(?:set)?
+            | typeof|to_record(?:set)?|strip_nulls
+            )
+          | jsonb_(?>set|insert|pretty|path_exists|path_match|path_query(?>_array|_first)?)
           )
-        )\b |
+          # Should always be keywords, but SQL.sublime-syntax doesn't think so yet.
+        | (
+            any|all|array|cast|cross|column|collat(?:e|ion)|create|distinct|do(?=\s+update)
+          | except|excluded(?=\s*\.)|fetch|full|group(?:\s+by)?|intersect|into|inner|isnull
+          | i[sn]|ilike|left|not|on(?:\s+conflict)?|offset|outer|over|table|unnest|window
+          )
+        | (?:(nulls) \s+ (last))
+          # Some common (Postgres) functions.
+        | (
+            now|coalesce|nullif|greatest|least
+          | (?>array|string|jsonb?)_agg|random|row_number
+          | to_ts(?>query|vector)|setweight|replace
+          )
+        )\b
         # Various Postgres operators.
-        (::|\|?\|/|!!?|<<|>>|[%^@|&#~]) |
+        | (::|\|?\|/|!!?|<<|>>|[%^@|&#~])
         # Postgres type cast identifier.
-        (?<=::)\s*((?!\d)\w+) |
+        | (?<=::)\s*((?!\d)\w+)
         # Postgres jsonb operators.
-        (\\\\)(\?[|&]?)? | (->>?|\#>>?|@[@>?]|<@|\#-) |
+        | (\\\\)(\?[|&]?)? | (->>?|\#>>?|@[@>?]|<@|\#-)
         # Ecto argument placeholder.
-        ((?<!\w)\\?\?(?!\w))
+        | ((?<!\w)\\?\?(?!\w))
+        # Prepared statement parameter.
+        | (\$\d+)
+        # Database identifier.
+        | ((?!\d)\w+) (?=(?:\s*\.\s*(?!\d)\w+){2})
+        # Table and member identifier.
+        | ((?!\d)\w+) (\s*\.\s*) (\s*(?!\d)\w+)
+        # Accessor punctuation.
+        | (\.)
       captures:
         1: support.function.psql
         2: keyword.operator.sql
@@ -54,5 +62,21 @@ contexts:
         9: keyword.operator.jsonb.psql
         10: keyword.operator.jsonb.psql
         11: constant.other.placeholder.elixir
+        12: constant.other.parameter.sql
+        13: constant.other.database-name.sql
+        14: constant.other.table-name.sql
+        15: punctuation.accessor.dot.sql
+        16: variable.other.member.sql
+        17: punctuation.accessor.dot.sql
 
+    - include: comment
     - include: scope:source.sql
+
+  comment:
+    - match: /\*
+      scope: punctuation.definition.comment.sql
+      push:
+        - meta_scope: comment.block.c
+        - include: comment
+        - match: \*/
+          pop: true
