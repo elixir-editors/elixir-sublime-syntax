@@ -72,6 +72,7 @@ contexts:
     - include: capture
     - include: module_attribute
     - include: char_literal
+    - include: comma_and_skip_ws
     - include: line_continuation
 
   merge_conflict:
@@ -100,6 +101,7 @@ contexts:
             - include: block_end_pop
             - include: core_syntax
         - include: block_end_pop
+        - include: if_closing_token_pop
         # NB: no default parameters in fn blocks
         - match: \\\\(?!:(?![:'"[:alpha:]]))
           scope: keyword.operator.default.elixir invalid.illegal.default-operator.elixir
@@ -463,11 +465,11 @@ contexts:
 
   paren_type:
     - match: \(
-      scope: punctuation.definition.parens.begin.elixir
+      scope: punctuation.section.group.begin.elixir
       push:
         - meta_scope: meta.parens.elixir
         - match: \)
-          scope: punctuation.definition.parens.end.elixir
+          scope: punctuation.section.group.end.elixir
           pop: true
         - include: comma_and_skip_ws
         - include: named_type
@@ -1900,9 +1902,9 @@ contexts:
           scope: punctuation.section.access.end.elixir
           pop: true
         - include: if_closing_token_pop
-        - include: core_syntax
         - match: \,
           scope: invalid.illegal.separator.elixir
+        - include: core_syntax
 
   list:
     - match: \]
@@ -2015,6 +2017,7 @@ contexts:
     - match: ''
       set:
         - include: if_closing_tokens_pop
+        - include: arg_comma_and_skip_ws
         - include: core_syntax
         - include: if_non_space_pop
 
@@ -2241,8 +2244,8 @@ contexts:
     - match: |
         (?x)
         (?>
-          is_(?>atom|binary|bitstring|boolean|exception|float|function|integer|list|map(?:_key)?|nil|number|pid|port|reference|struct|tuple)
-        | abs|apply|binary_part|bit_size|byte_size|ceil|div|elem|exit|floor|(?>function|macro)_exported\?|get(?:_and_update)?_in|hd|inspect|length|make_ref|map_size|max|min|node|pop_in|put_(?>elem|in)|rem|round|self|send|spawn(?>_link|_monitor)?|struct!?|sum|tap|then|throw|tl|trunc|tuple_size|update_in
+          is_(?>atom|binary|list|integer|function|nil|pid|map(?:_key)?|tuple|boolean|bitstring|exception|float|number|port|reference|struct)
+        | abs|apply|binary_part|bit_size|byte_size|ceil|div|elem|exit|floor|(?>function|macro)_exported\?|get(?:_and_update)?_in|hd|inspect|length|make_ref|map_size|max|min|node|pop_in|put_(?>elem|in)|rem|round|self|send|spawn(?>_link|_monitor)?|struct!?|sum|tap|then|throw|tl|to_charlist|to_string|trunc|tuple_size|update_in
         ){{no_suffix_then_arguments}}
       scope: variable.function.built-in.elixir
       push: arguments_paren_or_ws_pop
@@ -2297,6 +2300,8 @@ contexts:
     - match: \,(?=\s*do{{not_id_key_suffix}})
       scope: invalid.illegal.separator.elixir
     - include: arg_comma_and_skip_ws
+    - match: (?<=[-+*!=<>|&@^~]|[^:]\band|[^:]\bor|[^:]\bwhen)$
+      push: if_non_space_pop
     - include: last_id_argument
     - include: do_block_pop
     - include: if_closing_tokens_pop
