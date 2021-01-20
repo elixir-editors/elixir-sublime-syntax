@@ -2,8 +2,20 @@
 
 ## SQL fragments
 
+fragment()
+#        ^ punctuation.section.arguments.end
+#       ^ punctuation.section.arguments.begin
 fragment("")
-#        ^^ string.quoted.double.elixir
+#        ^^ meta.string.elixir string.quoted.double.elixir
+fragment("""
+#        ^^^ punctuation.definition.string.begin.elixir
+#        ^^^ string.quoted.triple.double.elixir
+#        ^^^^ meta.string.elixir
+ """)
+#^^^ meta.string.elixir string.quoted.triple.double.elixir punctuation.definition.string.end.elixir
+fragment("INSERT INTO table AS t (a, b) VALUES ($1, $2)")
+#                                                   ^^ constant.other.parameter.sql
+#                                               ^^ constant.other.parameter.sql
 fragment("?"); fragment("\?"); fragment("\\?")
 #                                          ^ keyword.operator.jsonb.psql
 #                                        ^^ constant.character.escape.char.elixir
@@ -66,6 +78,10 @@ fragment(
 fragment("""
   jsonb_to_tsvector('simple', content, '["string", "numeric"]')
 # ^^^^^^^^^^^^^^^^^ support.function.psql
+""")
+
+fragment("""\
+#           ^ invalid.illegal.opening-heredoc
 """)
 
 @sql "..."
