@@ -47,6 +47,7 @@ contexts:
     - include: merge_conflict
 
   core_syntax:
+    - include: comma_and_skip_ws
     - include: dot_accessor
     - include: item_access
     - include: list
@@ -72,7 +73,6 @@ contexts:
     - include: capture
     - include: module_attribute
     - include: char_literal
-    - include: comma_and_skip_ws
     - include: line_continuation
 
   merge_conflict:
@@ -196,6 +196,7 @@ contexts:
         - match: \)
           scope: punctuation.definition.parameters.end.elixir
           set: arguments_rest_pop
+        - include: if_closing_token_pop
         - include: parameters
     - match: (?=,)
       set: arguments_rest_pop
@@ -215,9 +216,6 @@ contexts:
       captures:
         1: variable.parameter.unused.elixir
         2: variable.parameter.elixir
-    - match: \,(?=\s*\))
-      scope: invalid.illegal.separator.elixir
-    - include: comma_and_skip_ws
     - match: \\\\(?!:(?![:'"[:alpha:]]))
       scope: keyword.operator.default.elixir
       push:
@@ -387,7 +385,7 @@ contexts:
       scope: punctuation.accessor.dot.elixir
       push:
         - include: unquote_call_pop
-        - match: '{{identifier}}'
+        - match: '{{identifier}}{{not_id_key_suffix}}'
           scope: storage.type.remote.elixir
           set: type_arguments_or_pop
         - include: if_non_space_pop
@@ -404,6 +402,7 @@ contexts:
     - include: if_empty_pop
 
   named_type:
+    - include: block_or_keyword
     - match: '{{identifier}}(?=\s*::(?!:))'
       scope: variable.other.named-type.elixir
 
@@ -420,16 +419,16 @@ contexts:
       pop: true
     - match: (?=\S)
       set:
-        - include: named_type
         - match: (?=$|\|(?![:|>])|::(?!:)|when{{not_id_key_suffix}})
           set: [next_types_pop, if_non_space_pop]
         # NB: we can't prevent matching more than one type expression.
+        - include: named_type
         - include: types_pop
 
   next_types_pop:
     - include: comments
     - match: when{{not_id_key_suffix}}
-      scope: keyword.other.when.elixir
+      scope: keyword.operator.when.elixir
       set: [when_types_clause_pop, if_non_space_pop]
     - match: (\|(?![:|>]))|(::(?!:))
       captures:
@@ -440,15 +439,14 @@ contexts:
     - include: if_non_space_or_eol_pop
 
   union_types_eol_pop:
-    - include: named_type
     - match: (?=\|(?![:|>])|::(?!:)|when{{not_id_key_suffix}})
       pop: true
+    - include: named_type
     - include: types_pop
     - include: if_closing_tokens_pop
     - include: if_non_space_or_eol_pop
 
   when_types_clause_pop:
-    - include: comma_and_skip_ws
     - include: comments
     - include: atom_keyword
     - match: (?<=[\w"'@]:)
@@ -471,7 +469,6 @@ contexts:
         - match: \)
           scope: punctuation.section.group.end.elixir
           pop: true
-        - include: comma_and_skip_ws
         - include: named_type
         - include: types_pop
 
@@ -483,7 +480,6 @@ contexts:
         - match: \}
           scope: punctuation.section.sequence.end.elixir
           pop: true
-        - include: comma_and_skip_ws
         - include: named_type
         - include: types_pop
 
@@ -495,7 +491,6 @@ contexts:
         - match: \]
           scope: punctuation.section.brackets.end.elixir
           pop: true
-        - include: comma_and_skip_ws
         - include: named_type
         - include: types_pop
 
@@ -519,7 +514,6 @@ contexts:
         - match: \}
           scope: punctuation.section.mapping.end.elixir
           pop: true
-        - include: comma_and_skip_ws
         - include: named_type
         - include: types_pop
     - include: if_non_space_or_eol_pop
@@ -579,7 +573,6 @@ contexts:
       scope: string.other.binary.elixir punctuation.definition.string.end.elixir
       pop: true
     - include: if_closing_token_pop
-    - include: comma_and_skip_ws
     - match: ::(?!:)
       scope: keyword.operator.colon.elixir
       push:
@@ -1797,6 +1790,7 @@ contexts:
         - include: core_syntax
 
   comma_and_skip_ws:
+    - include: invalid_comma
     - match: \,
       scope: punctuation.separator.sequence.elixir
       push: invalid_comma_or_non_space_pop
@@ -1804,6 +1798,10 @@ contexts:
   arg_comma_and_skip_ws:
     - match: \,
       scope: punctuation.separator.arguments.elixir
+      push: invalid_comma_or_non_space_pop
+
+  invalid_comma:
+    - match: (?=,\s*(?>[,;)]|%>|do{{not_id_key_suffix}}|{{closing_keyword}}))
       push: invalid_comma_or_non_space_pop
 
   invalid_comma_or_non_space_pop:
@@ -1886,7 +1884,6 @@ contexts:
           scope: punctuation.section.sequence.end.elixir
           pop: true
         - include: if_closing_token_pop
-        - include: comma_and_skip_ws
         - include: core_syntax
 
   item_access:
@@ -1902,8 +1899,8 @@ contexts:
           scope: punctuation.section.access.end.elixir
           pop: true
         - include: if_closing_token_pop
-        - match: \,
-          scope: invalid.illegal.separator.elixir
+        - match: (?=\,)
+          push: invalid_comma_or_non_space_pop
         - include: core_syntax
 
   list:
@@ -1917,7 +1914,6 @@ contexts:
           scope: punctuation.section.brackets.end.elixir
           pop: true
         - include: if_closing_token_pop
-        - include: comma_and_skip_ws
         - include: cons_operator
         - include: core_syntax
 
@@ -1945,7 +1941,6 @@ contexts:
           scope: punctuation.section.mapping.end.elixir
           pop: true
         - include: if_closing_token_pop
-        - include: comma_and_skip_ws
         - include: cons_operator
         - include: core_syntax
     - include: if_non_space_or_eol_pop
@@ -2202,10 +2197,9 @@ contexts:
     - include: arg_comma_and_skip_ws
     - include: core_syntax
 
-  comment:
+  opaque_struct:
     # Attempt highlighting e.g. #PID<0.1.0>, #Decimal<1.0> etc.
-    # Disabled for now using (?=_).
-    - match: '(?=_)#(?={{module_name}}(?:\s*\.\s*{{module_name}})*<)'
+    - match: '#(?={{module_name}}(?:\s*\.\s*{{module_name}})*<)'
       scope: punctuation.section.mapping.elixir
       comment: opaque struct
       push:
@@ -2219,6 +2213,9 @@ contexts:
               pop: true
             # Text between <> brackets isn't always valid Elixir code.
             # - include: core_syntax
+
+  comment:
+    # - include: opaque_struct
     - match: (#).*\n?
       scope: comment.line.number-sign.elixir
       captures:
@@ -2297,8 +2294,7 @@ contexts:
         - include: arguments_rest_pop
 
   arguments_rest_pop:
-    - match: \,(?=\s*do{{not_id_key_suffix}})
-      scope: invalid.illegal.separator.elixir
+    - include: invalid_comma
     - include: arg_comma_and_skip_ws
     - match: (?<=[-+*!=<>|&@^~]|[^:]\band|[^:]\bor|[^:]\bwhen)$
       push: if_non_space_pop
@@ -2360,7 +2356,7 @@ contexts:
         1: keyword.context.block.end.elixir
         2: keyword.context.block.do.elixir
         3: keyword.declaration.function.elixir
-        4: keyword.operator.word.elixir
+        4: keyword.operator.when.elixir
         5: constant.language.elixir
         6: keyword.operator.logical.elixir
         7: keyword.control.conditional.else.elixir
