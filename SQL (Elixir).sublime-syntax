@@ -24,7 +24,7 @@ contexts:
         | (
             any|all|array|cast|cross|column|collat(?:e|ion)|create|distinct|do(?=\s+update)
           | except|excluded(?=\s*\.)|fetch|full|group(?:\s+by)?|intersect|into|inner|isnull
-          | i[sn]|ilike|left|not|on(?:\s+conflict)?|offset|outer|over|table|unnest|window
+          | i[sn]|ilike|left|not|on(?:\s+conflict)?|offset|outer|over|returning|table|unnest|window
           )
         | (?:(nulls) \s+ (last))
           # Some common (Postgres) functions.
