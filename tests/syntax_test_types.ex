@@ -159,6 +159,12 @@
 #                            ^^^^^ constant.language
 #                ^^^^ constant.language
 #     ^^^ constant.language
+@type t :: when :: any
+#          ^^^^ keyword.operator.when -variable.other.named-type
+@type t :: {else :: any, nil :: nil, when :: any}
+#                                    ^^^^ keyword.operator.when -variable.other.named-type
+#                        ^^^ constant.language -variable.other.named-type
+#           ^^^^ keyword.control.conditional.else -variable.other.named-type
 
 @type; @typep; @opaque
 #               ^^^^^^ variable.other

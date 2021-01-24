@@ -407,6 +407,10 @@ end[]
 #     ^ punctuation.accessor.arity
 # ^^^^ variable.other.capture
 #^ keyword.operator.capture
+ &__MODULE__/0
+#           ^ punctuation.accessor.arity
+# ^^^^^^^^^^ variable.other.capture
+#^ keyword.operator.capture
 
  &unquote(:apply)/2
 #                ^ punctuation.accessor.arity
@@ -433,7 +437,7 @@ end[]
 ## Elixir keywords
 
  when
-#^^^^ keyword.operator.word
+#^^^^ keyword.operator.when
  a not in b and c or d
 #                 ^^ keyword.operator.logical
 #           ^^^ keyword.operator.logical

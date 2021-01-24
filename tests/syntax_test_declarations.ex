@@ -190,12 +190,18 @@ defimpl IEx.Info, for: [Date, Time, NaiveDateTime] do end
 
 def
 #<- variable.other
+def , do end
+#   ^ invalid.illegal.separator
 def()
 #   ^ punctuation.section.arguments.end
 #  ^ punctuation.section.arguments.begin -punctuation.definition.parameters.begin
 def(())
 #    ^ -punctuation.section.group.end
 #   ^ -punctuation.section.group.begin punctuation.definition.parameters.begin
+def ()(a) do end
+#      ^ variable.parameter
+#     ^ punctuation.definition.parameters.begin
+#   ^ punctuation.definition.parameters.begin
 def do end
 #         ^ punctuation.section.arguments.end
 #      ^^^ punctuation.section.block.end
@@ -285,7 +291,7 @@ def not false, do: true
 #       ^^^^^ constant.language
 #   ^^^ entity.name.function
 def when(x), do: x
-#   ^^^^ keyword.operator.word -entity.name.function
+#   ^^^^ keyword.operator.when -entity.name.function
 def not x when x, do: false
 #              ^ variable.other -variable.parameter
 def not x, do: not x
@@ -354,6 +360,27 @@ def [left] ++ [_ | _] = right, do: [left | right]
 #                  ^ variable.parameter
 #              ^ variable.parameter
 #    ^^^^ variable.parameter
+
+def {}: :{}
+#   ^^ -entity.name.function
+def {}, do: :{}
+#   ^^ entity.name.function
+def {a}
+#     ^ entity.name.function
+#    ^ variable.parameter
+#   ^ entity.name.function
+def {[a], (b), {c}}
+#                 ^ entity.name.function
+#                ^ punctuation.section.sequence.end
+#               ^ variable.parameter
+#              ^ punctuation.section.sequence.begin
+#          ^ variable.parameter
+#     ^ variable.parameter
+#   ^ entity.name.function
+def {}(a) do
+#     ^ punctuation.section.group.begin -punctuation.definition.parameters.begin
+end
+
 def unquote(head), do: :x
 #                ^ punctuation.separator.arguments
 #           ^^^^ variable.other
@@ -584,21 +611,25 @@ def __STACKTRACE__(), do: __STACKTRACE__
 
 alias List
 #         ^ punctuation.section.arguments.end
-#     ^^^^ meta.path.modules constant.other.module
+#     ^^^^ constant.other.module
 #    ^ punctuation.section.arguments.begin
 #<- keyword.control.import
 alias List, as: L
-#               ^ meta.path.modules entity.name.namespace
+#               ^ entity.name.namespace
 #         ^ punctuation.separator.arguments
-#     ^^^^ meta.path.modules constant.other.module
+#     ^^^^ constant.other.module
 alias List,
 #         ^ punctuation.separator.arguments
       as: L
 #          ^ punctuation.section.arguments.end
 #         ^ entity.name.namespace
+alias List,
+      as:
+      L
+#     ^ entity.name.namespace
 alias List
 , as: L
-#     ^ constant.other.module
+#     ^ constant.other.module -entity.name.namespace
 alias __MODULE__, as: MODULE
 #                     ^^^^^^ entity.name.namespace
 #     ^^^^^^^^^^ variable.language.special-form
@@ -606,7 +637,6 @@ alias MODULE, as: __MODULE__
 #                 ^^^^^^^^^^ variable.language.special-form
 alias __MODULE__.B.{ C }
 #     ^^^^^^^^^^ variable.language.special-form
-#     ^^^^^^^^^^^^^^^^^^ meta.path.modules
 alias unquote(path), as: Alias
 #                        ^^^^^ entity.name.namespace
 #             ^^^^ variable.other
@@ -620,9 +650,20 @@ alias unquote(path).Live, as: L
 #                             ^ entity.name.namespace
 #             ^^^^ variable.other
 #     ^^^^^^^ keyword.other.unquote
+alias A.{unquote(B).unquote(:"#{C}"), D.E}
+#                                       ^ constant.other.module
+#                                      ^ punctuation.accessor.dot
+#                                     ^ constant.other.module
+#                                   ^ punctuation.separator.sequence
+#                                 ^ constant.other.symbol
+#                               ^ constant.other.module
+#                           ^^ constant.other.symbol
+#                  ^ punctuation.accessor.dot
+#                ^ constant.other.module
+#        ^^^^^^^ keyword.other.unquote
+
 alias ExUnit.EventManager, as: EM
 #                              ^^ entity.name.namespace
-#     ^^^^^^^^^^^^^^^^^^^ meta.path.modules
 alias A.B.{C, D}
 #              ^ punctuation.section.braces.end
 #          ^ constant.other.module
@@ -633,7 +674,6 @@ alias A. { B . { C , D } }
 #                ^ constant.other.module
 #            ^ punctuation.accessor.dot
 #      ^ punctuation.accessor.dot
-#     ^^^^^^^^^^^^^^^^^^^^ meta.path.modules
 alias A.B.{
 #         ^ punctuation.section.braces.begin
    # X
@@ -654,6 +694,10 @@ alias A.B.{
 #  ^ punctuation.section.braces.end
 }
 #<- punctuation.section.braces.end
+alias A.{:"B.C"}
+#              ^ punctuation.section.braces.end
+#        ^^^^^^ constant.other.symbol
+#       ^ punctuation.section.braces.begin
 alias A.B, as: C, warn: false
 #              ^ entity.name.namespace
 #       ^ constant.other.module
@@ -674,7 +718,7 @@ alias :erlang, as: Erlang
 #                  ^^^^^^ entity.name.namespace
 #     ^^^^^^^ constant.other.symbol
 alias :lists, as: List
-#     ^^^^^^ meta.path.modules constant.other.symbol
+#     ^^^^^^ constant.other.symbol
 alias :"Hello.World", as: HW, warn: false
 #                           ^ punctuation.separator.arguments
 #                   ^ punctuation.separator.arguments
@@ -711,6 +755,9 @@ alias do end
 #<- keyword.control.import
 
 [alias A]
+#       ^ punctuation.section.brackets.end
+#      ^ constant.other.module
+#<- punctuation.section.brackets.begin
 (alias A)
 #       ^ punctuation.section.group.end
 #      ^ constant.other.module
@@ -732,7 +779,6 @@ alias Elixir.unquote(Kernel), as: K
 
 require EEx.Tokenizer, as: T
 #                          ^ entity.name.namespace
-#       ^^^^^^^^^^^^^ meta.path.modules
 #<- keyword.control.import
 require :"Elixir.Stream.Reducers", as: R
 #                                      ^ entity.name.namespace
