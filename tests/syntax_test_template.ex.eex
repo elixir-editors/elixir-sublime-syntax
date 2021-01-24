@@ -40,3 +40,36 @@ alias <%= @web_namespace %>.Router.Helpers, as: Routes
 "<%= string %>"
 #           ^ entity.name.tag.ex.eex
 # ^^ entity.name.tag.ex.eex
+
+M1.<%= M2 %>.f()
+#              ^ punctuation.section.arguments.end
+#             ^ punctuation.section.arguments.begin
+#            ^ variable.function
+#           ^ punctuation.accessor.dot
+#         ^ entity.name.tag.ex.eex
+#      ^^ constant.other.module
+#   ^^ entity.name.tag.ex.eex
+# ^ punctuation.accessor.dot
+def asd({a,}) do
+end
+
+x.<%= :member %>()
+#             ^ entity.name.tag.ex.eex
+#     ^^^^^^^ constant.other.symbol
+#  ^^ entity.name.tag.ex.eex
+#^ punctuation.accessor.dot
+                 ^ punctuation.section.arguments.end
+                ^ punctuation.section.arguments.begin
+
+@type <%= :t %> :: any
+#            ^ entity.name.tag.ex.eex
+#      ^^ entity.name.tag.ex.eex
+                   ^^^ support.type
+
+@spec <%= :name %>(any)
+#                  ^^^ support.type
+#               ^ entity.name.tag.ex.eex
+#      ^^ entity.name.tag.ex.eex
+                      ^ punctuation.definition.parameters.end
+                  ^ punctuation.definition.parameters.begin
+

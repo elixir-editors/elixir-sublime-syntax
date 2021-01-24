@@ -493,6 +493,22 @@ def run(), do: nil
 #                             ^^^^^^^ storage.type.custom
 #                        ^^^ support.type
 #         ^^^^^^^^^^^^^ storage.type.custom
+@spec func(arg) :: arg
+#                  ^^^ storage.type.custom
+      when
+#     ^^^^ keyword.operator.when
+           arg:
+#          ^^^^ constant.other.keyword
+             var
+#            ^^^ support.type
+             | var()
+#                  ^ punctuation.section.arguments.end
+#                 ^ punctuation.section.arguments.begin
+#              ^^^ storage.type.custom -support.type
+#            ^ keyword.operator.union
+             | atom
+#              ^^^^ support.type
+#            ^ keyword.operator.union
 
 @spec any!(any!) :: any!
 #                   ^^^^ storage.type.custom

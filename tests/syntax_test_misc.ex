@@ -236,6 +236,9 @@ end
 
 []
 #<- punctuation.section.brackets -punctuation.section.access
+<%= [a: :a] %>[]
+#              ^ punctuation.section.access.end
+#             ^ punctuation.section.access.begin
 ["[]":[]][[]]
 #         ^ punctuation.section.brackets.begin
 #        ^ punctuation.section.access.begin
@@ -599,6 +602,45 @@ x = \
 #<- punctuation.definition.comment
 
 
+## Invalid commas
+
+, do end
+#<- invalid.illegal.separator
+, end
+#<- invalid.illegal.separator
+, else
+#<- invalid.illegal.separator
+, after
+#<- invalid.illegal.separator
+, rescue
+#<- invalid.illegal.separator
+, catch
+#<- invalid.illegal.separator
+, when
+#<- invalid.illegal.separator
+, ;
+#<- invalid.illegal.separator
+, %>
+#<- invalid.illegal.separator
+
+[a,] [b,,] {c,} {c,,} (d,) (e,,) <<"",>> <<"",,>>
+#                                            ^^ invalid.illegal.separator
+#                                    ^ punctuation.separator.sequence
+#                            ^^ invalid.illegal.separator
+#                       ^ invalid.illegal.separator
+#                 ^^ invalid.illegal.separator
+#            ^ punctuation.separator.sequence
+#      ^^ invalid.illegal.separator
+# ^ punctuation.separator.sequence
+
+assert x,
+, "msg"
+#<- invalid.illegal.separator
+
+fn a,,b -> end
+#   ^^ invalid.illegal.separator
+
+
 ## Stray closing tokens
 
 ( ( ) )
@@ -789,17 +831,17 @@ def f(%{ << }) >>
 #              ^^ invalid.illegal.stray-closing-binary
 
 <%= ( %> <% ) %>
-#           ^ punctuation.section.group.end
+#           ^ invalid.illegal.stray-closing-parenthesis
 #   ^ punctuation.section.group.begin
 <%= [ %> <% ] %>
-#           ^ punctuation.section.brackets.end
+#           ^ invalid.illegal.stray-closing-bracket
 #   ^ punctuation.section.brackets.begin
 <%= { %> <% } %>
-#           ^ punctuation.section.sequence.end
+#           ^ invalid.illegal.stray-closing-brace
 #   ^ punctuation.section.sequence.begin
 <%= %{ %> <% } %>
-#            ^ punctuation.section.mapping.end
+#            ^ invalid.illegal.stray-closing-brace
 #    ^ punctuation.section.mapping.begin
 <%= << %> <% >> %>
-#            ^^ punctuation.definition.string.end
+#            ^^ invalid.illegal.stray-closing-binary
 #   ^^ punctuation.definition.string.begin
