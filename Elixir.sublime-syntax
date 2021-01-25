@@ -551,7 +551,7 @@ contexts:
         | (0 (o) [0-7] (?:_?[0-7])*)
         | (\d(?:_?\d)* (\.) \d(?:_?\d)* (?:[eE] [-+]? \d(?:_?\d)*)?)
         | (\d(?:_?\d)*)
-        )(\w*)
+        )([_\d]*)
       comment: (?:_?\d)* because double or trailing '_' are invalid
       captures:
         1: constant.numeric.hex.elixir
@@ -2093,27 +2093,29 @@ contexts:
   ## Captures
 
   capture:
-    - match: (&0+(?!\d))|(&\d+)
+    - match: (&)\s*(\d(?:_?\d)*)(?!\.(?!\.))
       captures:
-        1: invalid.illegal.capture.elixir
+        1: punctuation.definition.capture.elixir constant.other.capture.elixir
         2: constant.other.capture.elixir
     - match: \&
       scope: keyword.operator.capture.elixir
-      push: func_capture_pop
-
-  func_capture_pop:
-    - include: atom_symbol
-    - include: module_name
-    - include: unquote_call
-    - include: dot_operator
-    - include: func_arity_pop
-    - match: '{{member}}(?=\s*(/)\s*(\d+))'
-      scope: variable.other.capture.elixir
-      set: func_arity_pop
-    - include: if_non_space_or_eol_pop
+      push:
+        - match: (?=(?>do|fn|true|false|nil){{not_id_key_suffix}}|{{closing_keyword}})
+          pop: true
+        - match: (?=\S)
+          set:
+            - include: atom_symbol
+            - include: module_name
+            - include: unquote_call
+            - include: func_arity_pop
+            - include: dot_operator
+            - match: '{{member}}(?=\s*(/)\s*(\d(?:_?\d)*)(?!\.(?!\.)))'
+              scope: variable.other.capture.elixir
+              set: func_arity_pop
+            - include: if_non_space_or_eol_pop
 
   func_arity_pop:
-    - match: (/)\s*(\d+)
+    - match: (/)\s*(\d(?:_?\d)*)(?!\.(?!\.))
       captures:
         1: punctuation.accessor.arity.elixir
         2: constant.numeric.integer.decimal.elixir
@@ -2227,7 +2229,7 @@ contexts:
         (?x)
         (?>
           is_(?>atom|binary|list|integer|function|nil|pid|map(?:_key)?|tuple|boolean|bitstring|exception|float|number|port|reference|struct)
-        | abs|apply|binary_part|bit_size|byte_size|ceil|div|elem|exit|floor|(?>function|macro)_exported\?|get(?:_and_update)?_in|hd|inspect|length|make_ref|map_size|max|min|node|pop_in|put_(?>elem|in)|rem|round|self|send|spawn(?>_link|_monitor)?|struct!?|sum|tap|then|throw|tl|to_charlist|to_string|trunc|tuple_size|update_in
+        | abs|apply|binary_part|bit_size|byte_size|ceil|destructure|div|elem|exit|floor|(?>function|macro)_exported\?|get(?:_and_update)?_in|hd|inspect|length|make_ref|map_size|max|min|node|pop_in|put_(?>elem|in)|rem|round|self|send|spawn(?>_link|_monitor)?|struct!?|sum|tap|then|throw|tl|to_charlist|to_string|trunc|tuple_size|update_in
         ){{no_suffix_then_arguments}}
       scope: variable.function.built-in.elixir
       push: arguments_paren_or_ws_pop
@@ -2355,7 +2357,7 @@ contexts:
           (if|unless|case|cond|with)
         | (for)
         | (quote)
-        | (defstruct|defrecord|defexception|defoverridable)
+        | (defstruct|defrecordp?|defexception|defoverridable)
         | (import|require|use)
         | (receive)
         | (try)
