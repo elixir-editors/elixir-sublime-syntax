@@ -73,3 +73,7 @@ x.<%= :member %>()
                       ^ punctuation.definition.parameters.end
                   ^ punctuation.definition.parameters.begin
 
+ &<%= %>
+#     ^ entity.name.tag.ex.eex
+#  ^^ entity.name.tag.ex.eex
+#^ keyword.operator.capture

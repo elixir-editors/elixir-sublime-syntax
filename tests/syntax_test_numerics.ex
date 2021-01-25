@@ -54,13 +54,13 @@ _123
 #                                                          ^^^ invalid.illegal.numeric
 #                                                   ^ invalid.illegal.numeric
 #                                          ^ invalid.illegal.numeric
-#                                 ^^^ invalid.illegal.numeric
-#                           ^^ invalid.illegal.numeric
-#                     ^^ invalid.illegal.numeric
-#                ^ invalid.illegal.numeric
-#           ^ invalid.illegal.numeric
-#     ^^ invalid.illegal.numeric
-# ^^ invalid.illegal.numeric
+#                                 ^^^ -constant.numeric
+#                           ^^ -constant.numeric
+#                     ^^ -constant.numeric
+#                ^ -constant.numeric
+#           ^ -constant.numeric
+#     ^^ -constant.numeric
+# ^^ -constant.numeric
 
  0_0.0
 #^^^^^ constant.numeric.float
@@ -79,12 +79,12 @@ _123.456
 
  0b 0b_ 0b0_ 0b0_0__0 0b0__0 0b2 0b0_2
 #                                   ^^ invalid.illegal.numeric
-#                             ^^ invalid.illegal.numeric
+#                             ^^ -constant.numeric
 #                        ^^^ invalid.illegal.numeric
 #                 ^^^ invalid.illegal.numeric
 #          ^ invalid.illegal.numeric
-#    ^^ invalid.illegal.numeric
-# ^ invalid.illegal.numeric
+#    ^^ -constant.numeric
+# ^ -constant.numeric
 
  0b00..0b01
 #      ^^^^ constant.numeric
@@ -101,12 +101,12 @@ _123.456
 #^^^^^^^^^^^^^^^^^^^ constant.numeric
 
  0x 0x_ 0x0_ 0x0__0 0xG 0x0_G
-#                          ^^ invalid.illegal.numeric
-#                    ^^ invalid.illegal.numeric
+#                          ^ invalid.illegal.numeric
+#                    ^^ -constant.numeric
 #               ^^^ invalid.illegal.numeric
 #          ^ invalid.illegal.numeric
-#    ^^ invalid.illegal.numeric
-# ^ invalid.illegal.numeric
+#    ^^ -constant.numeric
+# ^ -constant.numeric
 
  0x00..0x01
 #      ^^^^ constant.numeric
@@ -127,10 +127,10 @@ _123.456
  0o 0o_ 0o0_ 0o8 0o0_8 0o0_7_8
 #                           ^^ invalid.illegal.numeric
 #                   ^^ invalid.illegal.numeric
-#             ^^ invalid.illegal.numeric
+#             ^^ -constant.numeric
 #          ^ invalid.illegal.numeric
-#    ^^ invalid.illegal.numeric
-# ^ invalid.illegal.numeric
+#    ^^ -constant.numeric
+# ^ -constant.numeric
 
  0o00..0o01
 #      ^^^^ constant.numeric

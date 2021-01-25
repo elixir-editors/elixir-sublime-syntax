@@ -236,9 +236,9 @@ end
 
 []
 #<- punctuation.section.brackets -punctuation.section.access
-<%= [a: :a] %>[]
-#              ^ punctuation.section.access.end
-#             ^ punctuation.section.access.begin
+<%=[a: :a]%>[]
+#            ^ punctuation.section.access.end
+#           ^ punctuation.section.access.begin
 ["[]":[]][[]]
 #         ^ punctuation.section.brackets.begin
 #        ^ punctuation.section.access.begin
@@ -368,24 +368,185 @@ end[]
 #    ^^ keyword.operator.range
 #  ^^ constant.other.capture
 
+ &1/2
+#  ^ -punctuation.accessor.arity
+#^^ constant.other.capture
+
  &:erlang.apply/2
 #              ^ punctuation.accessor.arity
 #         ^^^^^ variable.other.capture
 #        ^ punctuation.accessor.dot
 
- &Module.{}/0
-#          ^ punctuation.accessor.arity
-#        ^^ variable.other.capture
+ &<%= num %>
+#          ^ keyword.operator.comparison
+#     ^^^ variable.other
+# ^ keyword.operator.comparison
+#^ keyword.operator.capture
 
- &//2; &</2; &<>/2; &../2; &.../2
-#                      ^ punctuation.accessor.arity
+ & 0.1
+#  ^^^ constant.numeric.float
+ &func/0.1
+#      ^^^ constant.numeric.float
+#     ^ keyword.operator.arithmetic
+# ^^^^ variable.other
+ & 0<=&1and&1<=255
+#              ^^^ constant.numeric
+#            ^^ keyword.operator.comparison
+#          ^^ constant.other.capture
+#       ^^^ keyword.operator.logical
+#     ^^ constant.other.capture
+#   ^^ keyword.operator.comparison
+#  ^ constant.other.capture -constant.numeric
+#^ constant.other.capture
+
+ &a:/2
+#   ^ keyword.operator.arithmetic
+# ^^ constant.other.keyword
+
+ &M.do/2; &M.end/2; &M.else/2; &M.after/2; &M.rescue/2; &M.catch/2
+#                                                          ^^^^^ variable.other.capture
+#                                             ^^^^^^ variable.other.capture
+#                                 ^^^^^ variable.other.capture
+#                      ^^^^ variable.other.capture
+#            ^^^ variable.other.capture
+#   ^^ variable.other.capture
+
+ &fn/2 end; &do/2; &end/2; &else/2; &after/2; &rescue/2; &catch/2
+#                                                         ^^^^^ -variable.other.capture
+#                                              ^^^^^^ -variable.other.capture
+#                                    ^^^^^ -variable.other.capture
+#                           ^^^^ -variable.other.capture
+#                   ^^^ -variable.other.capture
+#            ^^ -variable.other.capture
+# ^^^^^^^^ -variable.other.capture
+ &=~/2; &=/2; &==/2; &===/2; &!/1; &!=/2; &!==/2; &<<</2; &>>>/2
+#                                                          ^^^ variable.other.capture
+#                                                  ^^^ variable.other.capture
+#                                          ^^^ variable.other.capture
+#                                   ^^ variable.other.capture
+#                             ^ variable.other.capture
+#                     ^^^ variable.other.capture
+#              ^^ variable.other.capture
+#        ^ variable.other.capture
+# ^^ variable.other.capture
+ &~~~/2; &::/2; &<~>/2; &<~/2; &<<~/2; &~>/2; &~>>/2; &|>/2; &<|>/2
+#                                                             ^^^ variable.other.capture
+#                                                      ^^ variable.other.capture
+#                                              ^^^ variable.other.capture
+#                                       ^^ variable.other.capture
+#                               ^^^ variable.other.capture
+#                        ^^ variable.other.capture
+#                ^^^ variable.other.capture
+#         ^^ variable.other.capture
+# ^^^ variable.other.capture
+ &//2; &\\/2; &*/2; &../2; &.../2; &<=/2; &>=/2; &---/2; &-/2; &</2
+#                                                               ^ variable.other.capture
+#                                                         ^ variable.other.capture
+#                                                 ^^^ variable.other.capture
+#                                          ^^ variable.other.capture
+#                                   ^^ variable.other.capture
+#                           ^^^ variable.other.capture
 #                    ^^ variable.other.capture
-#               ^ punctuation.accessor.arity
-#             ^^ variable.other.capture
-#        ^ punctuation.accessor.arity
-#       ^ variable.other.capture
-#  ^ punctuation.accessor.arity
+#              ^ variable.other.capture
+#       ^^ variable.other.capture
 # ^ variable.other.capture
+ &<>/2; &<-/2; &->/2; &--/2; &>/2; & &/1; & &&/2; & &&&/2; &+/2; &++/2
+#                                                                 ^^ variable.other.capture
+#                                                           ^ variable.other.capture
+#                                                   ^^^ variable.other.capture
+#                                           ^^ variable.other.capture
+#                                    ^ variable.other.capture
+#                             ^ variable.other.capture
+#                      ^^ variable.other.capture
+#               ^^ variable.other.capture
+#        ^^ variable.other.capture
+# ^^ variable.other.capture
+ &+++/2; &|/2; &||/2; &|||/2; &@/1; &^/1; &^^^/2
+#                                          ^^^ variable.other.capture
+#                                    ^ variable.other.capture
+#                              ^ variable.other.capture
+#                      ^^^ variable.other.capture
+#               ^^ variable.other.capture
+#         ^ variable.other.capture
+# ^^^ variable.other.capture
+
+ &&/1; &&&/2; &&&&/2; &;/2; &./2; &^^/2
+#                                  ^^ -variable.other.capture
+#                            ^ -variable.other.capture
+#                      ^ -variable.other.capture
+#              ^^^ -variable.other.capture
+#       ^^ -variable.other.capture
+# ^ -variable.other.capture
+
+# The tuple function is rather an exception and normally used only in alias expressions.
+ &{}/1; &Kernel.{}/1
+#                 ^ punctuation.accessor.arity
+#               ^^ variable.other.capture
+#   ^ punctuation.accessor.arity
+# ^^ variable.other.capture
+
+ &true/2; &false/2; &nil/2
+#                       ^ -punctuation.accessor.arity
+#                    ^^^ constant.language -variable.other.capture
+#               ^ -punctuation.accessor.arity
+#          ^^^^^ constant.language -variable.other.capture
+#     ^ -punctuation.accessor.arity
+# ^^^^ constant.language -variable.other.capture
+ &M.true/2; &M.false/2; &M.nil/2
+#                          ^^^ variable.other.capture -constant.language
+#              ^^^^^ variable.other.capture -constant.language
+#   ^^^^ variable.other.capture -constant.language
+
+ &when/2; &and/2; &in/2; &or/2; &not/1
+#                                ^^^ variable.other.capture
+#                         ^^ variable.other.capture
+#                  ^^ variable.other.capture
+#          ^^^ variable.other.capture
+# ^^^^ variable.other.capture
+
+ &if/2; &unless/2; &case/2; &cond/1; &with/2; &for/2
+#                                              ^^^ variable.other.capture
+#                                     ^^^^ variable.other.capture
+#                            ^^^^ variable.other.capture
+#                   ^^^^ variable.other.capture
+#        ^^^^^^ variable.other.capture
+# ^^ variable.other.capture
+ &quote/1; &unquote/1; &unquote_splicing/1; &def/2; &defp/2
+#                                                    ^^^^ variable.other.capture
+#                                            ^^^ variable.other.capture
+#                       ^^^^^^^^^^^^^^^^ variable.other.capture
+#           ^^^^^^^ variable.other.capture
+# ^^^^^ variable.other.capture
+ &defimpl/2; &defguard/1; &defguardp/1; &defmacro/2; &defmacrop/2
+#                                                     ^^^^^^^^^ variable.other.capture
+#                                        ^^^^^^^^ variable.other.capture
+#                          ^^^^^^^^^ variable.other.capture
+#             ^^^^^^^^ variable.other.capture
+# ^^^^^^^ variable.other.capture
+ &defcallback/2; &defmacrocallback/2; &defmodule/2; &defstruct/1
+#                                                    ^^^^^^^^^ variable.other.capture
+#                                      ^^^^^^^^^ variable.other.capture
+#                 ^^^^^^^^^^^^^^^^ variable.other.capture
+# ^^^^^^^^^^^ variable.other.capture
+ &defrecord/1; &defrecordp/1; &defdelegate/2; &defprotocol/2
+#                                              ^^^^^^^^^^^ variable.other.capture
+#                              ^^^^^^^^^^^ variable.other.capture
+#               ^^^^^^^^^^ variable.other.capture
+# ^^^^^^^^^ variable.other.capture
+ &defexception/1; &defoverridable/1; &import/1; &require/1; &use/1
+#                                                            ^^^ variable.other.capture
+#                                                ^^^^^^^ variable.other.capture
+#                                     ^^^^^^ variable.other.capture
+#                  ^^^^^^^^^^^^^^ variable.other.capture
+# ^^^^^^^^^^^^ variable.other.capture
+ &receive/1; &try/1; &raise/1; &reraise/1; &throw/1; &exit/1; &super/1
+#                                                              ^^^^^ variable.other.capture
+#                                                     ^^^^ variable.other.capture
+#                                           ^^^^^ variable.other.capture
+#                               ^^^^^^^ variable.other.capture
+#                     ^^^^^ variable.other.capture
+#             ^^^ variable.other.capture
+# ^^^^^^^ variable.other.capture
 
  &Module.Sub.SubSub.func/2
 #                   ^^^^ variable.other.capture
@@ -415,6 +576,9 @@ end[]
 # ^^^^^^^^^^ variable.other.capture
 #^ keyword.operator.capture
 
+ &quote/2; &unquote/1
+#           ^^^^^^^ variable.other.capture
+# ^^^^^ variable.other.capture
  &unquote(:apply)/2
 #                ^ punctuation.accessor.arity
  &:erlang.unquote(:apply)/2
@@ -432,9 +596,12 @@ end[]
             ^ keyword.operator -punctuation.accessor
         ^ punctuation.accessor.dot
 
+# Used to highlight invalid capture variables but it's not really worth the CPU cycles.
  &0; &000
-#    ^^^^invalid.illegal.capture
-#^^invalid.illegal.capture
+#    ^ punctuation.definition.capture constant.other.capture
+#^ punctuation.definition.capture constant.other.capture
+      ^^^invalid.illegal.capture
+  ^invalid.illegal.capture
 
 
 ## Elixir keywords
