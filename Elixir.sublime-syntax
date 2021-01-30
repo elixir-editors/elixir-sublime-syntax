@@ -304,8 +304,6 @@ contexts:
           pop: true
         - include: if_closing_tokens_pop
         - include: parameters
-        # No cons operator when parameter.
-        # - include: cons_operator
     - include: if_non_space_or_eol_pop
 
   binary_string_param:
@@ -1668,13 +1666,11 @@ contexts:
     # Regular attributes:
     - match: '{{identifier}}{{has_arguments}}'
       comment: definition
-      # FIXME: Sublime doesn't list it as a "Goto"-symbol for some reason.
       scope: entity.name.constant.elixir
       set: arguments_paren_or_ws_pop
 
     - match: '{{identifier}}'
       comment: reference
-      # FIXME: "Goto Definition" doesn't work no matter which scope is used.
       scope: variable.other.constant.elixir
       pop: true
 
@@ -1839,13 +1835,13 @@ contexts:
   operator:
     - match: |
         (?x)
-        (?>
+        (?> # Ordered by likeliness of occurrence.
           (=(?![=>~]))
         | (->|<-)
         | ((?>[!=]=|[<>])(?![<>~|])=?)
         | (::)
         | (\|(?![|>]))
-        | (<?\|>|<~>|<?<~|~>>?) # operators with pipe precedence
+        | (<?\|>|<~>|<?<~|~>>?) # Operators with pipe precedence.
         | (<>)
         | (---|\+\+\+)
         | (--)
@@ -1854,7 +1850,7 @@ contexts:
         | (=>)
         | (\|\|(?!\|)|&&(?!&)|!)
         | (=~)
-        | (\.\.\.) # can appear in @type declarations
+        | (\.\.\.) # Can appear in @type declarations.
         | (\.\.)
         | (\\\\)
         | (<<<|>>>|&&&|\|\|\||~~~|\^\^\^)
@@ -2069,26 +2065,21 @@ contexts:
               pop: true
 
   atom_symbol:
-    - match: (:)((?=<%)|{{atom_symbol}})
-      scope: constant.other.symbol.elixir
-      captures:
-        1: punctuation.definition.constant.begin.elixir
-    - match: :'
-      scope: punctuation.definition.constant.begin.elixir
+    - match: :(?!:([^:]|$))
+      scope: constant.other.symbol.elixir punctuation.definition.constant.begin.elixir
       push:
-        - meta_scope: constant.other.symbol.single-quoted.elixir
-        - match: \'
-          scope: punctuation.definition.constant.end.elixir
+        - match: (?=<%)|{{atom_symbol}}
+          scope: constant.other.symbol.elixir
           pop: true
-        - include: escaped_or_interpolated
-    - match: :"
-      scope: punctuation.definition.constant.begin.elixir
-      push:
-        - meta_scope: constant.other.symbol.double-quoted.elixir
-        - match: \"
-          scope: punctuation.definition.constant.end.elixir
-          pop: true
-        - include: escaped_or_interpolated
+        - match: (["'])
+          scope: punctuation.definition.constant.begin.elixir
+          set:
+            - meta_scope: constant.other.symbol.quoted.elixir
+            - match: \1
+              scope: punctuation.definition.constant.end.elixir
+              pop: true
+            - include: escaped_or_interpolated
+        - include: if_empty_pop
 
   ## Captures
 
@@ -2215,19 +2206,18 @@ contexts:
         - include: if_non_space_pop
 
   char_literal:
-    - match: \?$
-      scope: invalid.illegal.character-literal.elixir
-    - match: (\?)(?>\\[\S\s]|\S|(\s))
+    - match: (\?$)|(\?)(?>\\[\S\s]|\S|(\s))
       comment: character literal as an integer
       scope: constant.numeric.char.elixir
       captures:
-        1: punctuation.definition.numeric.elixir
-        2: invalid.illegal.character-literal.elixir
+        1: invalid.illegal.character-literal.elixir
+        2: punctuation.definition.numeric.elixir
+        3: invalid.illegal.character-literal.elixir
 
   built_ins:
     - match: |
         (?x)
-        (?>
+        (?> # Ordered by likeliness of occurrence.
           is_(?>atom|binary|list|integer|function|nil|pid|map(?:_key)?|tuple|boolean|bitstring|exception|float|number|port|reference|struct)
         | abs|apply|binary_part|bit_size|byte_size|ceil|destructure|div|elem|exit|floor|(?>function|macro)_exported\?|get(?:_and_update)?_in|hd|inspect|length|make_ref|map_size|max|min|node|pop_in|put_(?>elem|in)|rem|round|self|send|spawn(?>_link|_monitor)?|struct!?|sum|tap|then|throw|tl|to_charlist|to_string|trunc|tuple_size|update_in
         ){{no_suffix_then_arguments}}
