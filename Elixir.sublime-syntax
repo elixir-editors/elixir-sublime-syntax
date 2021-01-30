@@ -2283,8 +2283,10 @@ contexts:
   arguments_rest_pop:
     - include: invalid_comma
     - include: arg_comma_and_skip_ws
-    - match: (?<=[-+*!=<>|&@^~]|[^:]\band|[^:]\bor|[^:]\bwhen)$
-      push: if_non_space_pop
+    - match: (?<=[-+*!=<>|&@^~:]|[^:]\band|[^:]\bor|[^:]\bwhen)(?<!\W\?:)$
+      push:
+        - include: comments
+        - include: if_non_space_pop
     - include: last_id_argument
     - include: do_block_pop
     - include: if_ws_closing_tokens_or_eol_pop
