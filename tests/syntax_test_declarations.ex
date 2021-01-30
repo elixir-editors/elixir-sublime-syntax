@@ -782,4 +782,5 @@ require EEx.Tokenizer, as: T
 #<- keyword.control.import
 require :"Elixir.Stream.Reducers", as: R
 #                                      ^ entity.name.namespace
-#       ^^^^^^^^^^^^^^^^^^^^^^^^^ constant.other.symbol.double-quoted
+#        ^^^^^^^^^^^^^^^^^^^^^^^^ constant.other.symbol.quoted
+#       ^ constant.other.symbol punctuation.definition.constant.begin

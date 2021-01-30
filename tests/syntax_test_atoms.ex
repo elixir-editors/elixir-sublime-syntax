@@ -213,7 +213,8 @@
 [
   ?: :?,
 #     ^^ constant.numeric
-#    ^^ -constant.other.symbol
+#     ^ -constant.other.symbol
+#    ^ constant.other.symbol
 # ^^ constant.numeric -constant.other.keyword
   :::,
 #    ^ punctuation.separator.sequence
@@ -236,8 +237,10 @@
 #  ^^ constant.other.keyword
 # ^ -constant.other.keyword
   []: :[],
-#     ^^^ -constant.other.symbol
-# ^^^ -constant.other.keyword
+#      ^^ -constant.other.symbol
+#     ^ constant.other.symbol
+#   ^ constant.other.symbol
+# ^^ -constant.other.keyword
   "[]": :"[]",
 #       ^^^^^ constant.other.symbol
 # ^^^^^ constant.other.keyword

@@ -46,6 +46,7 @@ func ?:
 #      ^ punctuation.section.arguments.end
 #   ^ punctuation.section.arguments.begin
 func valid?:
+#           ^ -punctuation.section.arguments.end
 #   ^ punctuation.section.arguments.begin
      bool
 #        ^ punctuation.section.arguments.end
