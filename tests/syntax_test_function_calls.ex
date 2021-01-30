@@ -42,6 +42,14 @@ m."quoted" arg
 #         ^ punctuation.section.arguments.begin
 #  ^^^^^^ variable.function
 
+func ?:
+#      ^ punctuation.section.arguments.end
+#   ^ punctuation.section.arguments.begin
+func valid?:
+#   ^ punctuation.section.arguments.begin
+     bool
+#        ^ punctuation.section.arguments.end
+
 raise ArgumentError, "msg"
 #                         ^ punctuation.section.arguments.end
 #    ^ punctuation.section.arguments.begin
