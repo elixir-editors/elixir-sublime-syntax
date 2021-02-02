@@ -131,6 +131,9 @@ contexts:
     - match: (?={{atom_symbol}}:(?!:))|(?<=["']:)
       set: arguments_rest_pop
 
+    - match: (?=unquote\(\s*:(?!:(?=[^:]|$)))
+      set: [function_params_or_eol_pop, function_atom_name_pop, unquote_pop]
+
     - match: (?=unquote\()
       set: [function_params_or_eol_pop, arguments_pop, unquote_pop]
 
@@ -216,6 +219,31 @@ contexts:
     - include: do_block_pop
     - include: if_ws_closing_tokens_or_eol_pop
     - include: if_non_space_pop
+
+  function_atom_name_pop:
+    - match: \(
+      scope: punctuation.section.arguments.begin.elixir
+      set:
+        - meta_scope: meta.function-call.arguments.elixir
+        - include: arguments_closing_pop
+        - match: ':'
+          scope: constant.other.symbol.elixir punctuation.definition.constant.begin.elixir
+          push:
+            - match: (?=<%)|{{atom_symbol}}
+              scope: constant.other.symbol.elixir entity.name.function.elixir
+              pop: true
+            - match: (["'])
+              scope: punctuation.definition.constant.begin.elixir
+              set:
+                - meta_scope: constant.other.symbol.quoted.elixir
+                - match: \1
+                  scope: punctuation.definition.constant.end.elixir
+                  pop: true
+                - include: interpolated_elixir
+                - match: \\?.|\n
+                  scope: entity.name.function.elixir
+            - include: if_empty_pop
+        - include: core_syntax
 
   ## Parameters
 
@@ -1781,7 +1809,7 @@ contexts:
           pop: true
         - include: core_syntax
 
-    - match: \s*(```)\s*(elixir)\b
+    - match: (```)\s*(elixir)\b
       captures:
         1: punctuation.definition.code-block.begin.markdown
         2: constant.other.language-name.elixir
@@ -2100,9 +2128,13 @@ contexts:
             - include: unquote_call
             - include: func_arity_pop
             - include: dot_operator
-            - match: '{{member}}(?=\s*(/)\s*(\d(?:_?\d)*)(?!\.(?!\.)))'
+            - match: |
+                (?x)
+                (?>{{member}} | "(?>\\[\\"]|.)*" | '(?>\\[\\']|.)*')
+                (?=\s*(/)\s*(\d(?:_?\d)*)(?!\.(?!\.)))
               scope: variable.other.capture.elixir
               set: func_arity_pop
+            - include: special_form
             - include: if_non_space_or_eol_pop
 
   func_arity_pop:
