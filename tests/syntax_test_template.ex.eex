@@ -50,8 +50,6 @@ M1.<%= M2 %>.f()
 #      ^^ constant.other.module
 #   ^^ entity.name.tag.ex.eex
 # ^ punctuation.accessor.dot
-def asd({a,}) do
-end
 
 x.<%= :member %>()
 #             ^ entity.name.tag.ex.eex

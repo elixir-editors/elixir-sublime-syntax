@@ -403,6 +403,13 @@ end[]
 #   ^ keyword.operator.arithmetic
 # ^^ constant.other.keyword
 
+ &__MODULE__."arbitrary function name"/0
+#                                     ^ punctuation.accessor.arity
+#            ^^^^^^^^^^^^^^^^^^^^^^^^^ variable.other.capture
+ &__MODULE__.'arbitrary function name'/0
+#                                     ^ punctuation.accessor.arity
+#            ^^^^^^^^^^^^^^^^^^^^^^^^^ variable.other.capture
+
  &M.do/2; &M.end/2; &M.else/2; &M.after/2; &M.rescue/2; &M.catch/2
 #                                                          ^^^^^ variable.other.capture
 #                                             ^^^^^^ variable.other.capture

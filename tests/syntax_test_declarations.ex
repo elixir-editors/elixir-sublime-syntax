@@ -408,9 +408,48 @@ def f(%unquote(struct_name){id: id} = struct)
 #      ^^^^^^^ keyword.other.unquote
 #     ^ punctuation.section.mapping.begin
 
-def bool?(bool) when is_boolean(bool),
-#                                    ^ punctuation.separator.arguments
+def unquote(:.)(a, b), do: {a, b}
+#                           ^ variable.other
+#               ^ variable.parameter
+#            ^ entity.name.function
+def unquote(:"\"\"")(x), do: x
+#                            ^ variable.other
+#                    ^ variable.parameter
+#                 ^ punctuation.definition.constant.end
+#             ^^^^ entity.name.function
+#            ^ punctuation.definition.constant.begin
+def unquote(:'arbitrary function name')(x), do: x
+#                                    ^ punctuation.definition.constant.end
+#             ^^^^^^^^^^^^^^^^^^^^^^^ entity.name.function
+#            ^ punctuation.definition.constant.begin
+def unquote(:{})(a), do: a
+#            ^^ entity.name.function
+def unquote(:%{})(a), do: a
+#            ^^^ entity.name.function
+def unquote(:%)(struct, map), do: {struct, map}
+#            ^ entity.name.function
+def unquote(:<<>>)(a), do: a
+#            ^^^^ entity.name.function
+def unquote(:::)(a, b), do: {a, b}
+#            ^^ entity.name.function
+def unquote(::)(a, b), do: {a, b}
+#           ^^ keyword.operator.colon
+def unquote(:unquote)(expr), do: expr
+#                     ^^^^ variable.parameter
+#            ^^^^^^^ entity.name.function
+def unquote(:"#{prefix}_func")(), do: :_
+#                      ^^^^^ entity.name.function
+#                     ^ punctuation.section.interpolation.end
+#               ^^^^^^ variable.other
+#             ^^ punctuation.section.interpolation.begin
+
+def bool?(bool) when
+#                   ^ -punctuation.section.arguments.end
+                is_boolean(bool),
+#                                ^ -punctuation.section.arguments.end
+#                               ^ punctuation.separator.arguments
     do: bool
+#           ^ punctuation.section.arguments.end
 def bool?(bool)
     when is_boolean(bool),
 # FIXME:
@@ -605,6 +644,15 @@ def __STACKTRACE__(), do: __STACKTRACE__
 #                   ^ punctuation.separator.arguments
 #             ^^^^ entity.name.function
 #^^^^^^^^^^^^ keyword.declaration.function.private
+ defmacro quote(opts, block), do: [opts, block]
+#                     ^^^^^ variable.parameter
+#               ^^^^ variable.parameter
+#         ^^^^^ entity.name.function
+ defmacro f(x), do: quote do x end
+#                              ^^^ keyword.context.block.end
+#                            ^ variable.other
+#                         ^^ keyword.context.block.do
+#                   ^^^^^ variable.other -keyword.other.quote.elixir
 
 
 ### alias
