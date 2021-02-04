@@ -36,7 +36,7 @@ Don't insert a comment between `x` and `"""`.
 Don't insert a comment between `X` and `"""`.
    defmodule X
 #  ^^^^^^^^^ -keyword.declaration.module
-    defmodule X
+    defmodule X do end
 #   ^^^^^^^^^ keyword.declaration.module
 #   ^^^^^^^^^^^^ markup.raw.block.markdown
  """m
@@ -73,7 +73,7 @@ Don't insert a comment between `X` and `"""`.
 #^^^^ meta.string.elixir
 
 @doc """
-    defmodule X
+    defmodule X do end
 #   ^^^^^^^^^^^^ markup.raw.block.elixir
 #^^^ source.markdown.embedded.elixir
  """m

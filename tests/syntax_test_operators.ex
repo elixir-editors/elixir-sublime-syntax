@@ -171,5 +171,11 @@
 #   ^ keyword.operator.match
 # ^ variable.other
 
-|
-#<- keyword.operator.union
+l | r
+# ^ keyword.operator.union
+
+l ::::: r
+#       ^ variable.other
+#    ^^ keyword.operator.colon
+# ^^^ constant.other.symbol
+#<- variable.function

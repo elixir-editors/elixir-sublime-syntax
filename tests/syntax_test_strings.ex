@@ -660,7 +660,12 @@ key: "#{value}\"""
 ~w"some words"
 #       ^^^^^ -constant.other.symbol.atom
 #  ^^^^ -constant.other.symbol.atom
-~w"some words"a
-#             ^ storage.type.string
+~w"some atoms #{'chars'}"a
+#                        ^ storage.type.string
+#               ^^^^^^^ string.quoted.single
+#             ^^^^^^^^^^ meta.interpolation
 #       ^^^^^ constant.other.symbol.atom
+#      ^ -constant.other.symbol.atom
 #  ^^^^ constant.other.symbol.atom
+# FIXME:
+~w"some atoms #{"string"}"a

@@ -8,6 +8,10 @@
 #  ^ punctuation.section.mapping.end
 # ^ punctuation.section.mapping.begin
 #^ punctuation.section.mapping.begin
+ %_{}
+#   ^ punctuation.section.mapping.end
+# ^ variable.other.unused
+#^ punctuation.section.mapping.begin
  %{%{}: :%{}}."%{}"
 #              ^^^ variable.other.member
 #       ^^^^ constant.other.symbol
@@ -21,6 +25,23 @@
 #            ^^^^^^ constant.other.module
 #           ^ punctuation.accessor.dot
 # ^^^^^^^^^^ variable.language.special-form
+ %Some.Module{}
+#            ^ punctuation.section.mapping.begin
+#      ^^^^^^ constant.other.module
+# ^^^^ constant.other.module
+#^ punctuation.section.mapping.begin
+ %:Some.Module{}
+#             ^ punctuation.section.mapping.begin
+# ^^^^^ constant.other.symbol
+#^ punctuation.section.mapping.begin
+ %:"Some".Module{}
+#               ^ punctuation.section.mapping.begin
+# ^^^^^^^ constant.other.symbol
+#^ punctuation.section.mapping.begin
+ %:'Some'.Module{}
+#               ^ punctuation.section.mapping.begin
+# ^^^^^^^ constant.other.symbol
+#^ punctuation.section.mapping.begin
 
 %module{}
 #^^^^^^ variable.other
@@ -104,6 +125,10 @@ fn
 #   ^ punctuation.separator.sequence
 end
 
+fn __MODULE__ -> __MODULE__ end
+#                ^^^^^^^^^^ variable.language.special-form
+#  ^^^^^^^^^^ variable.language.special-form
+
 (fn x -> fn y -> x + y end end).(1).(2)
 #                                   ^ punctuation.section.arguments.begin
 #                                  ^ punctuation.accessor.dot
@@ -122,6 +147,12 @@ end
 #   ^ variable.parameter
 #^^ keyword.declaration.function
 #<- punctuation.section.group.begin
+
+(fn x -> x end).(fn a, b -> {a, b} end).(:b, :c)
+#                                       ^ punctuation.section.arguments.begin.elixir
+#                                     ^ punctuation.section.arguments.end.elixir
+#               ^ punctuation.section.arguments.begin.elixir
+#              ^ punctuation.accessor.dot.elixir
 
 "(((())))"
 |> to_charlist()

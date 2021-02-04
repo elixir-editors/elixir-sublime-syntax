@@ -27,7 +27,13 @@ fragment("\\\?"); fragment("\\\\?")
 #                           ^^ constant.character.escape.char.elixir
 #           ^^ constant.other.placeholder.elixir
 #         ^^ constant.character.escape.char.elixir
-
+fragment("jsonb \\? jsonb OR jsonb \\?| jsonb OR jsonb \\?& jsonb")
+#                                                        ^^ keyword.operator.jsonb.psql
+#                                             ^^ keyword.operator.logical.sql
+#                                    ^^ keyword.operator.jsonb.psql
+#                         ^^ keyword.operator.logical.sql
+#                 ^ keyword.operator.jsonb.psql
+#               ^^ constant.character.escape.char.elixir
 fragment("\"string\"")
 #                 ^^ constant.character.escape.char.elixir
 #         ^^ constant.character.escape.char.elixir

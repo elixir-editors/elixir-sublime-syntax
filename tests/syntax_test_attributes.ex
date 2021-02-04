@@ -19,6 +19,16 @@
 @attr!
 #^^^^^ variable.other.constant
 
+@fn_attr fn a -> a end
+#                  ^^^ keyword.context.block.end
+#        ^^ keyword.declaration.function
+#^^^^^^^ entity.name.constant
+@fn_attr.(:a)
+#           ^ punctuation.section.arguments.end
+#        ^ punctuation.section.arguments.begin
+#       ^ punctuation.accessor.dot
+#^^^^^^^ variable.other.constant
+
 @_ :_
 #  ^^ constant.other.symbol
 #^ entity.name.constant
