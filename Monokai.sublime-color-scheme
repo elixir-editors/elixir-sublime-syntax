@@ -95,6 +95,11 @@
       "background": "color(var(white) a(0.03))"
     },
     {
+      "name": "Italic type name",
+      "scope": "entity.name.type.elixir",
+      "font_style": "italic"
+    },
+    {
       "name": "Labelled type",
       "scope": "variable.other.named-type.elixir",
       "font_style": "italic",
