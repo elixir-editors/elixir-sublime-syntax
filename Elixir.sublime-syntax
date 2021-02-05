@@ -375,42 +375,39 @@ contexts:
     - include: if_non_space_pop
 
   types:
-    - include: comments
     - match: (?=unquote(?:_splicing)?\()
       push: [type_arguments_or_pop, arguments_pop, unquote_pop]
     - include: block_or_keyword
     - include: special_form
     - match: |
         (?x)
-        ((?>
-          # Basic types:
-          (?>
-            nonempty_char
-          | (?>(?:nonempty_)?maybe_|nonempty_)improper_|nonempty_
-        )?list
-        | (?>(?:non_)?neg_|pos_)?integer
-        | any|atom|float|map|none|pid|port|reference|tuple
-          # Built-in types:
-        | arity|as_boolean|binary|bitstring|boolean|byte|charlist|char
-        | function|fun|identifier|iodata|iolist|keyword
-        | maybe_improper_list|mfa|module|no_return|node
-        | number|struct|term|timeout
-        )){{no_id_key_suffix}}
-      scope: support.type.elixir
+          ((?> # Ordered by likeliness of occurrence.
+            binary|term|atom|any|integer|boolean|map|list|module
+          | (?>(?:non_)?neg_|pos_)?integer|no_return|pid|iodata
+          | number|float|keyword|timeout|tuple|reference|charlist
+          | fun(?:ction)?|char|struct|arity|port|identifier|none\b|mfa
+          | node|byte|as_boolean|bitstring|iolist|maybe_improper_list
+          | (?>
+              nonempty_char
+            | (?>(?:nonempty_)?maybe_|nonempty_)improper_|nonempty_
+            )?list
+          )){{no_id_key_suffix}}
+        | (?>(optional)|(required)){{no_id_key_suffix}}
+        | ({{identifier}})
+      captures:
+        1: support.type.elixir
+        2: keyword.other.optional.elixir
+        3: keyword.other.required.elixir
+        4: storage.type.custom.elixir
       push: type_arguments_or_pop
-    - match: (?>optional|required){{no_id_key_suffix}}
-      scope: keyword.other.elixir
-      push: type_arguments_or_pop
-    - match: '{{identifier}}'
-      scope: storage.type.custom.elixir
-      push: type_arguments_or_pop
-    - include: paren_type
     - include: list_type
     - include: tuple_type
+    - include: module_name
+    - include: dot_type
     - include: map_type
     - include: binary_string_type
-    - include: dot_type
-    - include: module_name
+    - include: paren_type
+    - include: comments
 
   types_pop:
     - include: types
@@ -427,7 +424,7 @@ contexts:
         - match: '{{identifier}}{{no_id_key_suffix}}'
           scope: storage.type.remote.elixir
           set: type_arguments_or_pop
-        - include: if_non_space_pop
+        - include: if_non_space_or_eol_pop
 
   type_arguments_or_pop:
     - match: \(
