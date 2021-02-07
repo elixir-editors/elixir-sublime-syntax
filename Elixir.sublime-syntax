@@ -2109,37 +2109,57 @@ contexts:
   ## Captures
 
   capture:
-    - match: (&)\s*(\d(?:_?\d)*)(?!\.(?!\.))
+    - match: (&)\s*(\d+)(?!\.(?![.\D]))
       captures:
         1: punctuation.definition.capture.elixir constant.other.capture.elixir
         2: constant.other.capture.elixir
     - match: \&
       scope: keyword.operator.capture.elixir
       push:
-        - match: (?=(?>do|fn|true|false|nil){{no_id_key_suffix}}|{{closing_keyword}})
+        - match: (?=(?>do|fn|true|false|nil){{no_id_key_suffix}})
           pop: true
-        - match: (?=\S)
+        - include: if_closing_tokens_pop
+        - match: (?=\.(?!\.))
           set:
-            - include: atom_symbol
-            - include: module_name
-            - include: unquote_call
-            - include: func_arity_pop
             - include: dot_operator
-            - match: |
-                (?x)
-                (?>{{member}} | "(?>\\[\\"]|.)*" | '(?>\\[\\']|.)*')
-                (?=\s*(/)\s*(\d(?:_?\d)*)(?!\.(?!\.)))
-              scope: variable.other.capture.elixir
-              set: func_arity_pop
-            - include: special_form
+            - include: arguments_pop
+            - include: capture_name_pop
+            - include: id_or_operator_call_pop
+            - include: quoted_remote_call_pop
+            - include: quoted_member_pop
+            - match: (?={{member}}{{no_id_key_suffix}})
+              push: id_member_pop
+            - include: tuple_call_pop
+            - include: if_closing_tokens_pop
             - include: if_non_space_or_eol_pop
+        - include: capture_name_pop
+        - include: special_form
+        - match: (?={{identifier}}\s*\.(?!\.))
+          push: identifier_pop
+        - include: if_non_space_or_eol_pop
 
-  func_arity_pop:
-    - match: (/)\s*(\d(?:_?\d)*)(?!\.(?!\.))
+  capture_name_pop:
+    - include: atom_symbol
+    - include: atom_keyword
+    - include: module_name
+    - include: unquote_call
+    - match: (/)\s*(\d+)(?!\.(?![.\D]))
       captures:
         1: punctuation.accessor.arity.elixir
-        2: constant.numeric.integer.decimal.elixir
+        2: constant.numeric.arity.elixir
       pop: true
+    - match: |
+        (?x)
+        (?>({{member}}) | (")((?>\\[\\"]|.)*)(") | (')((?>\\[\\']|.)*)('))
+        (?=\s*(/)\s*(\d+)(?!\.(?![.\D])))
+      captures:
+        1: variable.other.capture.elixir
+        2: punctuation.definition.constant.begin.elixir
+        3: variable.other.capture.elixir
+        4: punctuation.definition.constant.end.elixir
+        5: punctuation.definition.constant.begin.elixir
+        6: variable.other.capture.elixir
+        7: punctuation.definition.constant.end.elixir
 
   ## SQL
 
