@@ -50,6 +50,11 @@
       "foreground": "color(var(blue))"
     },
     {
+      "name": "Capture arity",
+      "scope": "constant.numeric.arity.elixir",
+      "font_style": "italic"
+    },
+    {
       "name": "Module atom",
       "scope": "constant.other.module.elixir",
       "foreground": "color(var(yellow2) s(+ 50%) l(- 20%))"
@@ -57,7 +62,7 @@
     {
       "name": "Atom keyword",
       "scope": "constant.other.keyword.elixir",
-      "foreground": "color(var(purple) s(- 50%) l(- 20%))"
+      "foreground": "color(var(purple) s(- 50%) l(- 15%))"
     },
     {
       "name": "Atom keyword punctuation",
