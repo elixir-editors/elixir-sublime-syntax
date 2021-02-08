@@ -28,8 +28,6 @@
 #^^^^^^^^ variable.other
  defp
 #^^^^ variable.other
- defdelegatep
-#^^^^^^^^^^^^ variable.other
  defmacrop
 #^^^^^^^^^ variable.other
  defguardp
@@ -237,8 +235,6 @@ x.defguard
 # ^^^^^^^^ variable.other.member
 x.defp
 # ^^^^ variable.other.member
-x.defdelegatep
-# ^^^^^^^^^^^^ variable.other.member
 x.defmacrop
 # ^^^^^^^^^ variable.other.member
 x.defguardp

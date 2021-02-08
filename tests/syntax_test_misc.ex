@@ -394,19 +394,40 @@ end[]
 #     ^^ constant.other.capture
 #^^^ constant.other.capture
 
- & &1..&2
+ & &1..&2; & &1 .. &2
+#                  ^^ constant.other.capture
+#            ^^ constant.other.capture
 #      ^^ constant.other.capture
 #    ^^ keyword.operator.range
 #  ^^ constant.other.capture
 
- &1/2
-#  ^ -punctuation.accessor.arity
-#^^ constant.other.capture
+ & &1/2
+#    ^ -punctuation.accessor.arity
+#  ^^ constant.other.capture
 
  &:erlang.apply/2
 #              ^ punctuation.accessor.arity
 #         ^^^^^ variable.other.capture
 #        ^ punctuation.accessor.dot
+
+ &x.(&1)
+#      ^ punctuation.section.arguments.end
+#    ^^ constant.other.capture
+#   ^ punctuation.section.arguments.begin
+#  ^ punctuation.accessor.dot
+# ^ variable.other
+ & &1.(args)
+#          ^ punctuation.section.arguments.end
+#     ^ punctuation.section.arguments.begin
+#    ^ punctuation.accessor.dot
+#  ^^ constant.other.capture
+ & &1.prop; & &1 .prop
+#                 ^^^^ variable.other.member
+#                ^ punctuation.accessor.dot
+#             ^^ constant.other.capture
+#     ^^^^ variable.other.member
+#    ^ punctuation.accessor.dot
+#  ^^ constant.other.capture
 
  &<%= num %>
 #          ^ keyword.operator.comparison
@@ -420,6 +441,7 @@ end[]
 #      ^^^ constant.numeric.float
 #     ^ keyword.operator.arithmetic
 # ^^^^ variable.other
+
  & 0<=&1and&1<=255
 #              ^^^ constant.numeric
 #            ^^ keyword.operator.comparison
@@ -430,23 +452,72 @@ end[]
 #  ^ constant.other.capture -constant.numeric
 #^ constant.other.capture
 
+ &mod.&/1; &Mod.&/1
+#               ^ variable.other.capture
+#     ^ variable.other.capture
+ &mod.flatten/1
+#     ^^^^^^^ variable.other.capture
+#    ^ punctuation.accessor.dot
+# ^^^ variable.other
+
+ &x."a func"
+#   ^^^^^^^^ meta.member
+#  ^ punctuation.accessor.dot
+# ^ variable.other
+
+ &x.//2
+#    ^ punctuation.accessor.arity
+#   ^ variable.other.capture
+#  ^ punctuation.accessor.dot
+# ^ variable.other
  &a:/2
-#   ^ keyword.operator.arithmetic
 # ^^ constant.other.keyword
+    ^ keyword.operator.arithmetic
 
- &__MODULE__."arbitrary function name"/0
-#                                     ^ punctuation.accessor.arity
-#            ^^^^^^^^^^^^^^^^^^^^^^^^^ variable.other.capture
- &__MODULE__.'arbitrary function name'/0
-#                                     ^ punctuation.accessor.arity
-#            ^^^^^^^^^^^^^^^^^^^^^^^^^ variable.other.capture
+ (&) [&] {&} %{&} <%= & %>
+#               ^ punctuation.section.mapping.end
+#             ^ punctuation.section.mapping.begin
+#          ^ punctuation.section.sequence.end
+#        ^ punctuation.section.sequence.begin
+#      ^ punctuation.section.brackets.end
+#    ^ punctuation.section.brackets.begin
+#  ^ punctuation.section.group.end
+#^ punctuation.section.group.begin
+ (&x.) [&x.] {&x.} %{&x.} <%= &x. %>
+#                       ^ punctuation.section.mapping.end
+#                   ^ punctuation.section.mapping.begin
+#                ^ punctuation.section.sequence.end
+#            ^ punctuation.section.sequence.begin
+#          ^ punctuation.section.brackets.end
+#      ^ punctuation.section.brackets.begin
+#    ^ punctuation.section.group.end
+#^ punctuation.section.group.begin
 
- &M.do/2; &M.end/2; &M.else/2; &M.after/2; &M.rescue/2; &M.catch/2
-#                                                          ^^^^^ variable.other.capture
-#                                             ^^^^^^ variable.other.capture
-#                                 ^^^^^ variable.other.capture
-#                      ^^^^ variable.other.capture
-#            ^^^ variable.other.capture
+ &Mod."arbitrary function name"/0
+#                              ^ punctuation.accessor.arity
+#      ^^^^^^^^^^^^^^^^^^^^^^^ variable.other.capture
+# ^^^ constant.other.module
+ &Mod.'arbitrary function name'/0
+#                              ^ punctuation.accessor.arity
+#      ^^^^^^^^^^^^^^^^^^^^^^^ variable.other.capture
+# ^^^ constant.other.module
+
+ &x.fn/2; &x.do/2; &x.end/2; &x.else/2; &x.after/2; &x.rescue/2; &x.catch/2
+#                                                                   ^^^^^ variable.other.capture
+#                                                      ^^^^^^ variable.other.capture
+#                                          ^^^^^ variable.other.capture
+#                               ^^^^ variable.other.capture
+#                     ^^^ variable.other.capture
+#            ^^ variable.other.capture
+#   ^^ variable.other.capture
+
+ &M.fn/2; &M.do/2; &M.end/2; &M.else/2; &M.after/2; &M.rescue/2; &M.catch/2
+#                                                                   ^^^^^ variable.other.capture
+#                                                      ^^^^^^ variable.other.capture
+#                                          ^^^^^ variable.other.capture
+#                               ^^^^ variable.other.capture
+#                     ^^^ variable.other.capture
+#            ^^ variable.other.capture
 #   ^^ variable.other.capture
 
  &fn/2 end; &do/2; &end/2; &else/2; &after/2; &rescue/2; &catch/2
@@ -457,6 +528,7 @@ end[]
 #                   ^^^ -variable.other.capture
 #            ^^ -variable.other.capture
 # ^^^^^^^^ -variable.other.capture
+
  &=~/2; &=/2; &==/2; &===/2; &!/1; &!=/2; &!==/2; &<<</2; &>>>/2
 #                                                          ^^^ variable.other.capture
 #                                                  ^^^ variable.other.capture
@@ -609,10 +681,22 @@ end[]
 #     ^ punctuation.accessor.arity
 # ^^^^ variable.other.capture
 #^ keyword.operator.capture
- &__MODULE__/0
-#           ^ punctuation.accessor.arity
-# ^^^^^^^^^^ variable.other.capture
-#^ keyword.operator.capture
+
+ &__MODULE__.func/0; &__MODULE__/0; &mod.__MODULE__/0; &Mod.__MODULE__/0
+#                                                                     ^ punctuation.accessor.arity
+#                                                           ^^^^^^^^^^ variable.other.capture -variable.language.special-form
+#                                                          ^ punctuation.accessor.dot
+#                                                       ^^^ constant.other.module
+#                                                  ^ punctuation.accessor.arity
+#                                        ^^^^^^^^^^ variable.other.capture -variable.language.special-form
+#                                       ^ punctuation.accessor.dot
+#                                    ^^^ variable.other
+#                               ^ punctuation.accessor.arity
+#                     ^^^^^^^^^^ variable.other.capture -variable.language.special-form
+#                    ^ keyword.operator.capture
+#            ^^^^ variable.other.capture
+#           ^ punctuation.accessor.dot
+# ^^^^^^^^^^ variable.language.special-form
 
  &quote/2; &unquote/1
 #           ^^^^^^^ variable.other.capture
@@ -625,13 +709,13 @@ end[]
 #                       ^ punctuation.accessor.arity
 
 # These are semantically invalid, but it complicates the rules to do it correctly.
-  &./2
-#   ^ punctuation.accessor.arity
-#  ^ punctuation.accessor.dot
+ &./2
+   ^ variable.other.member -punctuation.accessor.arity
+  ^ punctuation.accessor.dot
  &:erlang/2
-         ^ keyword.operator -punctuation.accessor
+         ^ keyword.operator -punctuation.accessor.arity
  &Module.Sub/0
-            ^ keyword.operator -punctuation.accessor
+            ^ keyword.operator -punctuation.accessor.arity
         ^ punctuation.accessor.dot
 
 # Used to highlight invalid capture variables but it's not really worth the CPU cycles.

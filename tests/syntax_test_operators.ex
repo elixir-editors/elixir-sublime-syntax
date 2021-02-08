@@ -122,7 +122,7 @@
 #              ^ variable.function
 #           ^ variable.other
 #          ^ keyword.operator.attribute
-#       ^ constant.numeric.integer.decimal
+#       ^ constant.numeric.arity
 #      ^ punctuation.accessor.arity
 #     ^ variable.other.capture
 #    ^ keyword.operator.capture

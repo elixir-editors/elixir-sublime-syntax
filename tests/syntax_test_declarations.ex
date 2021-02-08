@@ -642,8 +642,8 @@ def __STACKTRACE__(), do: __STACKTRACE__
  defdelegatep func(), to: Other, as: :func
 #                              ^ punctuation.separator.arguments
 #                   ^ punctuation.separator.arguments
-#             ^^^^ entity.name.function
-#^^^^^^^^^^^^ keyword.declaration.function.private
+#             ^^^^ variable.function -entity
+#^^^^^^^^^^^^ variable.function -keyword
  defmacro quote(opts, block), do: [opts, block]
 #                     ^^^^^ variable.parameter
 #               ^^^^ variable.parameter

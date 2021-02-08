@@ -144,6 +144,19 @@ case a.func do
 #      ^^^^ -variable.function
 end
 
+func x do do end end
+#                ^^^ punctuation.section.block.end keyword.context.block.end
+#            ^^^ punctuation.section.block.end keyword.context.block.end
+#         ^^ punctuation.section.block.begin keyword.context.block.do
+#      ^^ punctuation.section.block.begin keyword.context.block.do
+#    ^ variable.other
+func x . do do end
+#              ^^^ punctuation.section.block.end keyword.context.block.end
+#           ^^ punctuation.section.block.begin keyword.context.block.do
+#        ^^ variable.other.member
+#      ^ punctuation.accessor.dot
+#    ^ variable.other
+
 start(fn -> raise "stop"  end)
 #                            ^ punctuation.section.arguments.end
 #                         ^^^ punctuation.section.block.end
