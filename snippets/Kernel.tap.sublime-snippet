@@ -1,0 +1,6 @@
+<snippet>
+  <content><![CDATA[|> tap(fn ${1:x} -> ${2:x} end)]]></content>
+  <tabTrigger>tap</tabTrigger>
+  <scope>source.elixir</scope>
+  <description>Pipes into `fn`. Returns value unchanged.</description>
+</snippet>

@@ -1,0 +1,6 @@
+<snippet>
+  <content><![CDATA[|> IO.inspect(label: "${2:$TM_FILENAME:$TM_LINE_NUMBER: }${1:...}")]]></content>
+  <tabTrigger>iil</tabTrigger>
+  <scope>source.elixir</scope>
+  <description>Print to stdout with label</description>
+</snippet>
