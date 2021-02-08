@@ -1,0 +1,6 @@
+<snippet>
+  <content><![CDATA[IO.inspect(${1:...})]]></content>
+  <tabTrigger>ii</tabTrigger>
+  <scope>source.elixir</scope>
+  <description>Print to stdout</description>
+</snippet>
