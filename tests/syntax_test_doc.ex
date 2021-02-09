@@ -67,6 +67,7 @@ Don't insert a comment between `X` and `"""`.
 @doc ~S"""
 #    ^^^^^^ meta.string.elixir
 \"""m
+#^^^ -punctuation.definition.string.end
  """m
 #   ^ storage.type.string
 #^^^ punctuation.definition.string.end
@@ -81,10 +82,10 @@ Don't insert a comment between `X` and `"""`.
 #^^^ punctuation.definition.string.end
 
 @doc ~S"""
- \'\e \""" #{interpolation}
-#          ^^^^^^^^^^^^^^^^ -meta.interpolation.elixir
-#     ^^ constant.character.escape.char.elixir
-#^^^^ -constant.character.escape
+ \'\S\ \""" #{interpolation}
+#           ^^^^^^^^^^^^^^^^ -meta.interpolation.elixir
+#       ^^^ -punctuation.definition.string.end
+#^^^^^^^^ -constant.character.escape
  """m
 #   ^ storage.type.string
 #^^^ punctuation.definition.string.end
@@ -94,12 +95,10 @@ Don't insert a comment between `X` and `"""`.
 #    ^^ storage.type.string
  doc
 #^^^^ source.markdown.embedded.elixir
- \escape #{interpolation}
-#        ^^^^^^^^^^^^^^^^ -meta.interpolation.elixir
-#^^ -constant.character.escape
- \" \'''
-#   ^^ constant.character.escape.char.elixir
-#^^ -constant.character.escape
+ \'\S\ \""" #{interpolation}
+#           ^^^^^^^^^^^^^^^^ -meta.interpolation.elixir
+#       ^^^ -punctuation.definition.string.end
+#^^^^^^^^ -constant.character.escape
  '''m
 #   ^ storage.type.string
 #^^^ punctuation.definition.string.end

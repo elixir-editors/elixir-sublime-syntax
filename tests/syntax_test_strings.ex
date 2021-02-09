@@ -43,7 +43,7 @@
 ~L"""
  \"""
 #^^^^^ meta.string.elixir text.html.eex text.html.basic
-#^^ constant.character.escape.char
+#^^ -constant.character.escape.char
   """''a
 #      ^ -string.quoted.modifiers
 
@@ -185,7 +185,7 @@ heredoc text
 #^^^^ meta.string.elixir
  \"""m
 #    ^ -storage.type.string
-#^^ constant.character.escape.char.elixir
+#^^ -constant.character.escape.char.elixir
  """m
 #    ^ -meta.string.elixir
 #   ^ storage.type.string
@@ -193,11 +193,11 @@ heredoc text
 #^^^^ meta.string.elixir
 ~L"<div>\"</div>"m
 #               ^ punctuation.definition.string.end
-#       ^^ constant.character.escape.char.elixir
+#       ^^ -constant.character.escape.char.elixir
 #   ^^^ entity.name.tag.block.any.html
 ~L'<div>\'</div>'m
 #               ^ punctuation.definition.string.end
-#       ^^ constant.character.escape.char.elixir
+#       ^^ -constant.character.escape.char.elixir
 #   ^^^ entity.name.tag.block.any.html
 
  ~L/\//m ~L|\||m ~L{\}}m ~L[\]]m ~L<\>>m ~L(\))m
@@ -210,7 +210,7 @@ heredoc text
 
 ~L'''
  \
- ^^text.html.basic
+ ^^ text.html.basic -punctuation.separator.continuation
  '''m
 #   ^ storage.type.string
 #^^^ punctuation.definition.string.end
@@ -249,7 +249,7 @@ key: #{value}
 
 ~Y"""
 key: "#{value}\"""
-#             ^^ constant.character.escape.char.elixir
+#             ^^ -constant.character.escape.char.elixir
  \"""m
  """m
 #   ^ storage.type.string
@@ -319,14 +319,14 @@ key: "#{value}\"""
   "k\u0065y\"": "J"
 }
  \"""
-#^^ constant.character.escape.char.elixir
+#^^ -constant.character.escape.char.elixir
  """a
 #   ^ storage.type.string
 #^^^ punctuation.definition.string.end
 
 ~J'''
  \'''
-#^^ constant.character.escape.char
+#^^ -constant.character.escape.char
  '''m
 #   ^ storage.type.string
 #^^^ punctuation.definition.string.end
@@ -394,12 +394,16 @@ key: "#{value}\"""
 
 ~R"""   *
 #    ^^^^ invalid.illegal.opening-heredoc.elixir
+ \"\'
+#^^^^ constant.character.escape.pcree
  *"""x
 #    ^ string.quoted.modifiers.elixir
 #^ invalid.illegal.closing-heredoc.elixir
 
 ~R'''   *
 #    ^^^^ invalid.illegal.opening-heredoc.elixir
+ \'\"
+#^^^^ constant.character.escape.pcree
  *'''x
 #    ^ string.quoted.modifiers.elixir
 #^ invalid.illegal.closing-heredoc.elixir
