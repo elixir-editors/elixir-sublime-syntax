@@ -29,9 +29,12 @@ alias <%= @web_namespace %>.Router.Helpers, as: Routes
 #      ^^ entity.name.tag.ex.eex
 
 :<%= @key %>
-#<- punctuation.definition.constant.begin
+#<- constant.other.symbol punctuation.definition.constant.begin
 <%= @key %>:
-#          ^ punctuation.definition.constant.end
+#          ^ constant.other.keyword punctuation.definition.constant.end
+<%= @key %>_atom:
+#               ^ punctuation.definition.constant.end
+#          ^^^^^^ constant.other.keyword
 
 
 # NB: due to the workaround in the syntax file EEx tags

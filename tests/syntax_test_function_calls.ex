@@ -144,6 +144,34 @@ case a.func do
 #      ^^^^ -variable.function
 end
 
+# Avoid matching keywords as an identifier before "do":
+f x __MODULE__ do end; f x __ENV__ do end
+#                          ^^^^^^^ variable.language.special-form
+#   ^^^^^^^^^^ variable.language.special-form
+f x nil do end; f x true do end; f x false do end
+#                                    ^^^^^ constant.language
+#                   ^^^^ constant.language
+#   ^^^ constant.language
+f x when do end; f x and do end; f x in do end
+#                                    ^^ keyword.operator.logical
+#                    ^^^ keyword.operator.logical
+#   ^^^^ keyword.operator.when
+f x or do end; f x not do end; f x else do end
+#                                  ^^^^ keyword.control.conditional.else
+#                  ^^^ keyword.operator.logical
+#   ^^ keyword.operator.logical
+f x after do end; f x rescue do end; f x catch do end
+#                                        ^^^^^ keyword.control.exception.catch
+#                     ^^^^^^ keyword.control.exception.catch
+#   ^^^^^ keyword.control.exception.catch
+f x end do end; f fn end
+#                 ^^ keyword.declaration.function
+#   ^^^ keyword.context.block.end
+f x do: do end; f x end: do end; f fn: end
+#                                  ^^^ constant.other.keyword
+#                   ^^^^ constant.other.keyword
+#   ^^^ constant.other.keyword
+
 func x do do end end
 #                ^^^ punctuation.section.block.end keyword.context.block.end
 #            ^^^ punctuation.section.block.end keyword.context.block.end
