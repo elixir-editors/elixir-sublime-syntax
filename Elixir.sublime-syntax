@@ -2068,14 +2068,12 @@ contexts:
     - match: |
         (?x)
         (?! [?.]: | ::: | %:(?:{{atom_id}}|['"]) ) # No ::: and %:XYZ{} (it's a map)
-        {{atom_symbol}}(:)(?![:'"[:alpha:]])
+        (?>{{atom_symbol}}|(?<=%>)) (:) (?![:'"[:alpha:]])
       comment: keyword symbol
       scope: constant.other.keyword.elixir
       captures:
         1: punctuation.definition.constant.end.elixir
-    - match: '(?<=%>):'
-      scope: constant.other.keyword.elixir punctuation.definition.constant.end.elixir
-    # Look for ':' behind the closing apostrophe.
+    # Look for ':' behind the closing double/single quote.
     - match: (?x)(?=(["']) (?>\\. | (?!\1).)* \1:(?![:'"[:alpha:]]))
       comment: keyword string
       push:
@@ -2332,24 +2330,22 @@ contexts:
     - include: do_block_pop
     - include: fn_block
     - include: if_ws_closing_tokens_or_eol_pop
-    # Avoid matching (and|in|or|not) as an id.
     - include: elixir_keywords
     - include: special_form
     - include: last_id_argument
     - include: core_syntax
 
   last_id_argument:
-    # E.g.: func first, second, last do end
     - match: |
         (?x)
         (?=
           (?>
-            @?\s*{{identifier}}
+            (?:@\s*)?{{identifier}}
           | \.\s*(?:{{member}} | "(?>\\[\\"]|.)*" | '(?>\\[\\']|.)*')
           )
           \s*do{{no_id_key_suffix}}
         )
-      comment: prevent matching last argument as a function call
+      comment: prevent matching last argument as a function call, e.g. `func first, second, last do end`
       push:
         - include: do_block_pop
         - match: (@)\s*({{identifier}})
