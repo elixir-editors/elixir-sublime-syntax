@@ -55,6 +55,8 @@ M1.<%= M2 %>.f()
 # ^ punctuation.accessor.dot
 
 x.<%= :member %>()
+#                ^ punctuation.section.arguments.end
+#               ^ punctuation.section.arguments.begin
 #             ^ entity.name.tag.ex.eex
 #     ^^^^^^^ constant.other.symbol
 #  ^^ entity.name.tag.ex.eex
