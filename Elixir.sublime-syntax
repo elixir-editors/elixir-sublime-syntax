@@ -1990,6 +1990,8 @@ contexts:
     - include: if_non_space_or_eol_pop
 
   paren:
+    - match: (?<=%>)(?=\()
+      push: arguments_pop
     - match: \)
       scope: invalid.illegal.stray-closing-parenthesis.elixir
     - match: \(
