@@ -99,10 +99,10 @@
 #        ^ variable.parameter
 #          ^^ keyword.operator.arrow
 
-# NB: only the first parameter list can be matched correctly atm.
    x -> x
+#       ^ variable.other
 #    ^^ keyword.operator.arrow
-#  ^ variable.other
+#  ^ variable.parameter
  end
 
   list =
@@ -154,21 +154,124 @@ fn __MODULE__ -> __MODULE__ end
 #               ^ punctuation.section.arguments.begin.elixir
 #              ^ punctuation.accessor.dot.elixir
 
+fn x -> x end
+#         ^^^ punctuation.section.block.end
+#       ^ variable.other
+#    ^^ keyword.operator.arrow
+#  ^ variable.parameter
+fn
+ x -> x
+#     ^ variable.other
+#  ^^ keyword.operator.arrow
+#^ variable.parameter
+y -> y
+#    ^ variable.other
+# ^^ keyword.operator.arrow
+#<- variable.parameter
+  z -> z
+  #    ^ variable.other
+  # ^^ keyword.operator.arrow
+  #<- variable.parameter
+end
+#^^ punctuation.section.block.end
+fn -> x; y -> z end
+#               ^^^ punctuation.section.block.end
+#             ^ variable.other
+#          ^^ keyword.operator.arrow
+#        ^ -variable.parameter
+#     ^ variable.other
+#  ^^ keyword.operator.arrow
+fn x -> x; y -> y end
+#                 ^^^ punctuation.section.block.end
+#               ^ variable.other
+#            ^^ keyword.operator.arrow
+#        ^ keyword.operator.semicolon
+#       ^ variable.other
+#    ^^ keyword.operator.arrow
+#  ^ variable.parameter
+(fn
+#<- meta.parens punctuation.section.group.begin
+#^^^ meta.parens
+  x, 2, x3 ->
+    #      ^^ keyword.operator.arrow
+    #   ^^ variable.parameter
+    # ^ punctuation.separator.sequence
+    #^ constant.numeric.integer
+    {x, x3}
+    #   ^^ variable.other
+    #^ variable.other
+  "->" <> y ->
+    #       ^^ keyword.operator.arrow
+    #     ^ variable.parameter
+    #  ^^ keyword.operator.binary-concat
+    y
+    #<- variable.other
+  "#{(fn -> "->" end).(a)}", z when z == :-> -> z
+    #                                           ^ variable.other
+    #                                        ^^ keyword.operator.arrow
+    #                                    ^^^ constant.other.symbol
+    #                                 ^^ keyword.operator.comparison
+    #                               ^ variable.other
+    #                          ^^^^ keyword.operator.when
+    #                        ^ variable.parameter
+    #                      ^ punctuation.separator.sequence
+    #                  ^ variable.other
+    #                ^ punctuation.accessor.dot
+    #       ^^^^ string.quoted
+     -> var -> var
+    #          ^^^ variable.other
+    #       ^^ keyword.operator.arrow
+    #   ^^^ variable.other
+    #^^ keyword.operator.arrow
+    expr
+    #^^^ variable.other
+  λ when is_function(λ, 1) -> λ.(:λ)
+#                                  ^ punctuation.section.arguments.end
+#                               ^ punctuation.section.arguments.begin
+#                              ^ punctuation.accessor.dot
+#                             ^ variable.function
+#                          ^^ keyword.operator.arrow
+#                        ^ punctuation.section.arguments.end
+#                       ^ constant.numeric.integer
+#                     ^ punctuation.separator.arguments
+#                    ^ variable.other
+#                   ^ punctuation.section.arguments.begin
+#        ^^^^^^^^^^^ variable.function.built-in
+#   ^^^^ keyword.operator.when
+# ^ variable.parameter
+end)
+#  ^ punctuation.section.group.end
+#^^ punctuation.section.block.end
+#<- punctuation.section.block.end
+
 "(((())))"
 |> to_charlist()
 |> Stream.scan(0, fn ?(, x -> x+1; ?), x -> x-1; _, x -> x end)
+#                                                             ^ punctuation.section.arguments.end
+#                                                          ^^^ punctuation.section.block.end
 #                                                        ^ variable.other
+#                                                     ^^ keyword.operator.arrow
+#                                                   ^ variable.parameter
+#                                                 ^ punctuation.separator.sequence
+#                                                ^ variable.parameter
 #                                              ^ keyword.operator.semicolon
+#                                             ^ constant.numeric.integer
+#                                            ^ keyword.operator.arithmetic
 #                                           ^ variable.other
 #                                        ^^ keyword.operator.arrow
+#                                      ^ variable.parameter
+#                                    ^ punctuation.separator.sequence
 #                                  ^^ constant.numeric.char
 #                                ^ keyword.operator.semicolon
+#                               ^ constant.numeric.integer
+#                              ^ keyword.operator.arithmetic
 #                             ^ variable.other
 #                          ^^ keyword.operator.arrow
 #                        ^ variable.parameter
 #                      ^ punctuation.separator.sequence
 #                    ^^ constant.numeric.char
 #                 ^^ keyword.declaration.function
+#             ^ punctuation.section.arguments.begin
 
 
 ## Do-block
