@@ -100,15 +100,39 @@ contexts:
     - match: fn{{no_id_key_suffix}}
       scope: punctuation.section.block.begin.elixir keyword.declaration.function.elixir
       push:
-        - match: (?=->|when{{no_id_key_suffix}})
+        - match: (?=->)
+          set: core_syntax_or_block_end_pop
+        - match: (?=\S)
+          set:
+            - match: (?=->|when{{no_id_key_suffix}})
+              push: inlined_core_syntax_pop
+            - include: block_end_pop
+            # NB: no default parameters in fn blocks
+            - match: \\\\(?!:(?![:'"[:alpha:]]))
+              scope: keyword.operator.default.elixir invalid.illegal.default-operator.elixir
+            - include: parameters
+        - match: $
           set:
             - include: block_end_pop
-            - include: core_syntax
-        - include: block_end_pop
-        # NB: no default parameters in fn blocks
-        - match: \\\\(?!:(?![:'"[:alpha:]]))
-          scope: keyword.operator.default.elixir invalid.illegal.default-operator.elixir
-        - include: parameters
+            - include: if_closing_token_pop
+            - match: ^(\s*)(?=\S)(?!#)
+              push: [indented_core_syntax_pop, params_until_arrow_pop]
+            - include: core_syntax_or_block_end_pop
+
+  inlined_core_syntax_pop:
+    - match: (?=;)
+      pop: true
+    - include: core_syntax_or_closing_pop
+
+  params_until_arrow_pop:
+    - match: (?=->|when{{no_id_key_suffix}})
+      pop: true
+    - include: parameters
+
+  indented_core_syntax_pop:
+    - match: ^(?=\1\S|(?!\1))
+      pop: true
+    - include: core_syntax_or_closing_pop
 
   function_header_pop:
     - match: \(
