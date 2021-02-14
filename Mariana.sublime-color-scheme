@@ -28,6 +28,11 @@
       "foreground": "var(blue)"
     },
     {
+      "name": "Constant variable",
+      "scope": "variable.other.constant.elixir",
+      "foreground": "color(var(orange) s(+ 50%) l(- 20%))"
+    },
+    {
       "name": "Unused variable",
       "scope": "variable.other.unused.elixir",
       "foreground": "color(var(white) a(0.6))"
