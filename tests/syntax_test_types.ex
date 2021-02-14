@@ -669,10 +669,15 @@ def run(), do: nil
 #                         ^^^^ storage.type.custom
 #                 ^^^^^ variable.other.constant
 
-# FIXME:
 @spec "not a spec"
+ still_a_type
+#^^^^^^^^^^^^ storage.type.custom
  assert_raise CompileError, ~r"invalid"
- ^^^^^^^^^^^^ -storage.type.custom
+#^^^^^^^^^^^^ -storage.type
+@spec "not a spec"
+end
+ not_a_type
+#^^^^^^^^^^ -storage.type
 
 @spec >> ;
 #     ^^ invalid.illegal.stray-closing-binary
