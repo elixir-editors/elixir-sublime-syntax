@@ -115,14 +115,14 @@ contexts:
           set:
             - include: block_end_pop
             - include: if_closing_token_pop
-            - match: ^(\s*)(?=\S)(?!#)
+            - match: ^(\s*)(?=[^#\s])
               push: [indented_core_syntax_pop, params_until_arrow_pop]
             - include: core_syntax_or_block_end_pop
 
   inlined_core_syntax_pop:
     - match: (?=;)
       pop: true
-    - include: core_syntax_or_closing_pop
+    - include: core_syntax_or_if_closing_pop
 
   params_until_arrow_pop:
     - match: (?=->|when{{no_id_key_suffix}})
@@ -130,9 +130,9 @@ contexts:
     - include: parameters
 
   indented_core_syntax_pop:
-    - match: ^(?=\1\S|(?!\1))
+    - match: ^(?=\1[^#\s]|(?!\1)(?!\s*(#|$)))
       pop: true
-    - include: core_syntax_or_closing_pop
+    - include: core_syntax_or_if_closing_pop
 
   function_header_pop:
     - match: \(
@@ -284,7 +284,7 @@ contexts:
       push:
         - match: (?=,|(?>when|do){{no_id_key_suffix}})
           pop: true
-        - include: core_syntax_or_closing_pop
+        - include: core_syntax_or_if_closing_pop
     - include: paren_param
     - include: list_param
     - include: tuple_param
@@ -622,7 +622,7 @@ contexts:
       push:
         - meta_scope: meta.string.binary.elixir
         - include: binary_string_body_pop
-        - include: core_syntax_or_closing_pop
+        - include: core_syntax_or_if_closing_pop
 
   stray_binary_end:
     - match: '>>(?!>)'
@@ -659,7 +659,7 @@ contexts:
           scope: punctuation.section.group.end.elixir
           pop: true
         - include: bitstring_type
-        - include: core_syntax_or_closing_pop
+        - include: core_syntax_or_if_closing_pop
 
   escaped_char:
     # Avoid possibly matching closing string delimiter: [^'"/\\)\]}>#]
@@ -1468,7 +1468,7 @@ contexts:
         - include: dot_operator
         - include: if_non_space_or_eol_pop
     - include: arg_comma_and_skip_ws
-    - include: core_syntax_or_closing_pop
+    - include: core_syntax_or_if_closing_pop
 
   block_or_keyword:
     - include: atom_keyword
@@ -1499,7 +1499,7 @@ contexts:
     - include: block_end_pop
     - include: core_syntax
 
-  core_syntax_or_closing_pop:
+  core_syntax_or_if_closing_pop:
     - include: if_closing_token_pop
     - include: core_syntax
 
@@ -1608,7 +1608,7 @@ contexts:
           scope: punctuation.section.braces.end.elixir
           pop: true
         - include: unquote_call
-        - include: core_syntax_or_closing_pop
+        - include: core_syntax_or_if_closing_pop
 
   dot_accessor:
     - match: \.(?!\.)
@@ -1952,7 +1952,7 @@ contexts:
         - match: \}
           scope: punctuation.section.sequence.end.elixir
           pop: true
-        - include: core_syntax_or_closing_pop
+        - include: core_syntax_or_if_closing_pop
 
   item_access:
     - match: |
@@ -1968,7 +1968,7 @@ contexts:
           pop: true
         - match: (?=\,)
           push: invalid_comma_or_non_space_pop
-        - include: core_syntax_or_closing_pop
+        - include: core_syntax_or_if_closing_pop
 
   list:
     - match: \]
@@ -1981,7 +1981,7 @@ contexts:
           scope: punctuation.section.brackets.end.elixir
           pop: true
         - include: cons_operator
-        - include: core_syntax_or_closing_pop
+        - include: core_syntax_or_if_closing_pop
 
   map:
     - match: \%
@@ -2008,7 +2008,7 @@ contexts:
           scope: punctuation.section.mapping.end.elixir
           pop: true
         - include: cons_operator
-        - include: core_syntax_or_closing_pop
+        - include: core_syntax_or_if_closing_pop
     - include: if_closing_token_pop
     - include: if_non_space_or_eol_pop
 
@@ -2024,7 +2024,7 @@ contexts:
         - match: \)
           scope: punctuation.section.group.end.elixir
           pop: true
-        - include: core_syntax_or_closing_pop
+        - include: core_syntax_or_if_closing_pop
 
   ## Alias/Require statement
 
