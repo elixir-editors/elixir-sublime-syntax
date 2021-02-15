@@ -168,10 +168,11 @@ y -> y
 #    ^ variable.other
 # ^^ keyword.operator.arrow
 #<- variable.parameter
+  # FIXME: should be a parameter
   z -> z
   #    ^ variable.other
   # ^^ keyword.operator.arrow
-  #<- variable.parameter
+   <- variable.parameter
 end
 #^^ punctuation.section.block.end
 fn -> x; y -> z end
@@ -189,9 +190,25 @@ fn x -> x; y -> y end
 #       ^ variable.other
 #    ^^ keyword.operator.arrow
 #  ^ variable.parameter
+fn
+    indent4 -> indent4
+    #          ^^^^^^^ variable.other
+    #^^^^^^ variable.parameter
+  indent2 -> indent2
+  #          ^^^^^^^ variable.other
+  #^^^^^^ variable.parameter
+indent0 -> indent0
+#          ^^^^^^^ variable.other
+#^^^^^^ variable.parameter
+end
 (fn
 #<- meta.parens punctuation.section.group.begin
 #^^^ meta.parens
+  a ->
+    a = f(a) # NB: leave next line empty.
+
+    [a]
+    #^ variable.other -variable.parameter
   x, 2, x3 ->
     #      ^^ keyword.operator.arrow
     #   ^^ variable.parameter
@@ -206,18 +223,19 @@ fn x -> x; y -> y end
     #  ^^ keyword.operator.binary-concat
     y
     #<- variable.other
-  "#{(fn -> "->" end).(a)}", z when z == :-> -> z
-    #                                           ^ variable.other
-    #                                        ^^ keyword.operator.arrow
-    #                                    ^^^ constant.other.symbol
-    #                                 ^^ keyword.operator.comparison
-    #                               ^ variable.other
-    #                          ^^^^ keyword.operator.when
-    #                        ^ variable.parameter
-    #                      ^ punctuation.separator.sequence
-    #                  ^ variable.other
-    #                ^ punctuation.accessor.dot
-    #       ^^^^ string.quoted
+  "#{(fn _ -> "->" end).(a)}", z when z == :-> -> z
+    #                                             ^ variable.other
+    #                                          ^^ keyword.operator.arrow
+    #                                      ^^^ constant.other.symbol
+    #                                   ^^ keyword.operator.comparison
+    #                                 ^ variable.other
+    #                            ^^^^ keyword.operator.when
+    #                          ^ variable.parameter
+    #                        ^ punctuation.separator.sequence
+    #                    ^ variable.other
+    #                  ^ punctuation.accessor.dot
+    #         ^^^^ string.quoted
+    #    ^ variable.parameter.unused
      -> var -> var
     #          ^^^ variable.other
     #       ^^ keyword.operator.arrow
@@ -225,6 +243,38 @@ fn x -> x; y -> y end
     #^^ keyword.operator.arrow
     expr
     #^^^ variable.other
+
+  [first | rest] = list, n ->
+#                          ^^ keyword.operator.arrow
+#                        ^ variable.parameter
+#                      ^ punctuation.separator.sequence
+#                  ^^^^ variable.parameter
+#                ^ keyword.operator.match
+#              ^ punctuation.section.brackets.end
+#          ^^^^ variable.parameter
+#        ^ keyword.operator.cons
+#  ^^^^^ variable.parameter
+# ^ punctuation.section.brackets.begin
+  Enum.reduce(list, {:ok, n}, fn
+ _, {:error, _} = error -> error
+#                          ^^^^^ variable.other -variable.parameter
+#                       ^^ keyword.operator.arrow
+#                 ^^^^^ variable.parameter
+#               ^ keyword.operator.match
+#            ^ variable.parameter.unused
+# ^ punctuation.separator.sequence
+#^ variable.parameter.unused
+ a, {:ok, b} -> if(a > 0, do: {:ok, b / a}, else: {:error, :division_by_zero})
+#                                       ^ variable.other -variable.parameter
+#                                   ^ variable.other -variable.parameter
+#                  ^ variable.other -variable.parameter
+#            ^^ keyword.operator.arrow
+#         ^ variable.parameter
+#       ^ punctuation.separator.sequence
+# ^ punctuation.separator.sequence
+#^ variable.parameter
+end)
+
   λ when is_function(λ, 1) -> λ.(:λ)
 #                                  ^ punctuation.section.arguments.end
 #                               ^ punctuation.section.arguments.begin
