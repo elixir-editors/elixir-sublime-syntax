@@ -30,7 +30,7 @@
     {
       "name": "Constant variable",
       "scope": "variable.other.constant.elixir",
-      "foreground": "color(var(orange) s(+ 50%) l(- 20%))"
+      "foreground": "color(var(pink))"
     },
     {
       "name": "Unused variable",
