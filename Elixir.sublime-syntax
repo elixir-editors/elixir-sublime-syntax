@@ -99,25 +99,27 @@ contexts:
   fn_block:
     - match: fn{{no_id_key_suffix}}
       scope: punctuation.section.block.begin.elixir keyword.declaration.function.elixir
-      push:
-        - match: (?=->)
-          set: core_syntax_or_block_end_pop
-        - match: (?=\S)
-          set:
-            - match: (?=->|when{{no_id_key_suffix}})
-              push: inlined_core_syntax_pop
-            - include: block_end_pop
-            # NB: no default parameters in fn blocks
-            - match: \\\\(?!:(?![:'"[:alpha:]]))
-              scope: keyword.operator.default.elixir invalid.illegal.default-operator.elixir
-            - include: parameters
-        - match: $
-          set:
-            - include: block_end_pop
-            - include: if_closing_token_pop
-            - match: ^(\s*)(?=[^#\s])
-              push: [indented_core_syntax_pop, params_until_arrow_pop]
-            - include: core_syntax_or_block_end_pop
+      push: arrow_clauses_body_pop
+
+  arrow_clauses_body_pop:
+    - match: (?=->)
+      set: core_syntax_or_block_end_pop
+    - match: (?=\S)
+      set:
+        - match: (?=->|when{{no_id_key_suffix}})
+          push: inlined_core_syntax_pop
+        - include: block_end_pop
+        # NB: no default parameters in fn blocks
+        - match: \\\\(?!:(?![:'"[:alpha:]]))
+          scope: keyword.operator.default.elixir invalid.illegal.default-operator.elixir
+        - include: parameters
+    - match: $
+      set:
+        - include: block_end_pop
+        - include: if_closing_token_pop
+        - match: ^(\s*)(?=[^#\s])
+          push: [indented_core_syntax_pop, params_until_arrow_pop]
+        - include: core_syntax_or_block_end_pop
 
   inlined_core_syntax_pop:
     - match: (?=;)
@@ -2411,8 +2413,22 @@ contexts:
         5: keyword.control.exception.catch.elixir
         6: keyword.context.block.end.elixir
 
+  case_arguments_pop:
+    - match: \s?
+      comment: arguments list without parentheses
+      scope: punctuation.section.arguments.begin.elixir
+      set:
+        - meta_scope: meta.function-call.arguments.elixir
+        - match: do{{no_id_key_suffix}}
+          scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
+          set: arrow_clauses_body_pop
+        - include: arguments_rest_pop
+
   elixir_functions:
     - include: unquote_call
+    - match: case(?=\s){{no_suffix_then_arguments}}
+      scope: keyword.control.conditional.elixir
+      push: case_arguments_pop
     - match: |-
         (?x)
         (?> # Ordered by likeliness of occurrence.
