@@ -168,11 +168,10 @@ y -> y
 #    ^ variable.other
 # ^^ keyword.operator.arrow
 #<- variable.parameter
-  # FIXME: should be a parameter
   z -> z
-  #    ^ variable.other
+  #    ^ variable.other -variable.parameter
   # ^^ keyword.operator.arrow
-   <- variable.parameter
+  #<- variable.other -variable.parameter
 end
 #^^ punctuation.section.block.end
 fn -> x; y -> z end

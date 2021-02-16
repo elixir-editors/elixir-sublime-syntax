@@ -142,7 +142,39 @@ end
 
 case a.func do
 #      ^^^^ -variable.function
+  {:ok, value} when value != [] -> value
+#                                  ^^^^^ variable.other
+#                               ^^ keyword.operator.arrow
+#                         ^^ keyword.operator.comparison
+#                   ^^^^^ variable.other
+#              ^^^^ keyword.operator.when
+#       ^^^^^ variable.parameter
+  {:error, e} ->
+#          ^ variable.parameter
+    e
+#   ^ variable.other -variable.parameter
 end
+
+case unquote(value) do
+  unquote(arrow_clauses(clauses))
+#                       ^^^^^^^ variable.other -variable.parameter
+# ^^^^^^^ keyword.other.unquote
+end
+
+# TODO: highlight x as a parameter?
+case(value, do: (x -> x; y -> y))
+#                               ^ punctuation.section.arguments.end
+#                              ^ punctuation.section.group.end
+#                      ^ keyword.operator.semicolon
+#                     ^ variable.other
+#                  ^^ keyword.operator.arrow
+#                ^ variable.other
+#               ^ punctuation.section.group.begin
+#           ^^^ constant.other.keyword
+#         ^ punctuation.separator.arguments
+#    ^^^^^ variable.other
+#   ^ punctuation.section.arguments.begin
+#<- keyword.control.conditional
 
 # Avoid matching keywords as an identifier before "do":
 f x __MODULE__ do end; f x __ENV__ do end
