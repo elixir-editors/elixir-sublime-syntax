@@ -36,7 +36,7 @@
     {
       "name": "Unused variable",
       "scope": "variable.other.unused.elixir",
-      "foreground": "color(var(yellow5) a(0.6))"
+      "foreground": "color(var(white) a(0.5))"
     },
     {
       "name": "Unused parameter",
