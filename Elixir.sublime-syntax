@@ -1413,7 +1413,7 @@ contexts:
   def_blocks:
     - match: |
         (?x)
-        (?>(def(?>macro|guard)?p) | (def(?>macro|delegate|guard)?))
+        (?>(def(?>macro|guard|n)?p) | (def(?>macro|delegate|guard|n)?))
         {{no_suffix_then_arguments}}
       captures:
         1: keyword.declaration.function.private.elixir
@@ -2426,7 +2426,7 @@ contexts:
 
   elixir_functions:
     - include: unquote_call
-    - match: case(?=\s){{no_suffix_then_arguments}}
+    - match: case(?!\(){{no_suffix_then_arguments}}
       scope: keyword.control.conditional.elixir
       push: case_arguments_pop
     - match: |-
