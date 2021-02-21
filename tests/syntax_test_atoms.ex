@@ -35,6 +35,33 @@
 #  ^^ constant.other.keyword
 #^^ variable.function
 
+ Module?
+#      ^ invalid.illegal.character-literal
+#^^^^^^ constant.other.module
+ Module?.Module!
+#              ^ keyword.operator.logical
+#        ^^^^^^ constant.other.module
+#      ^^ constant.numeric.char
+#^^^^^^ constant.other.module
+ Module!: :Module!
+#         ^^^^^^^^ constant.other.symbol
+#^^^^^^^^ constant.other.keyword
+ Module?: :Module?
+#         ^^^^^^^^ constant.other.symbol
+#^^^^^^^^ constant.other.keyword
+ Module@node1!: :Module@node1!
+#               ^^^^^^^^^^^^^^ constant.other.symbol
+#^^^^^^^^^^^^^^ constant.other.keyword
+ Module@node1?: :Module@node1?
+#               ^^^^^^^^^^^^^^ constant.other.symbol
+#^^^^^^^^^^^^^^ constant.other.keyword
+ Module?@node1: :Module?@node1
+#                        ^^^^^ variable.other.constant
+#                       ^ keyword.operator.attribute
+#               ^^^^^^^^ constant.other.symbol
+#        ^^^^^^ constant.other.keyword
+#      ^^ constant.numeric.char
+#^^^^^^ constant.other.module
 
 ### Atoms as keywords and equivalent symbols.
 

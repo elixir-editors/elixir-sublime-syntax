@@ -96,3 +96,30 @@ fragment(@sql, "ASC")
 #            ^ punctuation.separator.arguments
 #         ^^^ variable
 #        ^ keyword.operator.attribute
+
+fragment(
+#       ^ punctuation.section.arguments.begin
+#<- support.function
+  unquote("SELECT * FROM jsonb_populate_recordset(NULL::#{source}, to_jsonb(?))"),
+#                                                                                ^ punctuation.separator.arguments
+#                                                                               ^ punctuation.section.arguments.end
+#                                                                           ^ constant.other.placeholder.elixir
+#                                                                  ^^^^^^^^ support.function.psql
+#                                                                ^^^^^^^^^^^ meta.string.elixir source.ex.sql
+#                                                       ^^^^^^^^^ meta.string.elixir meta.interpolation.elixir
+#                                                     ^^ keyword.operator.psql
+#                        ^^^^^^^^^^^^^^^^^^^^^^^^ support.function.psql
+#                 ^ variable.language.star.sql
+#          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.string.elixir source.ex.sql
+#        ^ punctuation.section.arguments.begin
+# ^^^^^^^ keyword.other.unquote
+  ^unquote(values) |> type({:array, :map})
+#                                        ^ punctuation.section.arguments.end
+#                                   ^^^^ constant.other.symbol
+#                           ^^^^^^ constant.other.symbol
+#                         ^ punctuation.section.arguments.begin
+#                     ^^^^ variable.function
+#                  ^^ keyword.operator.pipe
+#          ^^^^^^ variable.other
+#  ^^^^^^^ keyword.other.unquote
+)

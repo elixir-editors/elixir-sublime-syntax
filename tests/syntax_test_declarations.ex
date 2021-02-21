@@ -20,7 +20,31 @@ defmodule do: Module
 defmodule Module
 #         ^^^^^^ entity.name.namespace
 #<- keyword.declaration.module
+defmodule Module?
+#                ^ punctuation.section.arguments.end
+#               ^ -entity.name.namespace
+#         ^^^^^^ entity.name.namespace
+defmodule Module!
+#                ^ punctuation.section.arguments.end
+#               ^ -entity.name.namespace
+#         ^^^^^^ entity.name.namespace
+defmodule Module? do
+#               ^ -entity.name.namespace
+#         ^^^^^^ entity.name.namespace
+end
+#  ^ punctuation.section.arguments.end
+defmodule Module! do
+#               ^ -entity.name.namespace
+#         ^^^^^^ entity.name.namespace
+end
+#  ^ punctuation.section.arguments.end
+defmodule A.Module? do
+#                 ^ -entity.name.namespace
+#           ^^^^^^ entity.name.namespace
+end
+#  ^ punctuation.section.arguments.end
 defmodule App.Module
+#                   ^ punctuation.section.arguments.end
 #             ^^^^^^ entity.name.namespace
 #            ^ punctuation.accessor
 #         ^^^ constant.other.module

@@ -176,6 +176,78 @@ case(value, do: (x -> x; y -> y))
 #   ^ punctuation.section.arguments.begin
 #<- keyword.control.conditional
 
+
+ with {:ok, struct} = ok <- Repo.insert() do
+#                     ^^ variable.parameter
+#           ^^^^^^ variable.parameter
+#    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.function-call.arguments
+#^^^^ keyword.control.conditional
+   struct
+#  ^^^^^^ variable.other -variable.parameter
+ else
+   {:error, e} -> e
+   #              ^ variable.other -variable.parameter
+   #        ^ variable.parameter
+ end
+#   ^ punctuation.section.arguments.end
+
+with do
+#    ^^ keyword.context.block.do
+else
+  e -> e
+# ^ variable.parameter
+end
+#  ^ punctuation.section.arguments.end
+
+with unquote(clauses) do
+#            ^^^^^^^ variable.other
+#    ^^^^^^^ keyword.other.unquote
+end
+#  ^ punctuation.section.arguments.end
+
+with some do
+#    ^^^^ variable.parameter
+end
+#  ^ punctuation.section.arguments.end
+with some < do
+#         ^ keyword.operator.comparison
+#    ^^^^ variable.other
+end
+#  ^ punctuation.section.arguments.end
+with some <- thing do
+#            ^^^^^ variable.other -variable.parameter
+#    ^^^^ variable.parameter
+end
+#  ^ punctuation.section.arguments.end
+
+with _ <- 0,
+#          ^ punctuation.separator.arguments
+#      ^^ keyword.operator.arrow
+#    ^ variable.parameter.unused
+     {:ok, p} <-
+#          ^ variable.parameter
+       Repo.insert(cs),
+#                     ^ punctuation.separator.arguments
+#                  ^^ variable.other
+     title =
+#          ^ keyword.operator.match
+#    ^^^^^ variable.parameter
+       p.title,
+#             ^ punctuation.separator.arguments
+     "T" <> _ <- title do
+#                ^^^^^ variable.other
+#           ^ variable.parameter.unused
+end
+#  ^ punctuation.section.arguments.end
+
+with {:ok, x} <- f(), do: x
+#                          ^ punctuation.section.arguments.end
+#                         ^ variable.other -variable.parameter
+#                     ^^^ constant.other.keyword.elixir
+#                   ^ punctuation.separator.arguments
+#          ^ variable.parameter
+
+
 # Avoid matching keywords as an identifier before "do":
 f x __MODULE__ do end; f x __ENV__ do end
 #                          ^^^^^^^ variable.language.special-form
@@ -249,17 +321,6 @@ start(fn -> raise "stop"  end)
 end
 #  ^ punctuation.section.arguments.end
 #<- punctuation.section.block.end
-
-with _ <- 0,
-#          ^ punctuation.separator.arguments
-     {:ok, p} <-
-       Repo.insert(cs),
-#                     ^ punctuation.separator.arguments
-     title =
-       p.title,
-#             ^ punctuation.separator.arguments
-     "T" <> _ <- title do
-end
 
 quote(do: (acc, x -> x))
 #             ^ punctuation.separator.sequence
