@@ -37,7 +37,7 @@ contexts:
         # Various Postgres operators.
         | (::|\|?\|/|!!?|<<|>>|[%^@|&#~])
         # Postgres type cast identifier.
-        | (?<=::)\s*((?!\d)\w+)
+        | (?<=::)\s*((?!\d)\w+(?:\[\])*)
         # Postgres jsonb operators.
         | (\\\\)(\?[|&]?)? | (->>?|\#>>?|@[@>?]|<@|\#-)
         # Ecto argument placeholder.
