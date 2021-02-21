@@ -154,7 +154,7 @@ contexts:
 
   function_header_args_pop:
     - match: (?={{atom_symbol}}:(?!:))|(?<=["']:)
-      set: arguments_rest_pop
+      set: arguments_ws_rest_pop
 
     - match: (?=unquote\(\s*:(?!:(?=[^:]|$)))
       set: [function_params_or_eol_pop, function_atom_name_pop, unquote_pop]
@@ -194,7 +194,7 @@ contexts:
             3: entity.name.function.elixir
           set:
             - match: (?=,)
-              set: arguments_rest_pop
+              set: arguments_ws_rest_pop
             - include: do_block_pop
             - include: if_ws_closing_token_or_eol_pop
             - include: paren_param
@@ -208,7 +208,7 @@ contexts:
             - meta_scope: meta.function.parameters.elixir
             - match: \}
               scope: entity.name.function.elixir
-              set: arguments_rest_pop
+              set: arguments_ws_rest_pop
             - include: parameters
         - include: parameters
         - include: function_params_or_eol_pop
@@ -217,7 +217,7 @@ contexts:
     # E.g.: "def func a, b do {a, b} end"
     - match: (?={{atom_symbol}}:(?!:))|(?<=["']:)|(?=when{{no_id_key_suffix}})
       comment: break at first atom key (usually "do:")
-      set: arguments_rest_pop
+      set: arguments_ws_rest_pop
     - include: arg_comma_and_skip_ws
     - include: function_ws_params_pop
 
@@ -235,10 +235,10 @@ contexts:
         - meta_scope: meta.function.parameters.elixir
         - match: \)
           scope: punctuation.definition.parameters.end.elixir
-          set: arguments_rest_pop
+          set: arguments_ws_rest_pop
         - include: parameters
     - match: (?=,)
-      set: arguments_rest_pop
+      set: arguments_ws_rest_pop
     - include: do_block_pop
     - include: if_ws_closing_token_or_eol_pop
     - include: if_non_space_pop
@@ -1451,7 +1451,7 @@ contexts:
 
   defmodule_arguments:
     - match: (?={{atom_symbol}}:(?!:))|(?<=["']:)
-      push: arguments_rest_pop
+      push: arguments_ws_rest_pop
     - include: block_or_keyword
     - match: (?=(?>(?<=%>)\.)?(?>{{module_name}}|__MODULE__){{no_id_key_suffix}}|:(?>{{atom_symbol}}|['"]))
       push:
@@ -2343,9 +2343,9 @@ contexts:
       scope: punctuation.section.arguments.begin.elixir
       set:
         - meta_scope: meta.function-call.arguments.elixir
-        - include: arguments_rest_pop
+        - include: arguments_ws_rest_pop
 
-  arguments_rest_pop:
+  arguments_ws_rest_pop:
     - include: invalid_comma
     - include: arg_comma_and_skip_ws
     - match: (?<=[-+*!=<>|&@^~:]|[^:]\band|[^:]\bor|[^:]\bwhen)(?<!\W\?:)$
@@ -2422,7 +2422,7 @@ contexts:
         - match: do{{no_id_key_suffix}}
           scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
           set: arrow_clauses_body_pop
-        - include: arguments_rest_pop
+        - include: arguments_ws_rest_pop
 
   elixir_functions:
     - include: unquote_call
