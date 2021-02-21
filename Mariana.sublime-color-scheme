@@ -59,6 +59,11 @@
       "font_style": "italic"
     },
     {
+      "name": "Capture placeholder ampersand",
+      "scope": "punctuation.definition.capture.elixir constant.other.capture.elixir",
+      "foreground": "color(var(pink) s(- 30%))"
+    },
+    {
       "name": "Module atom",
       "scope": "constant.other.module.elixir",
       "foreground": "color(var(orange) s(+ 50%) l(- 20%))"

@@ -1,5 +1,9 @@
 {
   "name": "Monokai for Elixir",
+  "variables":
+  {
+    "entity": "var(yellow2)"
+  },
   "rules":
   [
     // NB: commented out to keep it similar to the style of HTML tags.
@@ -47,7 +51,7 @@
       "name": "Spec name",
       "scope": "variable.other.spec.elixir",
       "font_style": "italic",
-      "foreground": "color(var(yellow2) s(- 50%))"
+      "foreground": "color(var(entity) s(- 50%))"
     },
     {
       "name": "Capture name",
@@ -60,9 +64,14 @@
       "font_style": "italic"
     },
     {
+      "name": "Capture placeholder ampersand",
+      "scope": "punctuation.definition.capture.elixir constant.other.capture.elixir",
+      "foreground": "color(var(purple) s(- 30%))"
+    },
+    {
       "name": "Module atom",
       "scope": "constant.other.module.elixir",
-      "foreground": "color(var(yellow2) s(+ 50%) l(- 20%))"
+      "foreground": "color(var(entity) s(+ 50%) l(- 20%))"
     },
     {
       "name": "Atom keyword",
