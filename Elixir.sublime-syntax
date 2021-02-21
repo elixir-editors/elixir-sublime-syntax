@@ -277,7 +277,7 @@ contexts:
     - match: |
         (?x)
         (?>((?=_)(?<!%>){{identifier}})|({{identifier}}))
-        (?=\s*(?>[,;)}\]=|\\]|\.\.|::|->|<>|>>|(?>when|in|do){{no_id_key_suffix}}|$))
+        (?=\s*(?>[,;)}\]=|\\]|\.\.|::|->|<-|<>|>>|(?>when|in|do){{no_id_key_suffix}}|$))
       captures:
         1: variable.parameter.unused.elixir
         2: variable.parameter.elixir
@@ -2424,7 +2424,6 @@ contexts:
 
   case_arguments_pop:
     - match: \s?
-      comment: arguments list without parentheses
       scope: punctuation.section.arguments.begin.elixir
       set:
         - meta_scope: meta.function-call.arguments.elixir
@@ -2433,11 +2432,41 @@ contexts:
           set: arrow_clauses_body_pop
         - include: arguments_ws_rest_pop
 
+  with_arguments_pop:
+    - match: \s?
+      scope: punctuation.section.arguments.begin.elixir
+      set:
+        - meta_scope: meta.function-call.arguments.elixir
+        - match: (?=do(:)(?!:))
+          set: [arguments_ws_closing_pop, arguments_ws_rest_pop]
+        - match: do{{no_id_key_suffix}}
+          scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
+          set:
+            - match: else{{no_id_key_suffix}}
+              scope: keyword.control.conditional.else.elixir
+              set: [arguments_ws_closing_pop, arrow_clauses_body_pop]
+            - match: (?=end{{no_id_key_suffix}})
+              set: [arguments_ws_closing_pop, block_end_pop]
+            - include: core_syntax
+        - include: arguments_ws_closing_pop
+        - include: arg_comma_and_skip_ws
+        - match: (?=\S)
+          push:
+            - match: (?=<-|,|(?>when|do){{no_id_key_suffix}}|do(:)(?!:))
+              set:
+                - match: (?=,|do{{no_id_key_suffix}}|do(:)(?!:))
+                  pop: true
+                - include: arguments_ws_rest_pop
+            - include: parameters
+
   elixir_functions:
     - include: unquote_call
     - match: case(?!\(){{no_suffix_then_arguments}}
       scope: keyword.control.conditional.elixir
       push: case_arguments_pop
+    - match: with(?!\(){{no_suffix_then_arguments}}
+      scope: keyword.control.conditional.elixir
+      push: with_arguments_pop
     - match: |-
         (?x)
         (?> # Ordered by likeliness of occurrence.
