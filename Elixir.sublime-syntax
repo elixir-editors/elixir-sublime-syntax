@@ -1693,14 +1693,13 @@ contexts:
           scope: punctuation.section.arguments.begin.elixir
           set:
             - meta_scope: meta.function-call.arguments.elixir
-            - include: arguments_closing_pop
             - include: block_or_keyword
             - match: (?=unquote\()
               push: [type_definition_pop, arguments_pop, unquote_pop]
             - match: '{{identifier}}'
               scope: entity.name.type.elixir
               push: type_definition_pop
-            - include: core_syntax
+            - include: arguments_rest_pop
         - match: \s?
           scope: punctuation.section.arguments.begin.elixir
           set:
@@ -2044,9 +2043,7 @@ contexts:
             - match: (?=,)
               set:
                 - include: alias_as_arg
-                - include: arg_comma_and_skip_ws
-                - include: arguments_closing_pop
-                - include: core_syntax
+                - include: arguments_rest_pop
             - include: core_syntax
         # alias X, as: Y
         - match: \s?
@@ -2187,17 +2184,30 @@ contexts:
   ## SQL
 
   sql_fragment:
-    - match: (fragment)\s*(\()
+    - match: (fragment)(\()
       captures:
         1: support.function.elixir
         2: punctuation.section.arguments.begin.elixir
       push:
-        - include: comment
-        # TODO: add sigil strings? Or use ~Q"" for SQL similar to ~L"" for LiveView?
-        - match: (?=")
-          set: [sql_fragment_args_pop, sql_string_pop]
-        - match: (?=\S)
-          set: sql_fragment_args_pop
+        - meta_scope: meta.function-call.arguments.elixir
+        - match: (?=unquote\()
+          set: [arguments_rest_pop, sql_unquote_pop, unquote_pop]
+        - include: sql_fragment_args_pop
+
+  sql_unquote_pop:
+    - match: \(
+      scope: punctuation.section.arguments.begin.elixir
+      set:
+        - meta_scope: meta.function-call.arguments.elixir
+        - include: sql_fragment_args_pop
+
+  sql_fragment_args_pop:
+    # TODO: add sigil strings? Or use ~Q"" for SQL similar to ~L"" for LiveView?
+    - match: (?=")
+      set: [arguments_rest_pop, sql_string_pop]
+    - include: comment
+    - match: (?=\S)
+      set: arguments_rest_pop
 
   sql_string_pop:
     - match: (""")(.*)\n
@@ -2241,11 +2251,6 @@ contexts:
           pop: true
         - include: escaped_char
         - include: if_empty_pop
-
-  sql_fragment_args_pop:
-    - include: arguments_closing_pop
-    - include: arg_comma_and_skip_ws
-    - include: core_syntax
 
   opaque_struct:
     # Attempt highlighting e.g. #PID<0.1.0>, #Decimal<1.0> etc.
@@ -2316,14 +2321,18 @@ contexts:
       scope: punctuation.section.arguments.begin.elixir
       set:
         - meta_scope: meta.function-call.arguments.elixir
-        - include: arguments_closing_pop
-        - include: arg_comma_and_skip_ws
-        - include: core_syntax
+        - include: arguments_rest_pop
 
   arguments_closing_pop:
     - match: \)
       scope: punctuation.section.arguments.end.elixir
       pop: true
+
+  arguments_rest_pop:
+    - include: arguments_closing_pop
+    - include: if_closing_token_pop
+    - include: arg_comma_and_skip_ws
+    - include: core_syntax
 
   arguments_ws_closing_pop:
     - match: |
