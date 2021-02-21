@@ -13,6 +13,7 @@ variables:
   atom_id: (?>[[:alpha:]_]{{atom_id_suffix}})
   identifier: (?>[[:lower:]_]\w*[?!]?)
   no_id_key_suffix: (?=\b(?!{{atom_id_suffix}}:(?!:)|[?!])|(?<=[?!])(?!:(?!:)))
+  no_mod_key_suffix: (?=(?!{{atom_id_suffix}}:(?!:)))
 
   # NB: the keywords are ordered by number of occurrences in the compiler source code of Elixir.
   # Stats produced using Makeup.Lexers.ElixirLexer.lex(): `[end: 21828, do: 17758, fn: 4070, when: 2364, true: 2232, false: 1625, nil: 1405, and: 1066, in: 821, else: 753, after: 408, or: 258, rescue: 211, not: 198, catch: 113]`
@@ -1453,7 +1454,7 @@ contexts:
     - match: (?={{atom_symbol}}:(?!:))|(?<=["']:)
       push: arguments_ws_rest_pop
     - include: block_or_keyword
-    - match: (?=(?>(?<=%>)\.)?(?>{{module_name}}|__MODULE__){{no_id_key_suffix}}|:(?>{{atom_symbol}}|['"]))
+    - match: (?=(?>(?<=%>)\.)?(?>{{module_name}}{{no_mod_key_suffix}}|__MODULE__{{no_id_key_suffix}})|:(?>{{atom_symbol}}|['"]))
       push:
         - meta_scope: meta.namespace.elixir
         - match: (:)({{atom_symbol}})(?!\s*\.)
@@ -1461,7 +1462,7 @@ contexts:
           captures:
             1: punctuation.definition.constant.begin.elixir
             2: entity.name.namespace.elixir
-        - match: '{{module_name}}{{no_id_key_suffix}}(?!\s*\.)'
+        - match: '{{module_name}}{{no_mod_key_suffix}}(?!\s*\.)'
           scope: entity.name.namespace.elixir
         - include: special_form
         - include: module_name
@@ -1508,11 +1509,11 @@ contexts:
   ## Identifiers
 
   module_name:
-    - match: '{{module_name}}{{no_id_key_suffix}}'
+    - match: '{{module_name}}{{no_mod_key_suffix}}'
       scope: constant.other.module.elixir
 
   module_name_pop:
-    - match: '{{module_name}}{{no_id_key_suffix}}'
+    - match: '{{module_name}}{{no_mod_key_suffix}}'
       scope: constant.other.module.elixir
       pop: true
 
@@ -2071,12 +2072,12 @@ contexts:
       push: [alias_as_name_pop, if_non_space_pop]
 
   alias_as_name_pop:
-    - match: '{{module_name}}{{no_id_key_suffix}}'
+    - match: '{{module_name}}{{no_mod_key_suffix}}'
       scope: entity.name.namespace.elixir
     - include: if_non_space_or_eol_pop
 
   alias_names:
-    - match: (?=(?>(?<=%>)\.)?(?>{{module_name}}|__MODULE__){{no_id_key_suffix}}|:(?>{{atom_symbol}}|['"]))
+    - match: (?=(?>(?<=%>)\.)?(?>{{module_name}}{{no_mod_key_suffix}}|__MODULE__{{no_id_key_suffix}})|:(?>{{atom_symbol}}|['"]))
       push:
         - include: module_name
         - include: dot_accessor
