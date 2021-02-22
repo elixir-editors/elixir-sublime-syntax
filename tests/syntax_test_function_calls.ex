@@ -247,6 +247,103 @@ with {:ok, x} <- f(), do: x
 #                   ^ punctuation.separator.arguments
 #          ^ variable.parameter
 
+ try do
+#    ^^ keyword.context.block.do
+#^^^ keyword.control.exception.try
+   no_param
+#  ^^^^^^^^ -variable.parameter
+   do_something_that_may_fail(some_arg)
+ rescue
+#^^^^^^ keyword.control.exception.catch
+   ArgumentError = e ->
+#                  ^ variable.parameter
+#  ^^^^^^^^^^^^^ constant.other.module
+     IO.puts("Invalid #{inspect(e)} given")
+ catch
+#^^^^^ keyword.control.exception.catch
+   value ->
+#  ^^^^^ variable.parameter
+     IO.puts("Caught #{inspect(value)}")
+ else
+#^^^^ keyword.control.conditional.else
+   value ->
+#  ^^^^^ variable.parameter
+     IO.puts("Success! The result was #{inspect(value)}")
+ after
+   no_param
+#  ^^^^^^^^ -variable.parameter
+   IO.puts("This is printed regardless if it failed or succeeded")
+ end
+#   ^ punctuation.section.arguments.end
+#^^^ keyword.context.block.end
+
+ try do: 1/x, after: IO.puts("Division by 0!")
+#                                             ^ punctuation.section.arguments.end
+#             ^^^^^^ constant.other.keyword
+#           ^ punctuation.separator.arguments
+#          ^ variable.other
+#    ^^^ constant.other.keyword
+
+
+ receive do
+#        ^^ keyword.context.block.do
+#^^^^^^^ keyword.control.loop.receive
+   {:selector, number, name} when is_integer(number) ->
+#                                            ^^^^^^ variable.other -variable.parameter
+#                            ^^^^ keyword.operator.when
+#                      ^^^^ variable.parameter
+#              ^^^^^^ variable.parameter
+     name
+#    ^^^^ variable.other -variable.parameter
+   name when is_atom(name) ->
+#                    ^^^^ variable.other -variable.parameter
+#       ^^^^ keyword.operator.when
+#  ^^^^ variable.parameter
+     name
+#    ^^^^ variable.other -variable.parameter
+   _ ->
+#  ^ variable.parameter.unused
+     IO.puts(:stderr, "Unexpected message received")
+ end
+#   ^ punctuation.section.arguments.end
+#^^^ keyword.context.block.end
+
+ receive do ^ref ->
+#                ^^ keyword.operator.arrow
+#            ^^^ variable.parameter
+#           ^ keyword.operator.pin
+   ref
+#  ^^^ variable.other
+ end
+
+ receive do
+   ^ref -> :ok
+#   ^^^ variable.parameter
+#  ^ keyword.operator.pin
+   {:DOWN, ^ref, _, _, _} -> :DOWN
+#           ^^^ variable.parameter
+ after
+#^^^^^ keyword.control.exception.catch
+   _timeout = 5_000 ->
+#             ^^^^^ constant.numeric.integer
+#  ^^^^^^^^ variable.parameter.unused
+     IO.puts(:stderr, "No message in 5 seconds")
+ end
+#   ^ punctuation.section.arguments.end
+#^^^ keyword.context.block.end
+
+ receive after: (timeout -> :ok)
+#                               ^ punctuation.section.arguments.end
+#                ^^^^^^^ variable
+#        ^^^^^^ constant.other.keyword
+ receive do: (^ref -> :ok), after: (timeout -> :ok)
+#                                                  ^ punctuation.section.arguments.end
+#                                   ^^^^^^^ variable
+#                           ^^^^^^ constant.other.keyword
+#                         ^ punctuation.separator.arguments
+#              ^^^ variable
+#        ^^^ constant.other.keyword
+
 
 # Avoid matching keywords as an identifier before "do":
 f x __MODULE__ do end; f x __ENV__ do end
