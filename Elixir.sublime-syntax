@@ -99,7 +99,7 @@ contexts:
 
   fn_block:
     - match: fn{{no_id_key_suffix}}
-      scope: punctuation.section.block.begin.elixir keyword.declaration.function.elixir
+      scope: punctuation.section.block.begin.elixir keyword.other.fn.elixir
       push: [fn_block_end_pop, arrow_clauses_body_pop, fn_single_body_or_pop]
 
   fn_single_body_or_pop:
@@ -1499,6 +1499,9 @@ contexts:
       scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
       set:
         - meta_scope: meta.block.elixir
+        - match: rescue{{no_id_key_suffix}}
+          scope: keyword.control.exception.catch.elixir
+          push: arrow_clauses_body_pop
         - include: core_syntax_or_block_end_pop
 
   do_block:
@@ -2361,7 +2364,7 @@ contexts:
   arguments_ws_closing_pop:
     - match: |
         (?x)
-          \n|\s?(?=\s*(?>[\n})\];]|$|%>|{{closing_keyword}}))
+          \n|\s?(?=\s*(?>[\n})\];]|$|>>(?!>)|%>|{{closing_keyword}}))
         | (?<=::\bend\b) | (?<=([^:])\bend\b) | (?<=^end\b)
       scope: punctuation.section.arguments.end.elixir
       pop: true
@@ -2446,100 +2449,139 @@ contexts:
         5: keyword.control.exception.catch.elixir
         6: keyword.context.block.end.elixir
 
-  case_arguments_pop:
-    - match: \s?
-      scope: punctuation.section.arguments.begin.elixir
-      set:
-        - meta_scope: meta.function-call.arguments.elixir
-        - match: do{{no_id_key_suffix}}
-          scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
-          set: arrow_clauses_body_pop
-        - include: arguments_ws_rest_pop
-
-  with_arguments_pop:
-    - match: \s?
-      scope: punctuation.section.arguments.begin.elixir
-      set:
-        - meta_scope: meta.function-call.arguments.elixir
-        - match: (?=do(:)(?!:))
-          set: [arguments_ws_closing_pop, arguments_ws_rest_pop]
-        - match: do{{no_id_key_suffix}}
-          scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
+  case_function:
+    - match: case(?!\(){{no_suffix_then_arguments}}
+      scope: keyword.control.conditional.elixir
+      push:
+        - match: \s?
+          scope: punctuation.section.arguments.begin.elixir
           set:
-            - match: else{{no_id_key_suffix}}
-              scope: keyword.control.conditional.else.elixir
-              push: arrow_clauses_body_pop
+            - meta_scope: meta.function-call.arguments.elixir
+            - match: do{{no_id_key_suffix}}
+              scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
+              push:
+                - meta_scope: meta.block.elixir
+                - include: arrow_clauses_body_pop
             - include: last_arg_block_end_pop
-            - include: core_syntax
-        - include: arguments_ws_closing_pop
-        - include: arg_comma_and_skip_ws
-        - match: (?=\S)
-          push:
-            - match: (?=<-|,|(?>when|do){{no_id_key_suffix}}|do(:)(?!:))
+            - include: arguments_ws_rest_pop
+
+  one_left_arrow_clause:
+    - match: (?=\S)
+      push:
+        - match: (?=<-|,|(?>when|do){{no_id_key_suffix}}|do(:)(?!:))
+          set:
+            - match: (?=,|do{{no_id_key_suffix}}|do(:)(?!:))
+              pop: true
+            - include: arguments_ws_rest_pop
+        - include: parameters_or_if_closing_pop
+
+  with_function:
+    - match: with(?!\(){{no_suffix_then_arguments}}
+      scope: keyword.control.conditional.elixir
+      push:
+        - match: \s?
+          scope: punctuation.section.arguments.begin.elixir
+          set:
+            - meta_scope: meta.function-call.arguments.elixir
+            - match: (?=do(:)(?!:))
+              set: [arguments_ws_closing_pop, arguments_ws_rest_pop]
+            - match: do{{no_id_key_suffix}}
+              scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
               set:
-                - match: (?=,|do{{no_id_key_suffix}}|do(:)(?!:))
-                  pop: true
+                - meta_scope: meta.block.elixir
+                - match: else{{no_id_key_suffix}}
+                  scope: keyword.control.conditional.else.elixir
+                  push: arrow_clauses_body_pop
+                - include: last_arg_block_end_pop
+                - include: core_syntax
+            - include: arguments_ws_closing_pop
+            - include: arg_comma_and_skip_ws
+            - include: one_left_arrow_clause
+
+  for_function:
+    - match: for(?!\(){{no_suffix_then_arguments}}
+      scope: keyword.control.loop.for.elixir
+      push:
+        - match: \s?
+          scope: punctuation.section.arguments.begin.elixir
+          set:
+            - meta_scope: meta.function-call.arguments.elixir
+            - match: (?=reduce:(?!:))
+              set:
+                - match: do{{no_id_key_suffix}}
+                  scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
+                  set:
+                    - meta_scope: meta.block.elixir
+                    - include: last_arg_block_end_pop
+                    - match: ''
+                      push: arrow_clauses_body_pop
+                - include: arg_comma_and_skip_ws
                 - include: arguments_ws_rest_pop
-            - include: parameters_or_if_closing_pop
+            - match: (?={{atom_symbol}}:(?!:))|(?<=["']:)
+              set: [arguments_ws_closing_pop, arguments_ws_rest_pop]
+            - include: arguments_ws_closing_pop
+            - include: arg_comma_and_skip_ws
+            - include: one_left_arrow_clause
 
-  try_arguments_pop:
-    - match: \s?
-      scope: punctuation.section.arguments.begin.elixir
-      set:
-        - meta_scope: meta.function-call.arguments.elixir
-        - match: do{{no_id_key_suffix}}
-          scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
+  try_function:
+    - match: try(?!\(){{no_suffix_then_arguments}}
+      scope: keyword.control.exception.try.elixir
+      push:
+        - match: \s?
+          scope: punctuation.section.arguments.begin.elixir
           set:
-            - match: else{{no_id_key_suffix}}
-              scope: keyword.control.conditional.else.elixir
-              push: arrow_clauses_body_pop
-            - match: after{{no_id_key_suffix}}
-              scope: keyword.control.exception.catch.elixir
-              push: core_syntax_or_if_closing_pop
-            - match: rescue{{no_id_key_suffix}}
-              scope: keyword.control.exception.catch.elixir
-              push: arrow_clauses_body_pop
-            - match: catch{{no_id_key_suffix}}
-              scope: keyword.control.exception.catch.elixir
-              push: arrow_clauses_body_pop
-            - include: last_arg_block_end_pop
+            - meta_scope: meta.function-call.arguments.elixir
+            - match: do{{no_id_key_suffix}}
+              scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
+              set:
+                - meta_scope: meta.block.elixir
+                - match: else{{no_id_key_suffix}}
+                  scope: keyword.control.conditional.else.elixir
+                  push: arrow_clauses_body_pop
+                - match: after{{no_id_key_suffix}}
+                  scope: keyword.control.exception.catch.elixir
+                  push: core_syntax_or_if_closing_pop
+                - match: rescue{{no_id_key_suffix}}
+                  scope: keyword.control.exception.catch.elixir
+                  push: arrow_clauses_body_pop
+                - match: catch{{no_id_key_suffix}}
+                  scope: keyword.control.exception.catch.elixir
+                  push: arrow_clauses_body_pop
+                - include: last_arg_block_end_pop
+                - include: core_syntax
+            - include: arguments_ws_closing_pop
+            - include: arg_comma_and_skip_ws
             - include: core_syntax
-        - include: arguments_ws_closing_pop
-        - include: arg_comma_and_skip_ws
-        - include: core_syntax
 
-  receive_arguments_pop:
-    - match: \s?
-      scope: punctuation.section.arguments.begin.elixir
-      set:
-        - meta_scope: meta.function-call.arguments.elixir
-        - match: do{{no_id_key_suffix}}
-          scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
+  receive_function:
+    - match: receive(?!\(){{no_suffix_then_arguments}}
+      scope: keyword.control.loop.receive.elixir
+      push:
+        - match: \s?
+          scope: punctuation.section.arguments.begin.elixir
           set:
-            - match: after{{no_id_key_suffix}}
-              scope: keyword.control.exception.catch.elixir
-              push: arrow_clauses_body_pop
-            - include: last_arg_block_end_pop
-            - match: ''
-              push: arrow_clauses_body_pop
-        - include: arguments_ws_closing_pop
-        - include: arg_comma_and_skip_ws
-        - include: core_syntax
+            - meta_scope: meta.function-call.arguments.elixir
+            - match: do{{no_id_key_suffix}}
+              scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
+              set:
+                - meta_scope: meta.block.elixir
+                - match: after{{no_id_key_suffix}}
+                  scope: keyword.control.exception.catch.elixir
+                  push: arrow_clauses_body_pop
+                - include: last_arg_block_end_pop
+                - match: ''
+                  push: arrow_clauses_body_pop
+            - include: arguments_ws_closing_pop
+            - include: arg_comma_and_skip_ws
+            - include: core_syntax
 
   elixir_functions:
     - include: unquote_call
-    - match: case(?!\(){{no_suffix_then_arguments}}
-      scope: keyword.control.conditional.elixir
-      push: case_arguments_pop
-    - match: with(?!\(){{no_suffix_then_arguments}}
-      scope: keyword.control.conditional.elixir
-      push: with_arguments_pop
-    - match: try(?!\(){{no_suffix_then_arguments}}
-      scope: keyword.control.exception.try.elixir
-      push: try_arguments_pop
-    - match: receive(?!\(){{no_suffix_then_arguments}}
-      scope: keyword.control.loop.receive.elixir
-      push: receive_arguments_pop
+    - include: case_function
+    - include: with_function
+    - include: for_function
+    - include: try_function
+    - include: receive_function
     - match: |-
         (?x)
         (?> # Ordered by likeliness of occurrence.
