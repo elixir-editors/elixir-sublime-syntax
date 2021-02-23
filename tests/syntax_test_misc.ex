@@ -89,7 +89,7 @@
  fn -> end
 #      ^^^ punctuation.section.block.end keyword.context.block.end
 #   ^^ keyword.operator.arrow
-#^^ punctuation.section.block.begin keyword.declaration.function
+#^^ punctuation.section.block.begin keyword.other.fn
  fn x -> x end
 #        ^ variable.other
 #   ^ variable.parameter
@@ -105,9 +105,20 @@
 #  ^ variable.parameter
  end
 
+# Normally only allowed in a def-block, but it's easier to match the rescue-branch in general.
+ do
+#^^ keyword.context.block.do
+   nil
+ rescue
+#^^^^^^ keyword.control.exception.catch
+   any -> any
+#  ^^^ variable.parameter
+ end
+#^^^ keyword.context.block.end
+
   list =
     Enum.map(fn )
-#            ^^ keyword.declaration.function
+#            ^^ keyword.other.fn
 #               ^ punctuation.section.arguments.end
 #           ^ punctuation.section.arguments.begin
   list
@@ -142,10 +153,10 @@ fn __MODULE__ -> __MODULE__ end
 #                ^ variable.other
 #             ^^ keyword.operator.arrow
 #           ^ variable.parameter
-#        ^^ keyword.declaration.function
+#        ^^ keyword.other.fn
 #     ^^ keyword.operator.arrow
 #   ^ variable.parameter
-#^^ keyword.declaration.function
+#^^ keyword.other.fn
 #<- punctuation.section.group.begin
 
 (fn x -> x end).(fn a, b -> {a, b} end).(:b, :c)
@@ -319,7 +330,7 @@ end)
 #                        ^ variable.parameter
 #                      ^ punctuation.separator.sequence
 #                    ^^ constant.numeric.char
-#                 ^^ keyword.declaration.function
+#                 ^^ keyword.other.fn
 #             ^ punctuation.section.arguments.begin
 
 
@@ -893,7 +904,7 @@ end[]
 #^^^^^ keyword.control.exception.catch
  fn end
 #   ^^^ keyword.context.block.end
-#^^ keyword.declaration.function
+#^^ keyword.other.fn
  do else end
 #   ^^^^ keyword.control.conditional.else
 #^^ keyword.context.block.do

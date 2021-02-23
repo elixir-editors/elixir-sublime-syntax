@@ -163,6 +163,7 @@ end
 
 # TODO: highlight x as a parameter?
 case(value, do: (x -> x; y -> y))
+#                                ^ -punctuation.section.arguments.end
 #                               ^ punctuation.section.arguments.end
 #                              ^ punctuation.section.group.end
 #                      ^ keyword.operator.semicolon
@@ -284,6 +285,67 @@ with {:ok, x} <- f(), do: x
 #          ^ variable.other
 #    ^^^ constant.other.keyword
 
+for n <- [1, 2, 3, 4], do: n * 2
+#                               ^ punctuation.section.arguments.end
+#                          ^ variable.other
+#   ^ variable.parameter
+for x <- [1, 2], y <- [2, 3], do: x * y
+#                                      ^ punctuation.section.arguments.end
+#                                 ^ variable.other
+#   ^ variable.parameter
+for n <- [1, 2, 3, 4, 5, 6], rem(n, 2) == 0, do: n
+#                                                 ^ punctuation.section.arguments.end
+#                                                ^ variable.other
+#                                ^ variable.other
+#   ^ variable.parameter
+for {type, name} when type != :guest <- users do String.upcase(name) end
+#                                                                       ^ punctuation.section.arguments.end
+#                                       ^^^^^ variable.other
+#                     ^^^^ variable.other
+#    ^^^^ variable.parameter
+for <<r::8, g::8, b::8 <- pixels >>, do: {r, g, b}
+#                                                 ^ punctuation.section.arguments.end
+#                                         ^ variable.other
+#                         ^^^^^^ variable.other
+#                 ^ variable.parameter
+#           ^ variable.parameter
+#     ^ variable.parameter
+for <<c <- " hello world ">>, c != ?\s, into: "", do: <<c>>
+#                                                       ^ variable.other
+#                             ^ variable.other
+#     ^ variable.parameter
+# TODO:                                                    ^ punctuation.section.arguments.end
+for line <- IO.stream(:stdio, :line), into: IO.stream(:stdio, :line) do
+#   ^^^^ variable.parameter
+   String.upcase(line)
+   no_param -> :ok
+#  ^^^^^^^^ variable.other -variable.parameter
+end
+#  ^ punctuation.section.arguments.end
+for x <- [1, 1, 2, 3], uniq: true, do: x * 2
+#                                           ^ punctuation.section.arguments.end
+#                                      ^ variable.other
+#   ^ variable.parameter
+for <<x <- "abcabc">>, uniq: true, into: "", do: <<x - 32>>
+#                                                  ^ variable.other
+#     ^ variable.parameter
+# TODO:                                                    ^ punctuation.section.arguments.end
+for <<x <- "AbCabCABc">>, x in ?a..?z, do: <<x>>
+#                                            ^ variable.other
+#                         ^ variable.other
+#     ^ variable.parameter
+# TODO:                                         ^ punctuation.section.arguments.end
+for <<x <- "AbCabCABc">>, x in ?a..?z, reduce: %{} do
+#                                                  ^^ keyword.context.block.do
+#                         ^ variable.other
+#     ^ variable.parameter
+  acc -> Map.update(acc, <<x>>, 1, & &1 + 1)
+#                          ^ variable.other
+#                   ^^^ variable.other
+# ^^^ variable.parameter
+end
+#  ^ punctuation.section.arguments.end
+
 
  receive do
 #        ^^ keyword.context.block.do
@@ -310,22 +372,27 @@ with {:ok, x} <- f(), do: x
 
  receive do ^ref ->
 #                ^^ keyword.operator.arrow
-#            ^^^ variable.parameter
+#            ^^^ variable.other -variable.parameter
 #           ^ keyword.operator.pin
    ref
-#  ^^^ variable.other
+#  ^^^ variable.other -variable.parameter
  end
 
  receive do
    ^ref -> :ok
-#   ^^^ variable.parameter
+#       ^^ keyword.operator.arrow
+#   ^^^ variable.other -variable.parameter
 #  ^ keyword.operator.pin
    {:DOWN, ^ref, _, _, _} -> :DOWN
-#           ^^^ variable.parameter
+#                      ^ variable.parameter.unused
+#                   ^ variable.parameter.unused
+#                ^ variable.parameter.unused
+#           ^^^ variable.other -variable.parameter
  after
 #^^^^^ keyword.control.exception.catch
    _timeout = 5_000 ->
 #             ^^^^^ constant.numeric.integer
+#           ^ keyword.operator.match
 #  ^^^^^^^^ variable.parameter.unused
      IO.puts(:stderr, "No message in 5 seconds")
  end
@@ -366,7 +433,7 @@ f x after do end; f x rescue do end; f x catch do end
 #                     ^^^^^^ keyword.control.exception.catch
 #   ^^^^^ keyword.control.exception.catch
 f x end do end; f fn end
-#                 ^^ keyword.declaration.function
+#                 ^^ keyword.other.fn
 #   ^^^ keyword.context.block.end
 f x do: do end; f x end: do end; f fn: end
 #                                  ^^^ constant.other.keyword

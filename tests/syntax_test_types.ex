@@ -356,7 +356,7 @@
 
 @type t :: fn -> any end
 #                    ^^^ punctuation.section.block.end keyword.context.block
-#          ^^ punctuation.section.block.begin keyword.declaration.function
+#          ^^ punctuation.section.block.begin keyword.other.fn
 @type t :: do any end
 #                 ^^^ keyword.context.block
 #             ^^^ variable.other

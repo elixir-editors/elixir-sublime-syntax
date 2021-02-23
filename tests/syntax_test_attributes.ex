@@ -21,7 +21,7 @@
 
 @fn_attr fn a -> a end
 #                  ^^^ keyword.context.block.end
-#        ^^ keyword.declaration.function
+#        ^^ keyword.other.fn
 #^^^^^^^ entity.name.constant
 @fn_attr.(:a)
 #           ^ punctuation.section.arguments.end
