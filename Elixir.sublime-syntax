@@ -123,7 +123,7 @@ contexts:
         # NB: no default parameters in arrow clauses
         - match: \\\\(?!:(?![:'"[:alpha:]]))
           scope: keyword.operator.default.elixir invalid.illegal.default-operator.elixir
-        - include: parameters
+        - include: parameters_or_if_closing_pop
     - match: $
       set:
         - include: if_closing_token_pop
@@ -139,7 +139,7 @@ contexts:
   params_until_arrow_pop:
     - match: (?=->|when{{no_id_key_suffix}})
       pop: true
-    - include: parameters
+    - include: parameters_or_if_closing_pop
 
   indented_core_syntax_pop:
     - match: ^(?=\1[^#\s]|(?!\1)(?!\s*(#|$)))
@@ -208,7 +208,7 @@ contexts:
             - include: do_block_pop
             - include: if_ws_closing_token_or_eol_pop
             - include: paren_param
-            - include: parameters
+            - include: parameters_or_if_closing_pop
             - include: if_non_space_pop
         - include: if_ws_closing_token_or_eol_pop
         - include: paren
@@ -219,8 +219,8 @@ contexts:
             - match: \}
               scope: entity.name.function.elixir
               set: arguments_ws_rest_pop
-            - include: parameters
-        - include: parameters
+            - include: parameters_or_if_closing_pop
+        - include: parameters_or_if_closing_pop
         - include: function_params_or_eol_pop
 
   function_free_form_header_pop:
@@ -235,7 +235,7 @@ contexts:
     - include: do_block_pop
     - include: if_ws_closing_token_or_eol_pop
     - include: paren
-    - include: parameters
+    - include: parameters_or_if_closing_pop
     - include: if_non_space_pop
 
   function_params_or_eol_pop:
@@ -246,7 +246,7 @@ contexts:
         - match: \)
           scope: punctuation.definition.parameters.end.elixir
           set: arguments_ws_rest_pop
-        - include: parameters
+        - include: parameters_or_if_closing_pop
     - match: (?=,)
       set: arguments_ws_rest_pop
     - include: do_block_pop
@@ -281,20 +281,22 @@ contexts:
   ## Parameters
 
   parameters:
-    - include: if_closing_token_pop
     - include: block_or_keyword
     - include: special_form
+    - match: (?=\^\s*{{identifier}}{{no_key_suffix}}(?!\s*\.)(?!{{has_arguments}}))
+      push:
+        - include: operator
+        - include: identifier_pop
     - match: |
         (?x)
         (?>((?=_)(?<!%>){{identifier}})|({{identifier}}))
-        (?=\s*(?>[,;)}\]=|\\]|\.\.|::|->|<-|<>|>>|(?>when|in|do){{no_id_key_suffix}}|$))
+        (?=\s*(?>[,;)}\]=|\\]|\.\.|::|->|<-|<>|>>|(?>when|do){{no_id_key_suffix}}|$))
       captures:
         1: variable.parameter.unused.elixir
         2: variable.parameter.elixir
-    - match: \\\\(?!:(?![:'"[:alpha:]]))
-      scope: keyword.operator.default.elixir
+    - match: (?=\\\\(?!:(?![:'"[:alpha:]]))|<-)
       push:
-        - match: (?=,|(?>when|do){{no_id_key_suffix}})
+        - match: (?=,|(?>when|do){{no_id_key_suffix}}|do(:)(?!:))
           pop: true
         - include: core_syntax_or_if_closing_pop
     - include: paren_param
@@ -303,6 +305,10 @@ contexts:
     - include: map_param
     - include: binary_string_param
     - include: core_syntax
+
+  parameters_or_if_closing_pop:
+    - include: if_closing_token_pop
+    - include: parameters
 
   paren_param:
     - match: (?=\()
@@ -316,7 +322,7 @@ contexts:
         - match: \)
           scope: punctuation.definition.parameters.end.elixir
           pop: true
-        - include: parameters
+        - include: parameters_or_if_closing_pop
 
   tuple_param:
     - match: \{
@@ -326,7 +332,7 @@ contexts:
         - match: \}
           scope: punctuation.section.sequence.end.elixir
           pop: true
-        - include: parameters
+        - include: parameters_or_if_closing_pop
 
   list_param:
     - match: \[
@@ -337,7 +343,7 @@ contexts:
           scope: punctuation.section.brackets.end.elixir
           pop: true
         - include: cons_operator
-        - include: parameters
+        - include: parameters_or_if_closing_pop
 
   map_param:
     - match: \%
@@ -361,7 +367,7 @@ contexts:
         - match: \}
           scope: punctuation.section.mapping.end.elixir
           pop: true
-        - include: parameters
+        - include: parameters_or_if_closing_pop
     - include: if_closing_token_pop
     - include: if_non_space_or_eol_pop
 
@@ -372,7 +378,7 @@ contexts:
       push:
         - meta_scope: meta.string.binary.elixir
         - include: binary_string_body_pop
-        - include: parameters
+        - include: parameters_or_if_closing_pop
 
   ## Types
 
@@ -393,7 +399,7 @@ contexts:
 
   spec_op_definition_next_pop:
     - include: return_types_pop
-    - include: types_pop
+    - include: types_or_if_closing_pop
     - include: if_non_space_pop
 
   type_definition_pop:
@@ -441,7 +447,7 @@ contexts:
     - include: paren_type
     - include: comments
 
-  types_pop:
+  types_or_if_closing_pop:
     - include: types
     - match: '[^\S\n]+'
       comment: need to skip spaces here due to if_ws_closing_token_pop
@@ -466,7 +472,7 @@ contexts:
         - include: arguments_closing_pop
         - include: arg_comma_and_skip_ws
         - include: named_type
-        - include: types_pop
+        - include: types_or_if_closing_pop
     - include: if_empty_pop
 
   named_type:
@@ -495,7 +501,7 @@ contexts:
           set: [next_types_pop, if_non_space_pop]
         # NB: we can't prevent matching more than one type expression.
         - include: named_type
-        - include: types_pop
+        - include: types_or_if_closing_pop
 
   next_types_pop:
     - include: comments
@@ -514,7 +520,7 @@ contexts:
     - match: (?=\|(?![:|>])|::(?!:)|when{{no_id_key_suffix}})
       pop: true
     - include: named_type
-    - include: types_pop
+    - include: types_or_if_closing_pop
     - include: if_ws_closing_token_or_eol_pop
     - include: if_non_space_or_eol_pop
 
@@ -541,7 +547,7 @@ contexts:
           scope: punctuation.section.group.end.elixir
           pop: true
         - include: named_type
-        - include: types_pop
+        - include: types_or_if_closing_pop
 
   tuple_type:
     - match: \{
@@ -552,7 +558,7 @@ contexts:
           scope: punctuation.section.sequence.end.elixir
           pop: true
         - include: named_type
-        - include: types_pop
+        - include: types_or_if_closing_pop
 
   list_type:
     - match: \[
@@ -563,7 +569,7 @@ contexts:
           scope: punctuation.section.brackets.end.elixir
           pop: true
         - include: named_type
-        - include: types_pop
+        - include: types_or_if_closing_pop
 
   map_type:
     - match: \%
@@ -586,7 +592,7 @@ contexts:
           scope: punctuation.section.mapping.end.elixir
           pop: true
         - include: named_type
-        - include: types_pop
+        - include: types_or_if_closing_pop
     - include: if_closing_token_pop
     - include: if_non_space_or_eol_pop
 
@@ -598,7 +604,7 @@ contexts:
         - meta_scope: meta.string.binary.elixir
         - include: binary_string_body_pop
         - include: named_type
-        - include: types_pop
+        - include: types_or_if_closing_pop
 
   # Numeric
 
@@ -2474,7 +2480,7 @@ contexts:
                 - match: (?=,|do{{no_id_key_suffix}}|do(:)(?!:))
                   pop: true
                 - include: arguments_ws_rest_pop
-            - include: parameters
+            - include: parameters_or_if_closing_pop
 
   try_arguments_pop:
     - match: \s?
