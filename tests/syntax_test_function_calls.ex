@@ -314,7 +314,7 @@ for <<c <- " hello world ">>, c != ?\s, into: "", do: <<c>>
 #                                                       ^ variable.other
 #                             ^ variable.other
 #     ^ variable.parameter
-# TODO:                                                    ^ punctuation.section.arguments.end
+  TODO:                                                    ^ punctuation.section.arguments.end
 for line <- IO.stream(:stdio, :line), into: IO.stream(:stdio, :line) do
 #   ^^^^ variable.parameter
    String.upcase(line)
@@ -329,12 +329,12 @@ for x <- [1, 1, 2, 3], uniq: true, do: x * 2
 for <<x <- "abcabc">>, uniq: true, into: "", do: <<x - 32>>
 #                                                  ^ variable.other
 #     ^ variable.parameter
-# TODO:                                                    ^ punctuation.section.arguments.end
+  TODO:                                                    ^ punctuation.section.arguments.end
 for <<x <- "AbCabCABc">>, x in ?a..?z, do: <<x>>
 #                                            ^ variable.other
 #                         ^ variable.other
 #     ^ variable.parameter
-# TODO:                                         ^ punctuation.section.arguments.end
+  TODO:                                         ^ punctuation.section.arguments.end
 for <<x <- "AbCabCABc">>, x in ?a..?z, reduce: %{} do
 #                                                  ^^ keyword.context.block.do
 #                         ^ variable.other

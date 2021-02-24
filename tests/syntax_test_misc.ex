@@ -118,8 +118,8 @@
 
   list =
     Enum.map(fn )
+#               ^ punctuation.section.arguments.end -invalid
 #            ^^ keyword.other.fn
-#               ^ punctuation.section.arguments.end
 #           ^ punctuation.section.arguments.begin
   list
 # ^^^^ -variable.parameter
