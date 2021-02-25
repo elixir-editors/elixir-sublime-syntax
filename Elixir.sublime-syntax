@@ -296,7 +296,7 @@ contexts:
         2: variable.parameter.elixir
     - match: (?=\\\\(?!:(?![:'"[:alpha:]]))|<-)
       push:
-        - match: (?=,|(?>when|do){{no_id_key_suffix}}|do(:)(?!:))
+        - match: (?=,|(?>when|do){{no_id_key_suffix}}|do:(?!:))
           pop: true
         - include: core_syntax_or_if_closing_pop
     - include: paren_param
@@ -2429,7 +2429,7 @@ contexts:
       scope: variable.language.special-form.elixir
 
   elixir_keywords:
-    - match: |-
+    - match: |
         (?x)
         (?> # Ordered by likeliness of occurrence.
         # (do) | (fn)          # Handled by do_block and fn_block.
@@ -2449,7 +2449,7 @@ contexts:
         5: keyword.control.exception.catch.elixir
         6: keyword.context.block.end.elixir
 
-  case_function:
+  case_macro_call:
     - match: case(?!\(){{no_suffix_then_arguments}}
       scope: keyword.control.conditional.elixir
       push:
@@ -2468,14 +2468,15 @@ contexts:
   one_left_arrow_clause:
     - match: (?=\S)
       push:
-        - match: (?=<-|,|(?>when|do){{no_id_key_suffix}}|do(:)(?!:))
+        - include: do_block_pop
+        - match: (?=<-|,|(?>when|do){{no_id_key_suffix}}|do:(?!:))
           set:
-            - match: (?=,|do{{no_id_key_suffix}}|do(:)(?!:))
+            - match: (?=,|do{{no_id_key_suffix}}|do:(?!:))
               pop: true
             - include: arguments_ws_rest_pop
         - include: parameters_or_if_closing_pop
 
-  with_function:
+  with_macro_call:
     - match: with(?!\(){{no_suffix_then_arguments}}
       scope: keyword.control.conditional.elixir
       push:
@@ -2483,7 +2484,7 @@ contexts:
           scope: punctuation.section.arguments.begin.elixir
           set:
             - meta_scope: meta.function-call.arguments.elixir
-            - match: (?=do(:)(?!:))
+            - match: (?=do:(?!:))
               set: [arguments_ws_closing_pop, arguments_ws_rest_pop]
             - match: do{{no_id_key_suffix}}
               scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
@@ -2498,7 +2499,7 @@ contexts:
             - include: arg_comma_and_skip_ws
             - include: one_left_arrow_clause
 
-  for_function:
+  for_macro_call:
     - match: for(?!\(){{no_suffix_then_arguments}}
       scope: keyword.control.loop.for.elixir
       push:
@@ -2523,7 +2524,7 @@ contexts:
             - include: arg_comma_and_skip_ws
             - include: one_left_arrow_clause
 
-  try_function:
+  try_macro_call:
     - match: try(?!\(){{no_suffix_then_arguments}}
       scope: keyword.control.exception.try.elixir
       push:
@@ -2553,7 +2554,7 @@ contexts:
             - include: arg_comma_and_skip_ws
             - include: core_syntax
 
-  receive_function:
+  receive_macro_call:
     - match: receive(?!\(){{no_suffix_then_arguments}}
       scope: keyword.control.loop.receive.elixir
       push:
@@ -2577,12 +2578,12 @@ contexts:
 
   elixir_functions:
     - include: unquote_call
-    - include: case_function
-    - include: with_function
-    - include: for_function
-    - include: try_function
-    - include: receive_function
-    - match: |-
+    - include: case_macro_call
+    - include: with_macro_call
+    - include: for_macro_call
+    - include: try_macro_call
+    - include: receive_macro_call
+    - match: |
         (?x)
         (?> # Ordered by likeliness of occurrence.
           (case|if|with|cond|unless)
