@@ -71,7 +71,7 @@ fragment(
 #                                                    ^ punctuation.separator.arguments
 #                               ^^^^^^^^^^^^^^^^^^^^ comment.line.double-dash.sql
 #                            ^ constant.other.placeholder.elixir
-#                 ^^^^^^^^^^ source.ex.sql support.function.sql
+#                 ^^^^^^^^^^ source.ex.sql support.function.psql
 #              ^^ keyword.operator.jsonb.psql
 #  ^ constant.other.placeholder.elixir
 #  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.ex.sql
@@ -123,3 +123,129 @@ fragment(
 #          ^^^^^^ variable.other
 #  ^^^^^^^ keyword.other.unquote
 )
+
+## Raw SQL queries
+
+ sql("SELECT * FROM posts")
+#                   ^^^^^ source.ex.sql
+#              ^^^^ keyword.other.DML.sql
+#            ^ variable.language.star.sql
+#     ^^^^^^ keyword.other.DML.sql
+#    ^^^^^^^^^^^^^^^^^^^^^ meta.string.elixir
+#^^^ variable.function
+
+ sql("""
+#    ^^^ punctuation.definition.string.begin
+#^^^ variable.function
+ WITH RECURSIVE t(n) AS (
+#                    ^^ keyword.operator.assignment.alias.sql
+#               ^^^^^^^^^^ source.ex.sql
+#     ^^^^^^^^^ keyword.other.sql
+#^^^^ keyword.other.DML.sql
+     VALUES (1)
+#            ^ constant.numeric.sql
+#    ^^^^^^ keyword.other.DML.II.sql
+   UNION ALL
+#  ^^^^^^^^^ keyword.other.DML.sql
+     SELECT n+1 FROM t WHERE n < 100
+#                                ^^^ constant.numeric.sql
+#                      ^^^^^ keyword.other.DML.sql
+#               ^^^^ keyword.other.DML.sql
+#             ^ constant.numeric.sql
+#    ^^^^^^ keyword.other.DML.sql
+ )
+ SELECT sum(n) FROM t;
+#              ^^^^ keyword.other.DML.sql
+#       ^^^ support.function.aggregate.sql
+#^^^^^^ keyword.other.DML.sql
+ """)
+#   ^ punctuation.section.arguments.end
+#^^^ punctuation.definition.string.end
+
+# All possible keywords. See: https://www.postgresql.org/docs/current/sql-keywords-appendix.html
+ sql("""
+  ALL; AND; ANY; ARRAY; AS; ASYMMETRIC; AUTHORIZATION; BINARY; BOTH;
+#                                                              ^^^^ keyword.other.sql
+#                                                      ^^^^^^ keyword.other.sql
+#                                       ^^^^^^^^^^^^^ keyword.other.sql
+#                           ^^^^^^^^^^ keyword.other.sql
+#                       ^^ keyword.operator.assignment.alias.sql
+#                ^^^^^ keyword.other.sql
+#           ^^^ keyword.other.sql
+#      ^^^ keyword.operator.logical.sql
+# ^^^ keyword.other.sql
+  CASE; CAST; CHECK; COLLATE; COLUMN; CONSTRAINT; CREATE; CROSS;
+  CURRENT_CATALOG; CURRENT_DATE; CURRENT_ROLE; CURRENT_SCHEMA;
+#                                              ^^^^^^^^^^^^^^ support.function.sql
+#                                ^^^^^^^^^^^^ support.function.sql
+#                  ^^^^^^^^^^^^ support.function.scalar.sql
+# ^^^^^^^^^^^^^^^ support.function.sql
+  CURRENT_TIME; CURRENT_TIMESTAMP; CURRENT_USER;
+#                                  ^^^^^^^^^^^^ support.function.scalar.sql
+#               ^^^^^^^^^^^^^^^^^ support.function.scalar.sql
+# ^^^^^^^^^^^^ support.function.scalar.sql
+  DEFAULT; DISTINCT; ELSE; END; EXCEPT; FALSE; FETCH; FOR; FOREIGN; FROM; FULL;
+#                                                                         ^^^^ keyword.other.sql
+#                                                                   ^^^^ keyword.other.DML.sql
+#                                                          ^^^^^^^ keyword.other.sql
+#                                                     ^^^ keyword.other.sql
+#                                              ^^^^^ keyword.other.sql
+#                                       ^^^^^ constant.boolean.sql
+#                               ^^^^^^ keyword.other.sql
+#                          ^^^ keyword.other.DML.sql
+#                    ^^^^ keyword.other.DML.sql
+#          ^^^^^^^^ keyword.other.sql
+# ^^^^^^^ storage.modifier.sql
+  GRANT; GROUP; HAVING; IN; INNER; INTERSECT; INTO; IS; JOIN; LATERAL; LEADING;
+#                                                                      ^^^^^^^ keyword.other.sql
+#                                                             ^^^^^^^ keyword.other.sql
+#                                                       ^^^^ keyword.other.DML.sql
+#                                                   ^^ keyword.other.sql
+#                                             ^^^^ keyword.other.sql
+#                                  ^^^^^^^^^ keyword.other.sql
+#                           ^^^^^ keyword.other.sql
+#                       ^^ keyword.other.sql
+#               ^^^^^^ keyword.operator.logical.sql
+#        ^^^^^ keyword.other.sql
+# ^^^^^ keyword.other.authorization.sql
+  LEFT; LIKE; LOCALTIME; LOCALTIMESTAMP; NATURAL; NOT; NULL; OFFSET; ON; ONLY; OR;
+#                                                                              ^^ keyword.operator.logical.sql
+#                                                                        ^^^^ keyword.other.sql
+#                                                                    ^^ keyword.other.sql
+#                                                            ^^^^^^ keyword.other.sql
+#                                                      ^^^^ constant.language.sql
+#                                                 ^^^ keyword.other.sql
+#                                        ^^^^^^^ keyword.other.sql
+#                        ^^^^^^^^^^^^^^ support.function.sql
+#             ^^^^^^^^^ support.function.sql
+#       ^^^^ keyword.operator.logical.sql
+# ^^^^ keyword.other.sql
+  ORDER; OUTER; OVERLAPS; PRIMARY; REFERENCES; RIGHT; SELECT; SESSION_USER; SIMILAR;
+#                                                                           ^^^^^^^ keyword.other.sql
+#                                                             ^^^^^^^^^^^^ support.function.scalar.sql
+#                                                     ^^^^^^ keyword.other.DML.sql
+#                                              ^^^^^ keyword.other.sql
+#                                  ^^^^^^^^^^ storage.modifier.sql
+#                         ^^^^^^^ keyword.other.sql
+#               ^^^^^^^^ keyword.other.sql
+#        ^^^^^ keyword.other.sql
+# ^^^^^ keyword.other.sql
+  SOME; SYMMETRIC; TABLE; TABLESAMPLE; THEN; TO; TRAILING; TRUE; UNION; UNIQUE;
+#                                                                       ^^^^^^ keyword.other.sql
+#                                                                ^^^^^ keyword.other.DML.sql
+#                                                          ^^^^ constant.boolean.sql
+#                                                ^^^^^^^^ keyword.other.sql
+#                                            ^^ keyword.other.sql
+#                                      ^^^^ keyword.other.DML.sql
+#                         ^^^^^^^^^^^ keyword.other.sql
+#                  ^^^^^ keyword.other.sql
+#       ^^^^^^^^^ keyword.other.sql
+# ^^^^ keyword.other.sql
+  USER; USING; WHEN; WHERE; WINDOW; WITH
+#                                   ^^^^ keyword.other.DML.sql
+#                           ^^^^^^ keyword.other.sql
+#                    ^^^^^ keyword.other.DML.sql
+#              ^^^^ keyword.other.DML.sql
+#       ^^^^^ keyword.other.DML.sql
+# ^^^^ keyword.other.sql
+""")
