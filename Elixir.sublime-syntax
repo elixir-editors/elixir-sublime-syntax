@@ -61,7 +61,7 @@ contexts:
     - include: elixir_functions        # if, case, with
     - include: special_form            # __MODULE__, __ENV__
     - include: do_block                # do end
-    - include: sql_fragment            # fragment("meta->>key")
+    - include: sql_or_fragment         # sql("SELECT * FROM t"); fragment("meta->>key")
     - include: modules_or_ids_or_calls # Module, id, M.f(), x.y()
     - include: comma_and_skip_ws       # ,
     - include: operator                # a == b
@@ -2210,25 +2210,26 @@ contexts:
 
   ## SQL
 
-  sql_fragment:
-    - match: (fragment)(\()
+  sql_or_fragment:
+    - match: (?>(fragment)|(sql))(\()
       captures:
         1: support.function.elixir
-        2: punctuation.section.arguments.begin.elixir
+        2: variable.function.elixir
+        3: punctuation.section.arguments.begin.elixir
       push:
         - meta_scope: meta.function-call.arguments.elixir
         - match: (?=unquote\()
           set: [arguments_rest_pop, sql_unquote_pop, unquote_pop]
-        - include: sql_fragment_args_pop
+        - include: sql_or_fragment_args_pop
 
   sql_unquote_pop:
     - match: \(
       scope: punctuation.section.arguments.begin.elixir
       set:
         - meta_scope: meta.function-call.arguments.elixir
-        - include: sql_fragment_args_pop
+        - include: sql_or_fragment_args_pop
 
-  sql_fragment_args_pop:
+  sql_or_fragment_args_pop:
     # TODO: add sigil strings? Or use ~Q"" for SQL similar to ~L"" for LiveView?
     - match: (?=")
       set: [arguments_rest_pop, sql_string_pop]
