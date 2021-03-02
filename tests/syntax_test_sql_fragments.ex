@@ -134,6 +134,23 @@ fragment(
 #    ^^^^^^^^^^^^^^^^^^^^^ meta.string.elixir
 #^^^ variable.function
 
+ sql("SELECT sub_do.do FROM (SELECT * FROM dodos AS do) AS sub_do")
+#                                                          ^^^^^^ variable.other.sql -keyword
+#                                                   ^^ variable.other.sql -keyword
+#                   ^^ variable.other.member.sql -keyword
+#            ^^^^^^ constant.other.table-name.sql
+
+ sql("INSERT INTO t (title) VALUES (...) ON CONFLICT DO NOTHING")
+#                                                       ^^^^^^^ keyword.other.sql
+#                                                    ^^ keyword.other.sql
+#                                           ^^^^^^^^ keyword.other.sql
+#                                        ^^ keyword.other.sql
+#                           ^^^^^^ keyword.other.DML.II.sql
+#                    ^^^^^ variable.other.sql
+#                 ^ variable.other.sql
+#            ^^^^ keyword.other.DML.sql
+#     ^^^^^^ keyword.other.DML.sql
+
  sql("""
 #    ^^^ punctuation.definition.string.begin
 #^^^ variable.function
