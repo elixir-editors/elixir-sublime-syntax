@@ -27,7 +27,7 @@ contexts:
           # Taken from https://www.postgresql.org/docs/current/sql-keywords-appendix.html
         | (
             all|any|array|analy[sz]e|a?symmetric|authorization|binary|both|cast|cross|column
-          | concurrently|collat(?:e|ion)|create|distinct|do(?=\s+update)
+          | concurrently|collat(?:e|ion)|create|distinct|(?<!\bas\s)do
           | except|excluded(?=\s*\.)|fetch|for(?:eign)?|freeze|full|group|intersect|into|inner|isnull
           | i[sn]|ilike|lateral|leading|left|natural|not(?:null)?|nullif|on(?:ly)?|offset|order|outer
           | over(?:laps)?|primary|recursive|returning|right|similar|some|table(?:sample)?|to|trailing
@@ -77,6 +77,8 @@ contexts:
 
     - include: comment
     - include: scope:source.sql
+    - match: (?!\d)\w+
+      scope: variable.other.sql
 
   comment:
     - match: /\*
