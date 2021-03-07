@@ -527,7 +527,7 @@ contexts:
   when_types_clause_pop:
     - include: comments
     - include: atom_keyword
-    - match: (?<=[\w"'@]:)
+    - match: (?<=[\w"'@?!]:)
       comment: skips to keyword value
       push: [when_var_pop, if_non_space_pop]
     - include: if_ws_closing_token_or_eol_pop
@@ -1994,7 +1994,7 @@ contexts:
         - match: \]
           scope: punctuation.section.access.end.elixir
           pop: true
-        - match: (?=\,)
+        - match: (?=,)
           push: invalid_comma_or_non_space_pop
         - include: core_syntax_or_if_closing_pop
 
@@ -2385,8 +2385,14 @@ contexts:
   arguments_ws_rest_pop:
     - include: invalid_comma
     - include: arg_comma_and_skip_ws
-    - match: (?<=[-+*!=<>|&@^~:]|[^:]\band|[^:]\bor|[^:]\bwhen)(?<!\W\?:)$
+    - match: |
+        (?x)
+          (?=[-+*/=>!&|~;\\] | <(?!<(?!<)) | \.(?=\.(?!\.)) | (::(?!:)))
+        | (?=(?>when|and|in|or|not){{no_id_key_suffix}})
+        | (?<=[\w"'@!?]:)(?<!\W\?:)(?=\s)
       push:
+        - include: operator
+        - include: elixir_keywords
         - include: comments
         - include: if_non_space_pop
     - include: atom_keyword
