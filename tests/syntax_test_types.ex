@@ -475,8 +475,16 @@ def run(), do: nil
 #                     ^ punctuation.section.arguments.begin
 #       ^^^^^^^^^^^^^^ storage.type.custom
 
-@spec max(first, second) :: first | second when first: term, second: term
-#                                                          ^ punctuation.separator.sequence
+@spec max(first?, second!) :: first? | second! when first?: term, second!: term
+#                                                                          ^^^^ support.type
+#                                                                 ^^^^^^^^ constant.other.keyword
+#                                                               ^ punctuation.separator.sequence
+#                                                           ^^^^ support.type
+#                                                   ^^^^^^^ constant.other.keyword
+#                                      ^^^^^^^ storage.type.custom
+#                             ^^^^^^ storage.type.custom
+#                 ^^^^^^^ storage.type.custom
+#         ^^^^^^ storage.type.custom
 
 @spec get(named :: t) :: named :: t when t: named :: var
 #                                                    ^^^ storage.type.custom

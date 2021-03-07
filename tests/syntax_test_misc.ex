@@ -758,6 +758,25 @@ end[]
 #   ^ punctuation.accessor.arity
 # ^^ variable.other.capture
 
+ &"=/="/2
+#       ^ constant.numeric.arity
+#      ^ punctuation.accessor.arity
+#     ^ punctuation.definition.constant.end
+#  ^^^ variable.other.capture
+# ^ punctuation.definition.constant.begin
+ &"=:="/2
+#       ^ constant.numeric.arity
+#      ^ punctuation.accessor.arity
+#     ^ punctuation.definition.constant.end
+#  ^^^ variable.other.capture
+# ^ punctuation.definition.constant.begin
+ &"=<"/2
+#      ^ constant.numeric.arity
+#     ^ punctuation.accessor.arity
+#    ^ punctuation.definition.constant.end
+#  ^^ variable.other.capture
+# ^ punctuation.definition.constant.begin
+
  &true/2; &false/2; &nil/2
 #                       ^ -punctuation.accessor.arity
 #                    ^^^ constant.language -variable.other.capture

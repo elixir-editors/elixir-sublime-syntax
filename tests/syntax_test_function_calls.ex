@@ -44,12 +44,77 @@ m."quoted" arg
 
 func ?:
 #      ^ punctuation.section.arguments.end
+#    ^^ constant.numeric.char
 #   ^ punctuation.section.arguments.begin
 func valid?:
 #           ^ -punctuation.section.arguments.end
+#    ^^^^^^^ constant.other.keyword
 #   ^ punctuation.section.arguments.begin
      bool
 #        ^ punctuation.section.arguments.end
+#    ^^^^ variable.other
+func a <
+#       ^ -punctuation.section.arguments.end
+#      ^ keyword.operator.comparison
+#    ^ variable.other
+     b
+#     ^ punctuation.section.arguments.end
+#    ^ variable.other
+func <<
+#      ^ -punctuation.section.arguments.end
+#    ^^ punctuation.definition.string.begin
+     >>
+#      ^ punctuation.section.arguments.end
+#    ^^ punctuation.definition.string.end
+func a <<<
+#         ^ -punctuation.section.arguments.end
+#      ^^^ keyword.operator.bitwise
+#    ^ variable.other
+     b
+#     ^ punctuation.section.arguments.end
+#    ^ variable.other
+func a :::
+#         ^ punctuation.section.arguments.end
+#      ^^^ constant.other.symbol
+#    ^ variable.function
+func a ::
+#        ^ -punctuation.section.arguments.end
+#      ^^ keyword.operator.colon
+#    ^ variable.other
+     b
+#     ^ punctuation.section.arguments.end
+#    ^ variable.other
+func a..
+#       ^ -punctuation.section.arguments.end
+     b
+#     ^ punctuation.section.arguments.end
+func ...
+#       ^ punctuation.section.arguments.end
+func a when
+#          ^ -punctuation.section.arguments.end
+#      ^^^^ keyword.operator.when
+     b
+#     ^ punctuation.section.arguments.end
+func a and
+#         ^ -punctuation.section.arguments.end
+#      ^^^ keyword.operator.logical
+     b
+#     ^ punctuation.section.arguments.end
+func a in
+#        ^ -punctuation.section.arguments.end
+#      ^^ keyword.operator.logical
+     b
+#     ^ punctuation.section.arguments.end
+func a or
+#        ^ -punctuation.section.arguments.end
+#      ^^ keyword.operator.logical
+     b
+#     ^ punctuation.section.arguments.end
+func a not
+#         ^ -punctuation.section.arguments.end
+#      ^^^ keyword.operator.logical
+     b
+#     ^ punctuation.section.arguments.end
 
 raise ArgumentError, "msg"
 #                         ^ punctuation.section.arguments.end
