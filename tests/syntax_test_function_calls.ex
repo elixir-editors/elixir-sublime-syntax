@@ -42,10 +42,41 @@ m."quoted" arg
 #         ^ punctuation.section.arguments.begin
 #  ^^^^^^ variable.function
 
+func a :: b
+#         ^ variable.other
+#    ^ variable.other -variable.function
+func ~j""
+#    ^^ storage.type.string
+#    ^^^^ meta.string.elixir
+ <<func a>>
+#        ^^ punctuation.definition.string.end
+#       ^ variable.other
+#  ^^^^ variable.function
+#^^ punctuation.definition.string.begin
+func <:
+#      ^ -punctuation.section.arguments.end
+#    ^^ constant.other.keyword
+     :<
+#      ^ punctuation.section.arguments.end
+#    ^^ constant.other.symbol
+func and:
+#        ^ -punctuation.section.arguments.end
+#    ^^^^ constant.other.keyword
+     :and
+#        ^ punctuation.section.arguments.end
+#    ^^^^ constant.other.symbol
+func !:
+#      ^ -punctuation.section.arguments.end
+     :!
+#      ^ punctuation.section.arguments.end
 func ?:
 #      ^ punctuation.section.arguments.end
 #    ^^ constant.numeric.char
 #   ^ punctuation.section.arguments.begin
+func x?:
+#       ^ -punctuation.section.arguments.end
+     :x?
+#       ^ punctuation.section.arguments.end
 func valid?:
 #           ^ -punctuation.section.arguments.end
 #    ^^^^^^^ constant.other.keyword
@@ -53,6 +84,13 @@ func valid?:
      bool
 #        ^ punctuation.section.arguments.end
 #    ^^^^ variable.other
+func a =
+#       ^ -punctuation.section.arguments.end
+#      ^ keyword.operator.match
+#    ^ variable.other
+     b
+#     ^ punctuation.section.arguments.end
+#    ^ variable.other
 func a <
 #       ^ -punctuation.section.arguments.end
 #      ^ keyword.operator.comparison
