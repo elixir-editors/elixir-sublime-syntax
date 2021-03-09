@@ -19,11 +19,18 @@ variables:
   # Stats produced using Makeup.Lexers.ElixirLexer.lex(): `[end: 21828, do: 17758, fn: 4070, when: 2364, true: 2232, false: 1625, nil: 1405, and: 1066, in: 821, else: 753, after: 408, or: 258, rescue: 211, not: 198, catch: 113]`
   closing_keyword: (?>end|else|after|rescue|catch){{no_id_key_suffix}}
   closing_token: (?>[,;)}\]#]|>>(?!>)|%>|$|{{closing_keyword}})
-  binary_operator: (?>(?<!\s)\[|<?<~|~>>?|<~>|[*=/|\\>.]|<(?!<[^<~]|%=)|\^\^|&&|(?<!\s)[-+]\S|[-+][-+>\s]|::(?!:)|$|!=|(?>when|and|in|or|not\s+in){{no_id_key_suffix}})
-  has_arguments: (?=\(|\s*\.{3}|(?!\s*(?>{{closing_token}}|{{binary_operator}}(?!:(?![:'"[:alpha:]])))))
-  no_suffix_then_arguments: '{{no_id_key_suffix}}{{has_arguments}}'
+  binary_operator: (?>(?<!\s)\[|<?<~|~>>?|<~>|[*=/|\\>]|\.(?!\.\.)|<(?!<[^<~]|%=)|\^\^|&&|(?<!\s)[-+]\S|[-+][-+>\s]|::(?!:)|$|!=|(?>when|and|in|or|not\s+in){{no_id_key_suffix}})
 
   operator: (?>=~|={1,3}|!={0,2}|<<<|>>>|~~~|::|<~>|<?<~|~>>?|<?\|>|/|\\\\|\*|\.{1,3}|[<>]=|---|(?!<%=)[<-][->]?|>|&{1,3}|\+{1,3}|\|{1,3}|@|\^{3}|\^)
+
+  has_arguments: |
+    (?x)
+    (?=
+      \(
+    | \s* (?![?.]:) {{operator}}: (?![:'"[:alpha:]])
+    | (?! \s* (?>{{closing_token}} | {{binary_operator}}) )
+    )
+  no_suffix_then_arguments: '{{no_id_key_suffix}}{{has_arguments}}'
 
   atom_symbol: (?>{{atom_id}}|<<>>|{{operator}}|%?{}|%)
   member: (?>{{identifier}}|{{operator}}|{})
