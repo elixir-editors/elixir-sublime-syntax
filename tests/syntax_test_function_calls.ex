@@ -42,17 +42,164 @@ m."quoted" arg
 #         ^ punctuation.section.arguments.begin
 #  ^^^^^^ variable.function
 
+# First argument is an operator keyword:
+
+(f =~: (f=~:)); (f =: (f=:)); (f ==: (f==:)); (f ===: (f===:)); (f !: (f!:)); (f !=: (f!=:));
+#                                                                                     ^^ variable.function
+#                                                                              ^ variable.function
+#                                                                      ^^^ constant.other.keyword
+#                                                                      ^ -variable.function
+#                                                                ^ variable.function
+#                                                      ^ variable.function
+#                                              ^ variable.function
+#                                     ^ variable.function
+#                              ^ variable.function
+#                      ^ variable.function
+#                ^ variable.function
+#       ^ variable.function
+#^ variable.function
+(f !==: (f!==:)); (f <<>>: (f<<>>:)); (f <<<: (f<<<:)); (f >>>: (f>>>:)); (f ~~~: (f~~~:));
+#                                                                                  ^ variable.function
+#                                                                          ^ variable.function
+#                                                                ^ variable.function
+#                                                        ^ variable.function
+#                                              ^ variable.function
+#                                      ^ variable.function
+#                           ^ variable.function
+#                  ^ variable.function
+#        ^ variable.function
+#^ variable.function
+(f <~>: (f<~>:)); (f <~: (f<~:)); (f <<~: (f<<~:)); (f ~>: (f~>:)); (f ~>>: (f~>>:));
+#                                                                            ^ variable.function
+#                                                                    ^ variable.function
+#                                                           ^ variable.function
+#                                                    ^ variable.function
+#                                          ^ variable.function
+#                                  ^ variable.function
+#                         ^ variable.function
+#                  ^ variable.function
+#        ^ variable.function
+#^ variable.function
+(f |>: (f|>:)); (f <|>: (f<|>:)); (f /: (f/:)); (f \\: (f\\:)); (f *: (f*:)); (f ..: (f..:));
+#                                                                                     ^ variable.function
+#                                                                              ^ variable.function
+#                                                                      ^ variable.function
+#                                                                ^ variable.function
+#                                                       ^ variable.function
+#                                                ^ variable.function
+#                                        ^ variable.function
+#                                  ^ variable.function
+#                        ^ variable.function
+#                ^ variable.function
+#       ^ variable.function
+#^ variable.function
+(f ...: (f...:)); (f >=: (f>=:)); (f <=: (f<=:)); (f <: (f<:)); (f <-: (f<-:)); (f <>: (f<>:));
+#                                                                                       ^ variable.function
+#                                                                                ^ variable.function
+#                                                                       ^ variable.function
+#                                                                ^ variable.function
+#                                                        ^ variable.function
+#                                                  ^ variable.function
+#                                         ^ variable.function
+#                                  ^ variable.function
+#                         ^ variable.function
+#                  ^ variable.function
+#        ^ variable.function
+#^ variable.function
+(f ->: (f->:)); (f >: (f>:)); (f -: (f-:)); (f --: (f--:)); (f ---: (f---:)); (f +: (f+:));
+#                                                                                    ^ variable.function
+#                                                                              ^ variable.function
+#                                                                    ^ variable.function
+#                                                            ^ variable.function
+#                                                   ^ variable.function
+#                                            ^ variable.function
+#                                    ^ variable.function
+#                              ^ variable.function
+#                      ^ variable.function
+#                ^ variable.function
+#       ^ variable.function
+#^ variable.function
+(f ++: (f++:)); (f +++: (f+++:)); (f &: (f&:)); (f &&: (f&&:)); (f &&&: (f&&&:)); (f |: (f|:));
+#                                                                                        ^ variable.function
+#                                                                                  ^ variable.function
+#                                                                        ^ variable.function
+#                                                                ^ variable.function
+#                                                       ^ variable.function
+#                                                ^ variable.function
+#                                        ^ variable.function
+#                                  ^ variable.function
+#                        ^ variable.function
+#                ^ variable.function
+#       ^ variable.function
+#^ variable.function
+(f ||: (f||:)); (f |||: (f|||:)); (f @: (f@:)); (f {}: (f{}:)); (f %{}: (f{}:)); (f %: (f%:));
+#                                                                                       ^ variable.function
+#                                                                                 ^ variable.function
+#                                                                        ^ variable.function
+#                                                                ^ variable.function
+#                                                       ^ variable.function
+#                                                ^ variable.function
+#                                        ^ -variable.function
+#                                  ^ variable.function
+#                        ^ variable.function
+#                ^ variable.function
+#       ^ variable.function
+#^ variable.function
+(f ^: (f^:)); (f ^^^: (f^^^:)); (f "::": (f"::":))
+#                                         ^ variable.function
+#                                ^ variable.function
+#                      ^ variable.function
+#              ^ variable.function
+#      ^ variable.function
+#^ variable.function
+
+# Exceptions:
+
+(f ?: (f?:)); (f ::: (f:::)); (f :: (f::)); (f **: (f**:)); (f .: (f.:));
+#                                                                  ^ -variable.function
+#                                                            ^ -variable.function
+#                                                   ^ -variable.function
+#                                            ^ -variable.function
+#                                    ^ -variable.function
+#                              ^ -variable.function
+#                     ^ variable.function
+#              ^ variable.function
+#      ^ -variable.function
+#^ variable.function
+(f ^^: (f^^:)); (f []: (f:[])); (f "[]": (f:"[]")); (f % (f%)); (f %{} (f%{}));
+#                                                                       ^ variable.function
+#                                                                ^ variable.function
+#                                                         ^ variable.function
+#                                                    ^ variable.function
+#                                         ^ variable.function
+#                                ^ variable.function
+#                       ^ -variable.function
+#                ^ variable.function
+#       ^ -variable.function
+#^ -variable.function
+
+# Make sure that newlines, comments and spaces are skipped to the next token
+# after an atom keyword or an operator:
+
+ do func a + end
+#            ^^^ punctuation.section.block.end keyword.context.block.end
+#^^ keyword.context.block.do
+ (func a + ); [func a + ]; {func a + }; %{func a + }; <<func a + >>;
+#                                                                ^^ punctuation.definition.string.end
+#                                                  ^ punctuation.section.mapping.end
+#                                    ^ punctuation.section.sequence.end
+#                       ^ punctuation.section.brackets.end
+#          ^ punctuation.section.group.end
 func a :: b
 #         ^ variable.other
 #    ^ variable.other -variable.function
 func ~j""
 #    ^^ storage.type.string
 #    ^^^^ meta.string.elixir
+#<- variable.function
  <<func a>>
 #        ^^ punctuation.definition.string.end
 #       ^ variable.other
-#  ^^^^ variable.function
-#^^ punctuation.definition.string.begin
 func <:
 #      ^ -punctuation.section.arguments.end
 #    ^^ constant.other.keyword
