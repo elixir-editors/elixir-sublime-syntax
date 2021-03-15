@@ -121,9 +121,9 @@
       "foreground": "color(var(white) l(- 40%))"
     },
     {
-      "name": "Darker pre-defined types",
-      "scope": "support.type.elixir",
-      "foreground": "color(var(pink) l(- 10%))"
+      "name": "Type",
+      "scope": "support.type.elixir | storage.type.custom.elixir | storage.type.remote.elixir | storage.type.binary.elixir",
+      "foreground": "color(var(pink) s(- 40%))"
     },
     {
       "name": "Italic binary type",
