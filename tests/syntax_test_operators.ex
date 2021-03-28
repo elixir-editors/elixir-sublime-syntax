@@ -146,7 +146,9 @@
 #    ^ variable.other
 #^^^ keyword.operator.logical
 
-[l - r, l + r, l * r, l / r]
+[l - r, l + r, l * r, l / r, l // r]
+#                                 ^ variable.other
+#                              ^^ keyword.operator.arithmetic
 #                         ^ variable.other
 #                       ^ keyword.operator.arithmetic
 #                     ^ variable.other

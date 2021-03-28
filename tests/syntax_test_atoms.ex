@@ -109,9 +109,7 @@
 #              ^^^ constant.other.keyword
 #       ^^^^^ constant.other.symbol
 # ^^^^^ constant.other.keyword
-  =~: :=~, =: :=, ==: :==, ===: :===, !: :!, !=: :!=, !==: :!==, <<>>: :<<>>,
-#                                                                      ^^^^^ constant.other.symbol
-#                                                                ^^^^^ constant.other.keyword
+  =~: :=~, =: :=, ==: :==, ===: :===, !: :!, !=: :!=, !==: :!==,
 #                                                          ^^^^ constant.other.symbol
 #                                                     ^^^^ constant.other.keyword
 #                                                ^^^ constant.other.symbol
@@ -141,13 +139,15 @@
 #            ^^^^ constant.other.keyword
 #      ^^^^ constant.other.symbol
 # ^^^^ constant.other.keyword
-  ~>>: :~>>, |>: :|>, <|>: :<|>, /: :/, \\: :\\, *: :*, ..: :.., ...: :...,
-#                                                                     ^^^^ constant.other.symbol
-#                                                                ^^^^ constant.other.keyword
-#                                                           ^^^ constant.other.symbol
-#                                                       ^^^ constant.other.keyword
-#                                                   ^^ constant.other.symbol
-#                                                ^^ constant.other.keyword
+  ~>>: :~>>, |>: :|>, <|>: :<|>, /: :/, //: ://, \\: :\\, *: :*, ..: :.., ...: :...,
+#                                                                              ^^^^ constant.other.symbol
+#                                                                         ^^^^ constant.other.keyword
+#                                                                    ^^^ constant.other.symbol
+#                                                                ^^^ constant.other.keyword
+#                                                            ^^ constant.other.symbol
+#                                                         ^^ constant.other.keyword
+#                                                    ^^^ constant.other.symbol
+#                                                ^^^ constant.other.keyword
 #                                           ^^^ constant.other.symbol
 #                                       ^^^ constant.other.keyword
 #                                   ^^ constant.other.symbol
@@ -201,19 +201,26 @@
 #        ^^^ constant.other.keyword
 #    ^^ constant.other.symbol
 # ^^ constant.other.keyword
-  {}: :{}, %{}: :%{}, %: :%, ^: :^, ^^^: :^^^, "::": :::
-#                                                    ^^^ constant.other.symbol
-#                                              ^^^^^ constant.other.keyword
-#                                        ^^^^ constant.other.symbol
-#                                   ^^^^ constant.other.keyword
-#                               ^^ constant.other.symbol
-#                            ^^ constant.other.keyword
-#                        ^^ constant.other.symbol
-#                     ^^ constant.other.keyword
-#               ^^^^ constant.other.symbol
-#          ^^^ constant.other.keyword
-#     ^^^ constant.other.symbol
-# ^^^ constant.other.keyword
+  ^: :^, ^^^: :^^^, "::": :::,
+#                         ^^^ constant.other.symbol
+#                   ^^^^^ constant.other.keyword
+#             ^^^^ constant.other.symbol
+#        ^^^^ constant.other.keyword
+#    ^^ constant.other.symbol
+# ^^ constant.other.keyword
+
+# Special symbols:
+  <<>>: :<<>>, ..//: :..//, {}: :{}, %{}: :%{}, %: :%
+#                                                  ^^ constant.other.symbol
+#                                               ^^ constant.other.keyword
+#                                         ^^^^ constant.other.symbol
+#                                     ^^^ constant.other.keyword
+#                               ^^^ constant.other.symbol
+#                           ^^^ constant.other.keyword
+#                    ^^^^^ constant.other.symbol
+#              ^^^^^ constant.other.keyword
+#       ^^^^^ constant.other.symbol
+# ^^^^^ constant.other.keyword
 ]
 
 

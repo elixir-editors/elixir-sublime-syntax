@@ -461,6 +461,9 @@ x.|> x.|>
 x.<|> x.<|>
 #       ^^^ variable.other.member
 # ^^^ variable.function
+x.// x.//
+#      ^^ variable.other.member
+# ^^ variable.function
 x./ x./
 #     ^ variable.other.member
 # ^ variable.function

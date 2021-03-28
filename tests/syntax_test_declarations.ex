@@ -335,6 +335,8 @@ def +(x), do: x
 #   ^ entity.name.function
 def @(x), do: x
 #   ^ entity.name.function
+def x // y, do: {x, y}
+#     ^^ entity.name.function
 def x | y, do: {x, y}
 #     ^ entity.name.function
 def .. a do a end
