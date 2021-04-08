@@ -21,7 +21,7 @@ variables:
   closing_token: (?>[,;)}\]#]|>>(?!>)|%>|$|{{closing_keyword}})
   binary_operator: (?>(?<!\s)\[|<?<~|~>>?|<~>|[*=/|\\>]|\.(?!\.\.)|<(?!<[^<~]|%=)|\^\^|&&|(?<!\s)[-+]\S|[-+][-+>\s]|::(?!:)|$|!=|(?>when|and|in|or|not\s+in){{no_id_key_suffix}})
 
-  operator: (?>=~|={1,3}|@|<?\|>|(?!<%=)[<-](?![~=]|<[<~]|--)[->]?|\|{1,3}|::|&{1,3}|\+{1,3}|\\\\|\^{3}|\^|\.{1,3}|!={0,2}|[<>]=|\*|>>>|>|//|/|<<<|~~~|<~>|<?<~|~>>?|---)
+  operator: (?>=~|={1,3}|@|<?\|>|(?!<%=)[<-](?![~=]|<|--)[->]?|\|{1,3}|::|&{1,3}|\+{1,3}|\\\\|\^{3}|\^|\.{1,3}|!={0,2}|[<>]=|\*|>>>|>(?!>)|//|/|<<<|~~~|<~>|<?<~|~>>?|---)
 
   has_arguments: |
     (?x)
@@ -173,7 +173,7 @@ contexts:
     - match: (?={{atom_symbol}}:(?!:))|(?<=["']:)
       set: arguments_ws_rest_pop
 
-    - match: (?=unquote\(\s*:(?!:(?=[^:]|$)))
+    - match: (?=unquote\(\s*:(?!:(?!:)))
       set: [function_params_or_eol_pop, function_atom_name_pop, unquote_pop]
 
     - match: (?=unquote\()
@@ -203,7 +203,7 @@ contexts:
             (?x)
             (?>((?=_)(?<!%>){{identifier}})|({{identifier}}))?
             \s*
-            ((?!>>(?!>)){{operator}}|(?>and|in|or){{no_id_key_suffix}})
+            ({{operator}}|(?>and|in|or){{no_id_key_suffix}})
           comment: e.g. x && y
           captures:
             1: variable.parameter.unused.elixir
@@ -219,7 +219,7 @@ contexts:
             - include: if_non_space_pop
         - include: if_ws_closing_token_or_eol_pop
         - include: paren
-        - match: \{(?!}:(?!:))
+        - match: \{(?!}:(?!:(?!:)))
           scope: entity.name.function.elixir
           set:
             - meta_scope: meta.function.parameters.elixir
@@ -398,7 +398,7 @@ contexts:
     # E.g.: @spec integer &&& integer :: integer
     - match: |
         (?x)
-        ((?!::|<<(?!<)|>>(?!>)|\.){{operator}} | (?>and|in|or|not){{no_id_key_suffix}})
+        ((?!::|\.(?!\.)){{operator}} | (?>and|in|or|not){{no_id_key_suffix}})
       scope: variable.other.spec.elixir
       set: spec_op_definition_next_pop
     - include: if_types_end_pop
@@ -2144,7 +2144,7 @@ contexts:
               pop: true
 
   atom_symbol:
-    - match: :(?!:([^:]|$))
+    - match: :(?!:(?!:))
       scope: constant.other.symbol.elixir punctuation.definition.constant.begin.elixir
       push:
         - match: (?=<%)|{{atom_symbol}}
