@@ -53,7 +53,7 @@ fragment("\
 #         ^^ source.ex.sql punctuation.separator.continuation
   SELECT *\
 #         ^^ source.ex.sql punctuation.separator.continuation
-#        ^ variable.language.star.sql
+#        ^ variable.language.wildcard.asterisk.sql
 # ^^^^^^ keyword.other.DML.sql
 -- Interpolations are not accepted by fragment(), but we match them anyway:
   FROM #{:posts}
@@ -109,7 +109,7 @@ fragment(
 #                                                       ^^^^^^^^^ meta.string.elixir meta.interpolation.elixir
 #                                                     ^^ keyword.operator.psql
 #                        ^^^^^^^^^^^^^^^^^^^^^^^^ support.function.psql
-#                 ^ variable.language.star.sql
+#                 ^ variable.language.wildcard.asterisk.sql
 #          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.string.elixir source.ex.sql
 #        ^ punctuation.section.arguments.begin
 # ^^^^^^^ keyword.other.unquote
@@ -129,7 +129,7 @@ fragment(
  sql("SELECT * FROM posts")
 #                   ^^^^^ source.ex.sql
 #              ^^^^ keyword.other.DML.sql
-#            ^ variable.language.star.sql
+#            ^ variable.language.wildcard.asterisk.sql
 #     ^^^^^^ keyword.other.DML.sql
 #    ^^^^^^^^^^^^^^^^^^^^^ meta.string.elixir
 #^^^ variable.function
