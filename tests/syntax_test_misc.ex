@@ -370,9 +370,11 @@ x."quoted_func" arg
 #             ^ variable.other.member
 #            ^ punctuation.definition.constant.begin
 #           ^ punctuation.accessor.dot
-%{>: 1}.>>0
-#        ^ keyword.operator.comparison
+%{>: 1}.> >0
+#         ^ keyword.operator.comparison
 #       ^ variable.other.member
+%{>: 1}.>>0
+#       ^^ punctuation.definition.string.end invalid.illegal.stray-closing-binary
 %{>>>: 1}.>>>>0
 #            ^ keyword.operator.comparison
 #         ^^^ variable.other.member

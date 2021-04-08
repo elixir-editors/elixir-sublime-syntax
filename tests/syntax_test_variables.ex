@@ -573,10 +573,8 @@ x.'\\\'\m\'\\' x.'\\\'\m\'\\'
 # * Exceptions
 
 x.<< x.>>
-#       ^ keyword.operator.comparison
-#      ^ variable.other.member
-#  ^ keyword.operator.comparison
-# ^ variable.other.member
+#      ^^ string.other.binary punctuation.definition.string.end
+# ^^ string.other.binary punctuation.definition.string.begin
 
 x.^^
 #  ^ keyword.operator.pin

@@ -448,6 +448,31 @@ def unquote(:'arbitrary function name')(x), do: x
 #                                    ^ punctuation.definition.constant.end
 #             ^^^^^^^^^^^^^^^^^^^^^^^ entity.name.function
 #            ^ punctuation.definition.constant.begin
+def a >>> b
+#          ^ punctuation.section.arguments.end
+#     ^^^ entity.name.function
+def a <<< b
+#          ^ punctuation.section.arguments.end
+#     ^^^ entity.name.function
+<< def a >>
+#        ^^ punctuation.definition.string.end
+#       ^ punctuation.section.arguments.end
+#      ^ variable.parameter
+def f <<a>>
+#          ^ punctuation.section.arguments.end
+#        ^^ punctuation.definition.string.end
+#       ^ variable.parameter
+#     ^^ punctuation.definition.string.begin
+#   ^ entity.name.function
+def <<a>> <> <<b>>, do: <<a, b>>
+#                               ^ punctuation.section.arguments.end
+#                            ^ variable.other
+#                         ^ variable.other
+#                 ^ punctuation.separator.arguments
+#              ^ variable.parameter
+#         ^^ entity.name.function
+#     ^ variable.parameter
+#   ^^ punctuation.definition.string.begin
 def unquote(:{})(a), do: a
 #            ^^ entity.name.function
 def unquote(:%{})(a), do: a

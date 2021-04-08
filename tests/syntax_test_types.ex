@@ -568,6 +568,15 @@ def run(), do: nil
         integer
 #       ^^^^^^^ support.type
 
+@spec limit..limit :: list when limit: integer
+#                                      ^^^^^^^ support.type
+#                               ^^^^^^ constant.other.keyword
+#                          ^^^^ keyword.operator.when
+#                     ^^^^ support.type
+#            ^^^^^ storage.type.custom
+#          ^^ variable.other.spec
+#     ^^^^^ storage.type.custom
+
 # Can't look ahead past newline unfortunately.
 @spec integer
 #     ^^^^^^^ variable.other.spec
