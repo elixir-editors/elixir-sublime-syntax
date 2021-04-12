@@ -216,7 +216,7 @@ func !:
 #      ^ -punctuation.section.arguments.end
      :!
 #      ^ punctuation.section.arguments.end
-func ?:
+func ?: #
 #      ^ punctuation.section.arguments.end
 #    ^^ constant.numeric.char
 #   ^ punctuation.section.arguments.begin
@@ -224,6 +224,10 @@ func x?:
 #       ^ -punctuation.section.arguments.end
      :x?
 #       ^ punctuation.section.arguments.end
+func x@?:
+#        ^ -punctuation.section.arguments.end
+     :x@?
+#        ^ punctuation.section.arguments.end
 func valid?:
 #           ^ -punctuation.section.arguments.end
 #    ^^^^^^^ constant.other.keyword
@@ -357,14 +361,22 @@ kernel.<>
 #                       ^ punctuation.accessor.dot
 
 f &r
+# ^ keyword.operator.capture
 #<- variable.function
+f &&r
+# ^^ keyword.operator.logical
+#<- -variable.function
 f +r
+# ^ keyword.operator.arithmetic
 #<- variable.function
 f -r
+# ^ keyword.operator.arithmetic
 #<- variable.function
 f << >>
+# ^^ punctuation.definition.string.begin
 #<- variable.function
 a <<< b
+# ^^^ keyword.operator.bitwise
 #<- variable.other -variable.function
 
  a+x
