@@ -14,11 +14,12 @@ variables:
   identifier: (?>[[:lower:]_]\w*[?!]?)
   no_id_key_suffix: (?=\b(?!{{atom_id_suffix}}:(?!:)|[?!])|(?<=[?!])(?!:(?!:)))
   no_key_suffix: (?!{{atom_id_suffix}}:(?!:))
+  no_colon_suffix: (?![:'"[:alpha:]])
 
   # NB: the keywords are ordered by number of occurrences in the compiler source code of Elixir.
   # Stats produced using Makeup.Lexers.ElixirLexer.lex(): `[end: 21828, do: 17758, fn: 4070, when: 2364, true: 2232, false: 1625, nil: 1405, and: 1066, in: 821, else: 753, after: 408, or: 258, rescue: 211, not: 198, catch: 113]`
   closing_keyword: (?>end|else|after|rescue|catch){{no_id_key_suffix}}
-  closing_token: (?>[,;)}\]#]|>>(?!>)|%>|$|{{closing_keyword}})
+  closing_token: (?>[)}\];#]|>>(?!>)|%>|$|{{closing_keyword}})
   binary_operator: (?>(?<!\s)\[|<?<~|~>>?|<~>|[*=/|\\>]|\.(?!\.\.)|<(?!<[^<~]|%=)|\^\^|&&|(?<!\s)[-+]\S|[-+][-+>\s]|::(?!:)|$|!=|(?>when|and|in|or|not\s+in){{no_id_key_suffix}})
 
   operator: (?>=~|={1,3}|@|<?\|>|(?!<%=)[<-](?![~=]|<|--)[->]?|\|{1,3}|::|&{1,3}|\+{1,3}|\\\\|\^{3}|\^|\.{1,3}|!={0,2}|[<>]=|\*|>>>|>(?!>)|//|/|<<<|~~~|<~>|<?<~|~>>?|---)
@@ -27,8 +28,8 @@ variables:
     (?x)
     (?=
       \(
-    | \s* (?![?.]:) {{operator}}: (?![:'"[:alpha:]])
-    | (?! \s* (?>{{closing_token}} | {{binary_operator}}) )
+    | \s* (?![?.]:) {{operator}}: {{no_colon_suffix}}
+    | (?! \s* (?>, | {{closing_token}} | {{binary_operator}}) )
     )
   no_suffix_then_arguments: '{{no_id_key_suffix}}{{has_arguments}}'
 
@@ -128,7 +129,7 @@ contexts:
         - match: (?=->|when{{no_id_key_suffix}})
           push: inlined_core_syntax_pop
         # NB: no default parameters in arrow clauses
-        - match: \\\\(?!:(?![:'"[:alpha:]]))
+        - match: \\\\(?!:{{no_colon_suffix}})
           scope: keyword.operator.default.elixir invalid.illegal.default-operator.elixir
         - include: parameters_or_if_closing_pop
     - match: $
@@ -301,7 +302,7 @@ contexts:
       captures:
         1: variable.parameter.unused.elixir
         2: variable.parameter.elixir
-    - match: (?=\\\\(?!:(?![:'"[:alpha:]]))|<-)
+    - match: (?=\\\\(?!:{{no_colon_suffix}})|<-)
       push:
         - match: (?=,|(?>when|do){{no_id_key_suffix}}|do:(?!:))
           pop: true
@@ -1686,7 +1687,7 @@ contexts:
             - include: arguments_closing_pop
             - match: ''
               push:
-                - include: if_ws_closing_token_pop
+                - include: if_closing_token_pop
                 - include: arg_comma_and_skip_ws
                 - include: markdown_comment
                 - include: core_syntax
@@ -2125,13 +2126,13 @@ contexts:
     - match: |
         (?x)
         (?! [?.]: | ::: | %:(?:{{atom_id}}|['"]) ) # No ::: and %:XYZ{} (it's a map)
-        (?>{{atom_symbol}}|(?<=%>)) (:) (?![:'"[:alpha:]])
+        (?>{{atom_symbol}}|(?<=%>)) (:) {{no_colon_suffix}}
       comment: keyword symbol
       scope: constant.other.keyword.elixir
       captures:
         1: punctuation.definition.constant.end.elixir
     # Look for ':' behind the closing double/single quote.
-    - match: (?x)(?=(["']) (?>\\. | (?!\1).)* \1:(?![:'"[:alpha:]]))
+    - match: (?x)(?=(["']) (?>\\. | (?!\1).)* \1:{{no_colon_suffix}})
       comment: keyword string
       push:
         - match: (.)
@@ -2372,7 +2373,7 @@ contexts:
   arguments_ws_closing_pop:
     - match: |
         (?x)
-          \n|\s?(?=\s*(?>[\n})\];]|$|>>(?!>)|%>|{{closing_keyword}}))
+          \n | \s? (?=\s*{{closing_token}})
         | (?<=::\bend\b) | (?<=([^:])\bend\b) | (?<=^end\b)
       scope: punctuation.section.arguments.end.elixir
       pop: true
@@ -2392,15 +2393,18 @@ contexts:
   arguments_ws_rest_pop:
     - include: invalid_comma
     - include: arg_comma_and_skip_ws
+    - match: (?=\?:\s*{{closing_token}})
+      set:
+        - include: char_literal
+        - include: if_ws_closing_token_or_eol_pop
     - include: atom_keyword
     - match: |
         (?x)
-          (?=[-+*/=!&|;] | \\\\ | ~(?![a-zA-Z]) | <(?!<(?!<)) | >(?!>(?!>)) | \.(?=\.(?!\.)) | (::(?!:)))
+          (?=[-+*/=!|;] | && | \\\\ | ~(?![a-zA-Z]) | <(?!<(?!<)) | >(?!>(?!>)) | \.\.(?!\.) | ::(?!:))
         | (?=(?>when|and|in|or|not){{no_id_key_suffix}})
-        | (?<=[^:]:)(?<!\W\?:)(?=\s)
+        | (?<=[^:]:)(?=\s)
       push:
         - include: if_closing_token_pop
-        - include: atom_keyword
         - include: operator
         - include: elixir_keywords
         - include: comments
@@ -2653,16 +2657,16 @@ contexts:
   ## Helpers
 
   if_closing_token_pop:
-    - match: (?=[})\]]|>>(?!>)|%>|{{closing_keyword}})
+    - match: (?=[)}\]]|>>(?!>)|%>|{{closing_keyword}})
       pop: true
 
   if_ws_closing_token_pop:
-    - match: (?=\s*(?>[})\];]|>>(?!>)|%>|{{closing_keyword}}))
+    - match: (?=\s*(?>[)}\];]|>>(?!>)|%>|{{closing_keyword}}))
       pop: true
 
   if_ws_closing_token_or_eol_pop:
     - include: if_ws_closing_token_pop
-    - match: $
+    - match: (?=\s*(?>#|$))
       pop: true
 
   if_closing_paren_pop:
