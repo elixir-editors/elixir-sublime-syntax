@@ -1,0 +1,90 @@
+%YAML 1.2
+---
+name: SQL (Elixir)
+file_extensions: [ex.sql]
+scope: source.ex.sql
+
+contexts:
+  main:
+    - match: |
+        (?xi)
+        \b(?>
+          (
+          # Postgres jsonb functions.
+            jsonb_to_tsvector|to_jsonb?|(?>array|row)_to_json
+          | jsonb?_build_array|jsonb?(?:_build)?_object
+          | jsonb?_(?>
+              agg|array_(?>length|elements(?:_text)?)|each(?:_text)?
+            | extract_path(?:_text)?|object_keys|populate_record(?:set)?
+            | typeof|to_record(?:set)?|strip_nulls
+            )
+          | jsonb_(?>set|insert|pretty|path_exists|path_match|path_query(?>_array|_first)?)
+          # Other Postgres functions.
+          | greatest|least|random|to_ts(?>query|vector)|setweight
+          )
+        | ((?<=\bdo\s)nothing | (?<=\bgroup\s)by | (?<=\bon\s)conflict)
+          # Should always be keywords, but SQL.sublime-syntax doesn't think so yet.
+          # Taken from https://www.postgresql.org/docs/current/sql-keywords-appendix.html
+        | (
+            all|any|array|analy[sz]e|a?symmetric|authorization|binary|both|cast|cross|column
+          | concurrently|collat(?:e|ion)|create|distinct|(?<!\bas\s)do
+          | except|excluded(?=\s*\.)|fetch|for(?:eign)?|freeze|full|group|intersect|into|inner|isnull
+          | i[sn]|ilike|lateral|leading|left|natural|not(?:null)?|nullif|on(?:ly)?|offset|order|outer
+          | over(?:laps)?|primary|recursive|returning|right|similar|some|table(?:sample)?|to|trailing
+          | unnest|unique|user|variadic|verbose|window
+          )
+        | (nulls | (?<=\bnulls\s)last)
+          # Some common functions.
+        | (
+            now|coalesce|current_(?>catalog|role|schema)?|localtime(?:stamp)?
+          | (?>array|string)_agg|rand|replace|row_number
+          )
+        )\b
+        # Various Postgres operators.
+        | (::|\|?\|/|!!?|<<|>>|[%^@|&#~])
+        # Postgres type cast identifier.
+        | (?<=::)\s*((?!\d)\w+(?:\[\])*)
+        # Postgres jsonb operators.
+        | (\\\\)(\?[|&]?)? | (->>?|\#>>?|@[@>?]|<@|\#-)
+        # Ecto argument placeholder.
+        | ((?<!\w)\\?\?(?!\w))
+        # Prepared statement parameter.
+        | (\$\d+)
+        # Database identifier.
+        | ((?!\d)\w+) (?=(?:\s*\.\s*(?!\d)\w+){2})
+        # Table and member identifier.
+        | ((?!\d)\w+) (\s*\.\s*) (\s*(?!\d)\w+)
+        # Accessor punctuation.
+        | (\.)
+      captures:
+        1: support.function.psql
+        2: keyword.other.sql
+        3: keyword.other.sql
+        4: constant.language.sql
+        5: support.function.sql
+        6: keyword.operator.psql
+        7: storage.type.psql
+        8: constant.character.escape.char.elixir
+        9: keyword.operator.jsonb.psql
+        10: keyword.operator.jsonb.psql
+        11: constant.other.placeholder.elixir
+        12: constant.other.parameter.sql
+        13: constant.other.database-name.sql
+        14: constant.other.table-name.sql
+        15: punctuation.accessor.dot.sql
+        16: variable.other.member.sql
+        17: punctuation.accessor.dot.sql
+
+    - include: comment
+    - include: scope:source.sql
+    - match: (?!\d)\w+
+      scope: variable.other.sql
+
+  comment:
+    - match: /\*
+      scope: punctuation.definition.comment.sql
+      push:
+        - meta_scope: comment.block.c
+        - include: comment
+        - match: \*/
+          pop: true
