@@ -1,0 +1,197 @@
+{
+  "name": "Monokai for Elixir",
+  "variables":
+  {
+    "entity": "var(yellow2)"
+  },
+  "rules":
+  [
+    // NB: commented out to keep it similar to the style of HTML tags.
+    // {
+    //   "name": "EEx tag",
+    //   "scope": "punctuation.section.embedded.begin.eex | punctuation.section.embedded.end.eex",
+    //   "foreground": "var(red)"
+    // },
+    {
+      "name": "EEx embedded",
+      "scope": "source.elixir.embedded.html",
+      "background": "color(var(white) a(0.05))"
+    },
+    {
+      "name": "Doc attribute",
+      "scope": "support.attr.doc.elixir",
+      "foreground": "var(yellow5)"
+    },
+    {
+      "name": "Doc string",
+      "scope": "source.markdown.embedded.elixir",
+      "foreground": "var(yellow5)"
+    },
+    {
+      "name": "Support attributes",
+      "scope": "support.attr.elixir",
+      "foreground": "var(blue)"
+    },
+    {
+      "name": "Constant variable",
+      "scope": "variable.other.constant.elixir",
+      "foreground": "color(var(purple))"
+    },
+    {
+      "name": "Unused variable",
+      "scope": "variable.other.unused.elixir",
+      "foreground": "color(var(white) a(0.5))"
+    },
+    {
+      "name": "Unused parameter",
+      "scope": "variable.parameter.unused.elixir",
+      "foreground": "color(var(orange) a(0.6))"
+    },
+    {
+      "name": "Spec name",
+      "scope": "variable.other.spec.elixir",
+      "font_style": "italic",
+      "foreground": "color(var(entity) s(- 50%))"
+    },
+    {
+      "name": "Capture name",
+      "scope": "variable.other.capture.elixir",
+      "foreground": "color(var(blue))"
+    },
+    {
+      "name": "Capture arity",
+      "scope": "constant.numeric.arity.elixir",
+      "font_style": "italic"
+    },
+    {
+      "name": "Capture placeholder ampersand",
+      "scope": "punctuation.definition.capture.elixir constant.other.capture.elixir",
+      "foreground": "color(var(purple) s(- 30%))"
+    },
+    {
+      "name": "Module atom",
+      "scope": "constant.other.module.elixir",
+      "foreground": "color(var(entity) s(+ 50%) l(- 20%))"
+    },
+    {
+      "name": "Atom keyword",
+      "scope": "constant.other.keyword.elixir",
+      "foreground": "color(var(purple) s(- 50%) l(- 15%))"
+    },
+    {
+      "name": "Atom keyword punctuation",
+      "scope": "punctuation.definition.constant",
+      "foreground": "color(var(white) a(0.65))"
+    },
+    {
+      "name": "Numeric punctuation",
+      "scope": "punctuation.separator.numeric.elixir | punctuation.definition.numeric.elixir | punctuation.separator.decimal.elixir",
+      "foreground": "color(var(purple) s(- 30%))"
+    },
+    {
+      "name": "Escapes in remote function call",
+      "scope": "variable.function.elixir constant.character.escape.char.elixir",
+      "foreground": "color(var(blue) l(- 30%))"
+    },
+    {
+      "name": "Interpolation",
+      "scope": "source.elixir.embedded",
+      "background": "color(var(white) a(0.03))"
+    },
+    {
+      "name": "Interpolation punctuation",
+      "scope": "punctuation.section.interpolation.begin.elixir | punctuation.section.interpolation.end.elixir",
+      "foreground": "color(var(white) l(- 30%))"
+    },
+    {
+      "name": "SQL boolean",
+      "scope": "constant.boolean.sql",
+      "foreground": "color(var(purple))"
+    },
+    {
+      "name": "SQL embedded",
+      "scope": "source.elixir source.sql",
+      "background": "color(var(white) a(0.03))"
+    },
+    {
+      "name": "Italic type name",
+      "scope": "entity.name.type.elixir",
+      "font_style": "italic"
+    },
+    {
+      "name": "Labelled type",
+      "scope": "variable.other.named-type.elixir",
+      "font_style": "italic",
+      "foreground": "color(var(white) l(- 40%))"
+    },
+    {
+      "name": "Type",
+      "scope": "support.type.elixir | storage.type.custom.elixir | storage.type.remote.elixir | storage.type.binary.elixir",
+      "foreground": "color(var(blue) s(- 40%))"
+    },
+    {
+      "name": "Italic binary type",
+      "scope": "meta.type.binary.elixir -keyword.operator.colon.elixir",
+      "font_style": "italic"
+    },
+    {
+      "name": "Darker string punctuation",
+      "scope": "source.elixir & punctuation.definition.string",
+      "foreground": "color(var(yellow) l(- 15%))"
+    },
+    {
+      "name": "Group parentheses",
+      "scope": "punctuation.section.group.begin.elixir | punctuation.section.group.end.elixir",
+      "foreground": "color(var(white) a(0.7))"
+    },
+    {
+      "name": "Item access brackets",
+      "scope": "punctuation.section.access.begin.elixir | punctuation.section.access.end.elixir",
+      "foreground": "var(red)"
+    },
+    {
+      "name": "Line continuation",
+      "scope": "punctuation.separator.continuation.elixir",
+      "foreground": "color(var(white) a(0.3))"
+    },
+    {
+      "name": "Git merge conflict current",
+      "scope": "punctuation.section.block.begin.git.conflict",
+      "background": "#454",
+      "font_style": "bold",
+      "foreground": "var(white)"
+    },
+    {
+      "name": "Git merge conflict current",
+      "scope": "comment.line.current.git.conflict",
+      "background": "#343",
+      "foreground": "color(var(white) a(0.8))"
+    },
+    {
+      "name": "Git merge conflict middle",
+      "scope": "punctuation.section.block.middle.git.conflict",
+      "background": "color(var(white) a(0.1))",
+      "font_style": "bold",
+      "foreground": "var(white)"
+    },
+    {
+      "name": "Git merge conflict middle",
+      "scope": "comment.line.middle.git.conflict",
+      "background": "color(var(white) a(0.05))",
+      "foreground": "color(var(white) a(0.8))"
+    },
+    {
+      "name": "Git merge conflict incoming",
+      "scope": "punctuation.section.block.end.git.conflict",
+      "background": "#446",
+      "font_style": "bold",
+      "foreground": "var(white)"
+    },
+    {
+      "name": "Git merge conflict incoming",
+      "scope": "comment.line.incoming.git.conflict",
+      "background": "#335",
+      "foreground": "color(var(white) a(0.8))"
+    }
+  ]
+}

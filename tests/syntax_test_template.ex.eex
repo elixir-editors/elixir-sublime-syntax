@@ -1,0 +1,82 @@
+# SYNTAX TEST "Elixir (EEx).sublime-syntax"
+
+# EEx inside Elixir code
+
+[
+<%= if @ecto do %>
+#      ^ keyword.operator.attribute
+  :ecto,
+<% end %><%= if @html do %>
+#  ^^^ keyword.context.block.end
+#            ^^ keyword.control.conditional
+  :html
+<% end %>
+#  ^^^ keyword.context.block.end
+]
+#<- -invalid
+
+defmodule <%= @module %>.View do
+#                        ^^^^ entity.name.namespace
+#                       ^ punctuation.accessor.dot
+#                     ^ entity.name.tag.ex.eex
+#             ^ keyword.operator.attribute
+#          ^^ entity.name.tag.ex.eex
+end
+
+alias <%= @web_namespace %>.Router.Helpers, as: Routes
+#                                               ^^^^^^ entity.name.namespace
+#                          ^ punctuation.accessor.dot
+#      ^^ entity.name.tag.ex.eex
+
+:<%= @key %>
+#<- constant.other.symbol punctuation.definition.constant.begin
+<%= @key %>:
+#          ^ constant.other.keyword punctuation.definition.constant.end
+<%= @key %>_atom:
+#               ^ punctuation.definition.constant.end
+#          ^^^^^^ constant.other.keyword
+
+
+# NB: due to the workaround in the syntax file EEx tags
+#     are also highlighted inside strings.
+# FIXME: make negative check with "-entity" when solved.
+"<%= string %>"
+#           ^ entity.name.tag.ex.eex
+# ^^ entity.name.tag.ex.eex
+
+M1.<%= M2 %>.f()
+#              ^ punctuation.section.arguments.end
+#             ^ punctuation.section.arguments.begin
+#            ^ variable.function
+#           ^ punctuation.accessor.dot
+#         ^ entity.name.tag.ex.eex
+#      ^^ constant.other.module
+#   ^^ entity.name.tag.ex.eex
+# ^ punctuation.accessor.dot
+
+x.<%= :member %>()
+#                ^ punctuation.section.arguments.end
+#               ^ punctuation.section.arguments.begin
+#             ^ entity.name.tag.ex.eex
+#     ^^^^^^^ constant.other.symbol
+#  ^^ entity.name.tag.ex.eex
+#^ punctuation.accessor.dot
+                 ^ punctuation.section.arguments.end
+                ^ punctuation.section.arguments.begin
+
+@type <%= :t %> :: any
+#            ^ entity.name.tag.ex.eex
+#      ^^ entity.name.tag.ex.eex
+                   ^^^ support.type
+
+@spec <%= :name %>(any)
+#                  ^^^ support.type
+#               ^ entity.name.tag.ex.eex
+#      ^^ entity.name.tag.ex.eex
+                      ^ punctuation.definition.parameters.end
+                  ^ punctuation.definition.parameters.begin
+
+ &<%= %>
+#     ^ entity.name.tag.ex.eex
+#  ^^ entity.name.tag.ex.eex
+#^ keyword.operator.capture
