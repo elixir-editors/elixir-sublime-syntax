@@ -1,5 +1,12 @@
 # Changelog
 
+## [v2.0.1] – 2021-05-02
+
+- Elixir: fixed a bug affecting, for example, multi-line `with` statements.
+- Elixir: fixed captures such as `&MyApp.User |> f(&1)`.
+- Elixir: fixed matching iex continuation lines (`...>`) in markdown comments.
+- SQL: highlight `BY` as a standalone keyword.
+
 ## [v2.0.0] – 2021-04-27
 
 The Elixir syntax definition has been reworked amounting to a complete rewrite
@@ -9,18 +16,18 @@ bringing among other things the following features and improvements:
 - Parameter highlighting (also in `fn`, `case`, `with`, `for`, `try` and `receive`).
 - Function call highlighting (e.g. `inspect error`, `Enum.map(...)`).
 - Highlight `as: A` argument in alias/require statements.
-- Better matching for def/defmodule/etc. statements.
+- Better matching for `def`/`defmodule`/etc. statements.
 - Highlight quoted member variables/functions (e.g. `:erlang."=/="(1, 2)`).
 - Fixes to strings, numerics, escapes, captures etc.
 - Newest Elixir operators and functions.
 - Highlight LiveView, YAML and JSON strings.
-- Syntax definition for EEx in Elixir (e.g. `defmodule <%= @module %>.View do end`)
+- Syntax definition for EEx in Elixir, e.g.: `defmodule <%= @module %>.View do end`
 - Some keywords are variables depending on the context (e.g. `def = 0`).
 - Markdown highlighting within `@doc` comments and also Elixir code examples.
-- Highlight SQL (e.g. jsonb operators) inside the Ecto `fragment()` function (also for general usage: `sql("INSERT INTO ...")`).
+- Highlight SQL (e.g. jsonb operators) inside the Ecto `fragment()` function but also inside `sql("INSERT INTO ...")`.
 - Git merge conflicts are highlighted.
 - Added Monokai and Mariana theme color scheme rules.
-- Correct scope for symbol names for the "Go to Definition" command.
+- Correct scope for symbol names for the "Goto Definition" command.
 - Speed optimizations: rules and regexps are ordered in such a way
   that they match the most likely occurring tokens first.
 - Snippets for `|> IO.inspect(label: "...")`, `|> then()` and `|> tap()`.
