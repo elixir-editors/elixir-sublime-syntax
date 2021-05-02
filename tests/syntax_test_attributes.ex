@@ -2,12 +2,10 @@
 
 ## Attributes
 
-@attribute :attr
-#^^^^^^^^^ entity.name.constant
-
-@other @attribute
-#       ^^^^^^^^^ variable.other.constant
-
+@attr :attr
+#          ^ punctuation.section.arguments.end
+#    ^ punctuation.section.arguments.begin
+#^^^^ entity.name.constant
 @attr? :attr?
 #^^^^^ entity.name.constant
 @attr! :attr!
@@ -18,6 +16,10 @@
 #^^^^^ variable.other.constant
 @attr!
 #^^^^^ variable.other.constant
+
+@other @attr
+#       ^^^^ variable.other.constant
+#      ^ keyword.operator.attribute
 
 @fn_attr fn a -> a end
 #                  ^^^ keyword.context.block.end
@@ -75,22 +77,17 @@
 @on_definition {Hooks, :on_def}
 #              ^^^^^^^^^^^^^^^^ meta.sequence.tuple.elixir
 #^^^^^^^^^^^^^ support.attr
-@__MODULE__ __MODULE__
-#           ^^^^^^^^^^ variable.language
-#^^^^^^^^^^ entity.name.constant
-@__CALLER__ __CALLER__
-#           ^^^^^^^^^^ variable.language
-#^^^^^^^^^^ entity.name.constant
-@__ENV__ __ENV__
-#        ^^^^^^^ variable.language
-#^^^^^^^ entity.name.constant
-@__DIR__ __DIR__
-#        ^^^^^^^ variable.language
-#^^^^^^^ entity.name.constant
-@__STACKTRACE__ __STACKTRACE__
-#               ^^^^^^^^^^^^^^ variable.language
-#^^^^^^^^^^^^^^ entity.name.constant
-
+@optional_callbacks f1: 1,
+#                         ^ -punctuation.section.arguments.end
+#                        ^ punctuation.separator.arguments
+#                   ^^^ constant.other.keyword
+#                  ^ punctuation.section.arguments.begin
+#^^^^^^^^^^^^^^^^^^ support.attr
+                    f2: 2
+#                        ^ punctuation.section.arguments.end
+#                   ^^^ constant.other.keyword
+@enforce_keys [:id, :name]
+#^^^^^^^^^^^^ support.attr
 
 @derive
 #^^^^^^ variable.other.constant
@@ -120,6 +117,27 @@
 #^^^^^^^ variable.other.constant
 @on_definition
 #^^^^^^^^^^^^^ variable.other.constant
+@optional_callbacks
+#^^^^^^^^^^^^^^^^^^ variable.other.constant
+@enforce_keys
+#^^^^^^^^^^^^ variable.other.constant
+
+
+@__MODULE__ __MODULE__
+#           ^^^^^^^^^^ variable.language
+#^^^^^^^^^^ entity.name.constant
+@__CALLER__ __CALLER__
+#           ^^^^^^^^^^ variable.language
+#^^^^^^^^^^ entity.name.constant
+@__ENV__ __ENV__
+#        ^^^^^^^ variable.language
+#^^^^^^^ entity.name.constant
+@__DIR__ __DIR__
+#        ^^^^^^^ variable.language
+#^^^^^^^ entity.name.constant
+@__STACKTRACE__ __STACKTRACE__
+#               ^^^^^^^^^^^^^^ variable.language
+#^^^^^^^^^^^^^^ entity.name.constant
 
 @__MODULE__
 #^^^^^^^^^^ variable.other.constant

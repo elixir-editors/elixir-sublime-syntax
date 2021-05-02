@@ -5,14 +5,27 @@
 # NB: Check that `def` doesn't match past the newline and consumes the closing `"""`.
 @doc """
 Don't insert a comment between `x` and `"""`.
-    iex> def x
+    iex> def x do
+#      ^ keyword.other.iex-angle.elixir punctuation.definition.iex.begin.elixir
 #   ^^^^^^^^^^^ markup.raw.block.markdown
 #^^^ meta.string.elixir
     ...(1)> {:ok, _} = Repo.insert(post)
 #                      ^^^^ constant.other.module.elixir
 #           ^^^^^^^^ meta.sequence.tuple.elixir
-#   ^^^ keyword.operator.ellipsis
+#         ^ keyword.other.iex-angle.elixir punctuation.definition.iex.begin.elixir
+#   ^^^ keyword.other.iex-dots
 #^^^ meta.string.elixir
+    ...(1)> end
+#           ^^^ keyword.context.block.end
+#         ^ keyword.other.iex-angle.elixir punctuation.definition.iex.begin.elixir
+#   ^^^ keyword.other.iex-dots
+
+    iex(1)> [1 + 2,
+#           ^ punctuation.section.brackets.begin.elixir
+    ...(1)>  3]
+#             ^ punctuation.section.brackets.end.elixir
+#            ^ constant.numeric.integer.elixir
+#   ^^^ keyword.other.iex-dots
  """m
 #   ^ variable.other -meta.string.elixir
 #^^^ punctuation.definition.string.end
@@ -99,6 +112,11 @@ Don't insert a comment between `X` and `"""`.
 #           ^^^^^^^^^^^^^^^^ -meta.interpolation.elixir
 #       ^^^ -punctuation.definition.string.end
 #^^^^^^^^ -constant.character.escape
+
+    iex> use Bitwise, only_operators: true
+#   ^^^ keyword.other.iex
+    iex> 1 &&& 1
+#   ^^^ keyword.other.iex
  '''m
 #   ^ storage.type.string
 #^^^ punctuation.definition.string.end

@@ -462,6 +462,20 @@ else
 end
 #  ^ punctuation.section.arguments.end
 
+with {:ok, fst} <-
+#               ^^ keyword.operator.arrow
+#          ^^^ variable.parameter
+       f1(),
+#          ^ punctuation.separator.arguments
+#      ^^ variable.function
+     {:ok, snd} <-
+#               ^^ keyword.operator.arrow
+#          ^^^ variable.parameter
+       f2() do
+#           ^^ keyword.context.block.do
+#      ^^ variable.function
+end
+
 with unquote(clauses) do
 #            ^^^^^^^ variable.other
 #    ^^^^^^^ keyword.other.unquote
