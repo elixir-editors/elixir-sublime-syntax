@@ -64,6 +64,12 @@ contexts:
   prototype:
     # NB: rules in the prototype context will always match before any other.
     - include: merge_conflict # Merge conflict markers can occur anywhere.
+    - match: ^(\s*)(\.{3}).*?(>)
+      comment: iex prompt continuation
+      captures:
+        1: meta.string.elixir
+        2: keyword.other.iex-dots.elixir
+        3: keyword.other.iex-angle.elixir punctuation.definition.iex.begin.elixir
 
   core_syntax:
     # The rules are approximately ordered by their likeliness of occurrence
@@ -406,9 +412,7 @@ contexts:
 
   spec_op_definition_pop:
     # E.g.: @spec integer &&& integer :: integer
-    - match: |
-        (?x)
-        ((?!::|\.(?!\.)){{operator}} | (?>and|in|or|not){{no_id_key_suffix}})
+    - match: (?x)((?!::|\.(?!\.)){{operator}} | (?>and|in|or|not){{no_id_key_suffix}})
       scope: variable.other.spec.elixir
       set: spec_op_definition_next_pop
     - include: if_types_end_pop
@@ -500,7 +504,7 @@ contexts:
   return_types_pop:
     - match: ::(?!:)
       scope: keyword.operator.colon.elixir
-      set: [first_and_next_types_pop, if_non_space_pop]
+      set: [first_and_next_types_pop, invalid_comma_or_non_space_pop]
 
   if_types_end_pop:
     # Avoid matching e.g. "def func" while typing the return types.
@@ -524,12 +528,12 @@ contexts:
     - include: comments
     - match: when{{no_id_key_suffix}}
       scope: keyword.operator.when.elixir
-      set: [when_types_clause_pop, if_non_space_pop]
+      set: [when_types_clause_pop, invalid_comma_or_non_space_pop]
     - match: (\|(?![:|>]))|(::(?!:))
       captures:
         1: keyword.operator.union.elixir
         2: keyword.operator.colon.elixir
-      push: [if_non_space_pop, union_types_eol_pop, if_non_space_pop]
+      push: [if_non_space_pop, union_types_eol_pop, invalid_comma_or_non_space_pop]
     - include: if_ws_closing_token_or_eol_pop
     - include: if_non_space_or_eol_pop
 
@@ -544,9 +548,9 @@ contexts:
   when_types_clause_pop:
     - include: comments
     - include: atom_keyword
-    - match: (?<=[\w"'@?!]:)
+    - match: (?<=[^:]:)
       comment: skips to keyword value
-      push: [when_var_pop, if_non_space_pop]
+      push: [when_var_pop, invalid_comma_or_non_space_pop]
     - include: if_ws_closing_token_or_eol_pop
     - include: if_non_space_or_eol_pop
 
@@ -1871,8 +1875,6 @@ contexts:
       push:
         - clear_scopes: true
         - meta_scope: meta.interpolation.elixir markup.raw.block.markdown markup.raw.block.elixir
-        - match: ^\s*(\.{3})(>)
-          scope: keyword.other.elixir
         - match: \n|$
           scope: punctuation.definition.iex.end.elixir
           pop: true
@@ -2112,7 +2114,7 @@ contexts:
       scope: constant.other.keyword.elixir
       captures:
         1: punctuation.definition.constant.elixir
-      push: [alias_as_name_pop, if_non_space_pop]
+      push: [alias_as_name_pop, invalid_comma_or_non_space_pop]
 
   alias_as_name_pop:
     - match: '{{module_name}}{{no_key_suffix}}'
@@ -2203,6 +2205,8 @@ contexts:
         - include: if_non_space_or_eol_pop
 
   capture_name_pop:
+    - match: (?=(?>{{module_name}}{{no_key_suffix}}|:{{atom_symbol}})(?!\s*\.))
+      pop: true
     - include: atom_symbol
     - include: atom_keyword
     - include: module_name
@@ -2411,13 +2415,13 @@ contexts:
         (?x)
           (?=[-+*/=!|;] | && | \\\\ | ~(?![a-zA-Z]) | <(?!<(?!<)) | >(?!>(?!>)) | \.\.(?!\.) | ::(?!:))
         | (?=(?>when|and|in|or|not){{no_id_key_suffix}})
-        | (?<=[^:]:)(?=\s)
       push:
         - include: if_closing_token_pop
         - include: operator
         - include: elixir_keywords
-        - include: comments
-        - include: if_non_space_pop
+        - include: invalid_comma_or_non_space_pop
+    - match: (?<=[^:]:)\s
+      push: invalid_comma_or_non_space_pop
     - include: do_block_pop
     - include: fn_block
     - include: if_ws_closing_token_or_eol_pop
