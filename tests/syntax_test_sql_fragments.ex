@@ -126,7 +126,11 @@ fragment(
 
 ## Raw SQL queries
 
- sql("SELECT * FROM posts")
+ sql("SELECT * FROM posts ORDER BY title GROUP BY user_id")
+#                                              ^^ keyword.other.sql
+#                                        ^^^^^ keyword.other.sql
+#                               ^^ keyword.other.sql
+#                         ^^^^^ keyword.other.sql
 #                   ^^^^^ source.ex.sql
 #              ^^^^ keyword.other.DML.sql
 #            ^ variable.language.wildcard.asterisk.sql

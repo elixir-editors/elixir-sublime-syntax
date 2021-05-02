@@ -559,6 +559,14 @@ end[]
 #     ^^ constant.other.capture
 #^^^ constant.other.capture
 
+ & 1/&1
+#     ^ -punctuation.definition.capture constant.other.capture
+#    ^ punctuation.definition.capture constant.other.capture
+#   ^ keyword.operator.arithmetic
+#  ^ -punctuation.definition.capture constant.other.capture
+# ^ -punctuation.definition.capture -constant.other.capture
+#^ punctuation.definition.capture constant.other.capture
+
  & &1..&2; & &1 .. &2
 #                  ^^ constant.other.capture
 #            ^^ constant.other.capture
@@ -574,6 +582,10 @@ end[]
 #              ^ punctuation.accessor.arity
 #         ^^^^^ variable.other.capture
 #        ^ punctuation.accessor.dot
+# ^^^^^^^ constant.other.symbol
+ &:erlang/2
+#         ^ constant.numeric.integer
+#        ^ keyword.operator -punctuation.accessor.arity
 
  &x.(&1)
 #      ^ punctuation.section.arguments.end
@@ -842,6 +854,17 @@ end[]
 #             ^^^ variable.other.capture
 # ^^^^^^^ variable.other.capture
 
+ &Module |> func(&1)
+#           ^^^^ variable.function
+#        ^^ keyword.operator.pipe -punctuation.accessor.arity
+# ^^^^^^ constant.other.module
+ &Module.Sub |> func(&1)
+#               ^^^^ variable.function
+#            ^^ keyword.operator.pipe -punctuation.accessor.arity
+#        ^^^ constant.other.module
+#       ^ punctuation.accessor.dot
+# ^^^^^^ constant.other.module
+
  &Module.Sub.SubSub.func/2
 #                   ^^^^ variable.other.capture
 #                  ^ punctuation.accessor.dot
@@ -892,22 +915,14 @@ end[]
  &unquote(:erlang).apply/2
 #                       ^ punctuation.accessor.arity
 
-# These are semantically invalid, but it complicates the rules to do it correctly.
+# Semantically invalid, but it complicates the rules to do it correctly:
  &./2
    ^ variable.other.member -punctuation.accessor.arity
   ^ punctuation.accessor.dot
- &:erlang/2
-         ^ keyword.operator -punctuation.accessor.arity
- &Module.Sub/0
-            ^ keyword.operator -punctuation.accessor.arity
-        ^ punctuation.accessor.dot
 
-# Used to highlight invalid capture variables but it's not really worth the CPU cycles.
  &0; &000
 #    ^ punctuation.definition.capture constant.other.capture
 #^ punctuation.definition.capture constant.other.capture
-      ^^^invalid.illegal.capture
-  ^invalid.illegal.capture
 
 
 ## Elixir keywords
