@@ -22,11 +22,11 @@ contexts:
           # Other Postgres functions.
           | greatest|least|random|to_ts(?>query|vector)|setweight
           )
-        | ((?<=\bdo\s)nothing | (?<=\bgroup\s)by | (?<=\bon\s)conflict)
+        | ((?<=\bdo\s)nothing | (?<=\bon\s)conflict)
           # Should always be keywords, but SQL.sublime-syntax doesn't think so yet.
           # Taken from https://www.postgresql.org/docs/current/sql-keywords-appendix.html
         | (
-            all|any|array|analy[sz]e|a?symmetric|authorization|binary|both|cast|cross|column
+            all|any|array|analy[sz]e|a?symmetric|authorization|binary|both|by|cast|cross|column
           | concurrently|collat(?:e|ion)|create|distinct|(?<!\bas\s)do
           | except|excluded(?=\s*\.)|fetch|for(?:eign)?|freeze|full|group|intersect|into|inner|isnull
           | i[sn]|ilike|lateral|leading|left|natural|not(?:null)?|nullif|on(?:ly)?|offset|order|outer
