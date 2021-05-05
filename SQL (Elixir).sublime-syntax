@@ -8,37 +8,23 @@ contexts:
   main:
     - match: |
         (?xi)
-        \b(?>
+        (?>
           (
-          # Postgres jsonb functions.
-            jsonb_to_tsvector|to_jsonb?|(?>array|row)_to_json
-          | jsonb?_build_array|jsonb?(?:_build)?_object
-          | jsonb?_(?>
-              agg|array_(?>length|elements(?:_text)?)|each(?:_text)?
-            | extract_path(?:_text)?|object_keys|populate_record(?:set)?
-            | typeof|to_record(?:set)?|strip_nulls
-            )
-          | jsonb_(?>set|insert|pretty|path_exists|path_match|path_query(?>_array|_first)?)
-          # Other Postgres functions.
-          | greatest|least|random|to_ts(?>query|vector)|setweight
+          # Scalar values.
+            current_(?>catalog|role|schema) | localtime(?:stamp)?
           )
-        | ((?<=\bdo\s)nothing | (?<=\bon\s)conflict)
+        | (
           # Should always be keywords, but SQL.sublime-syntax doesn't think so yet.
           # Taken from https://www.postgresql.org/docs/current/sql-keywords-appendix.html
-        | (
-            all|any|array|analy[sz]e|a?symmetric|authorization|binary|both|by|cast|cross|column
-          | concurrently|collat(?:e|ion)|create|distinct|(?<!\bas\s)do
+            all|any|array|analy[sz]e|a?symmetric|authorization|binary|both|by
+          | (?<=\bdo\s)nothing|(?<=\bon\s)conflict
+          | cast|cross|column|concurrently|collat(?:e|ion)|create|distinct|(?<!\bas\s)do
           | except|excluded(?=\s*\.)|fetch|for(?:eign)?|freeze|full|group|intersect|into|inner|isnull
           | i[sn]|ilike|lateral|leading|left|natural|not(?:null)?|nullif|on(?:ly)?|offset|order|outer
           | over(?:laps)?|primary|recursive|returning|right|similar|some|table(?:sample)?|to|trailing
           | unnest|unique|user|variadic|verbose|window
           )
         | (nulls | (?<=\bnulls\s)last)
-          # Some common functions.
-        | (
-            now|coalesce|current_(?>catalog|role|schema)?|localtime(?:stamp)?
-          | (?>array|string)_agg|rand|replace|row_number
-          )
         )\b
         # Various Postgres operators.
         | (::|\|?\|/|!!?|<<|>>|[%^@|&#~])
@@ -55,30 +41,38 @@ contexts:
         # Table and member identifier.
         | ((?!\d)\w+) (\s*\.\s*) (\s*(?!\d)\w+)
         # Accessor punctuation.
-        | (\.)
+        | (\.(?!\d))
       captures:
-        1: support.function.psql
+        1: support.function.scalar.sql
         2: keyword.other.sql
-        3: keyword.other.sql
-        4: constant.language.sql
-        5: support.function.sql
-        6: keyword.operator.psql
-        7: storage.type.psql
-        8: constant.character.escape.char.elixir
-        9: keyword.operator.jsonb.psql
-        10: keyword.operator.jsonb.psql
-        11: constant.other.placeholder.elixir
-        12: constant.other.parameter.sql
-        13: constant.other.database-name.sql
-        14: constant.other.table-name.sql
+        3: constant.language.sql
+        4: keyword.operator.psql
+        5: storage.type.psql
+        6: constant.character.escape.char.elixir
+        7: keyword.operator.jsonb.psql
+        8: keyword.operator.jsonb.psql
+        9: constant.other.placeholder.elixir
+        10: constant.other.parameter.sql
+        11: constant.other.database-name.sql
+        12: constant.other.table-name.sql
+        13: punctuation.accessor.dot.sql
+        14: variable.other.member.sql
         15: punctuation.accessor.dot.sql
-        16: variable.other.member.sql
-        17: punctuation.accessor.dot.sql
 
     - include: comment
     - include: scope:source.sql
-    - match: (?!\d)\w+
-      scope: variable.other.sql
+
+    - match: |
+        (?x)
+          ((?!\d)\w+)(?=\()
+        | ((?!\d)\w+)
+        | (\d+ (\.)? (?:\d* (?:[eE][-+]? \d+)?)? | (\.) \d+ (?:[eE][-+]? \d+)?)
+      captures:
+        1: variable.function.sql
+        2: variable.other.sql
+        3: constant.numeric.sql
+        4: punctuation.separator.decimal.sql
+        5: punctuation.separator.decimal.sql
 
   comment:
     - match: /\*
