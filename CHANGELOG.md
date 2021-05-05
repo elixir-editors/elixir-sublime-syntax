@@ -1,5 +1,12 @@
 # Changelog
 
+## [v2.0.2] – 2021-05-05
+
+- Elixir: fixed a bug where a comma was seen as invalid, such as in `if a == nil, ...`.
+- SQL: added decimal number highlighting.
+- SQL: added general function-call syntax matching.
+- SQL: removed `support.function.psql` scope to simplify the file.
+
 ## [v2.0.1] – 2021-05-02
 
 - Elixir: fixed a bug affecting, for example, multi-line `with` statements.
