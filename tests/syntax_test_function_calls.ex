@@ -398,6 +398,13 @@ x ++ y; x++y; x++y
 #      ^ punctuation.section.arguments.begin
 #^^^^^^ variable.function
 
+if a == nil, do: b
+#                 ^ punctuation.section.arguments.end
+#          ^ punctuation.separator.arguments
+#       ^^^ constant.language
+#    ^^ keyword.operator.comparison
+# ^ punctuation.section.arguments.begin
+
 case A.func do
 #      ^^^^ variable.function
 end
