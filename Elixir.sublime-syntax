@@ -64,12 +64,13 @@ contexts:
   prototype:
     # NB: rules in the prototype context will always match before any other.
     - include: merge_conflict # Merge conflict markers can occur anywhere.
-    - match: ^(\s*)(\.{3}).*?(>)
+    - match: ^(\s*)(\.{3})(?:\((.*?)\))?(>)
       comment: iex prompt continuation
       captures:
         1: meta.string.elixir
         2: keyword.other.iex-dots.elixir
-        3: keyword.other.iex-angle.elixir punctuation.definition.iex.begin.elixir
+        3: constant.other.elixir
+        4: keyword.other.iex-angle.elixir punctuation.definition.iex.begin.elixir
 
   core_syntax:
     # The rules are approximately ordered by their likeliness of occurrence
@@ -1868,10 +1869,11 @@ contexts:
           escape: (?=^\s*'''|{{is_markdown_elixir}})
 
   elixir_in_markdown:
-    - match: (?<=\s{4})(iex).*?(>)
+    - match: (?<=\s{4})(iex)(?:\((.*?)\))?(>)
       captures:
         1: keyword.other.iex.elixir
-        2: keyword.other.iex-angle.elixir punctuation.definition.iex.begin.elixir
+        2: constant.other.elixir
+        3: keyword.other.iex-angle.elixir punctuation.definition.iex.begin.elixir
       push:
         - clear_scopes: true
         - meta_scope: meta.interpolation.elixir markup.raw.block.markdown markup.raw.block.elixir
@@ -2411,14 +2413,17 @@ contexts:
         - include: char_literal
         - include: if_ws_closing_token_or_eol_pop
     - include: atom_keyword
-    - match: |
-        (?x)
-          (?=[-+*/=!|;] | && | \\\\ | ~(?![a-zA-Z]) | <(?!<(?!<)) | >(?!>(?!>)) | \.\.(?!\.) | ::(?!:))
-        | (?=(?>when|and|in|or|not){{no_id_key_suffix}})
+    - match: (?=(?>when|and|in|or|not){{no_id_key_suffix}})
+      push:
+        - include: if_closing_token_pop
+        - match: (?!(?>when|and|in|or|not){{no_id_key_suffix}}|[,\s]|(?<!,))
+          pop: true
+        - include: elixir_keywords
+        - include: invalid_comma_or_non_space_pop
+    - match: (?x) (?=[-+*/=!|;] | && | \\\\ | ~(?![a-zA-Z]) | <(?!<(?!<)) | >(?!>(?!>)) | \.\.(?!\.) | ::(?!:))
       push:
         - include: if_closing_token_pop
         - include: operator
-        - include: elixir_keywords
         - include: invalid_comma_or_non_space_pop
     - match: (?<=[^:]:)\s
       push: invalid_comma_or_non_space_pop
