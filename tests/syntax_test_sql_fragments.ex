@@ -71,7 +71,7 @@ fragment(
 #                                                    ^ punctuation.separator.arguments
 #                               ^^^^^^^^^^^^^^^^^^^^ comment.line.double-dash.sql
 #                            ^ constant.other.placeholder.elixir
-#                 ^^^^^^^^^^ source.ex.sql support.function.psql
+#                 ^^^^^^^^^^ source.ex.sql variable.function.sql
 #              ^^ keyword.operator.jsonb.psql
 #  ^ constant.other.placeholder.elixir
 #  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.ex.sql
@@ -83,7 +83,7 @@ fragment(
 
 fragment("""
   jsonb_to_tsvector('simple', content, '["string", "numeric"]')
-# ^^^^^^^^^^^^^^^^^ support.function.psql
+# ^^^^^^^^^^^^^^^^^ variable.function.sql
 """)
 
 fragment("""\
@@ -104,11 +104,11 @@ fragment(
 #                                                                                ^ punctuation.separator.arguments
 #                                                                               ^ punctuation.section.arguments.end
 #                                                                           ^ constant.other.placeholder.elixir
-#                                                                  ^^^^^^^^ support.function.psql
+#                                                                  ^^^^^^^^ variable.function.sql
 #                                                                ^^^^^^^^^^^ meta.string.elixir source.ex.sql
 #                                                       ^^^^^^^^^ meta.string.elixir meta.interpolation.elixir
 #                                                     ^^ keyword.operator.psql
-#                        ^^^^^^^^^^^^^^^^^^^^^^^^ support.function.psql
+#                        ^^^^^^^^^^^^^^^^^^^^^^^^ variable.function.sql
 #                 ^ variable.language.wildcard.asterisk.sql
 #          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.string.elixir source.ex.sql
 #        ^ punctuation.section.arguments.begin
@@ -183,7 +183,21 @@ fragment(
 #   ^ punctuation.section.arguments.end
 #^^^ punctuation.definition.string.end
 
-# All possible keywords. See: https://www.postgresql.org/docs/current/sql-keywords-appendix.html
+ sql("""
+  1IN(.1,0.1,1E10,1E+10,1e-1,1e+1,0001,1)
+#                                 ^^^^ constant.numeric.sql
+#                            ^^^^ constant.numeric.sql
+#                       ^^^^ constant.numeric.sql
+#                 ^^^^ constant.numeric.sql
+#            ^^^^ constant.numeric.sql
+#        ^^^ constant.numeric.sql
+#     ^^ constant.numeric.sql
+#  ^^ keyword.other.sql
+# ^ constant.numeric.sql
+""")
+
+# All possible keywords or scalar variables.
+# See: https://www.postgresql.org/docs/current/sql-keywords-appendix.html
  sql("""
   ALL; AND; ANY; ARRAY; AS; ASYMMETRIC; AUTHORIZATION; BINARY; BOTH;
 #                                                              ^^^^ keyword.other.sql
@@ -196,11 +210,19 @@ fragment(
 #      ^^^ keyword.operator.logical.sql
 # ^^^ keyword.other.sql
   CASE; CAST; CHECK; COLLATE; COLUMN; CONSTRAINT; CREATE; CROSS;
+#                                                         ^^^^^ keyword.other.sql
+#                                                 ^^^^^^ keyword.other.sql
+#                                     ^^^^^^^^^^ storage.modifier.sql
+#                             ^^^^^^ keyword.other.sql
+#                    ^^^^^^^ keyword.other.sql
+#             ^^^^^ storage.modifier.sql
+#       ^^^^ keyword.other.sql
+# ^^^^ keyword.other.DML.sql
   CURRENT_CATALOG; CURRENT_DATE; CURRENT_ROLE; CURRENT_SCHEMA;
-#                                              ^^^^^^^^^^^^^^ support.function.sql
-#                                ^^^^^^^^^^^^ support.function.sql
+#                                              ^^^^^^^^^^^^^^ support.function.scalar.sql
+#                                ^^^^^^^^^^^^ support.function.scalar.sql
 #                  ^^^^^^^^^^^^ support.function.scalar.sql
-# ^^^^^^^^^^^^^^^ support.function.sql
+# ^^^^^^^^^^^^^^^ support.function.scalar.sql
   CURRENT_TIME; CURRENT_TIMESTAMP; CURRENT_USER;
 #                                  ^^^^^^^^^^^^ support.function.scalar.sql
 #               ^^^^^^^^^^^^^^^^^ support.function.scalar.sql
@@ -237,8 +259,8 @@ fragment(
 #                                                      ^^^^ constant.language.sql
 #                                                 ^^^ keyword.other.sql
 #                                        ^^^^^^^ keyword.other.sql
-#                        ^^^^^^^^^^^^^^ support.function.sql
-#             ^^^^^^^^^ support.function.sql
+#                        ^^^^^^^^^^^^^^ support.function.scalar.sql
+#             ^^^^^^^^^ support.function.scalar.sql
 #       ^^^^ keyword.operator.logical.sql
 # ^^^^ keyword.other.sql
   ORDER; OUTER; OVERLAPS; PRIMARY; REFERENCES; RIGHT; SELECT; SESSION_USER; SIMILAR;
