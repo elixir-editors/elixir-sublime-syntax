@@ -80,3 +80,11 @@ x.<%= :member %>()
 #     ^ entity.name.tag.ex.eex
 #  ^^ entity.name.tag.ex.eex
 #^ keyword.operator.capture
+
+# <%= @web_app_name %>
+#                    ^ punctuation.section.embedded.end.ex.eex
+#                   ^ entity.name.tag.ex.eex
+#  ^^ entity.name.tag.ex.eex
+# ^ punctuation.section.embedded.begin.ex.eex
+#^^^^^^^^^^^^^^^^^^^^^^ comment.line.number-sign.elixir
+#<- comment.line.number-sign.elixir punctuation.definition.comment.elixir
