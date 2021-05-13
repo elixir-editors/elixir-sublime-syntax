@@ -64,13 +64,7 @@ contexts:
   prototype:
     # NB: rules in the prototype context will always match before any other.
     - include: merge_conflict # Merge conflict markers can occur anywhere.
-    - match: ^(\s*)(\.{3})(?:\((.*?)\))?(>)
-      comment: iex prompt continuation
-      captures:
-        1: meta.string.elixir
-        2: keyword.other.iex-dots.elixir
-        3: constant.other.elixir
-        4: keyword.other.iex-angle.elixir punctuation.definition.iex.begin.elixir
+    - include: iex_dots       # iex prompt continuation: ...>
 
   core_syntax:
     # The rules are approximately ordered by their likeliness of occurrence
@@ -1910,6 +1904,15 @@ contexts:
           pop: true
         - include: core_syntax
 
+  iex_dots:
+    - match: ^(\s*)(\.{3})(?:\((.*?)\))?(>)
+      comment: iex prompt continuation
+      captures:
+        1: meta.string.elixir
+        2: keyword.other.iex-dots.elixir
+        3: constant.other.elixir
+        4: keyword.other.iex-angle.elixir punctuation.definition.iex.begin.elixir
+
   comma_and_skip_ws:
     - include: invalid_comma
     - match: \,
@@ -2322,10 +2325,12 @@ contexts:
 
   comment:
     # - include: opaque_struct
-    - match: (#).*\n?
-      scope: comment.line.number-sign.elixir
-      captures:
-        1: punctuation.definition.comment.elixir
+    - match: \#
+      scope: punctuation.definition.comment.elixir
+      push:
+        - meta_scope: comment.line.number-sign.elixir
+        - match: \n
+          pop: true
 
   comments:
     - match: (?=#)
