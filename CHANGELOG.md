@@ -1,5 +1,14 @@
 # Changelog
 
+## [v2.0.4] – 2021-05-17
+
+- Elixir: improved regular expression for module names.
+
+## [v2.0.3] – 2021-05-13
+
+- Elixir: moved syntax and color-scheme files into sub-folders.
+- Elixir: highlight EEx tags inside comments.
+
 ## [v2.0.2] – 2021-05-05
 
 - Elixir: fixed a bug where a comma was seen as invalid, such as in `if a == nil, ...`.
