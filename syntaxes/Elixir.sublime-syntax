@@ -17,7 +17,7 @@ authors:
   - José Valim <jose.valim@dashbit.co>
 
 variables:
-  module_name: '[A-Z][a-zA-Z\d_]*\b'
+  module_name: '[A-Z][a-zA-Z\d_]*+'
   atom_id_suffix: '[\w@]*[?!]?'
   atom_id: (?>[[:alpha:]_]{{atom_id_suffix}})
   identifier: (?>[[:lower:]_]\w*[?!]?)
@@ -594,7 +594,7 @@ contexts:
         - match: (?=unquote\()
           set: [map_type_body_pop, arguments_pop, unquote_pop]
         - include: alias_names
-        - match: _(?:{{module_name}}|{{identifier}})?
+        - match: _(?>{{module_name}}|{{identifier}})?
           scope: variable.type.unused.elixir invalid.illegal.struct.elixir
           set: map_type_body_pop
         - include: map_type_body_pop
@@ -1485,7 +1485,7 @@ contexts:
     - match: (?={{atom_symbol}}:(?!:))|(?<=["']:)
       push: arguments_ws_rest_pop
     - include: block_or_keyword
-    - match: (?=(?>(?<=%>)\.)?(?>{{module_name}}{{no_key_suffix}}|__MODULE__{{no_id_key_suffix}})|:(?>{{atom_symbol}}|['"]))
+    - match: (?=(?:(?<=%>)\.)?(?>{{module_name}}{{no_key_suffix}}|__MODULE__{{no_id_key_suffix}})|:(?>{{atom_symbol}}|['"]))
       push:
         - meta_scope: meta.namespace.elixir
         - match: (:)({{atom_symbol}})(?!\s*\.)
@@ -2127,7 +2127,7 @@ contexts:
     - include: if_non_space_or_eol_pop
 
   alias_names:
-    - match: (?=(?>(?<=%>)\.)?(?>{{module_name}}{{no_key_suffix}}|__MODULE__{{no_id_key_suffix}})|:(?>{{atom_symbol}}|['"]))
+    - match: (?=(?:(?<=%>)\.)?(?>{{module_name}}{{no_key_suffix}}|__MODULE__{{no_id_key_suffix}})|:(?>{{atom_symbol}}|['"]))
       push:
         - include: module_name
         - include: dot_accessor
