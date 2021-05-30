@@ -446,6 +446,42 @@ case(value, do: (x -> x; y -> y))
 #   ^ punctuation.section.arguments.begin
 #<- keyword.control.conditional
 
+# Don't match arrow clauses in else-body in general...
+do else
+  no_param
+# ^^^^^^^^ -variable.parameter
+end
+# ...especially not in an if-statement.
+if ?? do
+else
+  no_param
+# ^^^^^^^^ -variable.parameter
+end
+
+@spec func(<<_::24>>) :: {i, i, i} | no_return when i: non_neg_integer
+ def func(<<a, b, c>>) do
+   {a, b, c}
+ rescue
+#^^^^^^ keyword.control.exception.rescue
+   ArgumentError = e -> raise e
+#                  ^ variable.parameter
+#  ^^^^^^^^^^^^^ constant.other.module
+ catch
+#^^^^^ keyword.control.exception.catch
+   value -> throw value
+#  ^^^^^ variable.parameter
+ else
+#^^^^ keyword.control.exception.else
+   {a, b, c} when a > 127 or b > 127 or c > 127 -> raise ArgumentError
+#         ^ variable.parameter
+#      ^ variable.parameter
+#   ^ variable.parameter
+ after
+#^^^^^ keyword.control.exception.after
+   no_param
+#  ^^^^^^^^ -variable.parameter
+ end
+#   ^ punctuation.section.arguments.end
 
  with {:ok, struct} = ok <- Repo.insert() do
 #                     ^^ variable.parameter
@@ -538,7 +574,7 @@ with {:ok, x} <- f(), do: x
 #  ^^^^^^^^ -variable.parameter
    do_something_that_may_fail(some_arg)
  rescue
-#^^^^^^ keyword.control.exception.catch
+#^^^^^^ keyword.control.exception.rescue
    ArgumentError = e ->
 #                  ^ variable.parameter
 #  ^^^^^^^^^^^^^ constant.other.module
@@ -549,11 +585,12 @@ with {:ok, x} <- f(), do: x
 #  ^^^^^ variable.parameter
      IO.puts("Caught #{inspect(value)}")
  else
-#^^^^ keyword.control.conditional.else
+#^^^^ keyword.control.exception.else
    value ->
 #  ^^^^^ variable.parameter
      IO.puts("Success! The result was #{inspect(value)}")
  after
+#^^^^^ keyword.control.exception.after
    no_param
 #  ^^^^^^^^ -variable.parameter
    IO.puts("This is printed regardless if it failed or succeeded")
@@ -594,10 +631,10 @@ for <<r::8, g::8, b::8 <- pixels >>, do: {r, g, b}
 #           ^ variable.parameter
 #     ^ variable.parameter
 for <<c <- " hello world ">>, c != ?\s, into: "", do: <<c>>
+#                                                          ^ punctuation.section.arguments.end
 #                                                       ^ variable.other
 #                             ^ variable.other
 #     ^ variable.parameter
-  TODO:                                                    ^ punctuation.section.arguments.end
 for line <- IO.stream(:stdio, :line), into: IO.stream(:stdio, :line) do
 #   ^^^^ variable.parameter
    String.upcase(line)
@@ -610,14 +647,14 @@ for x <- [1, 1, 2, 3], uniq: true, do: x * 2
 #                                      ^ variable.other
 #   ^ variable.parameter
 for <<x <- "abcabc">>, uniq: true, into: "", do: <<x - 32>>
+#                                                          ^ punctuation.section.arguments.end
 #                                                  ^ variable.other
 #     ^ variable.parameter
-  TODO:                                                    ^ punctuation.section.arguments.end
 for <<x <- "AbCabCABc">>, x in ?a..?z, do: <<x>>
+#                                               ^ punctuation.section.arguments.end
 #                                            ^ variable.other
 #                         ^ variable.other
 #     ^ variable.parameter
-  TODO:                                         ^ punctuation.section.arguments.end
 for <<x <- "AbCabCABc">>, x in ?a..?z, reduce: %{} do
 #                                                  ^^ keyword.context.block.do
 #                         ^ variable.other
@@ -713,8 +750,8 @@ f x or do end; f x not do end; f x else do end
 #   ^^ keyword.operator.logical
 f x after do end; f x rescue do end; f x catch do end
 #                                        ^^^^^ keyword.control.exception.catch
-#                     ^^^^^^ keyword.control.exception.catch
-#   ^^^^^ keyword.control.exception.catch
+#                     ^^^^^^ keyword.control.exception.rescue
+#   ^^^^^ keyword.control.exception.after
 f x end do end; f fn end
 #                 ^^ keyword.other.fn
 #   ^^^ keyword.context.block.end

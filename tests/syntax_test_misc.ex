@@ -110,7 +110,7 @@
 #^^ keyword.context.block.do
    nil
  rescue
-#^^^^^^ keyword.control.exception.catch
+#^^^^^^ keyword.control.exception.rescue
    any -> any
 #  ^^^ variable.parameter
  end
@@ -446,8 +446,10 @@ end
 #      ^ punctuation.section.brackets.end
 #^ punctuation.section.brackets.begin
  [][:a, :b]
-#     ^ invalid.illegal.separator
 #  ^ punctuation.section.access.begin
+      ^ invalid.illegal.separator
+%{}[a: 1, b: 2]
+#       ^ punctuation.separator.sequence
 
 %{}[] [][] ()[] ([])[] [[]][] [_:[]][] {[]}[]
 #                                          ^ punctuation.section.access.begin
@@ -935,8 +937,8 @@ end[]
 #      ^^ keyword.operator.logical
 #  ^^^ keyword.operator.logical
  catch after rescue
-#            ^^^^^^ keyword.control.exception.catch
-#      ^^^^^ keyword.control.exception.catch
+#            ^^^^^^ keyword.control.exception.rescue
+#      ^^^^^ keyword.control.exception.after
 #^^^^^ keyword.control.exception.catch
  fn end
 #   ^^^ keyword.context.block.end

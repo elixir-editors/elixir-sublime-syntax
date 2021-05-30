@@ -86,6 +86,13 @@ fragment("""
 # ^^^^^^^^^^^^^^^^^ variable.function.sql
 """)
 
+fragment(" '[\"string\", \"numeric\"]' ")
+#                                 ^^ constant.character.escape.char.elixir
+#                        ^^ constant.character.escape.char.elixir
+#                    ^^ constant.character.escape.char.elixir
+#            ^^ constant.character.escape.char.elixir
+#          ^^^^^^^^^^^^^^^^^^^^^^^^^^^ string.quoted.single.sql
+
 fragment("""\
 #           ^ invalid.illegal.opening-heredoc
 """)
