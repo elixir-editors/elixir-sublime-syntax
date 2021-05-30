@@ -26,16 +26,27 @@ variables:
   no_colon_suffix: (?![:'"[:alpha:]])
 
   # NB: the keywords are ordered by number of occurrences in the compiler source code of Elixir.
-  # Stats produced using Makeup.Lexers.ElixirLexer.lex(): `[end: 21828, do: 17758, fn: 4070, when: 2364, true: 2232, false: 1625, nil: 1405, and: 1066, in: 821, else: 753, after: 408, or: 258, rescue: 211, not: 198, catch: 113]`
+  # Stats can be produced using `Makeup.Lexers.ElixirLexer.lex()`.
+  # To be more accurate "scripts/count_tokens_by_scope.py" can be used.
+  # Run `cat lib/**/*.ex > all.ex` to join all source files into a single file.
   closing_keyword: (?>end|else|after|rescue|catch){{no_id_key_suffix}}
   closing_token: (?>[)}\];#]|>>(?!>)|%>|$|{{closing_keyword}})
-  binary_operator: (?>(?<!\s)\[|<?<~|~>>?|<~>|[*=/|\\>]|\.(?!\.\.)|<(?!<[^<~]|%=)|\^\^|&&|(?<!\s)[-+]\S|[-+][-+>\s]|::(?!:)|$|!=|(?>when|and|in|or|not\s+in){{no_id_key_suffix}})
+  binary_operator: |
+    (?x)(?>
+      (?<!\s)\[ | <?<~ | ~>>? | <~> | [*=/|\\>] | \.(?!\.\.) | <(?!<[^<~] | %=)
+    | \^\^ | && | (?<!\s)[-+]\S | [-+][-+>\s] | ::(?!:) | $ | !=
+    | (?>when|and|in|or|not\s+in){{no_id_key_suffix}}
+    )
 
-  operator: (?>=~|={1,3}|@|<?\|>|(?!<%=)[<-](?![~=]|<|--)[->]?|\|{1,3}|::|&{1,3}|\+{1,3}|\\\\|\^{3}|\^|\.{1,3}|!={0,2}|[<>]=|\*|>>>|>(?!>)|//|/|<<<|~~~|<~>|<?<~|~>>?|---)
+  operator: |
+    (?x)(?>
+      =~ | ={1,3} | @ | <?\|> | (?!<%=)[<-](?![~=] | < | --)[->]? | \|{1,3} | ::
+    | &{1,3} | \+{1,3} | \\\\ | \^{3} | \^ | \.{1,3} | !={0,2} | [<>]= | \*
+    | >>> | >(?!>) | // | / | <<< | ~~~ | <~> | <?<~ | ~>>? | ---
+    )
 
   has_arguments: |
-    (?x)
-    (?=
+    (?x)(?=
       \(
     | \s* (?![?.]:) {{operator}}: {{no_colon_suffix}}
     | (?! \s* (?>, | {{closing_token}} | {{binary_operator}}) )
@@ -440,8 +451,8 @@ contexts:
     - include: block_or_keyword
     - include: special_form
     - match: |
-        (?x)
-          ((?> # Ordered by likeliness of occurrence.
+        (?x)(
+          (?> # Ordered by likeliness of occurrence.
             binary|term|atom|any|integer|boolean|map|list|module
           | (?>(?:non_)?neg_|pos_)?integer|no_return|pid|iodata
           | number|float|keyword|timeout|tuple|reference|charlist
@@ -641,8 +652,7 @@ contexts:
 
   numeric:
     - match: |
-        (?x)
-        (?>
+        (?x)(?>
           (0 (x) \h (?:_?\h)*)
         | (0 (b) [01] (?:_?[01])*)
         | (0 (o) [0-7] (?:_?[0-7])*)
@@ -1797,7 +1807,12 @@ contexts:
               set: type_definition_pop
             - include: if_non_space_pop
 
-    - match: (?>impl|deprecated|(?>before_|after_)?compile|behaviour|enforce_keys|fallback_to_any|optional_callbacks|file|dialyzer|derive|external_resource|vsn|on_(?>definition|load)){{no_suffix_then_arguments}}
+    - match: |
+        (?x)(?>
+          impl | deprecated | (?>before_|after_)?compile | behaviour | enforce_keys
+        | fallback_to_any | optional_callbacks | file | dialyzer | derive
+        | external_resource | vsn | on_(?>definition|load)
+        ){{no_suffix_then_arguments}}
       scope: support.attr.elixir
       set: arguments_paren_or_ws_pop
 
@@ -1980,8 +1995,7 @@ contexts:
 
   operator:
     - match: |
-        (?x)
-        (?> # Ordered by likeliness of occurrence.
+        (?x)(?> # Ordered by likeliness of occurrence.
           (=(?![=>~]))
         | (->|<-)
         | (<?\|>|<~>|<?<~|~>>?) # Operators with pipe precedence.
@@ -2167,7 +2181,11 @@ contexts:
     - include: if_non_space_or_eol_pop
 
   alias_names:
-    - match: (?=(?:(?<=%>)\.)?(?>{{module_name}}{{no_key_suffix}}|__MODULE__{{no_id_key_suffix}})|:(?>{{atom_symbol}}|['"]))
+    - match: |
+        (?x)(?=
+          (?:(?<=%>)\.)? (?>{{module_name}}{{no_key_suffix}} | __MODULE__{{no_id_key_suffix}})
+        | :(?>{{atom_symbol}}|['"])
+        )
       push:
         - include: module_name
         - include: dot_accessor
@@ -2387,9 +2405,11 @@ contexts:
 
   built_ins:
     - match: |
-        (?x)
-        (?> # Ordered by likeliness of occurrence.
-          is_(?>binary|list|atom|integer|function|nil|map(?:_key)?|tuple|number|boolean|float|bitstring|pid|exception|port|reference|struct)
+        (?x)(?> # Ordered by likeliness of occurrence.
+          is_(?>
+            binary|list|atom|integer|function|nil|map(?:_key)?|tuple|number
+          | boolean|float|bitstring|pid|exception|port|reference|struct
+          )
         | inspect|to_string|elem|length|apply|self|byte_size|div|send|rem|put_(?>elem|in)
         | (?>function|macro)_exported\?|update_in|binary_part|hd|struct!?|max|trunc|then
         | to_charlist|get(?:_and_update)?_in|map_size|min|tl|node|make_ref|bit_size
@@ -2480,8 +2500,7 @@ contexts:
 
   last_id_argument:
     - match: |
-        (?x)
-        (?=
+        (?x)(?=
           (?>
             (?:@\s*)?{{identifier}}
           | \.\s*(?:{{member}} | "(?>\\[\\"]|.)*?" | '(?>\\[\\']|.)*?')
@@ -2511,9 +2530,8 @@ contexts:
 
   elixir_keywords:
     - match: |
-        (?x)
-        (?> # Ordered by likeliness of occurrence.
-        # (do) | (fn)          # Handled by do_block and fn_block.
+        (?x)(?> # Ordered by likeliness of occurrence.
+        # (do) | (fn) # Handled by do_block and fn_block.
           (when)
         | (true|false|nil)
         | (and|in|or|not)
@@ -2658,8 +2676,7 @@ contexts:
     - include: try_macro_call
     - include: receive_macro_call
     - match: |
-        (?x)
-        (?> # Ordered by likeliness of occurrence.
+        (?x)(?> # Ordered by likeliness of occurrence.
           (case|if|with|cond|unless)
         | (use|import|require)
         | (quote)
