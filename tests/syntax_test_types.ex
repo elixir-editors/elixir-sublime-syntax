@@ -160,11 +160,24 @@
 #                ^^^^ constant.language
 #     ^^^ constant.language
 @type t :: when :: any
+#                  ^^^ -support.type -storage.type.custom
 #          ^^^^ keyword.operator.when -variable.other.named-type
 @type t :: {else :: any, nil :: nil, when :: any}
 #                                    ^^^^ keyword.operator.when -variable.other.named-type
+#                                  ^ invalid.illegal.separator
 #                        ^^^ constant.language -variable.other.named-type
 #           ^^^^ keyword.control.conditional.else -variable.other.named-type
+
+# Avoid matching the next statement as types after writing a `|`.
+(
+@type t :: any |
+@type t :: any |
+#     ^ entity.name.type -support.type
+#^^^^ keyword.declaration.type
+ def func()
+#    ^^^^ entity.name.function
+#^^^ keyword.declaration.function
+)
 
 @type; @typep; @opaque
 #               ^^^^^^ variable.other
@@ -185,16 +198,70 @@
 @type do end
 #        ^^^ keyword.context.block
 #     ^^ keyword.context.block
-@type else
-#     ^^^^ keyword.control
-#^^^^ variable.other
+#^^^^ keyword.declaration.type
+@type fn -> end
+#           ^^^ keyword.context.block.end
+#     ^^ keyword.other.fn
+#^^^^ keyword.declaration.type
 
-@type when; @type not; @type in; @type or; @type and; @type fn -> end;
-@type catch; @type after; @type rescue; @type do; @type else; @type end
+@type when; @type not; @type in; @type or; @type and;
+#                                                ^^^ keyword.operator.logical
+#                                           ^^^^ variable.other.constant
+#                                      ^^ keyword.operator.logical
+#                                 ^^^^ variable.other.constant
+#                            ^^ keyword.operator.logical
+#                       ^^^^ variable.other.constant
+#                 ^^^ keyword.operator.logical
+#            ^^^^ keyword.declaration.type
+#     ^^^^ keyword.operator.when
+#^^^^ variable.other.constant
+
+@type catch; @type after; @type rescue; @type else; @type end
+#                                                         ^^^ keyword.context.block.end
+#                                                    ^^^^ variable.other.constant
+#                                             ^^^^ keyword.control.conditional.else
+#                                        ^^^^ variable.other.constant
+#                          ^^^^ variable.other.constant
+#             ^^^^ variable.other.constant
+#^^^^ variable.other.constant
+
 @type func: :invalid
 #     ^^^^^ constant.other.keyword
 @type: :invalid
 #^^^^^ constant.other.keyword
+
+# Checks with a comma in different places.
+@type, t :: no_type
+#           ^^^^^^^ variable.other
+#      ^ -entity.name.type
+#^^^^ variable.other.constant
+@type t, :: no_type
+#           ^^^^^^^ variable.other
+@type t :: , no_type
+#            ^^^^^^^ variable.other
+@type t :: any, no_type
+#               ^^^^^^^ variable.other
+#          ^^^ support.type
+@type t :: (any, term -> (, -> any))
+#                              ^^^ support.type
+#                         ^ invalid.illegal.separator
+#              ^ punctuation.separator.sequence -punctuation.separator.arguments
+
+# Checks with a semicolon in different places.
+@type; t :: no_type
+#           ^^^^^^^ variable.other
+#      ^ -entity.name.type
+#^^^^ variable.other.constant
+@type t ; :: no_type
+#            ^^^^^^^ variable.other
+#     ^ entity.name.type
+@type t :: ; no_type
+#            ^^^^^^^ variable.other
+@type t :: any ; no_type
+#                ^^^^^^^ variable.other
+@type t :: (any ; term)
+#                 ^^^^ support.type
+#               ^ keyword.operator.semicolon
 
 # From elixir/pages/typespecs.md
 @type all ::
@@ -249,7 +316,8 @@
 #     ^^^^ storage.type.custom
 | (type1, type2 -> type)
 #                  ^^^^ storage.type.custom
-# TODO: try to highlight type1 and type2 as parameters?
+#         ^^^^^ storage.type.custom
+#  ^^^^^ storage.type.custom
 | (... -> type)
 #         ^^^^ storage.type.custom
 #  ^^^ keyword.operator.ellipsis
@@ -267,19 +335,31 @@
 #  ^ punctuation.section.brackets.end
 # ^ punctuation.section.brackets.begin
 | %{}
+# ^ punctuation.section.mapping.begin
+# ^^^ meta.mapping.elixir
 | %{key: value_type}
 #        ^^^^^^^^^^ storage.type.custom
+| %{key_type => value_type}
+#               ^^^^^^^^^^ storage.type.custom
+#            ^^ keyword.operator.map-pair
+#   ^^^^^^^^ storage.type.custom
 | %{required(key_type) => value_type}
 #                         ^^^^^^^^^^ storage.type.custom
+#                      ^^ keyword.operator.map-pair
 #            ^^^^^^^^ storage.type.custom
 #   ^^^^^^^^ keyword.other
 | %{optional(key_type) => value_type}
 #                         ^^^^^^^^^^ storage.type.custom
+#                      ^^ keyword.operator.map-pair
 #            ^^^^^^^^ storage.type.custom
 #   ^^^^^^^^ keyword.other
 | %SomeStruct{}
+#  ^^^^^^^^^^ constant.other.module
+# ^^^^^^^^^^^^^ meta.mapping.elixir
 | %SomeStruct{key: value_type}
 #                  ^^^^^^^^^^ storage.type.custom
+#             ^^^^ constant.other.keyword
+#  ^^^^^^^^^^ constant.other.module
 | {} | {:ok, type}
 #            ^^^^ storage.type.custom
 #  ^ punctuation.section.sequence.end
@@ -373,7 +453,7 @@ def run(), do: nil
 #     ^^^^ variable.other.spec
 @spec :: any
 #        ^^^ support.type
-
+#     ^^ keyword.operator.colon
 @spec -0 :: 0
 #           ^ constant.numeric
 #        ^^ keyword.operator.colon
@@ -486,7 +566,8 @@ def run(), do: nil
 #                 ^^^^^^^ storage.type.custom
 #         ^^^^^^ storage.type.custom
 
-@spec get(named :: t) :: named :: t when t: named :: var
+@spec get(named :: t) :: named :: t when t: named :: var, t: var
+#                                                            ^^^ support.type
 #                                                    ^^^ storage.type.custom
 #                                           ^^^^^ variable.other.named-type
 #                                        ^^ constant.other.keyword
@@ -494,6 +575,7 @@ def run(), do: nil
 #                        ^^^^^ variable.other.named-type
 #                  ^ storage.type.custom
 #         ^^^^^ variable.other.named-type
+
 @spec get(nil_container, any, default) :: default when default: var
 #                                                               ^^^ support.type
 #                                                      ^^^^^^^^ constant.other.keyword
@@ -501,6 +583,7 @@ def run(), do: nil
 #                             ^^^^^^^ storage.type.custom
 #                        ^^^ support.type
 #         ^^^^^^^^^^^^^ storage.type.custom
+
 @spec func(arg) :: arg
 #                  ^^^ storage.type.custom
       when
@@ -517,6 +600,22 @@ def run(), do: nil
              | atom
 #              ^^^^ support.type
 #            ^ keyword.operator.union
+
+# Multi-line when-clause with multiple types.
+@spec func(arg1, arg2) :: {arg1, arg2}
+      when
+#     ^^^^ keyword.operator.when
+        arg1:
+#       ^^^^^ constant.other.keyword
+          any,
+#            ^ punctuation.separator.sequence
+#         ^^^ support.type
+        arg2:
+#       ^^^^^ constant.other.keyword
+          any
+#         ^^^ support.type
+          | term
+#           ^^^^ support.type
 
 @spec any!(any!) :: any!
 #                   ^^^^ storage.type.custom
@@ -592,10 +691,13 @@ def run(), do: nil
 #             ^^^^ string.other.binary
 #          ^^ variable.other.spec
 #     ^^^^ string.other.binary
-@spec <<_::8>> <> <<_::8>> :: <<_::8>>
+@spec <<_::8>> <> <<_::8>> :: <<_::16>>
+#                                  ^^ storage.type.binary
 #                               ^ variable.other.named-type
+#                      ^ storage.type.binary
 #                   ^ variable.other.named-type
 #              ^^ variable.other.spec
+#          ^ storage.type.binary
 #       ^ variable.other.named-type
 @spec unquote
 #     ^^^^^^^ variable.other.spec
@@ -685,6 +787,51 @@ def run(), do: nil
  @spec func() :: @const | type
 #                         ^^^^ storage.type.custom
 #                 ^^^^^ variable.other.constant
+
+# Avoid matching the next statement as types after writing a `|`.
+(
+@spec func(map) :: map |
+@spec func(atom) :: atom |
+#     ^^^^ variable.other.spec
+#^^^^ keyword.declaration.type
+ def func(x)
+#         ^ variable.parameter
+#    ^^^^ entity.name.function
+#^^^ keyword.declaration.function
+)
+
+# Checks with a comma in different places.
+@spec , func() :: any
+#                 ^^^ variable.other
+#       ^^^^ variable.function
+#^^^^ variable.other.constant
+@spec func , () :: any
+#                  ^^^ variable.other
+#            ^^ punctuation.section.group
+@spec func() , :: any
+#                 ^^^ variable.other
+@spec func() :: , any
+#                 ^^^ variable.other
+@spec func() :: any, term
+#                    ^^^^ variable.other
+#               ^^^ support.type
+
+@spec integer , &&& integer :: any
+#                              ^^^ variable.other
+#                   ^^^^^^^ variable.other
+#               ^^^ keyword.operator.bitwise
+#     ^^^^^^^ variable.other.spec
+@spec integer &&& , integer :: any
+#                              ^^^ variable.other
+#                   ^^^^^^^ variable.other
+#             ^^^ variable.other.spec
+@spec integer &&& integer , :: any
+#                              ^^^ variable.other
+#                 ^^^^^^^ support.type
+@spec integer &&&  integer :: , any
+#                               ^^^ variable.other
+@spec integer &&&  integer :: any, term
+#                                  ^^^^ variable.other
 
 @spec "not a spec"
  still_a_type
