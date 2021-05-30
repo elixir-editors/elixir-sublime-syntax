@@ -1,8 +1,19 @@
 # Changelog
 
+## [v2.0.5] – 2021-05-30
+
+- Elixir: also highlight `catch`, `else`, `after` clauses in function do-end blocks.
+- Elixir: use own scopes for `after` and `rescue` keywords.
+- Elixir: allow commas inside item access brackets, e.g.: `%{}[a: 1, b: 2]`
+- Elixir: fixed: some multi-line when-type clauses were not matched correctly.
+- Elixir: don't match `def func()` as a type after writing a `|` in a type spec.
+- Elixir: use greedy matching for identifiers and atoms as well.
+- Elixir: the `meta.mapping.elixir` scope wasn't set correctly for maps.
+- SQL: fixed escapes breaking strings, e.g.: `fragment("? = '\"string\"'::jsonb", x)`
+
 ## [v2.0.4] – 2021-05-17
 
-- Elixir: improved regular expression for module names.
+- Elixir: use greedy matching for module names.
 
 ## [v2.0.3] – 2021-05-13
 
