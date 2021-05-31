@@ -10,23 +10,6 @@ See [CHANGELOG.md](./CHANGELOG.md) for the list of releases and noteworthy chang
 
 Some of the provided features are not immediately evident. Among them are:
 
-<style>
-  blockquote { font-family:monospace;white-space:pre;background-color:#282923;color:#eee !important }
-  .fnc { color:#67d8ef }
-  .blu_i { color:#67d8ef;font-style:italic }
-  .mod { color:#70a800 }
-  .kw { color:#f92472 }
-  .intp_bg { background-color: rgba(0, 0, 0, 0.03) }
-  .intp_dlm { color:#ababab }
-  .str_dlm { color:#dbca33 }
-  .str { color:#e7db74 }
-  .prpl { color:#ac80ff }
-  .akw { color:#8a66cc }
-  .colon { color:#aeafad }
-  .entity { color:#a6e22c }
-  .param { color:#fd9621;font-style:italic }
-</style>
-
 ### The `fragment` and `sql` functions
 
 SQL syntax is highlighted inside Ecto's `fragment` macro.
