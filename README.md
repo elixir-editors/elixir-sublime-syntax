@@ -1,6 +1,6 @@
 # ElixirSyntax
 
-ElixirSyntax was initially based on the [Elixir.tmbundle package](https://github.com/elixir-editors/elixir-tmbundle) but has been rewritten since, providing more accurate syntax matching as well as better syntax highlighting.
+ElixirSyntax was initially based on the [Elixir.tmbundle package](https://github.com/elixir-editors/elixir-tmbundle) but has been rewritten since, providing more accurate syntax matching as well as better syntax highlighting. Works with `goto definition`!
 
 ## Changes
 
