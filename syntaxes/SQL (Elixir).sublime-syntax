@@ -16,8 +16,8 @@ contexts:
         | (
           # Should always be keywords, but SQL.sublime-syntax doesn't think so yet.
           # Taken from https://www.postgresql.org/docs/current/sql-keywords-appendix.html
-            all|any|array|analy[sz]e|a?symmetric|authorization|binary|both|by
-          | (?<=\bdo\s)nothing|(?<=\bon\s)conflict
+            all|any|array|analy[sz]e|a?symmetric|authorization|at(?=\s+time\s+zone\b)|binary|both|by
+          | (?<=\bat\s)time(?=\s+zone\b) | (?<=\btime\s)zone | (?<=\bdo\s)nothing | (?<=\bon\s)conflict | (?<=\bwith\s)ordinality
           | cast|cross|column|concurrently|collat(?:e|ion)|create|distinct|(?<!\bas\s)do
           | except|excluded(?=\s*\.)|fetch|for(?:eign)?|freeze|full|group|intersect|into|inner|isnull
           | i[sn]|ilike|lateral|leading|left|natural|not(?:null)?|nullif|on(?:ly)?|offset|order|outer
@@ -42,6 +42,7 @@ contexts:
         | ((?!\d)\w+) (\s*\.\s*) (\s*(?!\d)\w+)
         # Accessor punctuation.
         | (\.(?!\d))
+        | (,)
       captures:
         1: support.function.scalar.sql
         2: keyword.other.sql
@@ -58,6 +59,7 @@ contexts:
         13: punctuation.accessor.dot.sql
         14: variable.other.member.sql
         15: punctuation.accessor.dot.sql
+        16: punctuation.comma.sql
 
     - include: comment
     - include: scope:source.sql
