@@ -1,5 +1,35 @@
 # Changelog
 
+## [v2.1.0] – 2021-07-25
+
+- Elixir: disabled highlighting Elixir code within Markdown comments. Reasons:
+  * Not completely reliable.
+  * Not all Elixir code was recognized.
+  * Can be distracting.
+  * Probably affects speed.
+  + If you'd like to re-enable this feature, override the package and uncomment the relevant lines.
+- Elixir: added `meta.type.elixir` scope to specs and types.
+- Elixir: added `meta.doc.elixir` scope to doc attributes.
+- Elixir: highlight an atom with a function call as a module constant: `:lists.sort([])`
+- Elixir: recognize a record's name as an entity symbol for "Goto Definition".
+- Elixir: recognize `record` as a special keyword in type declarations:\
+  `@type t :: record(:user, name: binary, age: integer)`
+- Elixir: fix: stop highlighting params after `when` in free-form functions: `def a + b when a == 0 and b == 0`
+- Elixir: fixed lambda calls in capture expressions: `&fun.(&1, &2)`
+- Elixir: consider a line continuation backslash to be the start of an argument list:
+  ```elixir
+  with \
+    {:ok, _} <- newline do
+  end
+  ```
+- Elixir: allow `unquote` and `unquote_splicing` to have arguments without parentheses.
+- Elixir: match `.:` as an atom keyword.
+- Elixir: `^^` is not an operator.
+- Themes: don't italicize parameters in Monokai.
+- Themes: completely italicize types and specs, except for `::`, `|` and strings.
+- SQL: highlight `WITH ORDINALITY` and `AT TIME ZONE`.
+- Builds: removed `$` from the file names so they're correctly displayed in the menu.
+
 ## [v2.0.5] – 2021-05-30
 
 - Elixir: also highlight `catch`, `else`, `after` clauses in function do-end blocks.
