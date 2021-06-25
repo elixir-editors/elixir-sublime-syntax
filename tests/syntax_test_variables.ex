@@ -551,20 +551,34 @@ x.'' x.''
 #      ^^ meta.member
 # ^^ meta.function-call
 
+x."x" x."x" x
+#           ^ variable.other
+#        ^ variable.function
+#     ^ variable.other
+#  ^ variable.function
+
 x."\\\"\m\"\\" x."\\\"\m\"\\"
+#                            ^ punctuation.section.arguments.end
 #                     ^^ -constant.character.escape
 #                 ^^^^ constant.character.escape
 #                 ^^^^^^^^^^ variable.other.member
 #                ^^^^^^^^^^^^ meta.member
+#               ^ punctuation.accessor.dot
+#              ^ variable.other
+#             ^ punctuation.section.arguments.begin
 #      ^^ -constant.character.escape
 #  ^^^^ constant.character.escape
 #  ^^^^^^ variable.function
 # ^^^^^^^^^^^^ meta.function-call
 x.'\\\'\m\'\\' x.'\\\'\m\'\\'
+#                            ^ punctuation.section.arguments.end
 #                     ^^ -constant.character.escape
 #                 ^^^^ constant.character.escape
 #                 ^^^^^^^^^^ variable.other.member
 #                ^^^^^^^^^^^^ meta.member
+#               ^ punctuation.accessor.dot
+#              ^ variable.other
+#             ^ punctuation.section.arguments.begin
 #      ^^ -constant.character.escape
 #  ^^^^ constant.character.escape
 #  ^^^^^^ variable.function

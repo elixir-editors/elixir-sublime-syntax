@@ -83,6 +83,9 @@ fragment(
 
 fragment("""
   jsonb_to_tsvector('simple', content, '["string", "numeric"]')
+#                                                ^ -punctuation.comma.sql
+#                                    ^ punctuation.comma.sql
+#                           ^ punctuation.comma.sql
 # ^^^^^^^^^^^^^^^^^ variable.function.sql
 """)
 
@@ -130,6 +133,25 @@ fragment(
 #          ^^^^^^ variable.other
 #  ^^^^^^^ keyword.other.unquote
 )
+
+fragment(
+  "SELECT id, row_num FROM unnest(?) WITH ORDINALITY ids (id, row_num)",
+#                                                             ^^^^^^^ variable.other.sql
+#                                                         ^^ variable.other.sql
+#                                                    ^^^ variable.other.sql
+#                                         ^^^^^^^^^^ keyword.other.sql
+#                                    ^^^^ keyword.other.DML.sql
+#                          ^^^^^^ keyword.other.sql
+#             ^^^^^^^ variable.other.sql
+#           ^ punctuation.comma.sql
+#         ^^ variable.other.sql
+  ^ids |> type({:array, :binary_id})
+)
+
+fragment("t AT TIME ZONE")
+#                   ^^^^ keyword.other.sql
+#              ^^^^ keyword.other.sql
+#           ^^ keyword.other.sql
 
 ## Raw SQL queries
 

@@ -32,15 +32,20 @@
 #^ punctuation.section.mapping.begin
  %:Some.Module{}
 #             ^ punctuation.section.mapping.begin
-# ^^^^^ constant.other.symbol
+#  ^^^^ constant.other.module
+# ^ punctuation.definition.constant.begin
 #^ punctuation.section.mapping.begin
  %:"Some".Module{}
 #               ^ punctuation.section.mapping.begin
-# ^^^^^^^ constant.other.symbol
+#       ^ punctuation.definition.constant.end
+#   ^^^^ constant.other.module
+# ^^ punctuation.definition.constant.begin
 #^ punctuation.section.mapping.begin
  %:'Some'.Module{}
 #               ^ punctuation.section.mapping.begin
-# ^^^^^^^ constant.other.symbol
+#       ^ punctuation.definition.constant.end
+#   ^^^^ constant.other.module
+# ^^ punctuation.definition.constant.begin
 #^ punctuation.section.mapping.begin
 
 %module{}
@@ -580,6 +585,17 @@ end[]
 #    ^ -punctuation.accessor.arity
 #  ^^ constant.other.capture
 
+ &:erlang.()/2
+#  ^^^^^^ constant.other.module
+ &:lists.(&1)
+#  ^^^^^ constant.other.module
+ &:lists.sort(&1)
+#        ^^^^ variable.function
+#  ^^^^^ constant.other.module
+ &:"\"Quoted\"\.Module\\".t()
+#                         ^ variable.function
+#   ^^^^^^^^^^^^^^^^^^^^ constant.other.module
+# FIXME:                 ^ punctuation.accessor.dot
  &:erlang.apply/2
 #              ^ punctuation.accessor.arity
 #         ^^^^^ variable.other.capture
@@ -594,7 +610,7 @@ end[]
 #    ^^ constant.other.capture
 #   ^ punctuation.section.arguments.begin
 #  ^ punctuation.accessor.dot
-# ^ variable.other
+# ^ variable.function
  & &1.(args)
 #          ^ punctuation.section.arguments.end
 #     ^ punctuation.section.arguments.begin
@@ -913,7 +929,8 @@ end[]
  &unquote(:apply)/2
 #                ^ punctuation.accessor.arity
  &:erlang.unquote(:apply)/2
-#                        ^ punctuation.accessor.arity
+# FIXME:
+                         ^ punctuation.accessor.arity
  &unquote(:erlang).apply/2
 #                       ^ punctuation.accessor.arity
 

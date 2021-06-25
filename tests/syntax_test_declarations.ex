@@ -56,14 +56,16 @@ defmodule :App.:Module
 #               ^^^^^^ entity.name.namespace
 #              ^ punctuation.definition.constant.begin
 #             ^ punctuation.accessor
-#         ^^^^ constant.other.symbol
+#          ^^^ constant.other.module
+#         ^ punctuation.definition.constant.begin
 defmodule :<<>>
 #          ^^^^ entity.name.namespace
 defmodule :&&, do: def(a &&& b, do: a && b); :&&.&&&(:&, :&)
 #                                                        ^^ constant.other.symbol
 #                                                    ^^ constant.other.symbol
 #                                                ^^^ variable.function
-#                                            ^^^ constant.other.symbol
+#                                             ^^ constant.other.module
+#                                            ^ punctuation.definition.constant.begin
 #                                          ^ keyword.operator.semicolon
 #                        ^^^ entity.name.function
 #            ^ punctuation.separator.arguments
@@ -110,7 +112,9 @@ end
 #<- keyword.context.block
 
 defmodule User, do: defstruct [:name]
+#                                    ^ punctuation.section.arguments.end
 #                              ^^^^^ constant.other.symbol
+#                            ^ punctuation.section.arguments.begin
 #                   ^^^^^^^^^ keyword.declaration
 #               ^^^ constant.other.keyword
 #             ^ punctuation.separator.arguments
@@ -147,7 +151,9 @@ defmodule(Nil, do: (def get_nil() do nil end)) |> elem(1) |> apply(:get_nil, [])
 
 defmodule (NotAModule, do: (import X))
 #                                     ^ punctuation.section.arguments.end
+#                                    ^ punctuation.section.group.end
 #          ^^^^^^^^^^ -entity.name.namespace
+#         ^ punctuation.section.group.begin
 #        ^ punctuation.section.arguments.begin
 
 
@@ -200,13 +206,44 @@ defimpl IEx.Info, for: [Date, Time, NaiveDateTime] do end
 
  defimpl Collectable, for: List do end
 #^^^^^^^ keyword.declaration.implementation
+ Record.defrecord(:user, [:name, :age])
+#                                     ^ punctuation.section.arguments.end
+#                              ^ punctuation.separator.sequence
+#                      ^ punctuation.separator.arguments
+#                  ^^^^ entity.name.function
+#                 ^ punctuation.definition.constant.begin
+#                ^ punctuation.section.arguments.begin
+#       ^^^^^^^^^ keyword.declaration
+#      ^ punctuation.accessor.dot.elixir
+#^^^^^^ constant.other.module
+ Record.defrecord :user, [:name, :age]
+#                                     ^ punctuation.section.arguments.end
+#                  ^^^^ entity.name.function
+#                ^ punctuation.section.arguments.begin
  defrecord :user, [:name, :age]
+#                              ^ punctuation.section.arguments.end
+#               ^ punctuation.separator.arguments
+#           ^^^^ entity.name.function
+#          ^ punctuation.definition.constant.begin
+#         ^ punctuation.section.arguments.begin
+#^^^^^^^^^ keyword.declaration
+ defrecord(:user, :user, [:name, :age])
+#                  ^^^^ constant.other.symbol -entity.name
+#               ^ punctuation.separator.arguments
+#           ^^^^ entity.name.function
+#          ^ punctuation.definition.constant.begin
 #^^^^^^^^^ keyword.declaration
  defstruct [:id, :name, :address]
+#                                ^ punctuation.section.arguments.end
+#         ^ punctuation.section.arguments.begin
 #^^^^^^^^^ keyword.declaration
  defexception message: "error"
+#                             ^ punctuation.section.arguments.end
+#            ^ punctuation.section.arguments.begin
 #^^^^^^^^^^^^ keyword.declaration
  defoverridable child_spec: 1
+#                            ^ punctuation.section.arguments.end
+#              ^ punctuation.section.arguments.begin
 #^^^^^^^^^^^^^^ keyword.declaration
 
 
@@ -293,6 +330,21 @@ def a + b, do: a - b
 #                  ^ -variable.parameter
 #              ^ -variable.parameter
 #     ^ entity.name.function
+def a + b when a == 0 and b == 0, do: 0
+#                         ^ variable.other -variable.parameter
+#              ^ variable.other -variable.parameter
+#         ^^^^ keyword.operator.when
+#       ^ variable.parameter
+#   ^ variable.parameter
+def unquote(:+)(a, b) when a == 0 and b == 0, do: 0
+#                                     ^ variable.other -variable.parameter
+#                          ^ variable.other -variable.parameter
+#                     ^^^^ keyword.operator.when
+#                  ^ variable.parameter
+#               ^ variable.parameter
+#            ^ entity.name.function
+#           ^ punctuation.definition.constant.begin
+#           ^^ constant.other.symbol
 def a <~ b, do: min(a, b)
 #     ^^ entity.name.function
 def a ~> b, do: max(a, b)
@@ -384,7 +436,9 @@ def [left] ++ [_ | _] = right, do: [left | right]
 #                            ^ punctuation.separator.arguments
 #                       ^^^^^ variable.parameter
 #                  ^ variable.parameter
+#                ^ keyword.operator.cons -entity.name.function
 #              ^ variable.parameter
+#          ^^ entity.name.function
 #    ^^^^ variable.parameter
 
 def {}: :{}
@@ -426,14 +480,18 @@ def unquote(name)(unquote_splicing(args)), do: unquote(compiled)
 #                ^ punctuation.definition.parameters.begin
 #           ^^^^ variable.other
 #   ^^^^^^^ keyword.other
+def unquote_splicing([quote(do: f(a, b)), [do: quote(do: {a, b})]])
+#                               ^ variable.function
+#                     ^^^^^ keyword.other.quote
+#   ^^^^^^^^^^^^^^^^ keyword.other.unquote
 def f(%unquote(struct_name){id: id} = struct)
 #                                     ^^^^^^ variable.parameter
 #                               ^^ variable.parameter
+#                           ^^^ constant.other.keyword
 #                          ^ punctuation.section.mapping.begin
 #              ^^^^^^^^^^^ variable.other
 #      ^^^^^^^ keyword.other.unquote
 #     ^ punctuation.section.mapping.begin
-
 def unquote(:.)(a, b), do: {a, b}
 #                           ^ variable.other
 #               ^ variable.parameter
@@ -506,6 +564,12 @@ def bool?(bool)
 # FIXME:
                          ^ punctuation.separator.arguments
     do: bool
+            ^ punctuation.section.arguments.end
+
+def f(bool)
+    when true == bool do
+#                ^^^^ variable.other -variable.function
+    end
 
 defp inspectable_end?(<<char, rest::binary>>)
      when char in ?A..?Z
