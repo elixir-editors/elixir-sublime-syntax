@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 620 20">
+<style type="text/css"><![CDATA[
+  div { padding:0.1em;font-family:monospace;font-size:16px;white-space:pre;color:#eee!important;background-color:#282923;border-radius:4px; }
+  .fnc { color:#67d8ef }
+  .blu_i { color:#67d8ef;font-style:italic }
+  .mod { color:#70a800 }
+  .kw { color:#f92472 }
+  .intp_bg { background-color: rgba(0, 0, 0, 0.03) }
+  .intp_dlm { color:#ababab }
+  .str_dlm { color:#dbca33 }
+  .str { color:#e7db74 }
+  .prpl { color:#ac80ff }
+  .akw { color:#8a66cc }
+  .colon { color:#aeafad }
+  .entity { color:#a6e22c }
+  .param { color:#fd9621 }
+  .type { color:#88c2cd }
+  .itlc { font-style:italic }
+]]>
+</style>
+<foreignObject width="100%" height="100%">
+<div xmlns="http://www.w3.org/1999/xhtml"><span class="kw">@</span><span class="blu_i">type</span> <span class="entity itlc">get_fun</span><span class="itlc" style="color:#e2e2e2">(</span><span class="param itlc">data</span><span class="itlc" style="color:#e2e2e2">)</span> <span class="kw">::</span> <span class="itlc" style="color:#b9b9b7">(</span><span class="colon itlc">:</span><span class="prpl itlc">get</span><span class="itlc">,</span> <span class="type itlc">data</span><span class="itlc">,</span> <span class="itlc" style="color:#b9b9b7">(</span><span class="type itlc">term</span> <span class="kw itlc">-&gt;</span> <span class="type itlc">term</span><span class="itlc" style="color:#b9b9b7">)</span> <span class="kw itlc">-&gt;</span> <span class="itlc" style="color:#919191">new_data</span> <span class="kw">::</span> <span class="type itlc">container</span><span class="itlc" style="color:#b9b9b7">)</span>
+</div>
+</foreignObject>
+</svg>

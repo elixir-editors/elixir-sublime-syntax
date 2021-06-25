@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 800 50">
+<style type="text/css"><![CDATA[
+  div { padding:0.3em;font-family:monospace;font-size:16px;white-space:pre;color:#eee!important;background-color:#282923;border-radius:4px; }
+  .fnc { color:#67d8ef }
+  .blu_i { color:#67d8ef;font-style:italic }
+  .mod { color:#70a800 }
+  .kw { color:#f92472 }
+  .intp_bg { background-color: rgba(0, 0, 0, 0.03) }
+  .intp_dlm { color:#ababab }
+  .str_dlm { color:#dbca33 }
+  .str { color:#e7db74 }
+  .prpl { color:#ac80ff }
+  .akw { color:#8a66cc }
+  .colon { color:#aeafad }
+  .entity { color:#a6e22c }
+  .param { color:#fd9621 }
+]]>
+</style>
+<foreignObject width="100%" height="100%">
+<div xmlns="http://www.w3.org/1999/xhtml"><span class="blu_i">defmacro</span> <span class="entity">sql</span>(<span class="param">sql</span>), <span class="akw">do</span><span class="colon">:</span> sql
+<span class="fnc">sql</span>(<span class="str_dlm">"</span><span class="kw">SELECT</span> <span style="color:#fd9621;font-style:italic">*</span> <span class="kw">FROM</span> posts <span class="kw">ORDER</span> <span class="kw">BY</span> title <span class="kw">GROUP</span> <span class="kw">BY</span> user_id<span class="str_dlm">"</span>)
+</div>
+</foreignObject>
+</svg>
