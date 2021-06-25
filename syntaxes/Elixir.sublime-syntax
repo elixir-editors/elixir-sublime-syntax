@@ -31,10 +31,11 @@ variables:
   # Run `cat lib/**/*.ex > all.ex` to join all source files into a single file.
   closing_keyword: (?>end|else|after|rescue|catch){{no_id_key_suffix}}
   closing_token: (?>[)}\];#]|>>(?!>)|%>|$|{{closing_keyword}})
+
   binary_operator: |
     (?x)(?>
       (?<!\s)\[ | <?<~ | ~>>? | <~> | [*=/|\\>] | \.(?!\.\.) | <(?!<[^<~] | %=)
-    | \^\^ | && | (?<!\s)[-+]\S | [-+][-+>\s] | ::(?!:) | $ | !=
+    | \^{3} | && | (?<!\s)[-+]\S | [-+][-+>\s] | ::(?!:) | $ | !=
     | (?>when|and|in|or|not\s+in){{no_id_key_suffix}}
     )
 
@@ -48,7 +49,7 @@ variables:
   has_arguments: |
     (?x)(?=
       \(
-    | \s* (?![?.]:) {{operator}}: {{no_colon_suffix}}
+    | \s* (?!\?:) (?>{{operator}}: {{no_colon_suffix}} | \\(?!\\))
     | (?! \s* (?>, | {{closing_token}} | {{binary_operator}}) )
     )
   no_suffix_then_arguments: '{{no_id_key_suffix}}{{has_arguments}}'
@@ -198,7 +199,7 @@ contexts:
     - match: (?=unquote\(\s*:(?!:(?!:)))
       set: [function_params_or_eol_pop, function_atom_name_pop, unquote_pop]
 
-    - match: (?=unquote\()
+    - match: (?=unquote(?:_splicing)?\()
       set: [function_params_or_eol_pop, arguments_pop, unquote_pop]
 
     - match: not{{no_suffix_then_arguments}}
@@ -232,7 +233,7 @@ contexts:
             2: variable.parameter.elixir
             3: entity.name.function.elixir
           set:
-            - match: (?=,)
+            - match: (?=,|when{{no_id_key_suffix}})
               set: arguments_ws_rest_pop
             - include: func_do_block_pop
             - include: if_ws_closing_token_or_eol_pop
@@ -316,7 +317,7 @@ contexts:
   parameters:
     - include: block_or_keyword
     - include: special_form
-    - match: (?=\^\s*{{identifier}}{{no_key_suffix}}(?!\s*\.)(?!{{has_arguments}}))
+    - match: (?=\^\s*{{identifier}}{{no_key_suffix}}(?!\s*\.(?!\.))(?!{{has_arguments}}))
       push:
         - include: operator
         - include: identifier_pop
@@ -337,6 +338,8 @@ contexts:
     - include: tuple_param
     - include: map_param
     - include: binary_string_param
+    # Use last_id_argument here to avoid matching `@attr do` as an entity symbol.
+    - include: last_id_argument
     - include: core_syntax
 
   parameters_or_if_closing_pop:
@@ -397,9 +400,7 @@ contexts:
     - match: \{
       scope: punctuation.section.mapping.begin.elixir
       set:
-        - match: \}
-          scope: meta.mapping.elixir punctuation.section.mapping.end.elixir
-          pop: true
+        - include: map_closing_pop
         - include: parameters_or_if_closing_pop
     - include: if_closing_token_pop
     - include: if_non_space_or_eol_pop
@@ -422,6 +423,7 @@ contexts:
 
   spec_op_definition_pop:
     # E.g.: @spec integer &&& integer :: integer
+    - meta_scope: meta.type.elixir
     - match: (?x)((?!::|\.(?!\.)){{operator}} | (?>and|in|or|not){{no_id_key_suffix}})
       scope: variable.other.spec.elixir
       set: spec_op_definition_next_pop
@@ -429,6 +431,7 @@ contexts:
     - include: spec_op_definition_next_pop
 
   spec_op_definition_next_pop:
+    - meta_scope: meta.type.elixir
     - include: return_types_pop
     - match: (?=[,;])
       pop: true
@@ -436,9 +439,20 @@ contexts:
     - include: if_non_space_pop
 
   type_definition_pop:
+    - meta_scope: meta.type.elixir
     - match: (?=\()
-      set: [type_definition_next_pop, paren_param_pop]
+      set: [type_definition_next_pop, type_params_pop]
     - include: type_definition_next_pop
+
+  type_params_pop:
+    - match: \(
+      scope: punctuation.definition.parameters.begin.elixir
+      set:
+        - meta_scope: meta.type.elixir meta.function.parameters.elixir
+        - match: \)
+          scope: punctuation.definition.parameters.end.elixir
+          pop: true
+        - include: parameters_or_if_closing_pop
 
   type_definition_next_pop:
     - include: comments
@@ -464,13 +478,14 @@ contexts:
             )?list
           )
         ){{no_id_key_suffix}}
-        | (?>(optional)|(required)){{no_id_key_suffix}}
+        | (?>(optional)|(required)|(record))(?={{no_suffix_then_arguments}})
         | ({{identifier}})
       captures:
         1: support.type.elixir
         2: keyword.other.optional.elixir
         3: keyword.other.required.elixir
-        4: storage.type.custom.elixir
+        4: keyword.other.record.elixir
+        5: storage.type.custom.elixir
       push: type_arguments_or_pop
     - include: list_type
     - include: tuple_type
@@ -500,7 +515,7 @@ contexts:
     - match: \(
       scope: punctuation.section.arguments.begin.elixir
       set:
-        - meta_scope: meta.function-call.arguments.elixir
+        - meta_scope: meta.type.elixir meta.function-call.arguments.elixir
         - include: arguments_closing_pop
         - include: arg_comma_and_skip_ws
         - include: named_type
@@ -514,7 +529,7 @@ contexts:
 
   return_types_pop:
     - match: ::(?!:)
-      scope: keyword.operator.colon.elixir
+      scope: meta.type.elixir keyword.operator.colon.elixir
       set: [first_and_next_types_pop, if_non_space_pop]
 
   if_types_end_pop:
@@ -529,6 +544,7 @@ contexts:
     - include: if_types_end_pop
     - match: (?=\S)
       set:
+        - meta_scope: meta.type.elixir
         # NB: we can't prevent matching more than one type expression.
         # Just move to next_types_pop after the first newline, `|`, `::` or `when`.
         - match: (?=$|\|(?![:|>])|::(?!:)|when{{no_id_key_suffix}})
@@ -552,6 +568,7 @@ contexts:
     - include: if_non_space_or_eol_pop
 
   union_types_eol_pop:
+    - meta_scope: meta.type.elixir
     - include: comments
     - match: |
         (?x)(?=
@@ -565,6 +582,7 @@ contexts:
     - include: if_non_space_or_eol_pop
 
   when_types_clause_pop:
+    - meta_scope: meta.type.elixir
     - include: comments
     - include: atom_keyword
     - match: (?<=[^:]:)
@@ -630,9 +648,7 @@ contexts:
     - match: \{
       scope: punctuation.section.mapping.begin.elixir
       set:
-        - match: \}
-          scope: meta.mapping.elixir punctuation.section.mapping.end.elixir
-          pop: true
+        - include: map_closing_pop
         - include: named_type
         - include: types_or_if_closing_pop
     - include: if_closing_token_pop
@@ -1517,13 +1533,9 @@ contexts:
         )
       push:
         - meta_scope: meta.namespace.elixir
-        - match: (:)({{atom_symbol}})(?!\s*\.)
-          scope: constant.other.symbol.elixir
-          captures:
-            1: punctuation.definition.constant.begin.elixir
-            2: entity.name.namespace.elixir
-        - match: '{{module_name}}{{no_key_suffix}}(?!\s*\.)'
+        - match: '{{module_name}}{{no_key_suffix}}(?!\s*\.(?!\.))'
           scope: entity.name.namespace.elixir
+        - include: atom_namespace_entity
         - include: special_form
         - include: module_name
         - include: atom_symbol
@@ -1532,6 +1544,49 @@ contexts:
         - include: if_non_space_or_eol_pop
     - include: arg_comma_and_skip_ws
     - include: core_syntax_or_if_closing_pop
+
+  defrecord:
+    - match: (?:(Record)\s*(\.)\s*)?(defrecordp?){{no_suffix_then_arguments}}
+      captures:
+        1: constant.other.module.elixir
+        2: punctuation.accessor.dot.elixir
+        3: keyword.declaration.elixir
+      push: defrecord_pop
+
+  defrecord_pop:
+    - match: \(
+      scope: punctuation.section.arguments.begin.elixir
+      set:
+        - meta_scope: meta.function-call.arguments.elixir
+        - include: arguments_closing_pop
+        - include: defrecord_arguments
+    - match: \s?
+      scope: punctuation.section.arguments.begin.elixir
+      set:
+        - meta_scope: meta.function-call.arguments.elixir
+        - include: arguments_ws_closing_pop
+        - include: defrecord_arguments
+
+  defrecord_arguments:
+    - include: atom_function_entity
+    - match: (?=,)
+      push: arguments_ws_rest_pop
+    - include: arg_comma_and_skip_ws
+    - include: core_syntax_or_if_closing_pop
+
+  atom_function_entity:
+    - match: (:)({{atom_symbol}})(?!\s*\.(?!\.))
+      scope: constant.other.symbol.elixir
+      captures:
+        1: punctuation.definition.constant.begin.elixir
+        2: entity.name.function.elixir
+
+  atom_namespace_entity:
+    - match: (:)({{atom_symbol}})(?!\s*\.(?!\.))
+      scope: constant.other.symbol.elixir
+      captures:
+        1: punctuation.definition.constant.begin.elixir
+        2: entity.name.namespace.elixir
 
   block_or_keyword:
     - include: atom_keyword
@@ -1605,24 +1660,38 @@ contexts:
   module_name:
     - match: '{{module_name}}{{no_key_suffix}}'
       scope: constant.other.module.elixir
-
+    - match: (?x)(:(["'])) ((?>\\\\|\\\2|(?!\2).)*?) (\2) (?=\s*\.(?!\.))
+      captures:
+        1: punctuation.definition.constant.begin.elixir
+        3: constant.other.module.elixir
+        4: punctuation.definition.constant.end.elixir
+    - match: (:)({{atom_symbol}})(?=\s*\.(?!\.))
+      captures:
+        1: punctuation.definition.constant.begin.elixir
+        2: constant.other.module.elixir
   module_name_pop:
     - match: '{{module_name}}{{no_key_suffix}}'
       scope: constant.other.module.elixir
       pop: true
 
   module_function_call_pop:
-    - match: ({{module_name}})\s*(\.(?!\.))\s*(?={{member}})
+    - match: ({{module_name}})\s*(\.(?!\.))
       comment: always a function call after a module
       captures:
         1: constant.other.module.elixir
         2: punctuation.accessor.dot.elixir
-      set:
-        - include: unquote_call_pop
-        - match: '{{member}}'
-          scope: variable.function.elixir
-          set: arguments_or_pop
-        - include: if_non_space_or_eol_pop
+      set: member_call_pop
+
+  member_call_pop:
+    # - include: sql_or_fragment
+    - include: quoted_remote_call_pop
+    - include: quoted_member_pop
+    - include: unquote_call_pop
+    - match: '{{member}}'
+      scope: variable.function.elixir
+      set: arguments_or_pop
+    - include: tuple_call_pop
+    - include: if_non_space_or_eol_pop
 
   id_or_operator_call_pop:
     - match: ({{member}})(?=\s*\.\s*\(|{{has_arguments}})
@@ -1630,7 +1699,7 @@ contexts:
       set: arguments_paren_or_ws_pop
 
   quoted_remote_call_pop:
-    - match: \"(?=(\\[\\"]|.)*?"{{has_arguments}})
+    - match: \"(?=(?>\\[\\"]|.)*?"{{has_arguments}})
       scope: punctuation.definition.constant.begin.elixir
       set:
         - meta_scope: meta.function-call.elixir
@@ -1641,7 +1710,7 @@ contexts:
           scope: variable.function.elixir
           captures:
             1: constant.character.escape.char.elixir
-    - match: \'(?=(\\[\\']|.)*?'{{has_arguments}})
+    - match: \'(?=(?>\\[\\']|.)*?'{{has_arguments}})
       scope: punctuation.definition.constant.begin.elixir
       set:
         - meta_scope: meta.function-call.elixir
@@ -1678,6 +1747,18 @@ contexts:
             1: constant.character.escape.char.elixir
 
   modules_or_ids_or_calls:
+    - match: (?x)(:(["'])) ((?>\\\\|\\\2|(?!\2).)*?) (\2) (?=\s*\.(?!\.))
+      captures:
+        1: punctuation.definition.constant.begin.elixir
+        3: constant.other.module.elixir
+        4: punctuation.definition.constant.end.elixir
+      push: member_call_pop
+    - match: (:)({{atom_symbol}})\s*(\.(?!\.))
+      captures:
+        1: punctuation.definition.constant.begin.elixir
+        2: constant.other.module.elixir
+        3: punctuation.accessor.dot.elixir
+      push: member_call_pop
     - match: (?={{module_name}}|{{identifier}})
       push:
         - include: module_function_call_pop
@@ -1704,7 +1785,6 @@ contexts:
         - match: \}
           scope: punctuation.section.braces.end.elixir
           pop: true
-        - include: unquote_call
         - include: core_syntax_or_if_closing_pop
 
   dot_accessor:
@@ -1744,6 +1824,7 @@ contexts:
         - match: \(
           scope: punctuation.section.arguments.begin.elixir
           set:
+            - meta_scope: meta.doc.elixir
             - include: arguments_closing_pop
             - match: ''
               push:
@@ -1754,6 +1835,7 @@ contexts:
         - match: \s?
           scope: punctuation.section.arguments.begin.elixir
           set:
+            - meta_scope: meta.doc.elixir
             - include: arguments_ws_closing_pop
             - include: arg_comma_and_skip_ws
             - include: markdown_comment
@@ -1762,6 +1844,7 @@ contexts:
     - match: (?>spec|(?:macro)?callback)(?={{no_suffix_then_arguments}}|\s*{{operator}})
       scope: keyword.declaration.type.elixir
       set:
+        - meta_scope: meta.type.elixir
         - match: \(
           scope: punctuation.section.arguments.begin.elixir
           set:
@@ -1784,10 +1867,11 @@ contexts:
     - match: (?>typep?|opaque){{no_suffix_then_arguments}}
       scope: keyword.declaration.type.elixir
       set:
+        - meta_scope: meta.type.elixir
         - match: \(
           scope: punctuation.section.arguments.begin.elixir
           set:
-            - meta_scope: meta.function-call.arguments.elixir
+            - meta_scope: meta.type.elixir meta.function-call.arguments.elixir
             - include: block_or_keyword
             - match: (?=unquote\()
               push: [type_definition_pop, arguments_pop, unquote_pop]
@@ -1798,7 +1882,7 @@ contexts:
         - match: \s?
           scope: punctuation.section.arguments.begin.elixir
           set:
-            - meta_scope: meta.function-call.arguments.elixir
+            - meta_scope: meta.type.elixir meta.function-call.arguments.elixir
             - include: block_or_keyword
             - match: (?=unquote\()
               set: [type_definition_pop, arguments_pop, unquote_pop]
@@ -1982,7 +2066,7 @@ contexts:
       push: invalid_comma_or_non_space_pop
 
   invalid_comma:
-    - match: (?=,\s*(?>[,;)]|[%-]>|(?>do|when){{no_id_key_suffix}}|{{closing_keyword}}))
+    - match: (?=,\s*(?>[,;)]|%>|->(?!:)|(?>do|when){{no_id_key_suffix}}|{{closing_keyword}}))
       push: invalid_comma_or_non_space_pop
 
   invalid_comma_or_non_space_pop:
@@ -2110,9 +2194,7 @@ contexts:
     - match: \{
       scope: punctuation.section.mapping.begin.elixir
       set:
-        - match: \}
-          scope: meta.mapping.elixir punctuation.section.mapping.end.elixir
-          pop: true
+        - include: map_closing_pop
         - include: cons_operator
         - include: core_syntax_or_if_closing_pop
     - include: if_closing_token_pop
@@ -2199,7 +2281,7 @@ contexts:
   atom_keyword:
     - match: |
         (?x)
-        (?! [?.]: | ::: | %:(?:{{atom_id}}|['"]) ) # No ::: and %:XYZ{} (it's a map)
+        (?! \?: | ::: | %:(?:{{atom_id}}|['"]) ) # No ::: and %:XYZ{} (it's a map)
         (?>{{atom_symbol}}|(?<=%>)) (:) {{no_colon_suffix}}
       comment: keyword symbol
       scope: constant.other.keyword.elixir
@@ -2263,12 +2345,22 @@ contexts:
             - include: if_non_space_or_eol_pop
         - include: capture_name_pop
         - include: special_form
-        - match: (?={{identifier}}\s*\.(?!\.))
+        - match: (?={{identifier}}\s*\.(?!\.|\s*\())
           push: identifier_pop
         - include: if_non_space_or_eol_pop
 
   capture_name_pop:
-    - match: (?=(?>{{module_name}}{{no_key_suffix}}|:{{atom_symbol}})(?!\s*\.))
+    - match: |
+        (?x)(?=
+          (?>
+            {{module_name}}{{no_key_suffix}}
+          | :{{atom_symbol}}
+          | (?>:(["'])) (?>\\\\|\\\1|(?!\1).)*? (\1)
+          )
+          \s* (?!\. (?!\. | \s*\())
+        | (?>:{{atom_symbol}}) \s*\.\s* {{member}} \s*\(
+        )
+      comment: exit if module/atom is not followed by `.` or `.(`
       pop: true
     - include: atom_symbol
     - include: atom_keyword
@@ -2281,16 +2373,13 @@ contexts:
       pop: true
     - match: |
         (?x)
-        (?>(/(?=/)|{{member}}) | (")((?>\\[\\"]|.)*?)(") | (')((?>\\[\\']|.)*?)('))
+        (?>(/(?=/)|{{member}}) | (["'])((?>\\\\|\\\2|(?!\2).)*?)(\2))
         (?=\s*(/)\s*(\d+)(?!\.(?![.\D])))
       captures:
         1: variable.other.capture.elixir
         2: punctuation.definition.constant.begin.elixir
         3: variable.other.capture.elixir
         4: punctuation.definition.constant.end.elixir
-        5: punctuation.definition.constant.begin.elixir
-        6: variable.other.capture.elixir
-        7: punctuation.definition.constant.end.elixir
 
   ## SQL
 
@@ -2442,6 +2531,11 @@ contexts:
       scope: punctuation.section.arguments.end.elixir
       pop: true
 
+  map_closing_pop:
+    - match: \}
+      scope: meta.mapping.elixir punctuation.section.mapping.end.elixir
+      pop: true
+
   arguments_rest_pop:
     - include: arguments_closing_pop
     - include: if_closing_token_pop
@@ -2509,7 +2603,8 @@ contexts:
         )
       comment: prevent matching last argument as a function call, e.g. `func first, second, last do end`
       push:
-        - include: do_block_pop
+        - match: (?=do{{no_id_key_suffix}})
+          pop: true
         - match: (@)\s*({{identifier}})
           comment: reference
           captures:
@@ -2529,11 +2624,18 @@ contexts:
       scope: variable.language.special-form.elixir
 
   elixir_keywords:
+    - match: when\b(?![?!])
+      scope: keyword.operator.when.elixir
+      comment: for `when`-clauses that are placed below the function header
+      push:
+        - match: (?=(?><-|->)(?!:))
+          pop: true
+        - include: arguments_ws_rest_pop
     - match: |
         (?x)(?> # Ordered by likeliness of occurrence.
         # (do) | (fn) # Handled by do_block and fn_block.
-          (when)
-        | (true|false|nil)
+        # (when)
+          (true|false|nil)
         | (and|in|or|not)
         | (else)
         | (after)
@@ -2543,14 +2645,13 @@ contexts:
         )\b(?![?!])
       comment: fully reserved keywords
       captures:
-        1: keyword.operator.when.elixir
-        2: constant.language.elixir
-        3: keyword.operator.logical.elixir
-        4: keyword.control.conditional.else.elixir
-        5: keyword.control.exception.after.elixir
-        6: keyword.control.exception.rescue.elixir
-        7: keyword.control.exception.catch.elixir
-        8: keyword.context.block.end.elixir
+        1: constant.language.elixir
+        2: keyword.operator.logical.elixir
+        3: keyword.control.conditional.else.elixir
+        4: keyword.control.exception.after.elixir
+        5: keyword.control.exception.rescue.elixir
+        6: keyword.control.exception.catch.elixir
+        7: keyword.context.block.end.elixir
 
   case_macro_call:
     - match: case(?!\(){{no_suffix_then_arguments}}
@@ -2571,8 +2672,7 @@ contexts:
   one_left_arrow_clause:
     - match: (?=\S)
       push:
-        - include: do_block_pop
-        - match: (?=<-|,|(?>when|do){{no_id_key_suffix}}|do:(?!:))
+        - match: (?=<-(?!:)|,|(?>when|do){{no_id_key_suffix}}|do:(?!:))
           set:
             - match: (?=,|do{{no_id_key_suffix}}|do:(?!:))
               pop: true
@@ -2682,7 +2782,7 @@ contexts:
         | (quote)
         | (raise|reraise|throw)
         | (for)
-        | (defstruct|defrecordp?|defexception|defoverridable)
+        | (defstruct|defexception|defoverridable)
         | (try)
         | (receive)
         | (exit)
@@ -2702,6 +2802,7 @@ contexts:
         10: keyword.other.super.elixir
         11: keyword.other.destructure.elixir
       push: arguments_paren_or_ws_pop
+    - include: defrecord
 
   unquote_pop:
     - match: unquote(?:_splicing)?
@@ -2711,6 +2812,8 @@ contexts:
   unquote_call_pop:
     - match: (?=unquote(?:_splicing)?\()
       set: [unquote_post_args_pop, arguments_pop, unquote_pop]
+    - match: (?=unquote(?:_splicing)?{{no_suffix_then_arguments}})
+      set: [arguments_ws_pop, unquote_pop]
 
   unquote_post_args_pop:
     - match: (?=\()
@@ -2718,7 +2821,7 @@ contexts:
     - include: if_empty_pop
 
   unquote_call:
-    - match: (?=unquote(?:_splicing)?\()
+    - match: (?=unquote(?:_splicing)?{{no_suffix_then_arguments}})
       push: unquote_call_pop
 
   line_continuation:
