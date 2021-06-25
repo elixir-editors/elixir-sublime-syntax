@@ -1,53 +1,48 @@
 # ElixirSyntax
 
-ElixirSyntax was initially based on the [Elixir.tmbundle package](https://github.com/elixir-editors/elixir-tmbundle) but has been rewritten since, providing more accurate syntax matching as well as better syntax highlighting. Works with `goto definition`!
-
-## Changes
-
-See [CHANGELOG.md](./CHANGELOG.md) for the list of releases and noteworthy changes.
+ElixirSyntax was initially based on the [Elixir.tmbundle package](https://github.com/elixir-editors/elixir-tmbundle) but has been rewritten since, providing more accurate syntax matching as well as better syntax highlighting.
 
 ## Features
 
-Some of the provided features are not immediately evident. Among them are:
+* Working `Goto Definition` functionality
+* LiveView template highlighting: `~L"..."`\
+  (Note: will be changed to the new HEEx syntax eventually.)
+* Full PCRE syntax highlighting: <img src="images/elixir_regex_example.svg" width="270" align="top">
+* Type highlighting: <img src="images/elixir_type_example.svg" width="620" align="top">
+
+Some of the other provided features are not immediately evident. Among them are:
 
 ### The `fragment` and `sql` functions
 
 SQL syntax is highlighted inside Ecto's `fragment` macro.
 
-<blockquote><span class="mod">Post</span>
-<span class="kw">|></span> <span class="fnc">where</span>([post], <span class="fnc">fragment</span>(<span class="str_dlm">"</span><span class="prpl">?</span>.full_text <span class="kw">&lt;@</span> <span class="fnc">to_tsquery</span>(<span class="prpl">?</span>)<span class="str_dlm">"</span>, post, terms))
+<blockquote>
+<img src="images/elixir_fragment_example.svg" width="100%">
 </blockquote>
 
 Add an `sql` macro/function to your project to enjoy SQL highlighting anywhere it's used.
 
-<blockquote><span class="blu_i">defmacro</span> <span class="entity">sql</span>(<span class="param">sql</span>), <span class="akw">do</span><span class="colon">:</span> sql
-<span class="fnc">sql</span>(<span class="str_dlm">"</span><span class="kw">SELECT</span> <span class="param">*</span> <span class="kw">FROM</span> posts <span class="kw">ORDER</span> <span class="kw">BY</span> title <span class="kw">GROUP</span> <span class="kw">BY</span> user_id<span class="str_dlm">"</span>)
+<blockquote>
+<img src="images/elixir_sql_example.svg" width="100%">
 </blockquote>
 
 ### The JSON `~j` and `~J` sigils
 
-Embed JSON strings in your Elixir code. (Notice the interpolated Elixir code is rendered properly.)
+Embed JSON strings in your Elixir code. Notice the interpolated Elixir code is colored correctly.
 
-<blockquote><span class="blu_i">~j</span><span class="str_dlm">"""</span>
-{
-  <span class="str_dlm">"</span><span class="str">key</span><span class="str_dlm">"</span>: <span class="str_dlm">"</span><span class="intp_dlm">#{</span><span class="intp_bg">value</span><span class="intp_dlm">}</span><span class="str_dlm">"</span>,
-  <span class="str_dlm">"</span><span class="intp_dlm">#{</span><span class="intp_bg">key</span><span class="intp_dlm">}</span><span class="str_dlm">"</span>: <span class="str_dlm">"</span><span class="str">value</span><span class="str_dlm">"</span>
-}
-<span class="str_dlm">"""</span>
+<blockquote>
+<img src="images/elixir_json_example.svg" width="100%">
 </blockquote>
 
 ### The YAML `~y` and `~Y` sigils
 
-<blockquote><span class="blu_i">~Y</span><span class="str_dlm">"""</span>
-<span class="kw">user</span>:
-  <span class="kw">name</span>: <span class="str">YAML</span>
-  <span class="kw">born</span>: <span class="prpl">2001</span><span class="prpl">-</span><span class="prpl">05</span><span class="prpl">-</span><span class="prpl">11</span>
-<span class="str_dlm">"""</span>
+<blockquote>
+<img src="images/elixir_yaml_example.svg" width="100%">
 </blockquote>
 
-### Etc.
+## Changes
 
-Also supported are LiveView (`~L"..."`) and the full PCRE syntax (`~r"..."`).
+See [CHANGELOG.md](./CHANGELOG.md) for the list of releases and noteworthy changes.
 
 ## Contributors/Maintainers
 
