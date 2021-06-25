@@ -139,11 +139,13 @@
 #            ^^^^ constant.other.keyword
 #      ^^^^ constant.other.symbol
 # ^^^^ constant.other.keyword
-  ~>>: :~>>, |>: :|>, <|>: :<|>, /: :/, //: ://, \\: :\\, *: :*, ..: :.., ...: :...,
-#                                                                              ^^^^ constant.other.symbol
-#                                                                         ^^^^ constant.other.keyword
-#                                                                    ^^^ constant.other.symbol
-#                                                                ^^^ constant.other.keyword
+  ~>>: :~>>, |>: :|>, <|>: :<|>, /: :/, //: ://, \\: :\\, *: :*, .: :., ..: :.., ...: :...,
+#                                                                                     ^^^^ constant.other.symbol
+#                                                                                ^^^^ constant.other.keyword
+#                                                                           ^^^ constant.other.symbol
+#                                                                       ^^^ constant.other.keyword
+#                                                                   ^^ constant.other.symbol
+#                                                                ^^ constant.other.keyword
 #                                                            ^^ constant.other.symbol
 #                                                         ^^ constant.other.keyword
 #                                                    ^^^ constant.other.symbol
@@ -163,6 +165,7 @@
 #                                                     ^^ constant.other.keyword
 #                                                ^^^ constant.other.symbol
 #                                            ^^^ constant.other.keyword
+#                                          ^ punctuation.separator.sequence -invalid
 #                                       ^^^ constant.other.symbol
 #                                   ^^^ constant.other.keyword
 #                              ^^^ constant.other.symbol
@@ -261,10 +264,6 @@
 #     ^^ constant.other.symbol
 #  ^^ constant.other.keyword
 # ^ -constant.other.keyword
-  .: :.,
-#    ^^ constant.other.symbol
-# ^ punctuation.accessor.dot
-# ^^ -constant.other.keyword
   ^^: :^^,
 #       ^ keyword.operator.pin
 #     ^^ constant.other.symbol

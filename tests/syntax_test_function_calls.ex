@@ -3,6 +3,8 @@
 ## Function calls
 
 f()
+# ^ punctuation.section.arguments.end
+#^ punctuation.section.arguments.begin
 #<- variable.function
 f ()
 #   ^ punctuation.section.arguments.end
@@ -80,9 +82,7 @@ m."quoted" arg
 #                  ^ variable.function
 #        ^ variable.function
 #^ variable.function
-(f |>: (f|>:)); (f <|>: (f<|>:)); (f /: (f/:)); (f \\: (f\\:)); (f *: (f*:)); (f ..: (f..:));
-#                                                                                     ^ variable.function
-#                                                                              ^ variable.function
+(f |>: (f|>:)); (f <|>: (f<|>:)); (f /: (f/:)); (f \\: (f\\:)); (f *: (f*:));
 #                                                                      ^ variable.function
 #                                                                ^ variable.function
 #                                                       ^ variable.function
@@ -93,19 +93,24 @@ m."quoted" arg
 #                ^ variable.function
 #       ^ variable.function
 #^ variable.function
-(f ...: (f...:)); (f >=: (f>=:)); (f <=: (f<=:)); (f <: (f<:)); (f <-: (f<-:)); (f <>: (f<>:));
-#                                                                                       ^ variable.function
-#                                                                                ^ variable.function
-#                                                                       ^ variable.function
-#                                                                ^ variable.function
-#                                                        ^ variable.function
-#                                                  ^ variable.function
-#                                         ^ variable.function
-#                                  ^ variable.function
-#                         ^ variable.function
-#                  ^ variable.function
+ (f .: (f.:)); (f ..: (f..:)); (f ...: (f...:));
+#                                       ^ variable.function
+#                               ^ variable.function
+#                      ^ variable.function
+#               ^ variable.function
+#       ^ variable.function
+# ^ variable.function
+ (f >=: (f>=:)); (f <=: (f<=:)); (f <: (f<:)); (f <-: (f<-:)); (f <>: (f<>:));
+#                                                                      ^ variable.function
+#                                                               ^ variable.function
+#                                                      ^ variable.function
+#                                               ^ variable.function
+#                                       ^ variable.function
+#                                 ^ variable.function
+#                        ^ variable.function
+#                 ^ variable.function
 #        ^ variable.function
-#^ variable.function
+# ^ variable.function
 (f ->: (f->:)); (f >: (f>:)); (f -: (f-:)); (f --: (f--:)); (f ---: (f---:)); (f +: (f+:));
 #                                                                                    ^ variable.function
 #                                                                              ^ variable.function
@@ -155,9 +160,7 @@ m."quoted" arg
 
 # Exceptions:
 
-(f ?: (f?:)); (f ::: (f:::)); (f :: (f::)); (f **: (f**:)); (f .: (f.:));
-#                                                                  ^ -variable.function
-#                                                            ^ -variable.function
+(f ?: (f?:)); (f ::: (f:::)); (f :: (f::)); (f **: (f**:));
 #                                                   ^ -variable.function
 #                                            ^ -variable.function
 #                                    ^ -variable.function
@@ -175,8 +178,8 @@ m."quoted" arg
 #                                ^ variable.function
 #                       ^ -variable.function
 #                ^ variable.function
-#       ^ -variable.function
-#^ -variable.function
+#       ^ variable.function
+#^ variable.function
 
 # Make sure that newlines, comments and spaces are skipped to the next token
 # after an atom keyword or an operator:
@@ -318,6 +321,28 @@ raise"msg"
 #      ^^^ variable.other
 #^^^^^^ variable.function
 
+:erlang.processes
+#       ^^^^^^^^^ variable.function
+#      ^ punctuation.accessor.dot
+#^^^^^^ constant.other.module
+#<- punctuation.definition.constant.begin -constant.other.module
+:erlang.length []
+#                ^ punctuation.section.arguments.end
+#             ^ punctuation.section.arguments.begin
+#       ^^^^^^ variable.function
+:erlang.* 2, 3
+#             ^ punctuation.section.arguments.end
+#          ^ punctuation.separator.arguments
+#        ^ punctuation.section.arguments.begin
+#       ^ variable.function
+#      ^ punctuation.accessor.dot
+#^^^^^^ constant.other.module
+#<- punctuation.definition.constant.begin -constant.other.module
+:erlang."=/=" 2, 3
+#                 ^ punctuation.section.arguments.end
+#              ^ punctuation.separator.arguments
+#            ^ punctuation.section.arguments.begin
+#        ^^^ variable.function
 
 %{} |> Kernel.|> Map.put(:key, :value)
 #                                     ^ punctuation.section.arguments.end
@@ -567,6 +592,18 @@ with {:ok, x} <- f(), do: x
 #                   ^ punctuation.separator.arguments
 #          ^ variable.parameter
 
+with \
+#    ^^ punctuation.separator.continuation
+     {:ok, newline} <- continuation do
+#                      ^^^^^^^^^^^^ variable.other
+#          ^^^^^^^ variable.parameter
+end
+
+(with \\ default)
+#        ^^^^^^^ variable.other
+#     ^^ keyword.operator.default
+#^^^^ variable.other
+
  try do
 #    ^^ keyword.context.block.do
 #^^^ keyword.control.exception.try
@@ -665,6 +702,8 @@ for <<x <- "AbCabCABc">>, x in ?a..?z, reduce: %{} do
 # ^^^ variable.parameter
 end
 #  ^ punctuation.section.arguments.end
+for x <- xs, x not in @list do end
+#                      ^^^^ variable.other.constant
 
 
  receive do
@@ -772,6 +811,15 @@ func x . do do end
 #        ^^ variable.other.member
 #      ^ punctuation.accessor.dot
 #    ^ variable.other
+
+ macro @fun fn -> end
+#                    ^ punctuation.section.arguments.end
+#                 ^^^ keyword.context.block.end
+#           ^^ keyword.other.fn
+#          ^ punctuation.section.arguments.begin
+#       ^^^ entity.name.constant
+#     ^ punctuation.section.arguments.begin
+#^^^^^ variable.function
 
 start(fn -> raise "stop"  end)
 #                            ^ punctuation.section.arguments.end

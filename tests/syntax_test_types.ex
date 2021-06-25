@@ -317,6 +317,7 @@
 | (type1, type2 -> type)
 #                  ^^^^ storage.type.custom
 #         ^^^^^ storage.type.custom
+#       ^ punctuation.separator.sequence
 #  ^^^^^ storage.type.custom
 | (... -> type)
 #         ^^^^ storage.type.custom
@@ -329,6 +330,7 @@
 | [] | [...] | [type] | [type, ...] | [key: value_type]
 #                                           ^^^^^^^^^^ storage.type.custom
 #                              ^^^ keyword.operator.ellipsis
+#                            ^ punctuation.separator.sequence
 #                        ^^^^ storage.type.custom
 #               ^^^^ storage.type.custom
 #       ^^^ keyword.operator.ellipsis
@@ -442,12 +444,37 @@
 #             ^^^ variable.other
 #          ^^ keyword.context.block
 
-## Specifications
+@type required :: required
+#                 ^^^^^^^^ storage.type.custom
+#     ^^^^^^^^ entity.name.type
+@type optional :: optional
+#                 ^^^^^^^^ storage.type.custom
+#     ^^^^^^^^ entity.name.type
+@type record :: record
+#               ^^^^^^ storage.type.custom
+#     ^^^^^^ entity.name.type
 
+@type user :: record(:user, name: String.t(), age: integer)
+#                                                         ^ punctuation.section.arguments.end
+#                                                  ^^^^^^^ support.type
+#                                             ^^^^ constant.other.keyword
+#                                          ^ punctuation.section.arguments.end
+#                                         ^ punctuation.section.arguments.begin
+#                                        ^ storage.type.remote
+#                                 ^^^^^^ constant.other.module
+#                           ^^^^^ constant.other.keyword
+#                         ^ punctuation.separator.arguments
+#                    ^^^^^ constant.other.symbol
+#                   ^ punctuation.section.arguments.begin
+#             ^^^^^^ keyword.other.record
+
+## Specifications
+(
 @spec run
 #     ^^^ variable.other.spec
 def run(), do: nil
 #<- keyword.declaration.function
+)
 @spec spec :: spec
 #             ^^^^ storage.type.custom
 #     ^^^^ variable.other.spec
@@ -543,10 +570,17 @@ def run(), do: nil
 #                                                           ^ punctuation.section.group.end
 #                                               ^^^^^^^^^^ storage.type.remote
 #                                              ^ punctuation.accessor.dot
-#                                   ^^^^^^^^^^^ constant.other.symbol
+#                                    ^^^^^^^^^^ constant.other.module
+#                                   ^ punctuation.definition.constant.begin
 #                                ^^ keyword.operator.colon
 #          ^^^^^^^^^^^^^^^^^^^^^ variable.other
 #         ^ punctuation.section.group.begin
+#       ^ keyword.operator.union
+        | (quoted_module_atom :: :"\"Quoted\"\.Module\\".t())
+#                                                        ^ storage.type.remote
+#                                                      ^ punctuation.definition.constant.end
+#                                  ^^^^^^^^^^^^^^^^^^^^ constant.other.module
+#                                ^^ punctuation.definition.constant.begin
 #       ^ keyword.operator.union
       ) ::
 #       ^^ keyword.operator.colon
@@ -787,6 +821,9 @@ def run(), do: nil
  @spec func() :: @const | type
 #                         ^^^^ storage.type.custom
 #                 ^^^^^ variable.other.constant
+
+@spec func() :: t when t: non_neg_integer, no_type
+#                                          ^^^^^^^ variable.other
 
 # Avoid matching the next statement as types after writing a `|`.
 (
