@@ -20,6 +20,6 @@ jobs:
       - uses: actions/checkout@v2
       - uses: SublimeText/syntax-test-action@v2
         with:
-          build: 4102
+          build: 4113
           default_packages: master
           package_name: ElixirSyntax
