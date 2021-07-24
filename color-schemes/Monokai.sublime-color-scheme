@@ -2,7 +2,8 @@
   "name": "Monokai for Elixir",
   "variables":
   {
-    "entity": "var(yellow2)"
+    "entity": "var(yellow2)",
+    "doc": "var(yellow5)"
   },
   "rules":
   [
@@ -20,12 +21,12 @@
     {
       "name": "Doc attribute",
       "scope": "support.attr.doc.elixir",
-      "foreground": "var(yellow5)"
+      "foreground": "var(doc)"
     },
     {
       "name": "Doc string",
       "scope": "source.markdown.embedded.elixir",
-      "foreground": "var(yellow5)"
+      "foreground": "var(doc)"
     },
     {
       "name": "Support attributes",
@@ -45,7 +46,13 @@
     {
       "name": "Unused parameter",
       "scope": "variable.parameter.unused.elixir",
-      "foreground": "color(var(orange) a(0.6))"
+      "foreground": "color(var(orange) a(0.6))",
+      "font_style": "regular"
+    },
+    {
+      "name": "Parameter",
+      "scope": "variable.parameter.elixir",
+      "font_style": "regular"
     },
     {
       "name": "Spec name",
@@ -114,30 +121,39 @@
       "background": "color(var(white) a(0.03))"
     },
     {
-      "name": "Italic type name",
-      "scope": "entity.name.type.elixir",
+      "name": "Types",
+      "scope": "meta.type.elixir",
       "font_style": "italic"
     },
     {
-      "name": "Labelled type",
+      "name": "Type parameters",
+      "scope": "meta.type.elixir & (variable.parameter.elixir | variable.parameter.unused.elixir)",
+      "font_style": "italic"
+    },
+    {
+      "name": "Type pipe, colon, string",
+      "scope": "meta.type.elixir & (keyword.operator.union | keyword.operator.colon | string)",
+      "font_style": "regular"
+    },
+    {
+      "name": "Type label",
       "scope": "variable.other.named-type.elixir",
-      "font_style": "italic",
       "foreground": "color(var(white) l(- 40%))"
     },
     {
-      "name": "Type",
+      "name": "Type identifier",
       "scope": "support.type.elixir | storage.type.custom.elixir | storage.type.remote.elixir | storage.type.binary.elixir",
       "foreground": "color(var(blue) s(- 40%))"
     },
     {
-      "name": "Italic binary type",
+      "name": "Type in binary",
       "scope": "meta.type.binary.elixir -keyword.operator.colon.elixir",
       "font_style": "italic"
     },
     {
       "name": "Darker string punctuation",
-      "scope": "source.elixir & punctuation.definition.string",
-      "foreground": "color(var(yellow) l(- 15%))"
+      "scope": "source.elixir punctuation.definition.string",
+      "foreground": "color(var(yellow) l(- 20%))"
     },
     {
       "name": "Group parentheses",
