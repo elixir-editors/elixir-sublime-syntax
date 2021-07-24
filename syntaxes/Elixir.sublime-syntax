@@ -57,6 +57,10 @@ variables:
   atom_symbol: (?>{{atom_id}}|<<>>|\.\.//|{{operator}}|%?{}|%)
   member: (?>{{identifier}}|{{operator}}|{})
 
+  # This regex is used to recognize Elixir inside Markdown comments.
+  # The rules have been commented out as the recognition wasn't reliable enough.
+  # It was incomplete, maybe distracting and speed may have been affected, too.
+  # It can be re-enabled by uncommenting all lines containing "{{is_markdown_elixir}}".
   is_markdown_elixir: |
     (?x)
     ```\s*elixir\b
@@ -76,7 +80,8 @@ contexts:
   prototype:
     # NB: rules in the prototype context will always match before any other.
     - include: merge_conflict # Merge conflict markers can occur anywhere.
-    - include: iex_dots       # iex prompt continuation: ...>
+    # Commented out: see "is_markdown_elixir" above.
+    # - include: iex_dots       # iex prompt continuation: ...>
 
   core_syntax:
     # The rules are approximately ordered by their likeliness of occurrence
@@ -1944,11 +1949,12 @@ contexts:
             - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
             - include: heredoc_string_closing_double_pop
         - include: escaped_or_interpolated
-        - include: elixir_in_markdown
+        # - include: elixir_in_markdown
         - match: ''
           embed: scope:text.html.markdown
           embed_scope: source.markdown.embedded.elixir
-          escape: (?=^\s*"""|\\|#{|{{is_markdown_elixir}})
+          # escape: (?=^\s*"""|\\|#{|{{is_markdown_elixir}})
+          escape: (?=^\s*"""|\\|#{)
 
     - match: \"
       scope: string.quoted.double.elixir punctuation.definition.string.begin.elixir
@@ -1977,11 +1983,12 @@ contexts:
           push:
             - meta_scope: string.quoted.triple.double.elixir
             - include: heredoc_string_closing_double_pop
-        - include: elixir_in_markdown
+        # - include: elixir_in_markdown
         - match: ''
           embed: scope:text.html.markdown
           embed_scope: source.markdown.embedded.elixir
-          escape: (?=^\s*"""|{{is_markdown_elixir}})
+          # escape: (?=^\s*"""|{{is_markdown_elixir}})
+          escape: (?=^\s*""")
 
     - match: (~S)(''')(.*)(\n)
       captures:
@@ -1997,11 +2004,12 @@ contexts:
           push:
             - meta_scope: string.quoted.triple.single.elixir
             - include: heredoc_string_closing_single_pop
-        - include: elixir_in_markdown
+        # - include: elixir_in_markdown
         - match: ''
           embed: scope:text.html.markdown
           embed_scope: source.markdown.embedded.elixir
-          escape: (?=^\s*'''|{{is_markdown_elixir}})
+          # escape: (?=^\s*'''|{{is_markdown_elixir}})
+          escape: (?=^\s*''')
 
   elixir_in_markdown:
     - match: (?<=\s{4})(iex)(?:\((.*?)\))?(>)
@@ -2015,25 +2023,6 @@ contexts:
         - match: \n|$
           scope: punctuation.definition.iex.end.elixir
           pop: true
-        - include: core_syntax
-
-    - match: (```)\s*(elixir)\b
-      captures:
-        1: punctuation.definition.code-block.begin.markdown
-        2: constant.other.language-name.elixir
-      push:
-        - clear_scopes: 2
-        - meta_scope: meta.interpolation.elixir markup.raw.block.markdown markup.raw.block.elixir
-        - match: '```\n?'
-          scope: punctuation.definition.code-block.end.markdown
-          pop: true
-        # NB: with_prototype causes "25000 context sanity limit" error.
-        # - match: ''
-        #   set: core_syntax
-        #   with_prototype:
-        #     - match: '```\n?'
-        #       scope: punctuation.definition.code-block.end.markdown
-        #       pop: true
         - include: core_syntax
 
     - match: (?={{is_markdown_elixir}})
