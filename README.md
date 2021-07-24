@@ -26,7 +26,7 @@ Add an `sql` macro/function to your project to enjoy SQL highlighting anywhere i
 <img src="images/elixir_sql_example.svg" width="100%">
 </blockquote>
 
-### The JSON `~j` and `~J` sigils
+### The JSON `~j` and `~J` sigils ([`Jason`](https://github.com/michalmuskala/jason/blob/ec2042e4e47442bf3d58410934b8e8f6ff850b3f/lib/sigil.ex))
 
 Embed JSON strings in your Elixir code. Notice the interpolated Elixir code is colored correctly.
 
@@ -34,7 +34,7 @@ Embed JSON strings in your Elixir code. Notice the interpolated Elixir code is c
 <img src="images/elixir_json_example.svg" width="100%">
 </blockquote>
 
-### The YAML `~y` and `~Y` sigils
+### The YAML `~y` and `~Y` sigils ([`YamlElixir`](https://hexdocs.pm/yaml_elixir/YamlElixir.Sigil.html#sigil_y/2))
 
 <blockquote>
 <img src="images/elixir_yaml_example.svg" width="100%">
