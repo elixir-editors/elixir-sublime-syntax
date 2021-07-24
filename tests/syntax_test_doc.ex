@@ -6,26 +6,26 @@
 @doc """
 Don't insert a comment between `x` and `"""`.
     iex> def x do
-#      ^ keyword.other.iex-angle.elixir punctuation.definition.iex.begin.elixir
-#   ^^^^^^^^^^^ markup.raw.block.markdown
+##     ^ keyword.other.iex-angle.elixir punctuation.definition.iex.begin.elixir
+##  ^^^^^^^^^^^ markup.raw.block.markdown
 #^^^ meta.string.elixir
     ...(1)> {:ok, _} = Repo.insert(post)
-#                      ^^^^ constant.other.module.elixir
-#           ^^^^^^^^ meta.sequence.tuple.elixir
-#         ^ keyword.other.iex-angle.elixir punctuation.definition.iex.begin.elixir
-#   ^^^ keyword.other.iex-dots
+##                     ^^^^ constant.other.module.elixir
+##          ^^^^^^^^ meta.sequence.tuple.elixir
+##        ^ keyword.other.iex-angle.elixir punctuation.definition.iex.begin.elixir
+##  ^^^ keyword.other.iex-dots
 #^^^ meta.string.elixir
     ...(1)> end
-#           ^^^ keyword.context.block.end
-#         ^ keyword.other.iex-angle.elixir punctuation.definition.iex.begin.elixir
-#   ^^^ keyword.other.iex-dots
+##          ^^^ keyword.context.block.end
+##        ^ keyword.other.iex-angle.elixir punctuation.definition.iex.begin.elixir
+##  ^^^ keyword.other.iex-dots
 
     iex(1)> [1 + 2,
-#           ^ punctuation.section.brackets.begin.elixir
+##          ^ punctuation.section.brackets.begin.elixir
     ...(1)>  3]
-#             ^ punctuation.section.brackets.end.elixir
-#            ^ constant.numeric.integer.elixir
-#   ^^^ keyword.other.iex-dots
+##            ^ punctuation.section.brackets.end.elixir
+##           ^ constant.numeric.integer.elixir
+##  ^^^ keyword.other.iex-dots
  """m
 #   ^ variable.other -meta.string.elixir
 #^^^ punctuation.definition.string.end
@@ -34,7 +34,7 @@ Don't insert a comment between `x` and `"""`.
 @doc """
 #^^^ support.attr.doc
     iex> def x
-#   ^^^^^^^^^^^ markup.raw.block.elixir
+##  ^^^^^^^^^^^ markup.raw.block.elixir
 #^^^ source.markdown.embedded.elixir
  \' \""" #{interpolation}
 #          ^^^^^^^^^^^^^ variable.other
@@ -50,8 +50,8 @@ Don't insert a comment between `X` and `"""`.
    defmodule X
 #  ^^^^^^^^^ -keyword.declaration.module
     defmodule X do end
-#   ^^^^^^^^^ keyword.declaration.module
-#   ^^^^^^^^^^^^ markup.raw.block.markdown
+##  ^^^^^^^^^ keyword.declaration.module
+##  ^^^^^^^^^^^^ markup.raw.block.markdown
  """m
 #   ^ variable.other -meta.string.elixir
 #^^^ punctuation.definition.string.end
@@ -59,11 +59,11 @@ Don't insert a comment between `X` and `"""`.
 
   @doc """
   ```elixir
-#    ^^^^^^ constant.other.language-name.elixir
-# ^^^ punctuation.definition.code-block.begin.markdown
+##   ^^^^^^ constant.other.language-name.elixir
+##^^^ punctuation.definition.code-block.begin.markdown
   @type t :: term
   ```
-# ^^^^ punctuation.definition.code-block.end.markdown
+##^^^^ punctuation.definition.code-block.end.markdown
   Text.
 # ^^^^^^ source.markdown.embedded.elixir
 # ^^^^^^ meta.string.elixir
@@ -88,8 +88,8 @@ Don't insert a comment between `X` and `"""`.
 
 @doc """
     defmodule X do end
-#   ^^^^^^^^^^^^ markup.raw.block.elixir
 #^^^ source.markdown.embedded.elixir
+##  ^^^^^^^^^^^^ markup.raw.block.elixir
  """m
 #   ^ -storage.type.string
 #^^^ punctuation.definition.string.end
@@ -114,9 +114,9 @@ Don't insert a comment between `X` and `"""`.
 #^^^^^^^^ -constant.character.escape
 
     iex> use Bitwise, only_operators: true
-#   ^^^ keyword.other.iex
+##  ^^^ keyword.other.iex
     iex> 1 &&& 1
-#   ^^^ keyword.other.iex
+##  ^^^ keyword.other.iex
  '''m
 #   ^ storage.type.string
 #^^^ punctuation.definition.string.end
