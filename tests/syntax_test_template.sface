@@ -1,0 +1,179 @@
+# SYNTAX TEST "HTML (Surface).sublime-syntax"
+
+<Rating :let={value: value, max: max} id="rating_2">
+#                                        ^^^^^^^^^^ string.quoted.double
+#                                       ^ punctuation.separator.key-value
+#                                     ^^ entity
+#                           ^^^^ constant.other.keyword
+#             ^^^^^^ constant.other.keyword
+#            ^^^^^^^^^^^^^^^^^^^^^^^^ source.elixir.interpolated.html
+#^^^^^^ entity.name.tag.begin.surface
+  {#for i <- 1..max}
+#      ^^^^^^^^^^^^ meta.function-call.arguments.elixir
+#   ^^^ entity.name.tag.block.surface
+# ^^^^^^^^^^^^^^^^^^ source.elixir.embedded.html
+    <span class={:icon, "has-text-warning": i <= value}>
+      <i class="fas fa-{@icon_name}" />
+#                        ^^^^^^^^^ variable.other.constant.elixir
+#                       ^ keyword.operator.attribute.elixir
+#                      ^^^^^^^^^^^^ source.elixir.interpolated.html
+    </span>
+    {i + 1}
+#   ^^^^^^^ source.elixir.embedded.html
+  {#else}
+#   ^^^^ entity.name.tag.block.surface
+  {#elsei}
+#   ^^^^^ entity.name.tag.block.surface
+  {#elseif x == 0}
+#          ^^^^^^ source.elixir.embedded.html
+#   ^^^^^^ entity.name.tag.block.surface
+  {/for}
+#   ^^^ entity.name.tag.block.surface
+</Rating>
+# ^^^^^^ entity.name.tag.end.surface
+
+<Some.component x={y} />
+#     ^^^^^^^^^ variable.function.surface -entity.name
+<Some.App.Component x={y}>
+#         ^^^^^^^^^ entity.name.tag.begin.surface
+#        ^ punctuation.accessor.dot.surface
+#     ^^^ entity.name.tag.begin.surface
+#    ^ punctuation.accessor.dot.surface
+#^^^^ entity.name.tag.begin.surface
+  {#case @value}
+    {#match [{_, first} | _]}
+#                           ^ punctuation.definition.tag.end.surface
+#                     ^ punctuation.section.sequence.end.elixir
+#                ^^^^^ variable.parameter.elixir
+#            ^ punctuation.section.sequence.begin.elixir
+#   ^^ punctuation.definition.tag.begin.surface
+      First {first}
+#            ^^^^^ variable.other.elixir
+#           ^^^^^^^ source.elixir.embedded.html
+    {#match []}
+#           ^^ meta.brackets.elixir
+      Value is empty
+    {#match _}
+#           ^ variable.parameter.unused.elixir
+      Value is something else
+  {/case}
+</Some.App.Component >
+#                    ^ punctuation.definition.tag.end.html
+#                   ^ -punctuation.definition.tag.end.html
+#          ^^^^^^^^^ entity.name.tag.end.surface
+#         ^ punctuation.accessor.dot.surface
+#      ^^^ entity.name.tag.end.surface
+#     ^ punctuation.accessor.dot.surface
+# ^^^^ entity.name.tag.end.surface
+
+<Card {=@prop} prop={@prop}>
+#                         ^ punctuation.section.interpolation.end.elixir
+#                     ^^^^ variable.other.constant.elixir
+#                    ^ keyword.operator.attribute.elixir
+#                   ^ punctuation.section.interpolation.begin.elixir
+#                   ^^^^^^^ source.elixir.interpolated.html
+#                  ^ punctuation.separator.key-value.html
+#              ^^^^ entity.other.attribute-name.html
+#            ^ punctuation.section.interpolation.end.elixir
+#        ^^^^ variable.other.constant.elixir
+#       ^ keyword.operator.attribute.elixir
+#      ^ keyword.operator.match.elixir
+#     ^ punctuation.section.interpolation.begin.elixir
+#     ^^^^^^^^ source.elixir.interpolated.html
+</Card>
+
+<#slot :args={value: @value, max: @max} />
+#            ^^^^^^^^^^^^^^^^^^^^^^^^^^ source.elixir.interpolated.html
+#           ^ punctuation.separator.key-value.html
+#       ^^^^ entity.other.attribute-name.surface
+#^^^^^ entity.name.tag.begin.surface
+
+<:slot></:slot>
+#        ^^^^^ entity.name.tag.end.surface
+#^^^^^ entity.name.tag.begin.surface
+
+  <#Raw>
+#      ^ punctuation.definition.tag.end.html
+#  ^^^^ entity.name.tag.begin.surface
+# ^ punctuation.definition.tag.begin.html
+  <#Raw>
+#      ^ -punctuation.definition.tag.end.html
+#  ^^^^ -entity.name.tag.begin.surface
+# ^ -punctuation.definition.tag.begin.html
+    <:slot args={@args}></:slot>
+#                         ^^^^^ -entity.name
+#          ^^^^^^^^^^^^ -variable -entity -punctuation
+#    ^^^^^ -entity.name
+    <span style="{@style}" {=@prop}></span>
+#                                     ^^^^ entity.name.tag.inline.any.html
+#                ^^^^^^^^ -source.elixir.interpolated
+#    ^^^^ entity.name.tag.inline.any.html
+  </#Raw>
+#       ^ punctuation.definition.tag.end.html
+#   ^^^^ entity.name.tag.end.surface
+# ^^ punctuation.definition.tag.begin.html
+
+  <#Markdown class="content" opts={x: "y"}>
+#                                         ^ punctuation.definition.tag.end.html
+#                                 ^^^^^^^^ source.elixir.interpolated.html
+#                  ^^^^^^^^^ string.quoted.double.html
+#            ^^^^^ entity.other.attribute-name.class.html
+#  ^^^^^^^^^ entity.name.tag.begin.surface
+# ^ punctuation.definition.tag.begin.html
+  # Markdown
+<#Markdown>
+#^^^^^^^^^ -entity.name.tag.end.surface
+</#Markdown>
+# ^^^^^^^^^ entity.name.tag.end.surface
+    <span></span>
+#           ^^^^ entity.name.tag.inline.any.html
+#    ^^^^ entity.name.tag.inline.any.html
+  </#Markdown>
+#            ^ punctuation.definition.tag.end.html
+#   ^^^^^^^^^ entity.name.tag.end.surface
+# ^^ punctuation.definition.tag.begin.surface
+
+<style>
+  .class {
+    margin: 1em;
+#   ^^^^^^^^^^^^^ text.html.surface source.css.embedded.html meta.property-list.css meta.block.css
+  }
+</style>
+
+<script>
+  var x = { y: z };
+# ^^^^^^^^^^^^^^^^^^ text.html.surface source.js.embedded.html -source.elixir
+</script>
+
+<!-- <#Markdown></#Markdown> -->
+#                 ^^^^^^^^^ -entity
+#     ^^^^^^^^^ -entity
+<!-- This {comment} will be sent to the browser -->
+#          ^^^^^^^ variable.other.elixir
+#         ^^^^^^^^^ source.elixir.interpolated.html
+ {!-- This {comment} won't be sent to the browser --}
+#                                                 ^^^ punctuation.definition.comment.end.surface
+#           ^^^^^^^ -variable
+#          ^^^^^^^^^ -source.elixir.interpolated -source.elixir.embedded
+#^^^^ punctuation.definition.comment.begin.surface
+
+
+<{}}>{@x}</{}}>
+#          ^^^ entity.name.tag.end.html
+#    ^^^^ source.elixir.embedded.html
+#^^^ entity.name.tag.begin.html
+<...>{@x}</...>
+#          ^^^ entity.name.tag.end.html
+#    ^^^^ source.elixir.embedded.html
+#^^^ entity.name.tag.begin.html
+<{x}>{@x}</{x}>
+#          ^^^ entity.name.tag.end.html -source.elixir
+#      ^ variable.other.constant.elixir
+#     ^ keyword.operator.attribute.elixir
+#    ^^^^ source.elixir.embedded.html
+#^^^ entity.name.tag.begin.html -source.elixir
+
+<.not_a_func>
+#^^^^^^^^^^^ entity.name.tag.begin.html -variable.function
+</.not_a_func>
+# ^^^^^^^^^^^ entity.name.tag.end.html -variable.function
