@@ -98,8 +98,8 @@
       "foreground": "var(pink)"
     },
     {
-      "name": "Interpolation",
-      "scope": "source.elixir.embedded",
+      "name": "Embedded or interpolated Elixir",
+      "scope": "source.elixir.embedded | source.elixir.interpolated",
       "background": "color(var(white) a(0.03))"
     },
     {
@@ -142,6 +142,11 @@
       "name": "Type in binary",
       "scope": "meta.type.binary.elixir -keyword.operator.colon.elixir",
       "font_style": "italic"
+    },
+    {
+      "name": "String sigil",
+      "scope": "storage.type.string.elixir",
+      "font_style": "regular"
     },
     // {
     //   "name": "Darker string punctuation",
