@@ -1,5 +1,14 @@
 # Changelog
 
+## [v2.2.0] – 2021-09-18
+  - Syntax: added support for the [HEEx](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.Helpers.html#sigil_H/2) template syntax inside the `~H` sigil.
+  - Syntax: added support for the [Surface](https://surface-ui.org/template_syntax) template syntax inside the `~F` sigil.
+  - Elixir: match the `**` power operator.
+  - HTML (EEx): switched to version 2 and removed usage of `with_prototype`.
+  - SQL: match the `;` token; fixed the `/**/` comment scope.
+  - Themes: highlight interpolated Elixir with a lighter background.
+  - Themes: don't italicize the sigil type.
+
 ## [v2.1.0] – 2021-07-25
 
 - Elixir: disabled highlighting Elixir code within Markdown comments. Reasons:
