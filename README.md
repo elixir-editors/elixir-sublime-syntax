@@ -5,8 +5,10 @@ ElixirSyntax was initially based on the [Elixir.tmbundle package](https://github
 ## Features
 
 * Working `Goto Definition` functionality
-* LiveView template highlighting: `~L"..."`\
-  (Note: will be changed to the new HEEx syntax eventually.)
+* HTML template highlighting:
+  - HEEx: <img src="images/elixir_heex_example.svg" width="260" align="top">
+  - Surface: <img src="images/elixir_surface_example.svg" width="215" align="top">
+  - LiveView: <img src="images/elixir_liveview_example.svg" width="230" align="top">
 * Full PCRE syntax highlighting: <img src="images/elixir_regex_example.svg" width="270" align="top">
 * Type highlighting: <img src="images/elixir_type_example.svg" width="620" align="top">
 
