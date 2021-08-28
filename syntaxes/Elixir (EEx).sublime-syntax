@@ -2,10 +2,12 @@
 ---
 version: 2
 name: Elixir (EEx)
-file_extensions: [ex.eex, exs.eex]
-first_line_match: ^#\s*exs?\.eex
 scope: source.elixir.eex
 extends: Elixir.sublime-syntax
+
+file_extensions: [ex.eex, exs.eex]
+first_line_match: ^#\s*exs?\.eex
+authors: [Aziz Köksal <aziz.koeksal@gmail.com>]
 
 contexts:
   # Use prototype to work around the "context sanity limit" error.
