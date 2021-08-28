@@ -1,8 +1,10 @@
 %YAML 1.2
 ---
 name: SQL (Elixir)
-file_extensions: [ex.sql]
 scope: source.ex.sql
+
+file_extensions: [ex.sql]
+authors: [Aziz Köksal <aziz.koeksal@gmail.com>]
 
 contexts:
   main:
@@ -43,6 +45,7 @@ contexts:
         # Accessor punctuation.
         | (\.(?!\d))
         | (,)
+        | (;)
       captures:
         1: support.function.scalar.sql
         2: keyword.other.sql
@@ -60,6 +63,7 @@ contexts:
         14: variable.other.member.sql
         15: punctuation.accessor.dot.sql
         16: punctuation.comma.sql
+        17: punctuation.terminator.sql
 
     - include: comment
     - include: scope:source.sql
@@ -80,7 +84,8 @@ contexts:
     - match: /\*
       scope: punctuation.definition.comment.sql
       push:
-        - meta_scope: comment.block.c
+        - meta_scope: comment.block.sql
+        # Comments can be nested.
         - include: comment
         - match: \*/
           pop: true
