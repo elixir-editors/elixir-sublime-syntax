@@ -13,9 +13,8 @@
      <%# Comment %>
 <!--             ^^ punctuation.definition.comment.end.eex -->
 <!--     ^^^^^^^ -constant -->
-<!-- ^^^^^^^^^^^^^^ text.html.basic comment.block.eex -->
+<!-- ^^^^^^^^^^^^^^ text.html.eex comment.block.eex -->
 <!-- ^^^ punctuation.definition.comment.begin.eex -->
-<!-- ^^^^^^^^^^^^^^ text.html.eex -->
 
      <% func arg %>
 <!--              ^ punctuation.section.embedded.end.eex -->
