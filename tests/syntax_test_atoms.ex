@@ -139,13 +139,15 @@
 #            ^^^^ constant.other.keyword
 #      ^^^^ constant.other.symbol
 # ^^^^ constant.other.keyword
-  ~>>: :~>>, |>: :|>, <|>: :<|>, /: :/, //: ://, \\: :\\, *: :*, .: :., ..: :.., ...: :...,
-#                                                                                     ^^^^ constant.other.symbol
-#                                                                                ^^^^ constant.other.keyword
-#                                                                           ^^^ constant.other.symbol
-#                                                                       ^^^ constant.other.keyword
-#                                                                   ^^ constant.other.symbol
-#                                                                ^^ constant.other.keyword
+  ~>>: :~>>, |>: :|>, <|>: :<|>, /: :/, //: ://, \\: :\\, *: :*, **: :**, .: :., ..: :.., ...: :...,
+#                                                                                              ^^^^ constant.other.symbol
+#                                                                                         ^^^^ constant.other.keyword
+#                                                                                    ^^^ constant.other.symbol
+#                                                                                ^^^ constant.other.keyword
+#                                                                            ^^ constant.other.symbol
+#                                                                         ^^ constant.other.keyword
+#                                                                    ^^^ constant.other.symbol
+#                                                                ^^^ constant.other.keyword
 #                                                            ^^ constant.other.symbol
 #                                                         ^^ constant.other.keyword
 #                                                    ^^^ constant.other.symbol
@@ -259,11 +261,6 @@
   :: ::,
 #    ^^ keyword.operator.colon
 # ^^ keyword.operator.colon
-  **: :**,
-#       ^ keyword.operator.arithmetic
-#     ^^ constant.other.symbol
-#  ^^ constant.other.keyword
-# ^ -constant.other.keyword
   ^^: :^^,
 #       ^ keyword.operator.pin
 #     ^^ constant.other.symbol

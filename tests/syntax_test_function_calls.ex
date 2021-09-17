@@ -82,7 +82,9 @@ m."quoted" arg
 #                  ^ variable.function
 #        ^ variable.function
 #^ variable.function
-(f |>: (f|>:)); (f <|>: (f<|>:)); (f /: (f/:)); (f \\: (f\\:)); (f *: (f*:));
+(f |>: (f|>:)); (f <|>: (f<|>:)); (f /: (f/:)); (f \\: (f\\:)); (f *: (f*:)); (f **: (f**:));
+#                                                                                     ^ variable.function
+#                                                                              ^ variable.function
 #                                                                      ^ variable.function
 #                                                                ^ variable.function
 #                                                       ^ variable.function
@@ -160,9 +162,7 @@ m."quoted" arg
 
 # Exceptions:
 
-(f ?: (f?:)); (f ::: (f:::)); (f :: (f::)); (f **: (f**:));
-#                                                   ^ -variable.function
-#                                            ^ -variable.function
+(f ?: (f?:)); (f ::: (f:::)); (f :: (f::));
 #                                    ^ -variable.function
 #                              ^ -variable.function
 #                     ^ variable.function
