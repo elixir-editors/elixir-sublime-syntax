@@ -130,7 +130,7 @@ contexts:
             4: comment.line.middle.git.conflict
             5: punctuation.section.block.end.git.conflict
             6: comment.line.incoming.git.conflict
-          pop: true
+          pop: 1
 
   ## Functions
 
@@ -143,7 +143,7 @@ contexts:
     - match: (?=->)
       set:
         - match: (?=end{{no_id_key_suffix}})
-          pop: true
+          pop: 1
         - include: core_syntax
     - include: if_non_space_or_eol_pop
 
@@ -170,17 +170,17 @@ contexts:
 
   inlined_core_syntax_pop:
     - match: (?=;)
-      pop: true
+      pop: 1
     - include: core_syntax_or_if_closing_pop
 
   params_until_arrow_pop:
     - match: (?=->|when{{no_id_key_suffix}})
-      pop: true
+      pop: 1
     - include: parameters_or_if_closing_pop
 
   indented_core_syntax_pop:
     - match: ^(?=\1[^#\s]|(?!\1)(?!\s*(#|$)))
-      pop: true
+      pop: 1
     - include: core_syntax_or_if_closing_pop
 
   function_header_pop:
@@ -305,14 +305,14 @@ contexts:
           push:
             - match: (?=<%)|{{atom_symbol}}
               scope: constant.other.symbol.elixir entity.name.function.elixir
-              pop: true
+              pop: 1
             - match: (["'])
               scope: punctuation.definition.constant.begin.elixir
               set:
                 - meta_scope: constant.other.symbol.quoted.elixir
                 - match: \1
                   scope: punctuation.definition.constant.end.elixir
-                  pop: true
+                  pop: 1
                 - include: interpolated_elixir
                 - match: \\?.|\n
                   scope: entity.name.function.elixir
@@ -338,7 +338,7 @@ contexts:
     - match: (?=\\\\(?!:{{no_colon_suffix}})|<-)
       push:
         - match: (?=,|(?>when|do){{no_id_key_suffix}}|do:(?!:))
-          pop: true
+          pop: 1
         - include: core_syntax_or_if_closing_pop
     - include: paren_param
     - include: list_param
@@ -364,7 +364,7 @@ contexts:
         - meta_scope: meta.function.parameters.elixir
         - match: \)
           scope: punctuation.definition.parameters.end.elixir
-          pop: true
+          pop: 1
         - include: parameters_or_if_closing_pop
 
   tuple_param:
@@ -374,7 +374,7 @@ contexts:
         - meta_scope: meta.sequence.tuple.elixir
         - match: \}
           scope: punctuation.section.sequence.end.elixir
-          pop: true
+          pop: 1
         - include: parameters_or_if_closing_pop
 
   list_param:
@@ -384,7 +384,7 @@ contexts:
         - meta_scope: meta.brackets.elixir
         - match: \]
           scope: punctuation.section.brackets.end.elixir
-          pop: true
+          pop: 1
         - include: cons_operator
         - include: parameters_or_if_closing_pop
 
@@ -441,7 +441,7 @@ contexts:
     - meta_scope: meta.type.elixir
     - include: return_types_pop
     - match: (?=[,;])
-      pop: true
+      pop: 1
     - include: types_or_if_closing_pop
     - include: if_non_space_pop
 
@@ -458,7 +458,7 @@ contexts:
         - meta_scope: meta.type.elixir meta.function.parameters.elixir
         - match: \)
           scope: punctuation.definition.parameters.end.elixir
-          pop: true
+          pop: 1
         - include: parameters_or_if_closing_pop
 
   type_definition_next_pop:
@@ -543,7 +543,7 @@ contexts:
     # Avoid matching e.g. "def func" while typing the return types.
     - match: (?=when{{no_id_key_suffix}}|@?{{identifier}}{{no_id_key_suffix}}\s{{has_arguments}})
       comment: no when clause directly after "::"
-      pop: true
+      pop: 1
     - include: if_closing_token_pop
 
   first_and_next_types_pop:
@@ -557,7 +557,7 @@ contexts:
         - match: (?=$|\|(?![:|>])|::(?!:)|when{{no_id_key_suffix}})
           set: [next_types_pop, if_non_space_pop]
         - match: (?=[,;])
-          pop: true
+          pop: 1
         - include: named_type
         - include: types_or_if_closing_pop
 
@@ -582,7 +582,7 @@ contexts:
           [,;] | \|(?![:|>]) | ::(?!:) | when{{no_id_key_suffix}}
         | @?{{identifier}}{{no_id_key_suffix}}\s{{has_arguments}}
         )
-      pop: true
+      pop: 1
     - include: named_type
     - include: types_or_if_closing_pop
     - include: if_ws_closing_token_or_eol_pop
@@ -612,7 +612,7 @@ contexts:
         - meta_scope: meta.parens.elixir
         - match: \)
           scope: punctuation.section.group.end.elixir
-          pop: true
+          pop: 1
         - include: named_type
         - include: types_or_if_closing_pop
 
@@ -623,7 +623,7 @@ contexts:
         - meta_scope: meta.braces.elixir
         - match: \}
           scope: punctuation.section.sequence.end.elixir
-          pop: true
+          pop: 1
         - include: named_type
         - include: types_or_if_closing_pop
 
@@ -634,7 +634,7 @@ contexts:
         - meta_scope: meta.brackets.elixir
         - match: \]
           scope: punctuation.section.brackets.end.elixir
-          pop: true
+          pop: 1
         - include: named_type
         - include: types_or_if_closing_pop
 
@@ -713,7 +713,7 @@ contexts:
   binary_string_body_pop:
     - match: '>>(?!>)'
       scope: string.other.binary.elixir punctuation.definition.string.end.elixir
-      pop: true
+      pop: 1
     - match: ::(?!:)
       scope: keyword.operator.colon.elixir
       push:
@@ -739,7 +739,7 @@ contexts:
         - meta_scope: meta.parens.elixir
         - match: \)
           scope: punctuation.section.group.end.elixir
-          pop: true
+          pop: 1
         - include: bitstring_type
         - include: core_syntax_or_if_closing_pop
 
@@ -768,7 +768,7 @@ contexts:
             - meta_scope: source.elixir meta.string.elixir meta.interpolation.elixir
             - match: \}
               scope: punctuation.section.interpolation.end.elixir
-              pop: true
+              pop: 1
             - include: core_syntax
 
   escaped_or_interpolated:
@@ -791,7 +791,7 @@ contexts:
         - meta_scope: meta.string.elixir string.quoted.single.elixir
         - match: \'
           scope: punctuation.definition.string.end.elixir
-          pop: true
+          pop: 1
         - include: escaped_or_interpolated
 
     - match: \"
@@ -801,7 +801,7 @@ contexts:
         - meta_scope: meta.string.elixir string.quoted.double.elixir
         - match: \"
           scope: punctuation.definition.string.end.elixir
-          pop: true
+          pop: 1
         - include: escaped_or_interpolated
 
   heredoc_regex_interpolated:
@@ -817,7 +817,7 @@ contexts:
           with_prototype:
             - include: elixir_in_regex
             - match: (?=(?>\\.|[^"])*?""")
-              pop: true
+              pop: 1
 
     - match: (''')(.*)\n
       captures:
@@ -831,7 +831,7 @@ contexts:
           with_prototype:
             - include: elixir_in_regex
             - match: (?=^(?>\\.|[^'])*?''')
-              pop: true
+              pop: 1
 
   heredoc_regex_raw:
     - match: (""")(.*)\n
@@ -846,7 +846,7 @@ contexts:
           push: pcre_erlang
           with_prototype:
             - match: (?=(?>\\.|[^"])*?""")
-              pop: true
+              pop: 1
 
     - match: (''')(.*)\n
       comment: Triple-quoted heredocs
@@ -860,7 +860,7 @@ contexts:
           push: pcre_erlang
           with_prototype:
             - match: (?=^(?>\\.|[^'])*?''')
-              pop: true
+              pop: 1
 
   heredoc_string_interpolated:
     - match: (""")(.*)\n
@@ -911,7 +911,7 @@ contexts:
       captures:
         1: invalid.illegal.closing-heredoc.elixir
         2: punctuation.definition.string.end.elixir
-      pop: true
+      pop: 1
 
   heredoc_string_closing_double_w_meta_pop:
     - meta_scope: meta.string.elixir
@@ -922,7 +922,7 @@ contexts:
       captures:
         1: invalid.illegal.closing-heredoc.elixir
         2: punctuation.definition.string.end.elixir
-      pop: true
+      pop: 1
 
   string:
     - include: heredoc_string_interpolated
@@ -957,7 +957,7 @@ contexts:
               captures:
                 1: string.quoted.other.atom.elixir punctuation.definition.string.end.elixir
                 2: string.quoted.modifiers.elixir storage.type.string.elixir
-              pop: true
+              pop: 1
 
     - match: ~L(?=["'])(?!''')
       comment: LiveView
@@ -1081,7 +1081,7 @@ contexts:
               with_prototype:
                 - include: escaped_or_interpolated
                 - match: (?=""")
-                  pop: true
+                  pop: 1
 
     - match: ~Y(?=""")
       comment: YAML raw
@@ -1101,7 +1101,7 @@ contexts:
                 - match: \\"
                   scope: constant.character.escape.char.elixir
                 - match: (?=""")
-                  pop: true
+                  pop: 1
 
     - match: ~j(?=")
       comment: JSON with interpolation
@@ -1120,7 +1120,7 @@ contexts:
               with_prototype:
                 - include: escaped_or_interpolated
                 - match: (?=""")
-                  pop: true
+                  pop: 1
         - match: \"
           scope: punctuation.definition.string.begin.elixir
           set:
@@ -1131,7 +1131,7 @@ contexts:
               with_prototype:
                 - include: escaped_or_interpolated
                 - match: (?=")
-                  pop: true
+                  pop: 1
 
     - match: ~J(?=")
       comment: JSON raw
@@ -1151,7 +1151,7 @@ contexts:
                 - match: \\"
                   scope: constant.character.escape.char.elixir
                 - match: (?=""")
-                  pop: true
+                  pop: 1
         - match: \"
           scope: punctuation.definition.string.begin.elixir
           set:
@@ -1163,7 +1163,7 @@ contexts:
                 - match: \\"
                   scope: constant.character.escape.char.elixir
                 - match: (?=")
-                  pop: true
+                  pop: 1
 
     - match: ~r
       comment: regex sigil string with interpolation
@@ -1184,7 +1184,7 @@ contexts:
               with_prototype:
                 - include: elixir_in_regex
                 - match: (?=")
-                  pop: true
+                  pop: 1
         - match: \'
           scope: punctuation.definition.string.begin.elixir
           set:
@@ -1195,7 +1195,7 @@ contexts:
               with_prototype:
                 - include: elixir_in_regex
                 - match: (?=')
-                  pop: true
+                  pop: 1
         - match: /
           scope: punctuation.definition.string.begin.elixir
           set:
@@ -1206,7 +1206,7 @@ contexts:
               with_prototype:
                 - include: elixir_in_regex
                 - match: (?=/)
-                  pop: true
+                  pop: 1
         - match: \|
           scope: punctuation.definition.string.begin.elixir
           set:
@@ -1217,7 +1217,7 @@ contexts:
               with_prototype:
                 - include: elixir_in_regex
                 - match: (?=\|)
-                  pop: true
+                  pop: 1
         - match: \{
           scope: punctuation.definition.string.begin.elixir
           set:
@@ -1228,7 +1228,7 @@ contexts:
               with_prototype:
                 - include: elixir_in_regex
                 - match: (?=})
-                  pop: true
+                  pop: 1
         - match: \[
           scope: punctuation.definition.string.begin.elixir
           set:
@@ -1239,7 +1239,7 @@ contexts:
               with_prototype:
                 - include: elixir_in_regex
                 - match: (?=])
-                  pop: true
+                  pop: 1
         - match: \<
           scope: punctuation.definition.string.begin.elixir
           set:
@@ -1250,7 +1250,7 @@ contexts:
               with_prototype:
                 - include: elixir_in_regex
                 - match: (?=>)
-                  pop: true
+                  pop: 1
         - match: \(
           scope: punctuation.definition.string.begin.elixir
           set:
@@ -1282,7 +1282,7 @@ contexts:
         #       with_prototype:
         #         - match: \1
         #           scope: punctuation.definition.string.end.elixir
-        #           pop: true
+        #           pop: 1
         - match: \"
           scope: punctuation.definition.string.begin.elixir
           set:
@@ -1294,7 +1294,7 @@ contexts:
                 - match: \\"
                   scope: constant.character.escape.pcree
                 - match: (?=")
-                  pop: true
+                  pop: 1
         - match: \'
           scope: punctuation.definition.string.begin.elixir
           set:
@@ -1306,7 +1306,7 @@ contexts:
                 - match: \\'
                   scope: constant.character.escape.pcree
                 - match: (?=')
-                  pop: true
+                  pop: 1
         - match: /
           scope: punctuation.definition.string.begin.elixir
           set:
@@ -1318,7 +1318,7 @@ contexts:
                 - match: \\/
                   scope: constant.character.escape.pcree
                 - match: (?=/)
-                  pop: true
+                  pop: 1
         - match: \|
           scope: punctuation.definition.string.begin.elixir
           set:
@@ -1330,7 +1330,7 @@ contexts:
                 - match: \\\|
                   scope: constant.character.escape.pcree
                 - match: (?=\|)
-                  pop: true
+                  pop: 1
         - match: \{
           scope: punctuation.definition.string.begin.elixir
           set:
@@ -1342,7 +1342,7 @@ contexts:
                 - match: \\}
                   scope: constant.character.escape.pcree
                 - match: (?=})
-                  pop: true
+                  pop: 1
         - match: \[
           scope: punctuation.definition.string.begin.elixir
           set:
@@ -1354,7 +1354,7 @@ contexts:
                 - match: \\]
                   scope: constant.character.escape.pcree
                 - match: (?=])
-                  pop: true
+                  pop: 1
         - match: \<
           scope: punctuation.definition.string.begin.elixir
           set:
@@ -1366,7 +1366,7 @@ contexts:
                 - match: \\>
                   scope: constant.character.escape.pcree
                 - match: (?=>)
-                  pop: true
+                  pop: 1
         - match: \(
           scope: punctuation.definition.string.begin.elixir
           set:
@@ -1399,7 +1399,7 @@ contexts:
                 - meta_content_scope: string.quoted.other.literal.lower.elixir
                 - match: \1
                   scope: string.quoted.other.literal.lower.elixir punctuation.definition.string.end.elixir
-                  pop: true
+                  pop: 1
                 - include: escaped_or_interpolated
             - match: ''
               set: string_modifiers_and_pop
@@ -1449,7 +1449,7 @@ contexts:
                 - match: \\.
                 - match: \1
                   scope: string.quoted.other.literal.upper.elixir punctuation.definition.string.end.elixir
-                  pop: true
+                  pop: 1
             - match: ''
               set: string_modifiers_and_pop
         - match: \{
@@ -1653,7 +1653,7 @@ contexts:
           comment: the else-block contains arrow clauses only in error handling
           scope: keyword.control.conditional.else.elixir
         - match: (?=%>)
-          pop: true
+          pop: 1
         - include: error_handling_clauses
         - include: core_syntax_or_block_end_pop
 
@@ -1689,7 +1689,7 @@ contexts:
   block_end_pop:
     - match: end{{no_id_key_suffix}}
       scope: punctuation.section.block.end.elixir keyword.context.block.end.elixir
-      pop: true
+      pop: 1
 
   last_arg_block_end_pop:
     - match: end{{no_id_key_suffix}}
@@ -1697,7 +1697,7 @@ contexts:
       set:
         - match: \s|\n|
           scope: punctuation.section.arguments.end.elixir
-          pop: true
+          pop: 1
 
   core_syntax_or_block_end_pop:
     - include: block_end_pop
@@ -1724,7 +1724,7 @@ contexts:
   module_name_pop:
     - match: '{{module_name}}{{no_key_suffix}}'
       scope: constant.other.module.elixir
-      pop: true
+      pop: 1
 
   module_function_call_pop:
     - match: ({{module_name}})\s*(\.(?!\.))
@@ -1781,7 +1781,7 @@ contexts:
         - meta_scope: meta.member.elixir
         - match: \"
           scope: punctuation.definition.constant.end.elixir
-          pop: true
+          pop: 1
         - match: (\\[\\"])|[^"]
           scope: variable.other.member.elixir
           captures:
@@ -1792,7 +1792,7 @@ contexts:
         - meta_scope: meta.member.elixir
         - match: \'
           scope: punctuation.definition.constant.end.elixir
-          pop: true
+          pop: 1
         - match: (\\[\\'])|[^']
           scope: variable.other.member.elixir
           captures:
@@ -1823,12 +1823,12 @@ contexts:
       captures:
         1: variable.other.unused.elixir
         2: variable.other.elixir
-      pop: true
+      pop: 1
 
   id_member_pop:
     - match: '{{member}}'
       scope: variable.other.member.elixir
-      pop: true
+      pop: 1
 
   tuple_call_pop:
     - match: \{
@@ -1836,7 +1836,7 @@ contexts:
       set:
         - match: \}
           scope: punctuation.section.braces.end.elixir
-          pop: true
+          pop: 1
         - include: core_syntax_or_if_closing_pop
 
   dot_accessor:
@@ -1963,7 +1963,7 @@ contexts:
     - match: '{{identifier}}'
       comment: reference
       scope: variable.other.constant.elixir
-      pop: true
+      pop: 1
 
   spec_after_unquote_pop:
     - match: (?=(?!::){{operator}})
@@ -2009,7 +2009,7 @@ contexts:
         - meta_scope: meta.string.elixir
         - match: \"
           scope: string.quoted.double.elixir punctuation.definition.string.end.elixir
-          pop: true
+          pop: 1
         - include: escaped_or_interpolated
         - match: ''
           embed: scope:text.html.markdown
@@ -2069,7 +2069,7 @@ contexts:
         - meta_scope: meta.interpolation.elixir markup.raw.block.markdown markup.raw.block.elixir
         - match: \n|$
           scope: punctuation.definition.iex.end.elixir
-          pop: true
+          pop: 1
         - include: core_syntax
 
     - match: (?={{is_markdown_elixir}})
@@ -2078,7 +2078,7 @@ contexts:
         - meta_scope: meta.interpolation.elixir markup.raw.block.markdown markup.raw.block.elixir
         - match: \n|$
           scope: punctuation.section.arguments.end.elixir
-          pop: true
+          pop: 1
         - include: core_syntax
 
   iex_dots:
@@ -2179,7 +2179,7 @@ contexts:
         - meta_scope: meta.sequence.tuple.elixir
         - match: \}
           scope: punctuation.section.sequence.end.elixir
-          pop: true
+          pop: 1
         - include: core_syntax_or_if_closing_pop
 
   item_access:
@@ -2193,7 +2193,7 @@ contexts:
         - meta_scope: meta.access.elixir
         - match: \]
           scope: punctuation.section.access.end.elixir
-          pop: true
+          pop: 1
         - include: core_syntax_or_if_closing_pop
 
   list:
@@ -2205,7 +2205,7 @@ contexts:
         - meta_scope: meta.brackets.elixir
         - match: \]
           scope: punctuation.section.brackets.end.elixir
-          pop: true
+          pop: 1
         - include: cons_operator
         - include: core_syntax_or_if_closing_pop
 
@@ -2247,7 +2247,7 @@ contexts:
         - meta_scope: meta.parens.elixir
         - match: \)
           scope: punctuation.section.group.end.elixir
-          pop: true
+          pop: 1
         - include: core_syntax_or_if_closing_pop
 
   ## Alias/Require statement
@@ -2334,7 +2334,7 @@ contexts:
             - include: escaped_or_interpolated
             - match: '\1:'
               scope: punctuation.definition.constant.end.elixir
-              pop: true
+              pop: 1
 
   atom_symbol:
     - match: :(?!:(?!:))
@@ -2342,14 +2342,14 @@ contexts:
       push:
         - match: (?=<%)|{{atom_symbol}}
           scope: constant.other.symbol.elixir
-          pop: true
+          pop: 1
         - match: (["'])
           scope: punctuation.definition.constant.begin.elixir
           set:
             - meta_scope: constant.other.symbol.quoted.elixir
             - match: \1
               scope: punctuation.definition.constant.end.elixir
-              pop: true
+              pop: 1
             - include: escaped_or_interpolated
         - include: if_empty_pop
 
@@ -2364,7 +2364,7 @@ contexts:
       scope: keyword.operator.capture.elixir
       push:
         - match: (?=(?>do|fn|true|false|nil){{no_id_key_suffix}})
-          pop: true
+          pop: 1
         - include: if_closing_token_pop
         - match: (?=\.(?!\.))
           set:
@@ -2397,7 +2397,7 @@ contexts:
         | (?>:{{atom_symbol}}) \s*\.\s* {{member}} \s*\(
         )
       comment: exit if module/atom is not followed by `.` or `.(`
-      pop: true
+      pop: 1
     - include: atom_symbol
     - include: atom_keyword
     - include: module_name
@@ -2406,7 +2406,7 @@ contexts:
       captures:
         1: punctuation.accessor.arity.elixir
         2: constant.numeric.arity.elixir
-      pop: true
+      pop: 1
     - match: |
         (?x)
         (?>(/(?=/)|{{member}}) | (["'])((?>\\\\|\\\2|(?!\2).)*?)(\2))
@@ -2454,12 +2454,12 @@ contexts:
         - meta_scope: meta.string.elixir
         - match: '"""'
           scope: string.quoted.triple.double.elixir punctuation.definition.string.end.elixir
-          pop: true
+          pop: 1
         - match: ''
           push: scope:source.ex.sql
           with_prototype:
             - match: (?=""")
-              pop: true
+              pop: 1
             - include: sql_or_elixir_escaped_pop
     - match: \"
       scope: string.quoted.double.elixir punctuation.definition.string.begin.elixir
@@ -2467,12 +2467,12 @@ contexts:
         - meta_scope: meta.string.elixir
         - match: \"
           scope: string.quoted.double.elixir punctuation.definition.string.end.elixir
-          pop: true
+          pop: 1
         - match: ''
           push: scope:source.ex.sql
           with_prototype:
             - match: (?=")
-              pop: true
+              pop: 1
             - include: sql_or_elixir_escaped_pop
 
   sql_or_elixir_escaped_pop:
@@ -2483,7 +2483,7 @@ contexts:
         - meta_scope: source.ex.sql
         - match: (?=\\\\?\?)
           comment: let source.ex.sql match "\\?"
-          pop: true
+          pop: 1
         - include: escaped_char
         - include: if_empty_pop
 
@@ -2500,7 +2500,7 @@ contexts:
           set:
             - match: (?<=\S|^)\>
               scope: punctuation.section.mapping.end.elixir
-              pop: true
+              pop: 1
             # Text between <> brackets isn't always valid Elixir code.
             # - include: core_syntax
 
@@ -2511,7 +2511,7 @@ contexts:
       push:
         - meta_scope: comment.line.number-sign.elixir
         - match: \n
-          pop: true
+          pop: 1
 
   comments:
     - match: (?=#)
@@ -2565,12 +2565,12 @@ contexts:
   arguments_closing_pop:
     - match: \)
       scope: punctuation.section.arguments.end.elixir
-      pop: true
+      pop: 1
 
   map_closing_pop:
     - match: \}
       scope: meta.mapping.elixir punctuation.section.mapping.end.elixir
-      pop: true
+      pop: 1
 
   arguments_rest_pop:
     - include: arguments_closing_pop
@@ -2584,7 +2584,7 @@ contexts:
           \n | \s? (?=\s*{{closing_token}})
         | (?<=::\bend\b) | (?<=([^:])\bend\b) | (?<=^end\b)
       scope: punctuation.section.arguments.end.elixir
-      pop: true
+      pop: 1
 
   arguments_ws_closing_or_empty_pop:
     - include: arguments_ws_closing_pop
@@ -2614,7 +2614,7 @@ contexts:
       push:
         - include: if_closing_token_pop
         - match: (?!(?>when|and|in|or|not){{no_id_key_suffix}}|[,\s]|(?<!,))
-          pop: true
+          pop: 1
         - include: elixir_keywords
         - include: invalid_comma_or_non_space_pop
     - match: (?x) (?=[-+*/=!|;] | && | \\\\ | ~(?![a-zA-Z]) | <(?!<(?!<)) | >(?!>(?!>)) | \.\.(?!\.) | ::(?!:))
@@ -2644,7 +2644,7 @@ contexts:
       comment: prevent matching last argument as a function call, e.g. `func first, second, last do end`
       push:
         - match: (?=do{{no_id_key_suffix}})
-          pop: true
+          pop: 1
         - match: (@)\s*({{identifier}})
           comment: reference
           captures:
@@ -2669,7 +2669,7 @@ contexts:
       comment: for `when`-clauses that are placed below the function header
       push:
         - match: (?=(?><-|->)(?!:))
-          pop: true
+          pop: 1
         - include: arguments_ws_rest_pop
     - match: |
         (?x)(?> # Ordered by likeliness of occurrence.
@@ -2715,7 +2715,7 @@ contexts:
         - match: (?=<-(?!:)|,|(?>when|do){{no_id_key_suffix}}|do:(?!:))
           set:
             - match: (?=,|do{{no_id_key_suffix}}|do:(?!:))
-              pop: true
+              pop: 1
             - include: arguments_ws_rest_pop
         - include: parameters_or_if_closing_pop
 
@@ -2847,7 +2847,7 @@ contexts:
   unquote_pop:
     - match: unquote(?:_splicing)?
       scope: keyword.other.unquote.elixir
-      pop: true
+      pop: 1
 
   unquote_call_pop:
     - match: (?=unquote(?:_splicing)?\()
@@ -2872,29 +2872,29 @@ contexts:
 
   if_closing_token_pop:
     - match: (?=[)}\]]|>>(?!>)|%>|{{closing_keyword}})
-      pop: true
+      pop: 1
 
   if_ws_closing_token_pop:
     - match: (?=\s*(?>[)}\];]|>>(?!>)|%>|{{closing_keyword}}))
-      pop: true
+      pop: 1
 
   if_ws_closing_token_or_eol_pop:
     - include: if_ws_closing_token_pop
     - match: (?=\s*(?>#|$))
-      pop: true
+      pop: 1
 
   if_closing_paren_pop:
     - match: (?=\))
-      pop: true
+      pop: 1
 
   if_non_space_pop:
     - match: (?=\S)
-      pop: true
+      pop: 1
 
   if_non_space_or_eol_pop:
     - match: (?=\S|$)
-      pop: true
+      pop: 1
 
   if_empty_pop:
     - match: ''
-      pop: true
+      pop: 1
