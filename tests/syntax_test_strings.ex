@@ -38,15 +38,6 @@
  ~w""a
 #    ^ string.quoted.modifiers storage.type.string
 
-~L""''a
-#     ^ -string.quoted.modifiers
-~L"""
- \"""
-#^^^^^ meta.string.elixir text.html.eex text.html.basic
-#^^ -constant.character.escape.char
-  """''a
-#      ^ -string.quoted.modifiers
-
  "\""m
 #    ^ -string.quoted.modifiers
 # ^^ string.quoted.double constant.character.escape.char
@@ -164,6 +155,15 @@ heredoc text
 
 ## LiveView
 
+~L""''a
+#     ^ -string.quoted.modifiers
+~L"""
+^^^^^ meta.string.elixir text.html.eex text.html.basic
+ \"""<sd>
+#^^ constant.character.escape.char.elixir
+  """''a
+#      ^ -string.quoted.modifiers
+
 ~L"""
   <div class="">
     <div>
@@ -172,7 +172,7 @@ heredoc text
     </div>
   </div>
  \
-#^^text.html.basic
+ ^^text.html.basic
   """
 
 ~L"""
@@ -185,7 +185,7 @@ heredoc text
 #^^^^ meta.string.elixir
  \"""m
 #    ^ -storage.type.string
-#^^ -constant.character.escape.char.elixir
+#^^ constant.character.escape.char.elixir
  """m
 #    ^ -meta.string.elixir
 #   ^ storage.type.string
@@ -193,11 +193,11 @@ heredoc text
 #^^^^ meta.string.elixir
 ~L"<div>\"</div>"m
 #               ^ punctuation.definition.string.end
-#       ^^ -constant.character.escape.char.elixir
+#       ^^ constant.character.escape.char.elixir
 #   ^^^ entity.name.tag.block.any.html
 ~L'<div>\'</div>'m
 #               ^ punctuation.definition.string.end
-#       ^^ -constant.character.escape.char.elixir
+#       ^^ constant.character.escape.char.elixir
 #   ^^^ entity.name.tag.block.any.html
 
  ~L/\//m ~L|\||m ~L{\}}m ~L[\]]m ~L<\>>m ~L(\))m
@@ -228,7 +228,8 @@ heredoc text
 ~Y"""
   a: {bc: "#{0}"}
   #//      ^^^^^ string.quoted.double.yaml
-  """
+  \"""
+"""
 
 ~y"""
 key: #{value}
@@ -249,7 +250,7 @@ key: #{value}
 
 ~Y"""
 key: "#{value}\"""
-#             ^^ -constant.character.escape.char.elixir
+#             ^^ constant.character.escape.char.elixir
  \"""m
  """m
 #   ^ storage.type.string
@@ -319,14 +320,14 @@ key: "#{value}\"""
   "k\u0065y\"": "J"
 }
  \"""
-#^^ -constant.character.escape.char.elixir
+#^^ constant.character.escape.char.elixir
  """a
 #   ^ storage.type.string
 #^^^ punctuation.definition.string.end
 
 ~J'''
  \'''
-#^^ -constant.character.escape.char
+#^^ constant.character.escape.char.elixir
  '''m
 #   ^ storage.type.string
 #^^^ punctuation.definition.string.end
