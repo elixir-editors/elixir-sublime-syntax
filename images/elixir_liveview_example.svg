@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 230 20">
+<style type="text/css"><![CDATA[
+  div { padding:0.1em;font-family:monospace;font-size:16px;white-space:pre;color:#eee!important;background-color:#282923;border-radius:4px; }
+  .fnc { color:#67d8ef }
+  .mod { color:#70a800 }
+  .kw { color:#f92472 }
+  .intp_bg { background-color: rgba(0, 0, 0, 0.03) }
+  .intp_dlm { color:#ababab }
+  .sigil { color:#67d8ef; }
+  .str_dlm { color:#dbca33 }
+  .str { color:#e7db74 }
+  .prpl { color:#ac80ff }
+  .akw { color:#8a66cc }
+  .colon { color:#aeafad }
+  .entity { color:#a6e22c }
+  .param { color:#fd9621 }
+]]>
+</style>
+<foreignObject width="100%" height="100%">
+<div xmlns="http://www.w3.org/1999/xhtml"><span class="sigil">~L</span><span class="str_dlm">"</span>&lt;<span class="kw">div</span>>&lt;<span class="kw">%=</span> <span class="kw">@</span><span class="prpl">live!</span> <span class="kw">%</span>>&lt;/<span class="kw">div</span>><span class="str_dlm">"</span>
+</div>
+</foreignObject>
+</svg>

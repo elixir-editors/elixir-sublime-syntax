@@ -7,6 +7,7 @@
   .kw { color:#f92472 }
   .intp_bg { background-color: rgba(0, 0, 0, 0.03) }
   .intp_dlm { color:#ababab }
+  .sigil { color:#67d8ef; }
   .str_dlm { color:#dbca33 }
   .str { color:#e7db74 }
   .prpl { color:#ac80ff }
@@ -17,7 +18,7 @@
 ]]>
 </style>
 <foreignObject width="100%" height="100%">
-<div xmlns="http://www.w3.org/1999/xhtml"><span class="blu_i">~r</span><span class="str_dlm">"</span><span class="kw">(</span><span class="kw">?&gt;</span><span class="kw">[</span><span class="kw">[:</span><span class="prpl">alpha</span><span class="kw">:]</span><span class="str">_</span><span class="kw">]</span><span class="kw">[</span><span class="prpl">\w</span><span class="str">@</span><span class="kw">]</span><span class="kw">*+</span><span class="kw">[</span><span class="str">?</span><span class="str">!</span><span class="kw">]</span><span class="kw">?+</span><span class="kw">)</span><span class="str_dlm">"</span>
+<div xmlns="http://www.w3.org/1999/xhtml"><span class="sigil">~r</span><span class="str_dlm">"</span><span class="kw">(</span><span class="kw">?&gt;</span><span class="kw">[</span><span class="kw">[:</span><span class="prpl">alpha</span><span class="kw">:]</span><span class="str">_</span><span class="kw">]</span><span class="kw">[</span><span class="prpl">\w</span><span class="str">@</span><span class="kw">]</span><span class="kw">*+</span><span class="kw">[</span><span class="str">?</span><span class="str">!</span><span class="kw">]</span><span class="kw">?+</span><span class="kw">)</span><span class="str_dlm">"</span>
 </div>
 </foreignObject>
 </svg>
