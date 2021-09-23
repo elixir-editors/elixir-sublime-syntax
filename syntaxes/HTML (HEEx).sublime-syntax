@@ -6,143 +6,82 @@ scope: text.html.heex
 extends: Packages/HTML/HTML.sublime-syntax
 
 file_extensions: [heex]
-authors: [Aziz Köksal <aziz.koeksal@gmail.com>]
+authors:
+  - Aziz Köksal <aziz.koeksal@gmail.com>
+  - deathaxe <https://github.com/deathaxe>
 
 variables:
-  tag_char: (?:[^ \n."'/=<>\x{7F}-\x{9F}])
-  upcase_tag_name: '[A-Z]{{tag_char}}*'
+  heex_tag_char: '[^ \n."''/=<>\x{7F}-\x{9F}]'
+  heex_tag_name: '[A-Z]{{heex_tag_char}}*'
+  is_heex_tag_name_begin: (?=[.A-Z])
 
 contexts:
   # HTML overrides:
 
-  tag:
+  tag-other:
     - meta_prepend: true
-    - include: heex-html-tag
-    - include: heex-tag
+    - include: heex-tags
+    - include: HTML (EEx).sublime-syntax#eex-embedded
 
-  tag-other-name:
+  tag-generic-attribute-value:
     - meta_prepend: true
-    - include: elixir-interpolated
-
-  tag-attributes:
-    - meta_prepend: true
-    - include: elixir-interpolated
-
-  tag-attribute-value-content:
-    - meta_prepend: true
-    - include: elixir-interpolated
-
-  strings-common-content:
-    - meta_prepend: true
-    - include: elixir-interpolated
-
-  comment-content:
-    - meta_prepend: true
-    - include: elixir-interpolated
+    - include: elixir-embedded-pop
 
   # HEEx:
 
-  heex-html-tag:
-    - match: (<)(?>(?=\.)|({{upcase_tag_name}}))
-      captures:
-        1: punctuation.definition.tag.begin.html
-        2: entity.name.tag.begin.heex
-      push: [heex-begin-tag-rest-pop, heex-begin-tag-name-rest-pop]
+  heex-tags:
+    - match: <{{is_heex_tag_name_begin}}
+      scope: punctuation.definition.tag.begin.html
+      push: [heex-begin-tag-content-pop, heex-begin-tag-name-pop]
 
-    - match: (</)(?>(?=\.)|({{upcase_tag_name}}))
-      captures:
-        1: punctuation.definition.tag.begin.html
-        2: entity.name.tag.end.heex
-      push: [heex-end-tag-rest-pop, heex-end-tag-name-rest-pop]
+    - match: </{{is_heex_tag_name_begin}}
+      scope: punctuation.definition.tag.begin.html
+      push: [heex-end-tag-content-pop, heex-end-tag-name-pop]
 
-  heex-begin-tag-rest-pop:
-    - match: /?>
-      scope: punctuation.definition.tag.end.html
-      pop: 1
+  heex-begin-tag-content-pop:
+    - meta_scope: meta.tag.other.heex
+    - include: tag-end-maybe-self-closing
     - include: tag-attributes
-      apply_prototype: true
 
-  heex-end-tag-rest-pop:
-    - match: \>|(?=\S)
-      scope: punctuation.definition.tag.end.html
+  heex-end-tag-content-pop:
+    - meta_scope: meta.tag.other.heex
+    - include: tag-end
+    - include: else-pop
+
+  heex-begin-tag-name-pop:
+    - match: '{{heex_tag_name}}'
+      scope: entity.name.tag.begin.heex
+    - include: heex-tag-name-common-pop
+
+  heex-end-tag-name-pop:
+    - match: '{{heex_tag_name}}'
+      scope: entity.name.tag.end.heex
+    - include: heex-tag-name-common-pop
+
+  heex-tag-name-common-pop:
+    - match: '[[:lower:]_]\w*[?!]?'
+      scope: variable.function.heex
       pop: 1
-
-  heex-begin-tag-name-rest-pop:
     - match: \.
       scope: punctuation.accessor.dot.heex
-      push:
-        - match: (?>[[:lower:]_]\w*+[?!]?+)
-          scope: variable.function.heex
-          pop: 2
-        - match: '{{upcase_tag_name}}|(?=\S)'
-          scope: entity.name.tag.begin.heex
-          pop: 1
-    - match: (?=\S)
-      pop: 1
-
-  heex-end-tag-name-rest-pop:
-    - match: \.
-      scope: punctuation.accessor.dot.heex
-      push:
-        - match: (?>[[:lower:]_]\w*+[?!]?+)
-          scope: variable.function.heex
-          pop: 2
-        - match: '{{upcase_tag_name}}|(?=\S)'
-          scope: entity.name.tag.end.heex
-          pop: 1
-    - match: (?=\S)
-      pop: 1
-
-  heex-tag:
-    - match: <%#
-      scope: punctuation.definition.comment.begin.eex
-      push:
-        - meta_scope: text.html.eex comment.block.eex
-        - match: '%>'
-          scope: punctuation.definition.comment.end.eex
-          pop: 1
-
-    # - match: (<)(%%=)
-    #   captures:
-    #     1: punctuation.section.embedded.begin.eex
-    #     2: entity.name.tag.eex
-    #   push:
-    #     - meta_scope: meta.interpolation.eex text.html.eex
-    #     - clear_scopes: 1
-    #     - include: heex-closing-tag-punctuation-pop
-    #     - include: scope:source.elixir.eex
-    #       apply_prototype: true
-
-    # Tags <%/ and <%| are parsed but have no functionality in EEx yet.
-    - match: (<)(%(?>%=?|[=/|]?))
-      captures:
-        1: punctuation.section.embedded.begin.eex
-        2: entity.name.tag.eex
-      push:
-        - meta_scope: meta.interpolation.eex text.html.eex
-        - clear_scopes: 1
-        - include: heex-closing-tag-punctuation-pop
-        - include: scope:source.elixir
-          apply_prototype: true
-
-  heex-closing-tag-punctuation-pop:
-    - match: (%)(>)
-      scope: text.html.eex
-      captures:
-        1: entity.name.tag.eex
-        2: punctuation.section.embedded.end.eex
-      pop: 1
+    - include: immediately-pop
 
   # Elixir:
 
-  elixir-interpolated:
+  elixir-embedded:
+    - match: (?={)
+      push: elixir-embedded-pop
+
+  elixir-embedded-pop:
     - match: \{
-      scope: punctuation.section.interpolation.begin.elixir
-      push:
-        - clear_scopes: 1
-        - meta_scope: meta.interpolation.html source.elixir.interpolated.html
-        - match: \}
-          scope: punctuation.section.interpolation.end.elixir
-          pop: 1
-        - include: scope:source.elixir
-          apply_prototype: true
+      scope: punctuation.section.embedded.begin.elixir
+      set: elixir-embedded-content-pop
+
+  elixir-embedded-content-pop:
+    - meta_scope: meta.embedded.html
+    - meta_content_scope: source.elixir.embedded.html
+    - match: \}
+      scope: punctuation.section.embedded.end.elixir
+      pop: 1
+    - include: scope:source.elixir
+      apply_prototype: true
