@@ -6,51 +6,83 @@ scope: text.html.eex
 extends: Packages/HTML/HTML.sublime-syntax
 
 file_extensions: [html.eex, html.leex]
-authors: [Aziz Köksal <aziz.koeksal@gmail.com>]
+authors:
+  - Aziz Köksal <aziz.koeksal@gmail.com>
+  - deathaxe <https://github.com/deathaxe>
 
 contexts:
   # HTML:
 
   prototype:
     - meta_prepend: true
-    - include: eex-tags
+    - include: eex-embedded
 
   tag-attribute-value-content:
     - meta_prepend: true
-    - include: eex-tags
+    - include: eex-interpolations
 
   strings-common-content:
     - meta_prepend: true
-    - include: eex-tags
+    - include: eex-interpolations
 
   # EEx:
 
-  eex-tags:
-    - match: <%#
-      scope: punctuation.definition.comment.begin.eex
-      push:
-        - meta_scope: text.html.eex comment.block.eex
-        - match: '%>'
-          scope: punctuation.definition.comment.end.eex
-          pop: 1
-
-    # Tags <%/ and <%| are parsed but have no functionality in EEx yet.
-    - match: (<)(%(?>%=?|[=/|]?))
+  eex-interpolations:
+    - match: (<%)(#)
       captures:
         1: punctuation.section.embedded.begin.eex
-        2: entity.name.tag.eex
-      push:
-        - meta_scope: meta.interpolation.eex text.html.eex
-        - clear_scopes: 1
-        - include: eex-closing-tag-punctuation-pop
-        # - include: scope:source.elixir.eex
-        - include: scope:source.elixir
-          apply_prototype: true
+        2: comment.block.eex punctuation.definition.comment.begin.eex
+      push: eex-interpolation-comment-content-pop
 
-  eex-closing-tag-punctuation-pop:
-    - match: (%)(>)
-      scope: text.html.eex
+    # Tags <%/ and <%| are parsed but have no functionality in EEx yet.
+    - match: <%(?:%=?|[=/|]?)
+      scope: punctuation.section.embedded.begin.eex
+      push: eex-interpolation-tag-content-pop
+
+  eex-interpolation-comment-content-pop:
+    # Need to clear the string scope so that auto-completion works,
+    # which is disabled by default in strings and comments.
+    - clear_scopes: 1
+    - meta_include_prototype: false
+    - meta_scope: meta.embedded.eex
+    - meta_content_scope: comment.block.eex
+    - include: eex-comment-content-pop
+
+  eex-interpolation-tag-content-pop:
+    # Need to clear the string scope.
+    - clear_scopes: 1
+    - meta_include_prototype: false
+    - meta_scope: meta.embedded.eex
+    - meta_content_scope: source.elixir.embedded.html
+    - include: eex-embedded-content-pop
+
+  eex-embedded:
+    - match: (<%)(#)
       captures:
-        1: entity.name.tag.eex
-        2: punctuation.section.embedded.end.eex
+        1: punctuation.section.embedded.begin.eex
+        2: comment.block.eex punctuation.definition.comment.begin.eex
+      push: eex-comment-content-pop
+
+    # Tags <%/ and <%| are parsed but have no functionality in EEx yet.
+    - match: <%(?:%=?|[=/|]?)
+      scope: punctuation.section.embedded.begin.eex
+      push: eex-embedded-content-pop
+
+  eex-comment-content-pop:
+    - meta_include_prototype: false
+    - meta_scope: meta.embedded.eex
+    - meta_content_scope: comment.block.eex
+    - include: eex-embedded-end-pop
+
+  eex-embedded-content-pop:
+    - meta_include_prototype: false
+    - meta_scope: meta.embedded.eex
+    - meta_content_scope: source.elixir.embedded.html
+    - include: eex-embedded-end-pop
+    - include: scope:source.elixir
+      apply_prototype: true
+
+  eex-embedded-end-pop:
+    - match: '%>'
+      scope: punctuation.section.embedded.end.eex
       pop: 1
