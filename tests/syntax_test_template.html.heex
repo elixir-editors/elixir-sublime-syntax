@@ -2,6 +2,7 @@
 
    <!DOCTYPE html>
 <!-- ^^^^^^^ keyword.declaration.doctype.html -->
+
 <html lang="{"en"}" lang={"en"}>
 <!--                           ^ punctuation.definition.tag.end.html -->
 <!--             ^ punctuation.section.interpolation.end.elixir -->
@@ -9,11 +10,36 @@
 <!--        ^ punctuation.section.interpolation.begin.elixir -->
 <!--       ^ punctuation.definition.string.begin.html -->
 
+<!-- HTML comment with {"interpolation"} ?? -->
+<!--                                   ^ punctuation.section.interpolation.end.elixir - source -->
+<!--                    ^^^^^^^^^^^^^^^ source.elixir.interpolated.html -->
+<!--                   ^ punctuation.section.interpolation.begin.elixir - source -->
+<!--                   ^^^^^^^^^^^^^^^^^ comment.block.html meta.interpolation.html -->
+
      <%# Comment %>
-<!--             ^^ punctuation.definition.comment.end.eex -->
-<!--     ^^^^^^^ -constant -->
-<!-- ^^^^^^^^^^^^^^ text.html.eex comment.block.eex -->
-<!-- ^^^ punctuation.definition.comment.begin.eex -->
+<!--             ^^ punctuation.section.embedded.end.eex - comment -->
+<!--   ^^^^^^^^^^ comment.block.eex - constant -->
+<!--   ^ punctuation.definition.comment.begin.eex -->
+<!-- ^^ punctuation.section.embedded.begin.eex - comment -->
+<!-- ^^^^^^^^^^^^^^ text.html.heex meta.embedded.eex -->
+
+     <br class="<%# Comment %>" />
+<!--           ^^^^^^^^^^^^^^^^ meta.string.html string.quoted.double.html - comment -->
+
+     <p {"tag"}={"value"} >
+<!--                      ^ punctuation.definition.tag.end.html -->
+<!--                    ^ punctuation.section.interpolation.end.elixir - source -->
+<!--             ^^^^^^^ source.elixir.interpolated.html meta.string.elixir string.quoted.double.elixir -->
+<!--            ^ punctuation.section.interpolation.begin.elixir - source -->
+<!--           ^ punctuation.separator.key-value.html -->
+<!--          ^ punctuation.section.interpolation.end.elixir - string -->
+<!--     ^^^^^ source.elixir.interpolated.html meta.string.elixir string.quoted.double.elixir -->
+<!--    ^ punctuation.section.interpolation.begin.elixir - source -->
+<!--                     ^^ meta.tag.block.any.html - meta.attribute-with-value -->
+<!--            ^^^^^^^^^ meta.tag meta.attribute-with-value.html meta.string.html meta.interpolation.html -->
+<!--           ^ meta.tag meta.attribute-with-value.html - meta.interpolation -->
+<!--    ^^^^^^^ meta.tag meta.attribute-with-value.html meta.interpolation.html -->
+<!-- ^^^ meta.tag.block.any.html - meta.attribute-with-value -->
 
      <.form>
 <!--   ^^^^ text.html.heex variable.function.heex -->
@@ -22,58 +48,87 @@
 <!--    ^^^^ variable.function.heex -->
 <!--   ^ punctuation.accessor.dot.heex -->
 
+     <MyApp name={@name}>
+<!--        ^^^^^^^^^^^^ meta.attribute-with-value.html -->
+<!--       ^ - entity -->
+<!--  ^^^^^ entity.name.tag.begin.heex -->
+<!-- ^ punctuation.definition.tag.begin.html -->
+<!-- ^^^^^^^^^^^^^^^^^^^^ meta.tag.other.heex - meta.tag meta.tag -->
+
      <MyApp.User.tag name={@name}>
-<!--                      ^^^^^^^ source.elixir.interpolated.html -->
+<!--                      ^^^^^^^ meta.attribute-with-value.html meta.string.html meta.interpolation.html -->
+<!--                 ^^^^^ meta.attribute-with-value.html - meta.interpolation -->
+<!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.tag.other.heex - meta.tag meta.tag -->
+<!--                             ^ punctuation.definition.tag.end.html -->
+<!--                            ^ punctuation.section.interpolation.end.elixir -->
+<!--                       ^^^^^ source.elixir.interpolated.html -->
+<!--                      ^ punctuation.section.interpolation.begin.elixir -->
+<!--                     ^ punctuation.separator.key-value.html -->
 <!--                 ^^^^ entity.other.attribute-name.html -->
 <!--             ^^^ variable.function.heex -->
 <!--            ^ punctuation.accessor.dot.heex -->
 <!--        ^^^^ entity.name.tag.begin.heex -->
 <!--       ^ punctuation.accessor.dot.heex -->
 <!--  ^^^^^ entity.name.tag.begin.heex -->
+<!-- ^ punctuation.definition.tag.begin.html -->
      </MyApp.User.tag>
+<!--                 ^ punctuation.definition.tag.end.html -->
 <!--              ^^^ variable.function.heex -->
 <!--             ^ punctuation.accessor.dot.heex -->
 <!--         ^^^^ entity.name.tag.end.heex -->
 <!--        ^ punctuation.accessor.dot.heex -->
 <!--   ^^^^^ entity.name.tag.end.heex -->
+<!-- ^ punctuation.definition.tag.begin.html -->
+<!-- ^^^^^^^^^^^^^^^^^ meta.tag.other.heex - meta.tag meta.tag -->
+
+     <t{=@a}a />
+<!--  ^^^^^^^ entity.name.tag.other.html - meta.interpolation - source -->
+<!-- ^^^^^^^^^^^ meta.tag.other.html -->
+
+     <{=@a}a />
+<!-- ^^^^^^^^^^ - meta.tag -->
 
      <% func arg %>
-<!--              ^ punctuation.section.embedded.end.eex -->
-<!--             ^ entity.name.tag.eex -->
+<!--             ^^ text.html.heex meta.embedded.eex - source -->
+<!--   ^^^^^^^^^^ text.html.heex meta.embedded.eex source.elixir.embedded.html -->
+<!-- ^^ text.html.heex meta.embedded.eex - source -->
+<!--             ^^ punctuation.section.embedded.end.eex -->
 <!--         ^^^ variable.other.elixir -->
 <!--    ^^^^ variable.function.elixir -->
-<!--  ^ entity.name.tag.eex -->
-<!-- ^ punctuation.section.embedded.begin.eex -->
-<!-- ^^^^^^^^^^^^^^ meta.interpolation.eex text.html.eex -->
+<!-- ^^ punctuation.section.embedded.begin.eex -->
 
      <%= if true? do %>
-<!--                  ^ punctuation.section.embedded.end.eex -->
-<!--                 ^ entity.name.tag.eex -->
+<!--                 ^^ text.html.heex meta.embedded.eex - source -->
+<!--    ^^^^^^^^^^^^^ text.html.heex meta.embedded.eex source.elixir.embedded.html -->
+<!-- ^^^ text.html.heex meta.embedded.eex - source -->
+<!--                 ^^ punctuation.section.embedded.end.eex -->
 <!--              ^^ keyword.context.block.do.elixir -->
 <!--        ^^^^^ variable.other.elixir -->
 <!--     ^^ keyword.control.conditional.elixir -->
-<!--  ^^ entity.name.tag.eex -->
-<!-- ^ punctuation.section.embedded.begin.eex -->
+<!-- ^^^ punctuation.section.embedded.begin.eex -->
      <% end %>
-<!--         ^ punctuation.section.embedded.end.eex -->
-<!--        ^ entity.name.tag.eex -->
+<!--        ^^ text.html.heex meta.embedded.eex - source -->
+<!--   ^^^^^ text.html.heex meta.embedded.eex source.elixir.embedded.html -->
+<!-- ^^ text.html.heex meta.embedded.eex - source -->
+<!--        ^^ punctuation.section.embedded.end.eex -->
 <!--    ^^^ keyword.context.block.end.elixir -->
-<!--  ^ entity.name.tag.eex -->
-<!-- ^ punctuation.section.embedded.begin.eex -->
+<!-- ^^ punctuation.section.embedded.begin.eex -->
 
      <%% quoted :code %>
-<!--                   ^ punctuation.section.embedded.end.eex -->
-<!--                  ^ entity.name.tag.eex -->
+<!--                  ^^ text.html.heex meta.embedded.eex - source -->
+<!--    ^^^^^^^^^^^^^^ text.html.heex meta.embedded.eex source.elixir.embedded.html -->
+<!-- ^^^ text.html.heex meta.embedded.eex - source -->
+<!--                  ^^ punctuation.section.embedded.end.eex -->
 <!--            ^^^^^ constant.other.symbol.elixir -->
 <!--     ^^^^^^ variable.function.elixir -->
-<!--  ^^ entity.name.tag.eex -->
-<!-- ^ punctuation.section.embedded.begin.eex -->
+<!-- ^^^ punctuation.section.embedded.begin.eex -->
 
      <%%= quoted :result %>
-<!--                      ^ punctuation.section.embedded.end.eex -->
-<!--                     ^ entity.name.tag.eex -->
+<!--                     ^^ text.html.heex meta.embedded.eex - source -->
+<!--     ^^^^^^^^^^^^^^^^ text.html.heex meta.embedded.eex source.elixir.embedded.html -->
+<!-- ^^^^ text.html.heex meta.embedded.eex - source -->
+<!--                     ^^ punctuation.section.embedded.end.eex -->
 <!--             ^^^^^^^ constant.other.symbol.elixir -->
 <!--      ^^^^^^ variable.function.elixir -->
-<!--  ^^^ entity.name.tag.eex -->
-<!-- ^ punctuation.section.embedded.begin.eex -->
+<!-- ^^^^ punctuation.section.embedded.begin.eex -->
 </html>
