@@ -6,199 +6,58 @@ scope: text.html.surface
 extends: Packages/HTML/HTML.sublime-syntax
 
 file_extensions: [sface]
-authors: [Aziz Köksal <aziz.koeksal@gmail.com>]
+authors:
+  - Aziz Köksal <aziz.koeksal@gmail.com>
+  - deathaxe <https://github.com/deathaxe>
 
 variables:
-  tag_char: (?:[^ \n."'/=<>\x{7F}-\x{9F}])
-  tag_name: '[a-zA-Z]{{tag_char}}*'
-  upcase_tag_name: '[A-Z]{{tag_char}}*'
+  html_custom_tag_char: '[^ \n"''/=<>\x{7F}-\x{9F}]'
+  surface_tag_char: '[^ \n."''/=<>\x{7F}-\x{9F}]'
+  surface_tag_name: '[a-zA-Z]{{surface_tag_char}}*'
+  surface_upcase_tag_name: '[A-Z]{{surface_tag_char}}*'
 
 contexts:
   # HTML overrides:
 
-  tag:
-    - meta_prepend: true
-    - include: surface-tag
-    - include: surface-block
-    - include: surface-private-comment
-    - include: elixir-embedded
-
   tag-other:
-    - meta_append: true
-    - include: html-custom-tag
-
-  tag-other-name:
-    - meta_prepend: true
-    - include: elixir-interpolated
+    - include: surface-markdown-tag
+    - include: surface-raw-tag
+    - include: surface-other-tags
+    - include: html-custom-tags
+    - include: surface-blocks
+    - include: surface-comment
+    - include: elixir-embedded
 
   tag-attributes:
     - meta_prepend: true
-    - include: elixir-interpolated
     - include: surface-attributes
+    - include: elixir-embedded
+    - match: (?=[^{{ascii_space}}=/>]+\s*=\s*{)
+      push:
+        - tag-generic-attribute-meta
+        - tag-generic-attribute-assignment
+        - tag-generic-attribute-name
 
-  tag-attribute-value-content:
+  tag-generic-attribute-value:
     - meta_prepend: true
-    - include: elixir-interpolated
+    - include: HTML (HEEx).sublime-syntax#elixir-embedded-pop
 
-  strings-common-content:
-    - meta_prepend: true
-    - include: elixir-interpolated
+  # Surface:
 
-  comment-content:
-    - meta_prepend: true
-    - include: elixir-interpolated
-
-  # Surface & Elixir:
-
-  surface-tag:
-    - include: surface-raw
-    - include: surface-markdown
-
-    - match: (<)([#:]{{tag_name}}|{{upcase_tag_name}})
-      captures:
-        1: punctuation.definition.tag.begin.surface
-        2: entity.name.tag.begin.surface
-      push: [surface-begin-tag-rest-pop, surface-begin-tag-name-rest-pop]
-
-    - match: (</)([#:]{{tag_name}}|{{upcase_tag_name}})
-      captures:
-        1: punctuation.definition.tag.begin.surface
-        2: entity.name.tag.end.surface
-      push: [surface-end-tag-rest-pop, surface-end-tag-name-rest-pop]
-
-  html-custom-tag:
-    - match: (<)((?>{{tag_char}}|\.)+)
-      captures:
-        1: punctuation.definition.tag.begin.html
-        2: entity.name.tag.begin.html
-      push: [surface-begin-tag-rest-pop, surface-begin-tag-name-rest-pop]
-
-    - match: (</)((?>{{tag_char}}|\.)+)
-      captures:
-        1: punctuation.definition.tag.begin.html
-        2: entity.name.tag.end.html
-      push: [surface-end-tag-rest-pop, surface-end-tag-name-rest-pop]
-
-  surface-begin-tag-rest-pop:
-    - match: /?>
-      scope: punctuation.definition.tag.end.html
-      pop: 1
-    - include: tag-attributes
-      apply_prototype: true
-
-  surface-end-tag-rest-pop:
-    - match: \>|(?=\S)
-      scope: punctuation.definition.tag.end.html
-      pop: 1
-
-  surface-begin-tag-name-rest-pop:
-    - match: \.
-      scope: punctuation.accessor.dot.surface
-      push:
-        - match: (?>[[:lower:]_]\w*+[?!]?+)
-          scope: variable.function.surface
-          pop: 2
-        - match: '{{upcase_tag_name}}|(?=\S)'
-          scope: entity.name.tag.begin.surface
-          pop: 1
-    - match: (?=\S)
-      pop: 1
-
-  surface-end-tag-name-rest-pop:
-    - match: \.
-      scope: punctuation.accessor.dot.surface
-      push:
-        - match: (?>[[:lower:]_]\w*+[?!]?+)
-          scope: variable.function.surface
-          pop: 2
-        - match: '{{upcase_tag_name}}|(?=\S)'
-          scope: entity.name.tag.end.surface
-          pop: 1
-    - match: (?=\S)
-      pop: 1
-
-  surface-attributes:
-    - match: |-
-        (?x)
-        (:)((?>
-          if | hook | show | let | args | values
-        | on-(?>
-            click | capture-click | blur | focus | change | submit | keydown | keyup
-          | window-(?>focus | blur | keydown | keyup)
-          )
-        )){{attribute_name_break}}
-      captures:
-        1: punctuation.definition.attribute.begin.surface
-        2: entity.other.attribute-name.surface
-      push: [tag-id-attribute-meta, tag-id-attribute-assignment]
-
-  surface-block:
-    - match: ({/)([a-z]+)(})
-      scope: meta.embedded.html meta.block.tag.end.surface source.elixir.embedded.html
-      captures:
-        1: punctuation.definition.tag.begin.surface
-        2: entity.name.tag.block.surface
-        3: punctuation.definition.tag.end.surface
-    - match: ({#)(match)\b
-      captures:
-        1: punctuation.definition.tag.begin.surface
-        2: entity.name.tag.block.surface
-      push:
-        - meta_scope: meta.embedded.html meta.block.tag.begin.surface source.elixir.embedded.html
-        - include: surface-block-closing-brace-pop
-        - include: scope:source.elixir#parameters
-          apply_prototype: true
-    - match: ({#)(?>(else\b)|(elseif\b|[a-z]+))\b
-      captures:
-        1: punctuation.definition.tag.begin.surface
-        2: entity.name.tag.block.surface
-        3: entity.name.tag.block.surface
-        # 3: variable.function.surface
-      push:
-        - meta_scope: meta.embedded.html meta.block.tag.begin.surface source.elixir.embedded.html
-        - include: surface-block-closing-brace-pop
-        - include: scope:source.elixir#arguments_ws
-          apply_prototype: true
-
-  surface-block-closing-brace-pop:
-    - match: \}
-      scope: punctuation.definition.tag.end.surface
-      pop: 1
-
-  surface-raw:
-    # NB: the #Raw-tag cannot be nested, e.g.: `<#Raw><#Raw></#Raw></#Raw>`
-    - match: (<)(#Raw)(>)
-      captures:
-        1: punctuation.definition.tag.begin.html
-        2: entity.name.tag.begin.surface
-        3: punctuation.definition.tag.end.html
-      push: surface-raw-body-pop
-
-  surface-raw-body-pop:
-    - match: (</)(#Raw)\b
-      captures:
-        1: punctuation.definition.tag.begin.html
-        2: entity.name.tag.end.surface
-      set: surface-end-tag-rest-pop
-
-    - include: scope:text.html.basic
-      apply_prototype: true
-
-  surface-markdown:
+  surface-markdown-tag:
     # NB: the #Markdown-tag cannot be nested, e.g.: `<#Markdown><#Markdown></#Markdown></#Markdown>`
     - match: (<)(#Markdown)\b
       captures:
         1: punctuation.definition.tag.begin.html
         2: entity.name.tag.begin.surface
-      push: [surface-markdown-attrs-pop]
+      push: surface-markdown-tag-content-pop
 
-  surface-markdown-attrs-pop:
+  surface-markdown-tag-content-pop:
+    - meta_scope: meta.tag.other.surface
     - match: \>
       scope: punctuation.definition.tag.end.html
       set: surface-markdown-body-pop
-    - match: /\>
-      scope: punctuation.definition.tag.end.html
-      pop: 1
+    - include: tag-end-self-closing
     - include: tag-attributes
 
   surface-markdown-body-pop:
@@ -206,7 +65,7 @@ contexts:
       captures:
         1: punctuation.definition.tag.begin.html
         2: entity.name.tag.end.surface
-      set: surface-end-tag-rest-pop
+      set: surface-end-tag-content-pop
 
     # # NB: commented out because Markdown is not really highlighted correctly
     # #     due to the surrounding indentation.
@@ -218,42 +77,148 @@ contexts:
     - include: scope:text.html.basic
       apply_prototype: true
 
-    # # NB: cannot use apply_prototype because Markdown doesn't use version 2.
-    # - include: scope:text.html.markdown
-    #   apply_prototype: true
+  surface-raw-tag:
+    # NB: the #Raw-tag cannot be nested, e.g.: `<#Raw><#Raw></#Raw></#Raw>`
+    - match: (<)(#Raw)(>)
+      captures:
+        0: meta.tag.other.surface
+        1: punctuation.definition.tag.begin.html
+        2: entity.name.tag.begin.surface
+        3: punctuation.definition.tag.end.html
+      push: surface-raw-body-pop
 
-  surface-private-comment:
+  surface-raw-body-pop:
+    - match: (</)(#Raw)\b
+      captures:
+        1: punctuation.definition.tag.begin.html
+        2: entity.name.tag.end.surface
+      set: surface-end-tag-content-pop
+
+    - include: scope:text.html.basic
+      apply_prototype: true
+
+  surface-other-tags:
+    - match: (<)([#:]{{surface_tag_name}}|{{surface_upcase_tag_name}})
+      captures:
+        1: punctuation.definition.tag.begin.surface
+        2: entity.name.tag.begin.surface
+      push: [surface-begin-tag-content-pop, surface-begin-tag-name-pop]
+
+    - match: (</)([#:]{{surface_tag_name}}|{{surface_upcase_tag_name}})
+      captures:
+        1: punctuation.definition.tag.begin.surface
+        2: entity.name.tag.end.surface
+      push: [surface-end-tag-content-pop, surface-end-tag-name-pop]
+
+  html-custom-tags:
+    - match: (<)({{html_custom_tag_char}}+)
+      captures:
+        1: punctuation.definition.tag.begin.html
+        2: entity.name.tag.begin.html
+      push: surface-begin-tag-content-pop
+
+    - match: (</)({{html_custom_tag_char}}+)
+      captures:
+        1: punctuation.definition.tag.begin.html
+        2: entity.name.tag.end.html
+      push: surface-end-tag-content-pop
+
+  surface-begin-tag-content-pop:
+    - meta_scope: meta.tag.other.surface
+    - include: tag-end-maybe-self-closing
+    - include: tag-attributes
+
+  surface-end-tag-content-pop:
+    - meta_scope: meta.tag.other.surface
+    - include: tag-end
+    - include: else-pop
+
+  surface-begin-tag-name-pop:
+    - match: '{{surface_upcase_tag_name}}'
+      scope: entity.name.tag.begin.surface
+    - include: surface-tag-name-common-pop
+
+  surface-end-tag-name-pop:
+    - match: '{{surface_upcase_tag_name}}'
+      scope: entity.name.tag.end.surface
+    - include: surface-tag-name-common-pop
+
+  surface-tag-name-common-pop:
+    - match: '[[:lower:]_]\w*[?!]?'
+      scope: variable.function.surface
+      pop: 1
+    - match: \.
+      scope: punctuation.accessor.dot.surface
+    - include: immediately-pop
+
+  surface-attributes:
+    - match: |-
+        (?x)
+        (:)(
+          if | hook | show | let | args | values
+        | on-(?:
+            click | capture-click | blur | focus | change | submit | keydown | keyup
+          | window-(?:focus | blur | keydown | keyup)
+          )
+        ){{attribute_name_break}}
+      captures:
+        1: punctuation.definition.attribute.begin.surface
+        2: entity.other.attribute-name.surface
+      push: [tag-generic-attribute-meta, tag-generic-attribute-assignment]
+
+  surface-blocks:
+    - match: ({/)(?:(case|elseif|else|if|unless)|(for)|([a-z]+))(})
+      captures:
+        0: meta.embedded.surface
+        1: punctuation.section.embedded.begin.surface
+        2: keyword.control.conditional.surface
+        3: keyword.control.loop.surface
+        4: keyword.control.surface
+        5: punctuation.section.embedded.end.surface
+    - match: ({#)(match)\b
+      captures:
+        1: punctuation.section.embedded.begin.surface
+        2: keyword.control.conditional.surface
+      push: surface-match-block-content-pop
+    - match: ({#)(?:(case|elseif|else|if|unless)|(for)|([a-z]+))\b
+      captures:
+        1: punctuation.section.embedded.begin.surface
+        2: keyword.control.conditional.surface
+        3: keyword.control.loop.surface
+        4: keyword.control.surface
+      push: surface-conditional-block-content-pop
+
+  surface-conditional-block-content-pop:
+    - meta_scope: meta.embedded.surface
+    - meta_content_scope: source.elixir.embedded.html
+    - include: surface-block-end-pop
+    - include: scope:source.elixir#arguments_ws
+      apply_prototype: true
+
+  surface-match-block-content-pop:
+    - meta_scope: meta.embedded.surface
+    - meta_content_scope: source.elixir.embedded.html
+    - include: surface-block-end-pop
+    - include: scope:source.elixir#parameters
+      apply_prototype: true
+
+  surface-block-end-pop:
+    - match: \}
+      scope: punctuation.section.embedded.end.surface
+      pop: 1
+
+  surface-comment:
     - match: '{!--'
       scope: punctuation.definition.comment.begin.surface
-      push:
-        - meta_scope: meta.embedded.html comment.block.surface
-        - clear_scopes: 1
-        - match: --}
-          scope: punctuation.definition.comment.end.surface
-          pop: 1
+      push: surface-comment-content-pop
+
+  surface-comment-content-pop:
+    - meta_scope: meta.embedded.surface comment.block.surface
+    - match: --}
+      scope: punctuation.definition.comment.end.surface
+      pop: 1
 
   # Elixir:
 
   elixir-embedded:
-    - match: \{
-      scope: punctuation.section.embedded.begin.elixir
-      push:
-        - clear_scopes: 1
-        - meta_scope: meta.embedded.html source.elixir.embedded.html
-        - match: \}
-          scope: punctuation.section.embedded.end.elixir
-          pop: 1
-        - include: scope:source.elixir
-          # apply_prototype: true
-
-  elixir-interpolated:
-    - match: \{
-      scope: punctuation.section.interpolation.begin.elixir
-      push:
-        - clear_scopes: 1
-        - meta_scope: meta.interpolation.html source.elixir.interpolated.html
-        - match: \}
-          scope: punctuation.section.interpolation.end.elixir
-          pop: 1
-        - include: scope:source.elixir
-          # apply_prototype: true
+    - include: HTML (HEEx).sublime-syntax#elixir-embedded
