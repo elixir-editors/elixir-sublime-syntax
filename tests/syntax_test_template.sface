@@ -4,52 +4,82 @@
 #                                        ^^^^^^^^^^ string.quoted.double
 #                                       ^ punctuation.separator.key-value
 #                                     ^^ entity
+#                                   ^ meta.embedded.html punctuation.section.embedded.end.elixir - source
 #                           ^^^^ constant.other.keyword
 #             ^^^^^^ constant.other.keyword
-#            ^^^^^^^^^^^^^^^^^^^^^^^^ source.elixir.interpolated.html
+#             ^^^^^^^^^^^^^^^^^^^^^^ meta.embedded.html source.elixir.embedded.html
+#            ^ meta.embedded.html punctuation.section.embedded.begin.elixir - source
+#       ^ punctuation.definition.attribute.begin.surface
 #^^^^^^ entity.name.tag.begin.surface
   {#for i <- 1..max}
-#      ^^^^^^^^^^^^ meta.function-call.arguments.elixir
-#   ^^^ entity.name.tag.block.surface
-# ^^^^^^^^^^^^^^^^^^ source.elixir.embedded.html
-    <span class={:icon, "has-text-warning": i <= value}>
+#      ^^^^^^^^^^^^ source.elixir.embedded.html meta.function-call.arguments.elixir
+#   ^^^ keyword.control.loop.surface
+# ^^^^^^^^^^^^^^^^^^ meta.embedded.surface
+    <span id={@id} class={:icon, "has-text-warning": i <= value} style={@style}>
+#                                                                      ^^^^^^^^ meta.attribute-with-value.html meta.embedded.html
+#                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.attribute-with-value.html meta.embedded.html
+#            ^^^^^ meta.attribute-with-value.html meta.embedded.html
+#         ^^ meta.tag.inline.any.html meta.attribute-with-value entity.other.attribute-name
       <i class="fas fa-{@icon_name}" />
-#                        ^^^^^^^^^ variable.other.constant.elixir
-#                       ^ keyword.operator.attribute.elixir
-#                      ^^^^^^^^^^^^ source.elixir.interpolated.html
+#                                  ^ meta.attribute-with-value.class.html meta.string.html - meta.embedded
+#                                 ^ - punctuation.section.embedded.end.elixir - source
+#                        ^^^^^^^^^ - variable.other.constant.elixir
+#                       ^ - keyword.operator.attribute.elixir
+#                       ^^^^^^^^^^ - source
+#                      ^ - punctuation.section.embedded.begin.elixir - source
+#                   ^^^^^^^^^^^^^^^ meta.attribute-with-value.class.html meta.class-name.html meta.string.html - meta.embedded.html
+#              ^^^^^^^^ meta.attribute-with-value.class.html meta.string.html - meta.embedded
     </span>
     {i + 1}
-#   ^^^^^^^ source.elixir.embedded.html
+#         ^ punctuation.section.embedded.end.elixir - source
+#    ^^^^^ source.elixir.embedded.html
+#   ^ punctuation.section.embedded.begin.elixir - source
+#   ^^^^^^^ meta.embedded.html
   {#else}
-#   ^^^^ entity.name.tag.block.surface
+#   ^^^^ keyword.control.conditional.surface
   {#elsei}
-#   ^^^^^ entity.name.tag.block.surface
+#   ^^^^^ keyword.control.surface
   {#elseif x == 0}
+#                ^ punctuation.section.embedded.end.surface
 #          ^^^^^^ source.elixir.embedded.html
-#   ^^^^^^ entity.name.tag.block.surface
+#   ^^^^^^ keyword.control.conditional.surface
+# ^^ punctuation.section.embedded.begin.surface
+# ^^^^^^^^^^^^^^^^ meta.embedded.surface
   {/for}
-#   ^^^ entity.name.tag.block.surface
+#      ^ punctuation.section.embedded.end.surface
+#   ^^^ keyword.control.loop.surface
+# ^^ punctuation.section.embedded.begin.surface
+# ^^^^^^ meta.embedded.surface
 </Rating>
 # ^^^^^^ entity.name.tag.end.surface
 
 <Some.component x={y} />
-#     ^^^^^^^^^ variable.function.surface -entity.name
+#     ^^^^^^^^^ variable.function.surface - entity.name
+#^^^^^^^^^^^^^^^^^^^^^^^ meta.tag.other.surface
 <Some.App.Component x={y}>
 #         ^^^^^^^^^ entity.name.tag.begin.surface
 #        ^ punctuation.accessor.dot.surface
 #     ^^^ entity.name.tag.begin.surface
 #    ^ punctuation.accessor.dot.surface
 #^^^^ entity.name.tag.begin.surface
+#^^^^^^^^^^^^^^^^^^^^^^^^^ meta.tag.other.surface
   {#case @value}
+#         ^^^^^ variable.other.constant.elixir
+#   ^^^^ keyword.control.conditional.surface
+#              ^ punctuation.section.embedded.end.surface
+# ^^punctuation.section.embedded.begin.surface
+# ^^^^^^^^^^^^^^ meta.embedded.surface
     {#match [{_, first} | _]}
-#                           ^ punctuation.definition.tag.end.surface
+#                           ^ punctuation.section.embedded.end.surface
 #                     ^ punctuation.section.sequence.end.elixir
 #                ^^^^^ variable.parameter.elixir
 #            ^ punctuation.section.sequence.begin.elixir
-#   ^^ punctuation.definition.tag.begin.surface
+#   ^^ punctuation.section.embedded.begin.surface
       First {first}
-#            ^^^^^ variable.other.elixir
-#           ^^^^^^^ source.elixir.embedded.html
+#                 ^ punctuation.section.embedded.end.elixir - source
+#            ^^^^^ source.elixir.embedded.html variable.other.elixir
+#           ^ punctuation.section.embedded.begin.elixir - source
+#           ^^^^^^^ meta.embedded.html
     {#match []}
 #           ^^ meta.brackets.elixir
       Value is empty
@@ -59,79 +89,102 @@
   {/case}
 </Some.App.Component >
 #                    ^ punctuation.definition.tag.end.html
-#                   ^ -punctuation.definition.tag.end.html
+#                   ^ - punctuation.definition.tag.end.html
 #          ^^^^^^^^^ entity.name.tag.end.surface
 #         ^ punctuation.accessor.dot.surface
 #      ^^^ entity.name.tag.end.surface
 #     ^ punctuation.accessor.dot.surface
 # ^^^^ entity.name.tag.end.surface
+#^^^^^^^^^^^^^^^^^^^^^ meta.tag.other.surface
 
 <Card {=@prop} prop={@prop}>
-#                         ^ punctuation.section.interpolation.end.elixir
+#                         ^ punctuation.section.embedded.end.elixir
 #                     ^^^^ variable.other.constant.elixir
 #                    ^ keyword.operator.attribute.elixir
-#                   ^ punctuation.section.interpolation.begin.elixir
-#                   ^^^^^^^ source.elixir.interpolated.html
+#                    ^^^^^ source.elixir.embedded.html
+#                   ^ punctuation.section.embedded.begin.elixir
 #                  ^ punctuation.separator.key-value.html
 #              ^^^^ entity.other.attribute-name.html
-#            ^ punctuation.section.interpolation.end.elixir
+#            ^ punctuation.section.embedded.end.elixir
 #        ^^^^ variable.other.constant.elixir
 #       ^ keyword.operator.attribute.elixir
 #      ^ keyword.operator.match.elixir
-#     ^ punctuation.section.interpolation.begin.elixir
-#     ^^^^^^^^ source.elixir.interpolated.html
+#      ^^^^^^ source.elixir.embedded.html
+#     ^ punctuation.section.embedded.begin.elixir
 </Card>
 
 <#slot :args={value: @value, max: @max} />
-#            ^^^^^^^^^^^^^^^^^^^^^^^^^^ source.elixir.interpolated.html
+#                                     ^ punctuation.section.embedded.end.elixir
+#             ^^^^^^^^^^^^^^^^^^^^^^^^ source.elixir.embedded.html
+#            ^ punctuation.section.embedded.begin.elixir
+#            ^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.attribute-with-value.html meta.embedded.html - string
 #           ^ punctuation.separator.key-value.html
 #       ^^^^ entity.other.attribute-name.surface
+#      ^ punctuation.definition.attribute.begin.surface
+#      ^^^^^^ meta.tag.other.surface meta.attribute-with-value.html - meta.string - meta.embedded
 #^^^^^ entity.name.tag.begin.surface
+#^^^^^^ meta.tag.other.surface - meta.attribute-with-value
 
 <:slot></:slot>
 #        ^^^^^ entity.name.tag.end.surface
 #^^^^^ entity.name.tag.begin.surface
+#^^^^^^^^^^^^^^ meta.tag.other.surface - meta.attribute-with-value
 
   <#Raw>
 #      ^ punctuation.definition.tag.end.html
 #  ^^^^ entity.name.tag.begin.surface
 # ^ punctuation.definition.tag.begin.html
+# ^^^^^^ meta.tag.other.surface - meta.attribute-with-value
   <#Raw>
-#      ^ -punctuation.definition.tag.end.html
-#  ^^^^ -entity.name.tag.begin.surface
-# ^ -punctuation.definition.tag.begin.html
+#      ^ - punctuation
+#  ^^^^ - entity
+# ^ - punctuation
     <:slot args={@args}></:slot>
-#                         ^^^^^ -entity.name
-#          ^^^^^^^^^^^^ -variable -entity -punctuation
-#    ^^^^^ -entity.name
-    <span style="{@style}" {=@prop}></span>
-#                                     ^^^^ entity.name.tag.inline.any.html
-#                ^^^^^^^^ -source.elixir.interpolated
+#                         ^^^^^ - entity
+#          ^^^^^^^^^^^^ - variable - entity - punctuation
+#    ^^^^^ - entity
+    <span style={@style} style="{@style}" {=@prop}></span>
+#                                                    ^^^^ entity.name.tag.inline.any.html
+#                                         ^^^^^^^^ - source.elixir
+#                               ^^^^^^^^ - source.elixir
+#               ^^^^^^^^ - source.elixir
 #    ^^^^ entity.name.tag.inline.any.html
   </#Raw>
 #       ^ punctuation.definition.tag.end.html
 #   ^^^^ entity.name.tag.end.surface
 # ^^ punctuation.definition.tag.begin.html
+# ^^^^^^^ meta.tag.other.surface - meta.attribute-with-value
 
   <#Markdown class="content" opts={x: "y"}>
 #                                         ^ punctuation.definition.tag.end.html
-#                                 ^^^^^^^^ source.elixir.interpolated.html
+#                                         ^ meta.tag.other.surface - meta.attribute-with-value
+#                                        ^ punctuation.section.embedded.end.elixir - source
+#                                  ^^^^^^ source.elixir.embedded.html
+#                                 ^ punctuation.section.embedded.begin.elixir - source
+#                            ^^^^^^^^^^^^^ meta.tag.other.surface meta.attribute-with-value.html
+#                           ^ meta.tag.other.surface - meta.attribute-with-value
 #                  ^^^^^^^^^ string.quoted.double.html
+#            ^^^^^^^^^^^^^^^ meta.tag.other.surface meta.attribute-with-value.class.html
 #            ^^^^^ entity.other.attribute-name.class.html
 #  ^^^^^^^^^ entity.name.tag.begin.surface
 # ^ punctuation.definition.tag.begin.html
+# ^^^^^^^^^^^ meta.tag.other.surface - meta.attribute-with-value
   # Markdown
 <#Markdown>
-#^^^^^^^^^ -entity.name.tag.end.surface
+#^^^^^^^^^ - entity.name.tag.end.surface
 </#Markdown>
 # ^^^^^^^^^ entity.name.tag.end.surface
+#^^^^^^^^^^^ meta.tag.other.surface
+#           ^ - meta.tag
     <span></span>
 #           ^^^^ entity.name.tag.inline.any.html
 #    ^^^^ entity.name.tag.inline.any.html
   </#Markdown>
+#             ^ - meta.tag
 #            ^ punctuation.definition.tag.end.html
 #   ^^^^^^^^^ entity.name.tag.end.surface
 # ^^ punctuation.definition.tag.begin.surface
+# ^^^^^^^^^^^^ meta.tag.other.surface
 
 <style>
   .class {
@@ -142,38 +195,43 @@
 
 <script>
   var x = { y: z };
-# ^^^^^^^^^^^^^^^^^^ text.html.surface source.js.embedded.html -source.elixir
+# ^^^^^^^^^^^^^^^^^^ text.html.surface source.js.embedded.html - source.elixir
 </script>
 
 <!-- <#Markdown></#Markdown> -->
-#                 ^^^^^^^^^ -entity
-#     ^^^^^^^^^ -entity
+#                 ^^^^^^^^^ - entity
+#     ^^^^^^^^^ - entity
 <!-- This {comment} will be sent to the browser -->
-#          ^^^^^^^ variable.other.elixir
-#         ^^^^^^^^^ source.elixir.interpolated.html
+#                 ^ - punctuation.section.embedded.end.elixir - source
+#          ^^^^^^^ - source.elixir.embedded.html variable.other.elixir
+#         ^ - punctuation.section.embedded.begin.elixir - source
+#         ^^^^^^^^^ - meta.embedded.html
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ comment.block.html
  {!-- This {comment} won't be sent to the browser --}
 #                                                 ^^^ punctuation.definition.comment.end.surface
-#           ^^^^^^^ -variable
-#          ^^^^^^^^^ -source.elixir.interpolated -source.elixir.embedded
 #^^^^ punctuation.definition.comment.begin.surface
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ text.html.surface meta.embedded.surface comment.block.surface - source - variable
 
+<tag{@a} />
+#   ^^^^ - source.elixir
+#^^^^^^^ entity.name.tag.begin.html
 
 <{}}>{@x}</{}}>
 #          ^^^ entity.name.tag.end.html
-#    ^^^^ source.elixir.embedded.html
+#     ^^ source.elixir.embedded.html
 #^^^ entity.name.tag.begin.html
 <...>{@x}</...>
 #          ^^^ entity.name.tag.end.html
-#    ^^^^ source.elixir.embedded.html
+#     ^^ source.elixir.embedded.html
 #^^^ entity.name.tag.begin.html
 <{x}>{@x}</{x}>
-#          ^^^ entity.name.tag.end.html -source.elixir
+#          ^^^ entity.name.tag.end.html - source.elixir
 #      ^ variable.other.constant.elixir
+#     ^^ source.elixir.embedded.html
 #     ^ keyword.operator.attribute.elixir
-#    ^^^^ source.elixir.embedded.html
-#^^^ entity.name.tag.begin.html -source.elixir
+#^^^ entity.name.tag.begin.html - source.elixir
 
 <.not_a_func>
-#^^^^^^^^^^^ entity.name.tag.begin.html -variable.function
+#^^^^^^^^^^^ entity.name.tag.begin.html - variable.function
 </.not_a_func>
-# ^^^^^^^^^^^ entity.name.tag.end.html -variable.function
+# ^^^^^^^^^^^ entity.name.tag.end.html - variable.function
