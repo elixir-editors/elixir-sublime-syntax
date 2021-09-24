@@ -7,7 +7,9 @@
 #  ^^^ meta.string.elixir punctuation.definition.string.begin.elixir
 
   <Some.App.Component x={y}>
-#                       ^^^ source.elixir.interpolated.html
+#                         ^ punctuation.section.embedded.end.elixir - source.elixir.embedded
+#                        ^ source.elixir.embedded.html
+#                       ^ punctuation.section.embedded.begin.elixir - source.elixir.embedded
 #                     ^ entity.other.attribute-name.html
 #           ^^^^^^^^^ entity.name.tag.begin.surface
 #       ^^^ entity.name.tag.begin.surface
