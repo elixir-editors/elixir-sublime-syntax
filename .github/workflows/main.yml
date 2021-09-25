@@ -3,11 +3,13 @@ name: Syntax Tests
 on:
   push:
     paths:
+      - '.github/workflows/main.yml'
       - '**.sublime-syntax'
       - '**/syntax_test*'
       - '**.tmPreferences'
   pull_request:
     paths:
+      - '.github/workflows/main.yml'
       - '**.sublime-syntax'
       - '**/syntax_test*'
       - '**.tmPreferences'
@@ -21,5 +23,5 @@ jobs:
       - uses: SublimeText/syntax-test-action@v2
         with:
           build: 4113
-          default_packages: master
+          default_packages: v4113
           package_name: ElixirSyntax
