@@ -26,7 +26,7 @@ contexts:
     - include: html-custom-tags
     - include: surface-blocks
     - include: surface-comment
-    - include: elixir-interpolation
+    - include: elixir-embedded
 
   tag-attributes:
     - meta_prepend: true
@@ -225,6 +225,23 @@ contexts:
       pop: 1
 
   # Elixir:
+
+  elixir-embedded:
+    - match: \{
+      scope: punctuation.section.embedded.begin.surface
+      set: elixir-embedded-content-pop
+
+  elixir-embedded-content-pop:
+    - meta_scope: meta.embedded.surface
+    - meta_content_scope: source.elixir.embedded.html
+    - include: elixir-embedded-end-pop
+    - include: scope:source.elixir
+      apply_prototype: true
+
+  elixir-embedded-end-pop:
+    - match: \}
+      scope: punctuation.section.embedded.end.surface
+      pop: 1
 
   elixir-interpolation:
     - include: HTML (HEEx).sublime-syntax#elixir-interpolation
