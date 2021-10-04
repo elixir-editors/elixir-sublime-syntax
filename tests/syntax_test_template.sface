@@ -26,10 +26,10 @@
 #              ^^^^^^^^ meta.attribute-with-value.class.html meta.string.html - meta.interpolation
     </span>
     {i + 1}
-#         ^ punctuation.section.interpolation.end.elixir - source
-#    ^^^^^ source.elixir.interpolated.html
-#   ^ punctuation.section.interpolation.begin.elixir - source
-#   ^^^^^^^ meta.interpolation.html
+#         ^ punctuation.section.embedded.end.surface - source
+#    ^^^^^ source.elixir.embedded.html
+#   ^ punctuation.section.embedded.begin.surface - source
+#   ^^^^^^^ meta.embedded.surface
   {#else}
 #   ^^^^ keyword.control.conditional.surface
   {#elsei}
@@ -59,6 +59,11 @@
 #^^^^ entity.name.tag.begin.surface
 #^^^^^^^^^^^^^^^^^^^^^^^^^ meta.tag.other.surface
   {#case @value}
+#         ^^^^^ variable.other.constant.elixir
+#   ^^^^ keyword.control.conditional.surface
+#              ^ punctuation.section.embedded.end.surface
+# ^^punctuation.section.embedded.begin.surface
+# ^^^^^^^^^^^^^^ meta.embedded.surface
     {#match [{_, first} | _]}
 #                           ^ punctuation.section.embedded.end.surface
 #                     ^ punctuation.section.sequence.end.elixir
@@ -66,10 +71,10 @@
 #            ^ punctuation.section.sequence.begin.elixir
 #   ^^ punctuation.section.embedded.begin.surface
       First {first}
-#                 ^ punctuation.section.interpolation.end.elixir - source
-#            ^^^^^ source.elixir.interpolated.html variable.other.elixir
-#           ^ punctuation.section.interpolation.begin.elixir - source
-#           ^^^^^^^ meta.interpolation.html
+#                 ^ punctuation.section.embedded.end.surface - source
+#            ^^^^^ source.elixir.embedded.html variable.other.elixir
+#           ^ punctuation.section.embedded.begin.surface - source
+#           ^^^^^^^ meta.embedded.surface
     {#match []}
 #           ^^ meta.brackets.elixir
       Value is empty
@@ -202,16 +207,16 @@
 
 <{}}>{@x}</{}}>
 #          ^^^ entity.name.tag.end.html
-#     ^^ source.elixir.interpolated.html
+#     ^^ source.elixir.embedded.html
 #^^^ entity.name.tag.begin.html
 <...>{@x}</...>
 #          ^^^ entity.name.tag.end.html
-#     ^^ source.elixir.interpolated.html
+#     ^^ source.elixir.embedded.html
 #^^^ entity.name.tag.begin.html
 <{x}>{@x}</{x}>
 #          ^^^ entity.name.tag.end.html -source.elixir
 #      ^ variable.other.constant.elixir
-#     ^^ source.elixir.interpolated.html
+#     ^^ source.elixir.embedded.html
 #     ^ keyword.operator.attribute.elixir
 #^^^ entity.name.tag.begin.html -source.elixir
 
@@ -219,7 +224,3 @@
 #^^^^^^^^^^^ entity.name.tag.begin.html -variable.function
 </.not_a_func>
 # ^^^^^^^^^^^ entity.name.tag.end.html -variable.function
-
-<div class={@my_class}>
-  Name: {String.upcase(@name)}
-</div>
