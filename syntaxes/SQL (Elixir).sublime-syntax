@@ -88,4 +88,4 @@ contexts:
         # Comments can be nested.
         - include: comment
         - match: \*/
-          pop: true
+          pop: 1
