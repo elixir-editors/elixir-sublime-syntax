@@ -4,15 +4,18 @@ ElixirSyntax was initially based on the [Elixir.tmbundle package](https://github
 
 ## Features
 
-* Working `Goto Definition` functionality
+* Working `Goto Definition` command.
 * HTML template highlighting:
   - HEEx: <img src="images/elixir_heex_example.svg" width="260" align="top">
   - Surface: <img src="images/elixir_surface_example.svg" width="215" align="top">
   - LiveView: <img src="images/elixir_liveview_example.svg" width="230" align="top">
 * Full PCRE syntax highlighting: <img src="images/elixir_regex_example.svg" width="270" align="top">
 * Type highlighting: <img src="images/elixir_type_example.svg" width="620" align="top">
+* Theme adaptations for Mariana and Monokai.
+* Build commands: `mix format`, `mix test`, `elixir $file`
+* Snippets for `IO.inspect`, `tap` and `then`.
 
-Some of the other provided features are not immediately evident. Among them are:
+Some highlighting features are not immediately evident. Among them are:
 
 ### The `fragment` and `sql` functions
 
@@ -41,6 +44,10 @@ Embed JSON strings in your Elixir code. Notice the interpolated Elixir code is c
 <blockquote>
 <img src="images/elixir_yaml_example.svg" width="100%">
 </blockquote>
+
+## Recommended packages
+
+* [LSP](https://packagecontrol.io/packages/LSP) and [LSP-elixir](https://packagecontrol.io/packages/LSP-elixir) for intelligent code completion.
 
 ## Changes
 
