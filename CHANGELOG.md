@@ -1,5 +1,11 @@
 # Changelog
 
+## [v2.3.0] – 2021-12-17
+  - Syntaxes: refactored Surface/HEEx/EEx with many improvements (thanks to @deathaxe).
+  - Themes: slightly darken the embed punctuation markers for Surface and (H)EEx tags.
+  - Elixir: allow digits in sigil string modifiers.
+  - Preferences: index Elixir `@attribute` definitions for "Goto Definition".
+
 ## [v2.2.0] – 2021-09-18
   - Syntax: added support for the [HEEx](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.Helpers.html#sigil_H/2) template syntax inside the `~H` sigil.
   - Syntax: added support for the [Surface](https://surface-ui.org/template_syntax) template syntax inside the `~F` sigil.
