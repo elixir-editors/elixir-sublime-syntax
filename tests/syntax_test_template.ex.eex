@@ -18,15 +18,16 @@
 defmodule <%= @module %>.View do
 #                        ^^^^ entity.name.namespace
 #                       ^ punctuation.accessor.dot
-#                     ^ entity.name.tag.ex.eex
+#                     ^^ punctuation.section.embedded.end.eex
 #             ^ keyword.operator.attribute
-#          ^^ entity.name.tag.ex.eex
+#         ^^^ punctuation.section.embedded.begin.eex
 end
 
 alias <%= @web_namespace %>.Router.Helpers, as: Routes
 #                                               ^^^^^^ entity.name.namespace
 #                          ^ punctuation.accessor.dot
-#      ^^ entity.name.tag.ex.eex
+#                        ^^ punctuation.section.embedded.end.eex
+#     ^^^ punctuation.section.embedded.begin.eex
 
 :<%= @key %>
 #<- constant.other.symbol punctuation.definition.constant.begin
@@ -41,50 +42,48 @@ alias <%= @web_namespace %>.Router.Helpers, as: Routes
 #     are also highlighted inside strings.
 # FIXME: make negative check with "-entity" when solved.
 "<%= string %>"
-#           ^ entity.name.tag.ex.eex
-# ^^ entity.name.tag.ex.eex
+#           ^^ punctuation.section.embedded.end.eex
+#^^^ punctuation.section.embedded.begin.eex
 
 M1.<%= M2 %>.f()
 #              ^ punctuation.section.arguments.end
 #             ^ punctuation.section.arguments.begin
 #            ^ variable.function
 #           ^ punctuation.accessor.dot
-#         ^ entity.name.tag.ex.eex
+#         ^^ punctuation.section.embedded.end.eex
 #      ^^ constant.other.module
-#   ^^ entity.name.tag.ex.eex
+#  ^^^ punctuation.section.embedded.begin.eex
 # ^ punctuation.accessor.dot
 
 x.<%= :member %>()
 #                ^ punctuation.section.arguments.end
 #               ^ punctuation.section.arguments.begin
-#             ^ entity.name.tag.ex.eex
+#             ^^ punctuation.section.embedded.end.eex
 #     ^^^^^^^ constant.other.symbol
-#  ^^ entity.name.tag.ex.eex
+# ^^^ punctuation.section.embedded.begin.eex
 #^ punctuation.accessor.dot
                  ^ punctuation.section.arguments.end
                 ^ punctuation.section.arguments.begin
 
 @type <%= :t %> :: any
-#            ^ entity.name.tag.ex.eex
-#      ^^ entity.name.tag.ex.eex
+#            ^^ punctuation.section.embedded.end.eex
+#     ^^^ punctuation.section.embedded.begin.eex
                    ^^^ support.type
 
 @spec <%= :name %>(any)
 #                  ^^^ support.type
-#               ^ entity.name.tag.ex.eex
-#      ^^ entity.name.tag.ex.eex
+#               ^^ punctuation.section.embedded.end.eex
+#     ^^^ punctuation.section.embedded.begin.eex
                       ^ punctuation.definition.parameters.end
                   ^ punctuation.definition.parameters.begin
 
  &<%= %>
-#     ^ entity.name.tag.ex.eex
-#  ^^ entity.name.tag.ex.eex
+#     ^^ punctuation.section.embedded.end.eex
+# ^^^ punctuation.section.embedded.begin.eex
 #^ keyword.operator.capture
 
 # <%= @web_app_name %>
-#                    ^ punctuation.section.embedded.end.ex.eex
-#                   ^ entity.name.tag.ex.eex
-#  ^^ entity.name.tag.ex.eex
-# ^ punctuation.section.embedded.begin.ex.eex
+#                   ^^ punctuation.section.embedded.end.eex
+# ^^^ punctuation.section.embedded.begin.eex
 #^^^^^^^^^^^^^^^^^^^^^^ comment.line.number-sign.elixir
 #<- comment.line.number-sign.elixir punctuation.definition.comment.elixir
