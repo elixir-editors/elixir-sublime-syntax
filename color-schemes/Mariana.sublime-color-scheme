@@ -6,11 +6,12 @@
   },
   "rules":
   [
-    {
-      "name": "EEx tag",
-      "scope": "punctuation.section.embedded.begin.eex | punctuation.section.embedded.end.eex",
-      "foreground": "var(blue5)"
-    },
+    // NB: commented out. See: "Embedded punctuation"
+    // {
+    //   "name": "EEx tag",
+    //   "scope": "punctuation.section.embedded.begin.eex | punctuation.section.embedded.end.eex",
+    //   "foreground": "var(blue5)"
+    // },
     {
       "name": "EEx embedded",
       "scope": "source.elixir.embedded.html",
@@ -101,6 +102,16 @@
       "name": "Embedded or interpolated Elixir",
       "scope": "source.elixir.embedded | source.elixir.interpolated",
       "background": "color(var(white) a(0.03))"
+    },
+    {
+      "name": "Interpolation punctuation",
+      "scope": "punctuation.section.interpolation.begin.elixir | punctuation.section.interpolation.end.elixir",
+      "foreground": "color(var(white) l(- 30%))"
+    },
+    {
+      "name": "Embedded punctuation",
+      "scope": "punctuation.section.embedded.begin.elixir | punctuation.section.embedded.end.elixir | punctuation.section.embedded.begin.eex | punctuation.section.embedded.end.eex | punctuation.section.embedded.begin.surface | punctuation.section.embedded.end.surface",
+      "foreground": "color(var(white) l(- 30%))"
     },
     {
       "name": "SQL boolean",
