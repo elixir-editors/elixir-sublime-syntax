@@ -43,7 +43,7 @@ contexts:
         - meta_scope: meta.quote.pcree
         - match: \\E
           scope: keyword.control.quote.pcree punctuation.definition.quote.end.pcree
-          pop: true
+          pop: 1
         - include: literal
 
   subroutine_call:
@@ -186,7 +186,7 @@ contexts:
           scope: constant.character.escape.ascii.pcree
           captures:
             1: invalid.illegal.escape.ascii.pcree
-          pop: true
+          pop: 1
     - match: \\[aefnrt]
       scope: constant.character.escape.non-printable.pcree
     - match: \\.
@@ -229,7 +229,7 @@ contexts:
                 - meta_scope: meta.backtracking.pcree
                 - meta_content_scope: entity.name.constant.pcree
                 - match: (?=\))
-                  pop: true
+                  pop: 1
             - include: backtracking_verb_end
         - include: backtracking_verb_end
 
@@ -301,14 +301,14 @@ contexts:
     - meta_content_scope: meta.group.pcree
     - match: \)
       scope: meta.group.pcree keyword.control.group.pcree punctuation.definition.group.end.pcree
-      pop: true
+      pop: 1
     - include: expression
 
   conditional_subpattern_pop:
     - meta_content_scope: meta.group.pcree
     - include: conditional_subpattern
     - match: ''
-      pop: true
+      pop: 1
 
   conditional_subpattern:
     - match: \?((\()(\)))
@@ -379,7 +379,7 @@ contexts:
         - include: class_set_escape_sequence
         - match: \]
           scope: keyword.control.set.pcree punctuation.definition.set.end.pcree
-          pop: true
+          pop: 1
         - include: literal
 
   character_range:
@@ -399,7 +399,7 @@ contexts:
                   captures:
                     1: invalid.illegal.range.pcree
                     2: constant.other.range.pcree
-                  pop: true
+                  pop: 1
 
   # Escape sequences inside [...]
   class_set_escape_sequence:
@@ -427,7 +427,7 @@ contexts:
         - meta_scope: constant.other.set.posix.pcree
         - match: :]
           scope: keyword.control.set.posix.pcree punctuation.definition.posix-class.end.pcree
-          pop: true
+          pop: 1
         - match: (\^?)((?>alnum|alpha|ascii|blank|cntrl|digit|graph|lower|print|punct|space|upper|word|xdigit))
           captures:
             1: keyword.control.set.negation.pcree
@@ -456,7 +456,7 @@ contexts:
   unexpected_quantifier_pop:
     - include: unexpected_quantifier
     - match: ''
-      pop: true
+      pop: 1
 
   dot_meta_char:
     - match: \.
@@ -468,12 +468,12 @@ contexts:
         - include: escape_sequence
         - match: '#'
           scope: meta.literal.pcree
-          pop: true
+          pop: 1
     - match: (?<=\s)#
       push:
         - meta_scope: comment.line.number-sign.pcree
         - match: \n
-          pop: true
+          pop: 1
 
   literal:
     - match: .|\n
