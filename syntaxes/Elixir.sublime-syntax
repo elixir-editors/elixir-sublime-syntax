@@ -1522,7 +1522,7 @@ contexts:
       set: string_modifiers_and_pop
 
   string_modifiers:
-    - match: '[a-zA-Z]+'
+    - match: '[a-zA-Z\d]+'
       scope: meta.string.elixir string.quoted.modifiers.elixir storage.type.string.elixir
     - match: \w+
       scope: invalid.illegal.non-ascii-modifier.elixir
