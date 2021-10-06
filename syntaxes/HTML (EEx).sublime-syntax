@@ -50,7 +50,7 @@ contexts:
     - clear_scopes: 1  # clear string scope
     - meta_include_prototype: false
     - meta_scope: meta.embedded.eex
-    - meta_content_scope: source.elixir.embedded.html
+    - meta_content_scope: source.elixir.embedded.eex
     - include: eex-embedded-content-pop
 
   eex-embedded:
@@ -74,7 +74,7 @@ contexts:
   eex-embedded-content-pop:
     - meta_include_prototype: false
     - meta_scope: meta.embedded.eex
-    - meta_content_scope: source.elixir.embedded.html
+    - meta_content_scope: source.elixir.embedded.eex
     - include: eex-embedded-end-pop
     - include: scope:source.elixir
       apply_prototype: true
