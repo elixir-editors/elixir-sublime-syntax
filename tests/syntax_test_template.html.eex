@@ -5,7 +5,7 @@
 <html lang="<%= "en" %>">
 <!--                   ^ meta.attribute-with-value.html meta.string.html - meta.interpolation -->
 <!--                 ^^ meta.attribute-with-value.html meta.string.html meta.embedded.eex - source -->
-<!--           ^^^^^^ meta.attribute-with-value.html meta.string.html meta.embedded.eex source.elixir.embedded.html -->
+<!--           ^^^^^^ meta.attribute-with-value.html meta.string.html meta.embedded.eex source.elixir.embedded.eex -->
 <!--        ^^^ meta.attribute-with-value.html meta.string.html meta.embedded.eex - source -->
 <!--       ^ meta.attribute-with-value.html meta.string.html - meta.interpolation -->
 <!--                   ^ punctuation.definition.string.end.html -->
@@ -30,7 +30,7 @@
 
      <% func arg %>
 <!--             ^^ text.html.eex meta.embedded.eex - source -->
-<!--   ^^^^^^^^^^ text.html.eex meta.embedded.eex source.elixir.embedded.html -->
+<!--   ^^^^^^^^^^ text.html.eex meta.embedded.eex source.elixir.embedded.eex -->
 <!-- ^^ text.html.eex meta.embedded.eex - source -->
 <!--             ^^ punctuation.section.embedded.end.eex -->
 <!--         ^^^ variable.other.elixir -->
@@ -39,7 +39,7 @@
 
      <%= if true? do %>
 <!--                 ^^ text.html.eex meta.embedded.eex - source -->
-<!--    ^^^^^^^^^^^^^ text.html.eex meta.embedded.eex source.elixir.embedded.html -->
+<!--    ^^^^^^^^^^^^^ text.html.eex meta.embedded.eex source.elixir.embedded.eex -->
 <!-- ^^^ text.html.eex meta.embedded.eex - source -->
 <!--                 ^^ punctuation.section.embedded.end.eex -->
 <!--              ^^ keyword.context.block.do.elixir -->
@@ -48,7 +48,7 @@
 <!-- ^^^ punctuation.section.embedded.begin.eex -->
      <% end %>
 <!--        ^^ text.html.eex meta.embedded.eex - source -->
-<!--   ^^^^^ text.html.eex meta.embedded.eex source.elixir.embedded.html -->
+<!--   ^^^^^ text.html.eex meta.embedded.eex source.elixir.embedded.eex -->
 <!-- ^^ text.html.eex meta.embedded.eex - source -->
 <!--        ^^ punctuation.section.embedded.end.eex -->
 <!--    ^^^ keyword.context.block.end.elixir -->
@@ -56,7 +56,7 @@
 
      <%% quoted :code %>
 <!--                  ^^ text.html.eex meta.embedded.eex - source -->
-<!--    ^^^^^^^^^^^^^^ text.html.eex meta.embedded.eex source.elixir.embedded.html -->
+<!--    ^^^^^^^^^^^^^^ text.html.eex meta.embedded.eex source.elixir.embedded.eex -->
 <!-- ^^^ text.html.eex meta.embedded.eex - source -->
 <!--                  ^^ punctuation.section.embedded.end.eex -->
 <!--            ^^^^^ constant.other.symbol.elixir -->
@@ -65,7 +65,7 @@
 
      <%%= quoted :result %>
 <!--                     ^^ text.html.eex meta.embedded.eex - source -->
-<!--     ^^^^^^^^^^^^^^^^ text.html.eex meta.embedded.eex source.elixir.embedded.html -->
+<!--     ^^^^^^^^^^^^^^^^ text.html.eex meta.embedded.eex source.elixir.embedded.eex -->
 <!-- ^^^^ text.html.eex meta.embedded.eex - source -->
 <!--                     ^^ punctuation.section.embedded.end.eex -->
 <!--             ^^^^^^^ constant.other.symbol.elixir -->
