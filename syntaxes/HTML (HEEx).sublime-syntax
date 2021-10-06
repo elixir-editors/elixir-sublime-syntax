@@ -1,11 +1,14 @@
 %YAML 1.2
 ---
-version: 2
 name: HTML (HEEx)
 scope: text.html.heex
+version: 2
+
 extends: Packages/HTML/HTML.sublime-syntax
 
-file_extensions: [heex]
+file_extensions:
+  - heex
+
 authors:
   - Aziz Köksal <aziz.koeksal@gmail.com>
   - deathaxe <https://github.com/deathaxe>

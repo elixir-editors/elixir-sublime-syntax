@@ -1,13 +1,19 @@
 %YAML 1.2
 ---
-version: 2
 name: Elixir (EEx)
 scope: source.elixir.eex
+version: 2
+
 extends: Elixir.sublime-syntax
 
-file_extensions: [ex.eex, exs.eex]
+file_extensions:
+  - ex.eex
+  - exs.eex
+
 first_line_match: ^#\s*exs?\.eex
-authors: [Aziz Köksal <aziz.koeksal@gmail.com>]
+
+authors:
+  - Aziz Köksal <aziz.koeksal@gmail.com>
 
 contexts:
   # Use prototype to work around the "context sanity limit" error.
