@@ -1,11 +1,15 @@
 %YAML 1.2
 ---
+# Perl Compatible Regular Expressions with a focus on Erlang (http://erlang.org/doc/man/re.html)
 name: PCRE (Erlang)
 scope: source.pcree
-file_extensions: [pcree]
 hidden: true
-comment: Perl Compatible Regular Expressions with a focus on Erlang (http://erlang.org/doc/man/re.html)
-authors: [Aziz Köksal <aziz.koeksal@gmail.com>]
+
+file_extensions:
+  - pcree
+
+authors:
+  - Aziz Köksal <aziz.koeksal@gmail.com>
 
 variables:
   character_quantifier: '[?*+]'

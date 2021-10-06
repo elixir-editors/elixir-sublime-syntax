@@ -1,11 +1,14 @@
 %YAML 1.2
 ---
-version: 2
 name: HTML (Surface)
 scope: text.html.surface
+version: 2
+
 extends: Packages/HTML/HTML.sublime-syntax
 
-file_extensions: [sface]
+file_extensions:
+  - sface
+
 authors:
   - Aziz Köksal <aziz.koeksal@gmail.com>
   - deathaxe <https://github.com/deathaxe>

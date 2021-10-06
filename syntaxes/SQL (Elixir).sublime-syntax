@@ -3,8 +3,11 @@
 name: SQL (Elixir)
 scope: source.ex.sql
 
-file_extensions: [ex.sql]
-authors: [Aziz Köksal <aziz.koeksal@gmail.com>]
+file_extensions:
+  - ex.sql
+
+authors:
+  - Aziz Köksal <aziz.koeksal@gmail.com>
 
 contexts:
   main:

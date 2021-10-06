@@ -1,11 +1,15 @@
 %YAML 1.2
 ---
-version: 2
 name: HTML (EEx)
 scope: text.html.eex
+version: 2
+
 extends: Packages/HTML/HTML.sublime-syntax
 
-file_extensions: [html.eex, html.leex]
+file_extensions:
+  - html.eex
+  - html.leex
+
 authors:
   - Aziz Köksal <aziz.koeksal@gmail.com>
   - deathaxe <https://github.com/deathaxe>
