@@ -65,7 +65,8 @@ contexts:
         16: punctuation.comma.sql
         17: punctuation.terminator.sql
 
-    - include: comment
+    - include: nested-comment
+    - include: scope:source.sql#comments
     - include: scope:source.sql
 
     - match: |
@@ -80,12 +81,12 @@ contexts:
         4: punctuation.separator.decimal.sql
         5: punctuation.separator.decimal.sql
 
-  comment:
+  nested-comment:
     - match: /\*
       scope: punctuation.definition.comment.sql
       push:
         - meta_scope: comment.block.sql
         # Comments can be nested.
-        - include: comment
+        - include: nested-comment
         - match: \*/
           pop: 1
