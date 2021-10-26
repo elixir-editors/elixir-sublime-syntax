@@ -262,7 +262,7 @@ fragment("t AT TIME ZONE")
 #                                                          ^^^^^^^ keyword.other.sql
 #                                                     ^^^ keyword.other.sql
 #                                              ^^^^^ keyword.other.sql
-#                                       ^^^^^ constant.boolean.sql
+#                                       ^^^^^ constant.language.boolean.sql
 #                               ^^^^^^ keyword.other.sql
 #                          ^^^ keyword.other.DML.sql
 #                    ^^^^ keyword.other.DML.sql
@@ -285,7 +285,7 @@ fragment("t AT TIME ZONE")
 #                                                                        ^^^^ keyword.other.sql
 #                                                                    ^^ keyword.other.sql
 #                                                            ^^^^^^ keyword.other.sql
-#                                                      ^^^^ constant.language.sql
+#                                                      ^^^^ constant.language.null.sql
 #                                                 ^^^ keyword.other.sql
 #                                        ^^^^^^^ keyword.other.sql
 #                        ^^^^^^^^^^^^^^ support.function.scalar.sql
@@ -305,7 +305,7 @@ fragment("t AT TIME ZONE")
   SOME; SYMMETRIC; TABLE; TABLESAMPLE; THEN; TO; TRAILING; TRUE; UNION; UNIQUE;
 #                                                                       ^^^^^^ keyword.other.sql
 #                                                                ^^^^^ keyword.other.DML.sql
-#                                                          ^^^^ constant.boolean.sql
+#                                                          ^^^^ constant.language.boolean.sql
 #                                                ^^^^^^^^ keyword.other.sql
 #                                            ^^ keyword.other.sql
 #                                      ^^^^ keyword.other.DML.sql
