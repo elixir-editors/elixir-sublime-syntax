@@ -1,5 +1,29 @@
 # SYNTAX TEST "HTML (Surface).sublime-syntax"
 
+<html lang="{"en"}" lang={"en"}>
+<!--                           ^ punctuation.definition.tag.end.html -->
+<!--             ^ punctuation.section.embedded.end.surface -->
+<!--         ^^^^ string.quoted.double.elixir -->
+<!--        ^ punctuation.section.embedded.begin.surface -->
+<!--       ^ punctuation.definition.string.begin.html -->
+
+<!-- HTML comment with {"embedded"} ?? -->
+<!--                              ^ punctuation.section.embedded.end.surface - source -->
+<!--                    ^^^^^^^^^^ source.elixir.embedded.surface -->
+<!--                   ^ punctuation.section.embedded.begin.surface - source -->
+<!--                   ^^^^^^^^^^^^ comment.block.html meta.embedded.surface -->
+
+     <%# Comment %>
+<!--              ^ punctuation.definition.tag.end.html -->
+<!--             ^ entity.other.attribute-name -->
+<!--     ^^^^^^^ entity.other.attribute-name -->
+<!--  ^^ entity.name.tag -->
+<!-- ^ punctuation.definition.tag.begin.html -->
+<!-- ^^^^^^^^^^^^^^ meta.tag - meta.embedded - comment -->
+
+     <br class="<%# Comment %>" />
+<!--           ^^^^^^^^^^^^^^^^ meta.string.html string.quoted.double.html - meta.embedded - comment -->
+
 <Rating :let={value: value, max: max} id="rating_2">
 #                                        ^^^^^^^^^^ string.quoted.double
 #                                       ^ punctuation.separator.key-value
