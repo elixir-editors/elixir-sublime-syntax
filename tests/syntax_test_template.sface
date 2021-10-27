@@ -160,16 +160,17 @@
 # ^ punctuation.definition.tag.begin.html
 # ^^^^^^ meta.tag.other.surface - meta.attribute-with-value
   <#Raw>
-#      ^ -punctuation.definition.tag.end.html
-#  ^^^^ -entity.name.tag.begin.surface
-# ^ -punctuation.definition.tag.begin.html
+#      ^ - punctuation
+#  ^^^^ - entity
+# ^ - punctuation
     <:slot args={@args}></:slot>
-#                         ^^^^^ -entity.name
-#          ^^^^^^^^^^^^ -variable -entity -punctuation
-#    ^^^^^ -entity.name
-    <span style="{@style}" {=@prop}></span>
-#                                     ^^^^ entity.name.tag.inline.any.html
-#                ^^^^^^^^ -source.elixir.interpolated
+#                         ^^^^^ - entity
+#          ^^^^^^^^^^^^ - variable - entity - punctuation
+#    ^^^^^ - entity
+    <span style={@style} style="{@style}" {=@prop}></span>
+#                                                    ^^^^ entity.name.tag.inline.any.html
+#                               ^^^^^^^^ - source.elixir
+#               ^^^^^^^^ - source.elixir
 #    ^^^^ entity.name.tag.inline.any.html
   </#Raw>
 #       ^ punctuation.definition.tag.end.html
@@ -233,6 +234,10 @@
 #                                                 ^^^ punctuation.definition.comment.end.surface
 #^^^^ punctuation.definition.comment.begin.surface
 #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ text.html.surface meta.embedded.surface comment.block.surface - source - variable
+
+<tag{@a} />
+#   ^^^^ - source.elixir
+#^^^^^^^ entity.name.tag.begin.html
 
 <{}}>{@x}</{}}>
 #          ^^^ entity.name.tag.end.html
