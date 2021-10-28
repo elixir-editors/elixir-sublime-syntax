@@ -21,26 +21,38 @@ variables:
 contexts:
   # HTML overrides:
 
+  comment-content:
+    - meta_prepend: true
+    - include: elixir-embedded
+
   tag-other:
     - meta_prepend: true
     - include: heex-tags
     - include: HTML (EEx).sublime-syntax#eex-embedded
 
-  tag-generic-attribute-name:
+  tag-class-attribute-value:
     - meta_prepend: true
-    - include: elixir-interpolation
+    - include: elixir-embedded-pop
 
-  tag-attribute-value-content:
+  tag-event-attribute-value:
     - meta_prepend: true
-    - include: elixir-interpolation
+    - include: elixir-embedded-pop
 
-  strings-common-content:
+  tag-generic-attribute-value:
     - meta_prepend: true
-    - include: elixir-interpolation
+    - include: elixir-embedded-pop
 
-  comment-content:
+  tag-href-attribute-value:
     - meta_prepend: true
-    - include: elixir-embedded
+    - include: elixir-embedded-pop
+
+  tag-id-attribute-value:
+    - meta_prepend: true
+    - include: elixir-embedded-pop
+
+  tag-style-attribute-value:
+    - meta_prepend: true
+    - include: elixir-embedded-pop
 
   # HEEx:
 
@@ -88,6 +100,11 @@ contexts:
       scope: punctuation.section.embedded.begin.heex
       push: elixir-embedded-content-pop
 
+  elixir-embedded-pop:
+    - match: \{
+      scope: punctuation.section.embedded.begin.heex
+      set: elixir-embedded-content-pop
+
   elixir-embedded-content-pop:
     - meta_scope: meta.embedded.heex
     - meta_content_scope: source.elixir.embedded.heex
@@ -96,14 +113,3 @@ contexts:
       pop: 1
     - include: scope:source.elixir
       apply_prototype: true
-
-  elixir-interpolation:
-    - match: \{
-      scope: punctuation.section.embedded.begin.heex
-      push: elixir-interpolation-content-pop
-
-  elixir-interpolation-content-pop:
-    - clear_scopes: 1
-    - meta_scope: meta.embedded.heex
-    - meta_content_scope: source.elixir.embedded.heex
-    - include: elixir-embedded-content-pop
