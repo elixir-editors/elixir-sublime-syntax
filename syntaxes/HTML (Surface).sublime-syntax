@@ -191,42 +191,42 @@ contexts:
   surface-blocks:
     - match: ({/)(?:(case|elseif|else|if|unless)|(for)|([a-z]+))(})
       captures:
-        0: meta.embedded.surface
-        1: punctuation.section.embedded.begin.surface
+        0: meta.embedded.html
+        1: punctuation.section.embedded.begin.html
         2: keyword.control.conditional.surface
         3: keyword.control.loop.surface
         4: keyword.control.surface
-        5: punctuation.section.embedded.end.surface
+        5: punctuation.section.embedded.end.html
     - match: ({#)(match)\b
       captures:
-        1: punctuation.section.embedded.begin.surface
+        1: punctuation.section.embedded.begin.html
         2: keyword.control.conditional.surface
       push: surface-match-block-content-pop
     - match: ({#)(?:(case|elseif|else|if|unless)|(for)|([a-z]+))\b
       captures:
-        1: punctuation.section.embedded.begin.surface
+        1: punctuation.section.embedded.begin.html
         2: keyword.control.conditional.surface
         3: keyword.control.loop.surface
         4: keyword.control.surface
       push: surface-conditional-block-content-pop
 
   surface-conditional-block-content-pop:
-    - meta_scope: meta.embedded.surface
-    - meta_content_scope: source.elixir.embedded.surface
+    - meta_scope: meta.embedded.html
+    - meta_content_scope: source.elixir.embedded.html
     - include: surface-block-end-pop
     - include: scope:source.elixir#arguments_ws
       apply_prototype: true
 
   surface-match-block-content-pop:
-    - meta_scope: meta.embedded.surface
-    - meta_content_scope: source.elixir.embedded.surface
+    - meta_scope: meta.embedded.html
+    - meta_content_scope: source.elixir.embedded.html
     - include: surface-block-end-pop
     - include: scope:source.elixir#parameters
       apply_prototype: true
 
   surface-block-end-pop:
     - match: \}
-      scope: punctuation.section.embedded.end.surface
+      scope: punctuation.section.embedded.end.html
       pop: 1
 
   surface-comment:
@@ -235,7 +235,7 @@ contexts:
       push: surface-comment-content-pop
 
   surface-comment-content-pop:
-    - meta_scope: meta.embedded.surface comment.block.surface
+    - meta_scope: meta.embedded.html comment.block.surface
     - match: --}
       scope: punctuation.definition.comment.end.surface
       pop: 1
@@ -243,20 +243,7 @@ contexts:
   # Elixir:
 
   elixir-embedded:
-    - match: \{
-      scope: punctuation.section.embedded.begin.surface
-      push: elixir-embedded-content-pop
+    - include: HTML (HEEx).sublime-syntax#elixir-embedded
 
   elixir-embedded-pop:
-    - match: \{
-      scope: punctuation.section.embedded.begin.surface
-      set: elixir-embedded-content-pop
-
-  elixir-embedded-content-pop:
-    - meta_scope: meta.embedded.surface
-    - meta_content_scope: source.elixir.embedded.surface
-    - match: \}
-      scope: punctuation.section.embedded.end.surface
-      pop: 1
-    - include: scope:source.elixir
-      apply_prototype: true
+    - include: HTML (HEEx).sublime-syntax#elixir-embedded-pop
