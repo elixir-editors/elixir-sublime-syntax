@@ -5,9 +5,16 @@
 
 <html lang="{"en"}" lang={"en"}>
 <!--                           ^ punctuation.definition.tag.end.html -->
-<!--             ^ punctuation.section.embedded.end.heex -->
-<!--         ^^^^ string.quoted.double.elixir -->
-<!--        ^ punctuation.section.embedded.begin.heex -->
+<!--                          ^ punctuation.section.embedded.end.heex -->
+<!--                     ^^^^^^ meta.attribute-with-value.html meta.embedded.heex -->
+<!--                     ^ punctuation.section.embedded.begin.heex -->
+<!--                    ^ punctuation.separator.key-value.html -->
+<!--                ^^^^ entity.other.attribute-name.html -->
+<!--                ^^^^^ meta.attribute-with-value.html - meta.embedded -->
+<!--              ^ invalid.illegal.attribute-name.html -->
+<!--            ^ invalid.illegal.attribute-name.html -->
+<!--          ^^^^^ entity.other.attribute-name.html -->
+<!--       ^^^ meta.string.html string.quoted.double.html -->
 <!--       ^ punctuation.definition.string.begin.html -->
 
 <!-- HTML comment with {"embedded"} ?? -->
@@ -37,13 +44,11 @@
 <!--             ^^^^^^^ source.elixir.embedded.heex meta.string.elixir string.quoted.double.elixir -->
 <!--            ^ punctuation.section.embedded.begin.heex - source -->
 <!--           ^ punctuation.separator.key-value.html -->
-<!--          ^ punctuation.section.embedded.end.heex - string -->
-<!--     ^^^^^ source.elixir.embedded.heex meta.string.elixir string.quoted.double.elixir -->
-<!--    ^ punctuation.section.embedded.begin.heex - source -->
+<!--    ^^^^^^^ entity.other.attribute-name.html -->
 <!--                     ^^ meta.tag.block.any.html - meta.attribute-with-value -->
-<!--            ^^^^^^^^^ meta.tag meta.attribute-with-value.html meta.string.html meta.embedded.heex -->
+<!--            ^^^^^^^^^ meta.tag meta.attribute-with-value.html meta.embedded.heex -->
 <!--           ^ meta.tag meta.attribute-with-value.html - meta.embedded -->
-<!--    ^^^^^^^ meta.tag meta.attribute-with-value.html meta.embedded.heex -->
+<!--    ^^^^^^^ meta.tag meta.attribute-with-value.html - meta.embedded -->
 <!-- ^^^ meta.tag.block.any.html - meta.attribute-with-value -->
 
      <.form>
@@ -61,7 +66,7 @@
 <!-- ^^^^^^^^^^^^^^^^^^^^ meta.tag.other.heex - meta.tag meta.tag -->
 
      <MyApp.User.tag name={@name}>
-<!--                      ^^^^^^^ meta.attribute-with-value.html meta.string.html meta.embedded.heex -->
+<!--                      ^^^^^^^ meta.attribute-with-value.html meta.embedded.heex -->
 <!--                 ^^^^^ meta.attribute-with-value.html - meta.embedded -->
 <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.tag.other.heex - meta.tag meta.tag -->
 <!--                             ^ punctuation.definition.tag.end.html -->
