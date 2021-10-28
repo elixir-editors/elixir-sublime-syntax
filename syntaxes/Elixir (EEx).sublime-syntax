@@ -20,10 +20,10 @@ contexts:
   # An issue that remains is that "<% ... %>" embeds are not independent
   # of the surroundings.
   prototype:
-    - include: eex_begin_tag
-    - include: eex_end_tag
+    - include: eex-begin
+    - include: eex-end
 
-  eex_begin_tag:
+  eex-begin:
     - match: (<%)(#)
       captures:
         1: punctuation.section.embedded.begin.eex
@@ -38,7 +38,7 @@ contexts:
       #   - match: (?=%>|<%)
       #     pop: true
 
-  eex_end_tag:
+  eex-end:
     - match: \s*(%>)
       captures:
         1: punctuation.section.embedded.end.eex
