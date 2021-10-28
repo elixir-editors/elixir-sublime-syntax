@@ -5,9 +5,9 @@
 
 <html lang="{"en"}" lang={"en"}>
 <!--                           ^ punctuation.definition.tag.end.html -->
-<!--                          ^ punctuation.section.embedded.end.heex -->
-<!--                     ^^^^^^ meta.attribute-with-value.html meta.embedded.heex -->
-<!--                     ^ punctuation.section.embedded.begin.heex -->
+<!--                          ^ punctuation.section.embedded.end.html -->
+<!--                     ^^^^^^ meta.attribute-with-value.html meta.embedded.html -->
+<!--                     ^ punctuation.section.embedded.begin.html -->
 <!--                    ^ punctuation.separator.key-value.html -->
 <!--                ^^^^ entity.other.attribute-name.html -->
 <!--                ^^^^^ meta.attribute-with-value.html - meta.embedded -->
@@ -18,10 +18,10 @@
 <!--       ^ punctuation.definition.string.begin.html -->
 
 <!-- HTML comment with {"embedded"} ?? -->
-<!--                              ^ punctuation.section.embedded.end.heex - source -->
-<!--                    ^^^^^^^^^^ source.elixir.embedded.heex -->
-<!--                   ^ punctuation.section.embedded.begin.heex - source -->
-<!--                   ^^^^^^^^^^^^ comment.block.html meta.embedded.heex -->
+<!--                              ^ punctuation.section.embedded.end.html - source -->
+<!--                    ^^^^^^^^^^ source.elixir.embedded.html -->
+<!--                   ^ punctuation.section.embedded.begin.html - source -->
+<!--                   ^^^^^^^^^^^^ comment.block.html meta.embedded.html -->
 
      <%# Comment %>
 <!--             ^^ punctuation.section.embedded.end.eex - comment -->
@@ -40,13 +40,13 @@
 
      <p {"tag"}={"value"} >
 <!--                      ^ punctuation.definition.tag.end.html -->
-<!--                    ^ punctuation.section.embedded.end.heex - source -->
-<!--             ^^^^^^^ source.elixir.embedded.heex meta.string.elixir string.quoted.double.elixir -->
-<!--            ^ punctuation.section.embedded.begin.heex - source -->
+<!--                    ^ punctuation.section.embedded.end.html - source -->
+<!--             ^^^^^^^ source.elixir.embedded.html meta.string.elixir string.quoted.double.elixir -->
+<!--            ^ punctuation.section.embedded.begin.html - source -->
 <!--           ^ punctuation.separator.key-value.html -->
 <!--    ^^^^^^^ entity.other.attribute-name.html -->
 <!--                     ^^ meta.tag.block.any.html - meta.attribute-with-value -->
-<!--            ^^^^^^^^^ meta.tag meta.attribute-with-value.html meta.embedded.heex -->
+<!--            ^^^^^^^^^ meta.tag meta.attribute-with-value.html meta.embedded.html -->
 <!--           ^ meta.tag meta.attribute-with-value.html - meta.embedded -->
 <!--    ^^^^^^^ meta.tag meta.attribute-with-value.html - meta.embedded -->
 <!-- ^^^ meta.tag.block.any.html - meta.attribute-with-value -->
@@ -66,13 +66,13 @@
 <!-- ^^^^^^^^^^^^^^^^^^^^ meta.tag.other.heex - meta.tag meta.tag -->
 
      <MyApp.User.tag name={@name}>
-<!--                      ^^^^^^^ meta.attribute-with-value.html meta.embedded.heex -->
+<!--                      ^^^^^^^ meta.attribute-with-value.html meta.embedded.html -->
 <!--                 ^^^^^ meta.attribute-with-value.html - meta.embedded -->
 <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.tag.other.heex - meta.tag meta.tag -->
 <!--                             ^ punctuation.definition.tag.end.html -->
-<!--                            ^ punctuation.section.embedded.end.heex -->
-<!--                       ^^^^^ source.elixir.embedded.heex -->
-<!--                      ^ punctuation.section.embedded.begin.heex -->
+<!--                            ^ punctuation.section.embedded.end.html -->
+<!--                       ^^^^^ source.elixir.embedded.html -->
+<!--                      ^ punctuation.section.embedded.begin.html -->
 <!--                     ^ punctuation.separator.key-value.html -->
 <!--                 ^^^^ entity.other.attribute-name.html -->
 <!--             ^^^ variable.function.heex -->

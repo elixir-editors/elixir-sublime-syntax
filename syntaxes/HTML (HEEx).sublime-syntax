@@ -97,19 +97,19 @@ contexts:
 
   elixir-embedded:
     - match: \{
-      scope: punctuation.section.embedded.begin.heex
+      scope: punctuation.section.embedded.begin.html
       push: elixir-embedded-content-pop
 
   elixir-embedded-pop:
     - match: \{
-      scope: punctuation.section.embedded.begin.heex
+      scope: punctuation.section.embedded.begin.html
       set: elixir-embedded-content-pop
 
   elixir-embedded-content-pop:
-    - meta_scope: meta.embedded.heex
-    - meta_content_scope: source.elixir.embedded.heex
+    - meta_scope: meta.embedded.html
+    - meta_content_scope: source.elixir.embedded.html
     - match: \}
-      scope: punctuation.section.embedded.end.heex
+      scope: punctuation.section.embedded.end.html
       pop: 1
     - include: scope:source.elixir
       apply_prototype: true
