@@ -22,6 +22,10 @@ variables:
 contexts:
   # HTML overrides:
 
+  comment-content:
+    - meta_prepend: true
+    - include: elixir-embedded
+
   tag-other:
     - include: surface-markdown-tag
     - include: surface-raw-tag
@@ -34,22 +38,31 @@ contexts:
   tag-attributes:
     - meta_prepend: true
     - include: surface-attributes
-
-  tag-generic-attribute-name:
-    - meta_prepend: true
-    - include: elixir-interpolation
-
-  tag-attribute-value-content:
-    - meta_prepend: true
-    - include: elixir-interpolation
-
-  strings-common-content:
-    - meta_prepend: true
-    - include: elixir-interpolation
-
-  comment-content:
-    - meta_prepend: true
     - include: elixir-embedded
+
+  tag-class-attribute-value:
+    - meta_prepend: true
+    - include: elixir-embedded-pop
+
+  tag-event-attribute-value:
+    - meta_prepend: true
+    - include: elixir-embedded-pop
+
+  tag-generic-attribute-value:
+    - meta_prepend: true
+    - include: elixir-embedded-pop
+
+  tag-href-attribute-value:
+    - meta_prepend: true
+    - include: elixir-embedded-pop
+
+  tag-id-attribute-value:
+    - meta_prepend: true
+    - include: elixir-embedded-pop
+
+  tag-style-attribute-value:
+    - meta_prepend: true
+    - include: elixir-embedded-pop
 
   # Surface:
 
@@ -234,6 +247,11 @@ contexts:
       scope: punctuation.section.embedded.begin.surface
       push: elixir-embedded-content-pop
 
+  elixir-embedded-pop:
+    - match: \{
+      scope: punctuation.section.embedded.begin.surface
+      set: elixir-embedded-content-pop
+
   elixir-embedded-content-pop:
     - meta_scope: meta.embedded.surface
     - meta_content_scope: source.elixir.embedded.surface
@@ -242,14 +260,3 @@ contexts:
       pop: 1
     - include: scope:source.elixir
       apply_prototype: true
-
-  elixir-interpolation:
-    - match: \{
-      scope: punctuation.section.embedded.begin.surface
-      push: elixir-interpolation-content-pop
-
-  elixir-interpolation-content-pop:
-    - clear_scopes: 1
-    - meta_scope: meta.embedded.surface
-    - meta_content_scope: source.elixir.embedded.surface
-    - include: elixir-embedded-content-pop
