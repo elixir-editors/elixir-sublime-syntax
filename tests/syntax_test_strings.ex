@@ -181,7 +181,7 @@ heredoc text
 #   ^ -string
 #^^^ entity.name.tag.block.any.html
 #               ^^^^^^ meta.string.elixir
-#    ^^^^^^^^^^^ meta.embedded.eex
+#    ^^^^^^^^^^^ meta.embedded.html
 #^^^^ meta.string.elixir
  \"""m
 #    ^ -storage.type.string

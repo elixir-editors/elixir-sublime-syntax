@@ -34,56 +34,56 @@ contexts:
   eex-interpolations:
     - match: (<%)(#)
       captures:
-        1: punctuation.section.embedded.begin.eex
+        1: punctuation.section.embedded.begin.html
         2: comment.block.eex punctuation.definition.comment.begin.eex
       push: eex-interpolation-comment-content-pop
 
     # Tags <%/ and <%| are parsed but have no functionality in EEx yet.
     - match: <%(?:%=?|[=/|]?)
-      scope: punctuation.section.embedded.begin.eex
+      scope: punctuation.section.embedded.begin.html
       push: eex-interpolation-tag-content-pop
 
   eex-interpolation-comment-content-pop:
     - clear_scopes: 1  # clear string scope
     - meta_include_prototype: false
-    - meta_scope: meta.embedded.eex
+    - meta_scope: meta.embedded.html
     - meta_content_scope: comment.block.eex
     - include: eex-comment-content-pop
 
   eex-interpolation-tag-content-pop:
     - clear_scopes: 1  # clear string scope
     - meta_include_prototype: false
-    - meta_scope: meta.embedded.eex
-    - meta_content_scope: source.elixir.embedded.eex
+    - meta_scope: meta.embedded.html
+    - meta_content_scope: source.elixir.embedded.html
     - include: eex-embedded-content-pop
 
   eex-embedded:
     - match: (<%)(#)
       captures:
-        1: punctuation.section.embedded.begin.eex
+        1: punctuation.section.embedded.begin.html
         2: comment.block.eex punctuation.definition.comment.begin.eex
       push: eex-comment-content-pop
 
     # Tags <%/ and <%| are parsed but have no functionality in EEx yet.
     - match: <%(?:%=?|[=/|]?)
-      scope: punctuation.section.embedded.begin.eex
+      scope: punctuation.section.embedded.begin.html
       push: eex-embedded-content-pop
 
   eex-comment-content-pop:
     - meta_include_prototype: false
-    - meta_scope: meta.embedded.eex
+    - meta_scope: meta.embedded.html
     - meta_content_scope: comment.block.eex
     - include: eex-embedded-end-pop
 
   eex-embedded-content-pop:
     - meta_include_prototype: false
-    - meta_scope: meta.embedded.eex
-    - meta_content_scope: source.elixir.embedded.eex
+    - meta_scope: meta.embedded.html
+    - meta_content_scope: source.elixir.embedded.html
     - include: eex-embedded-end-pop
     - include: scope:source.elixir
       apply_prototype: true
 
   eex-embedded-end-pop:
     - match: '%>'
-      scope: punctuation.section.embedded.end.eex
+      scope: punctuation.section.embedded.end.html
       pop: 1
