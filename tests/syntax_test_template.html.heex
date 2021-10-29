@@ -51,12 +51,43 @@
 <!--    ^^^^^^^ meta.tag meta.attribute-with-value.html - meta.embedded -->
 <!-- ^^^ meta.tag.block.any.html - meta.attribute-with-value -->
 
-     <.form>
-<!--   ^^^^ text.html.heex variable.function.heex -->
+     <.table rows={@users}>
+<!--                      ^ punctuation.definition.tag.end.html -->
+<!--                     ^ punctuation.section.embedded.end.html -->
+<!--               ^^^^^^ source.elixir.embedded.html -->
+<!--              ^ punctuation.section.embedded.begin.html -->
+<!--             ^ punctuation.separator.key-value.html -->
+<!--         ^^^^ entity.other.attribute-name.html -->
+<!--   ^^^^^ variable.function.heex -->
 <!--  ^ punctuation.accessor.dot.heex -->
-     </.form>
-<!--    ^^^^ variable.function.heex -->
+<!-- ^ punctuation.definition.tag.begin.html -->
+<!--                      ^ meta.tag.other.heex - meta.attribute-with-value - meta.embedded -->
+<!--              ^^^^^^^^ meta.tag.other.heex meta.attribute-with-value.html meta.embedded.html -->
+<!--         ^^^^^ meta.tag.other.heex meta.attribute-with-value.html - meta.embedded -->
+<!-- ^^^^^^^^ meta.tag.other.heex - meta.attribute-with-value-->
+       <:col let={user} label="Name">
+<!--                                ^ punctuation.definition.tag.end.html -->
+<!--                    ^^^^^^^^^^^^ meta.attribute-with-value.html -->
+<!--         ^^^^^^^^^^ meta.attribute-with-value.html -->
+<!--    ^^^^ entity.name.tag.begin.heex - punctuation -->
+<!--   ^ punctuation.definition.tag.begin.html -->
+<!--   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.tag.other.heex -->
+         <%= user.name %>
+<!--                   ^^ punctuation.section.embedded.end.html -->
+<!--        ^^^^^^^^^^^ source.elixir.embedded.html -->
+<!--     ^^^ punctuation.section.embedded.begin.html -->
+<!--     ^^^^^^^^^^^^^^^^ meta.embedded.html -->
+       </:col>
+<!--         ^ punctuation.definition.tag.end.html -->
+<!--     ^^^^ entity.name.tag.end.heex - punctuation -->
+<!--   ^^ punctuation.definition.tag.begin.html -->
+<!--   ^^^^^^^ meta.tag.other.heex -->
+     </.table>
+<!--         ^ punctuation.definition.tag.end.html -->
+<!--    ^^^^^ variable.function.heex -->
 <!--   ^ punctuation.accessor.dot.heex -->
+<!-- ^^ punctuation.definition.tag.begin.html -->
+<!-- ^^^^^^^^^ meta.tag.other.heex -->
 
      <MyApp name={@name}>
 <!--        ^^^^^^^^^^^^ meta.attribute-with-value.html -->
