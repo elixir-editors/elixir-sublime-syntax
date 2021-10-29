@@ -16,7 +16,7 @@ authors:
 variables:
   heex_tag_char: '[^ \n."''/=<>\x{7F}-\x{9F}]'
   heex_tag_name: '[A-Z]{{heex_tag_char}}*'
-  is_heex_tag_name_begin: (?=[.A-Z])
+  heex_slot_name: ':[a-zA-Z]{{heex_tag_char}}*'
 
 contexts:
   # HTML overrides:
@@ -57,12 +57,15 @@ contexts:
   # HEEx:
 
   heex-tags:
-    - match: <{{is_heex_tag_name_begin}}
-      scope: punctuation.definition.tag.begin.html
+    - match: (<)({{heex_tag_name}}|{{heex_slot_name}}|(?=\.))
+      captures:
+        1: punctuation.definition.tag.begin.html
+        2: entity.name.tag.begin.heex
       push: [heex-begin-tag-content-pop, heex-begin-tag-name-pop]
-
-    - match: </{{is_heex_tag_name_begin}}
-      scope: punctuation.definition.tag.begin.html
+    - match: (</)({{heex_tag_name}}|{{heex_slot_name}}|(?=\.))
+      captures:
+        1: punctuation.definition.tag.begin.html
+        2: entity.name.tag.end.heex
       push: [heex-end-tag-content-pop, heex-end-tag-name-pop]
 
   heex-begin-tag-content-pop:
