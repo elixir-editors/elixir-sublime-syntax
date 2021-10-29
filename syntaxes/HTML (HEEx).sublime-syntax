@@ -13,7 +13,8 @@ authors:
 variables:
   heex_tag_char: '[^ \n."''/=<>\x{7F}-\x{9F}]'
   heex_tag_name: '[A-Z]{{heex_tag_char}}*'
-  is_heex_tag_name_begin: (?=[.A-Z])
+  heex_slot_name: ':[a-zA-Z]{{heex_tag_char}}*'
+  is_heex_tag_name: (?=[A-Z]|\.[a-z]|:[a-zA-Z])
 
 contexts:
   # HTML overrides:
@@ -50,11 +51,10 @@ contexts:
   # HEEx:
 
   heex-tags:
-    - match: <{{is_heex_tag_name_begin}}
+    - match: <{{is_heex_tag_name}}
       scope: punctuation.definition.tag.begin.html
       push: [heex-begin-tag-content-pop, heex-begin-tag-name-pop]
-
-    - match: </{{is_heex_tag_name_begin}}
+    - match: </{{is_heex_tag_name}}
       scope: punctuation.definition.tag.begin.html
       push: [heex-end-tag-content-pop, heex-end-tag-name-pop]
 
@@ -69,12 +69,12 @@ contexts:
     - include: else-pop
 
   heex-begin-tag-name-pop:
-    - match: '{{heex_tag_name}}'
+    - match: '{{heex_tag_name}}|{{heex_slot_name}}'
       scope: entity.name.tag.begin.heex
     - include: heex-tag-name-common-pop
 
   heex-end-tag-name-pop:
-    - match: '{{heex_tag_name}}'
+    - match: '{{heex_tag_name}}|{{heex_slot_name}}'
       scope: entity.name.tag.end.heex
     - include: heex-tag-name-common-pop
 

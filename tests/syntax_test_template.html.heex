@@ -39,7 +39,7 @@
 <!--                    ^ punctuation.section.embedded.end.elixir - source -->
 <!--             ^^^^^^^ source.elixir.embedded.html meta.string.elixir string.quoted.double.elixir -->
 <!--            ^ punctuation.section.embedded.begin.elixir - source -->
-<!--            ^^^^^^^^^ meta.tag meta.attribute-with-value.html meta.embedded.html -->
+<!--            ^^^^^^^^^ meta.tag meta.attribute-with-value.html meta.embedded.heex -->
 <!--           ^ punctuation.separator.key-value.html -->
 <!--          ^ - punctuation.section.embedded.end.elixir string -->
 <!--     ^^^^^ - source.elixir.embedded.html meta.string.elixir string.quoted.double.elixir -->
@@ -48,12 +48,43 @@
 <!--    ^^^^^^^ meta.tag meta.attribute-with-value.html -->
 <!-- ^^^ meta.tag.block.any.html - meta.attribute-with-value -->
 
-     <.form>
-<!--   ^^^^ text.html.heex variable.function.heex -->
+     <.table rows={@users}>
+<!--                      ^ punctuation.definition.tag.end.html -->
+<!--                     ^ punctuation.section.embedded.end.elixir -->
+<!--               ^^^^^^ source.elixir.embedded.html -->
+<!--              ^^^^^^^^ meta.tag.other.heex meta.attribute-with-value.html meta.embedded.heex -->
+<!--              ^ punctuation.section.embedded.begin.elixir -->
+<!--             ^ punctuation.separator.key-value.html -->
+<!--         ^^^^ entity.other.attribute-name.html -->
+<!--   ^^^^^ variable.function.heex -->
 <!--  ^ punctuation.accessor.dot.heex -->
-     </.form>
-<!--    ^^^^ variable.function.heex -->
+<!-- ^ punctuation.definition.tag.begin.html -->
+<!--                      ^ meta.tag.other.heex - meta.attribute-with-value - meta.embedded -->
+<!--         ^^^^^ meta.tag.other.heex meta.attribute-with-value.html - meta.embedded -->
+<!-- ^^^^^^^^ meta.tag.other.heex - meta.attribute-with-value-->
+       <:col let={user} label="Name">
+<!--                                ^ punctuation.definition.tag.end.html -->
+<!--                    ^^^^^^^^^^^^ meta.attribute-with-value.html -->
+<!--         ^^^^^^^^^^ meta.attribute-with-value.html -->
+<!--    ^^^^ entity.name.tag.begin.heex - punctuation -->
+<!--   ^ punctuation.definition.tag.begin.html -->
+<!--   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.tag.other.heex -->
+         <%= user.name %>
+<!--                   ^^ punctuation.section.embedded.end.eex -->
+<!--        ^^^^^^^^^^^ source.elixir.embedded.html -->
+<!--     ^^^ punctuation.section.embedded.begin.eex -->
+<!--     ^^^^^^^^^^^^^^^^ meta.embedded.eex -->
+       </:col>
+<!--         ^ punctuation.definition.tag.end.html -->
+<!--     ^^^^ entity.name.tag.end.heex - punctuation -->
+<!--   ^^ punctuation.definition.tag.begin.html -->
+<!--   ^^^^^^^ meta.tag.other.heex -->
+     </.table>
+<!--         ^ punctuation.definition.tag.end.html -->
+<!--    ^^^^^ variable.function.heex -->
 <!--   ^ punctuation.accessor.dot.heex -->
+<!-- ^^ punctuation.definition.tag.begin.html -->
+<!-- ^^^^^^^^^ meta.tag.other.heex -->
 
      <MyApp name={@name}>
 <!--        ^^^^^^^^^^^^ meta.attribute-with-value.html -->
