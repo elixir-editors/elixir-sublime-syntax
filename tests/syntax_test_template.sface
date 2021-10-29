@@ -138,6 +138,21 @@
 #     ^ punctuation.section.embedded.begin.html
 </Card>
 
+<:slot></:slot>
+#        ^^^^^ entity.name.tag.end.surface
+#^^^^^ entity.name.tag.begin.surface
+#^^^^^^^^^^^^^^ meta.tag.other.surface - meta.attribute-with-value
+
+<.table rows={@users}></.table>
+#                             ^ punctuation.definition.tag.end.html
+#                       ^^^^^^ entity.name.tag.end.html
+#                     ^^ punctuation.definition.tag.begin.html
+#                     ^^^^^^^^^ meta.tag.other.surface
+#                    ^ meta.tag.other.surface punctuation.definition.tag.end.html
+#            ^^^^^^^^ meta.tag.other.surface meta.attribute-with-value.html meta.embedded.html
+#       ^^^^^ meta.tag.other.surface meta.attribute-with-value.html - meta.embedded
+#^^^^^^ meta.tag.other.surface entity.name.tag.begin.html
+
 <#slot :args={value: @value, max: @max} />
 #                                     ^ punctuation.section.embedded.end.html
 #             ^^^^^^^^^^^^^^^^^^^^^^^^ source.elixir.embedded.html
@@ -149,11 +164,6 @@
 #      ^^^^^^ meta.tag.other.surface meta.attribute-with-value.id.html - meta.string - meta.interpolation
 #^^^^^ entity.name.tag.begin.surface
 #^^^^^^ meta.tag.other.surface - meta.attribute-with-value
-
-<:slot></:slot>
-#        ^^^^^ entity.name.tag.end.surface
-#^^^^^ entity.name.tag.begin.surface
-#^^^^^^^^^^^^^^ meta.tag.other.surface - meta.attribute-with-value
 
   <#Raw>
 #      ^ punctuation.definition.tag.end.html
