@@ -55,7 +55,7 @@ See [CHANGELOG.md](./CHANGELOG.md) for the list of releases and noteworthy chang
 
 ## FAQ
 
-- How to color unused variables differently?
+- How to color unused variables, e.g. `_opts`, differently?
 
   You can customize the color of unused variable names by extending your color scheme, targeting the `variable.parameter.unused` and `variable.other.unused` scopes:
 
