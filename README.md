@@ -53,6 +53,26 @@ Embed JSON strings in your Elixir code. Notice the interpolated Elixir code is c
 
 See [CHANGELOG.md](./CHANGELOG.md) for the list of releases and noteworthy changes.
 
+## FAQ
+
+- How to color unused variables, e.g. `_opts`, differently?
+
+  You can [customize the color](https://user-images.githubusercontent.com/1329716/152258038-384c6a61-d974-4e9a-a1db-ab979c839ff7.png) of unused variable names by extending your color scheme, targeting the `variable.parameter.unused` and `variable.other.unused` scopes:
+
+  ```json
+  {
+    "rules": [
+      {
+        "name": "Unused variables",
+        "scope": "variable.parameter.unused, variable.other.unused",
+        "foreground": "#8c8cff"
+      }
+    ]
+  }
+  ```
+
+  More details at [Sublime Text Docs](https://www.sublimetext.com/docs/color_schemes.html)
+
 ## Contributors/Maintainers
 
 - [@azizk](https://github.com/azizk) rewrote the whole syntax definition with an extensive test-suite and added a wealth of new features. ⭐
