@@ -391,6 +391,12 @@ def x // y, do: {x, y}
 #     ^^ entity.name.function
 def x | y, do: {x, y}
 #     ^ entity.name.function
+def binary_slice(binary, first..last//step)
+#                                     ^^^^ variable.parameter
+#                                   ^^ keyword.operator.arithmetic
+#                               ^^^^ variable.parameter
+#                             ^^ keyword.operator.range
+#                        ^^^^^ variable.parameter
 def .. a do a end
 #   ^^ keyword.operator.range
 def ..(a) do a end

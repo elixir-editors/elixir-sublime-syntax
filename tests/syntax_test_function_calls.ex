@@ -551,7 +551,7 @@ end
 #  ^ punctuation.section.arguments.end
 
 with some do
-#    ^^^^ variable.parameter
+#    ^^^^ -variable.parameter
 end
 #  ^ punctuation.section.arguments.end
 with some < do
@@ -592,12 +592,34 @@ with {:ok, x} <- f(), do: x
 #                   ^ punctuation.separator.arguments
 #          ^ variable.parameter
 
+with %{x: x} = y when x <- z do y end
+#                               ^ variable.other
+#                          ^ variable.other
+#                       ^^ keyword.operator.arrow
+#                     ^ variable.other
+#                ^^^^ keyword.operator.when
+#              ^ variable.parameter
+#            ^ keyword.operator.match
+#         ^ variable.parameter
+
 with \
 #    ^^ punctuation.separator.continuation
-     {:ok, newline} <- continuation do
-#                      ^^^^^^^^^^^^ variable.other
+     {:ok, newline} <- \
+#                      ^^ punctuation.separator.continuation
 #          ^^^^^^^ variable.parameter
+                       continuation, \
+#                                    ^^ punctuation.separator.continuation
+#                                  ^ punctuation.separator.arguments
+#                      ^^^^^^^^^^^^ variable.other
+    "\n" <- newline do
 end
+
+with %{a: a} = %{b: b} = %{a: x, b: 2}, do: {a, b}
+#                             ^ -variable.parameter
+#                      ^ keyword.operator.match
+#                   ^ variable.parameter
+#            ^ keyword.operator.match
+#         ^ variable.parameter
 
 (with \\ default)
 #        ^^^^^^^ variable.other
@@ -646,9 +668,22 @@ for n <- [1, 2, 3, 4], do: n * 2
 #                               ^ punctuation.section.arguments.end
 #                          ^ variable.other
 #   ^ variable.parameter
+for m <- [1, 2, 3], m > 0, n <- [1, 2], n > 0, do: n * 2
+#                                                       ^ punctuation.section.arguments.end
+#                                                  ^ -variable.parameter
+#                                              ^^^ constant.other.keyword
+#                                            ^ punctuation.separator.arguments
+#                                        ^ -variable.parameter
+#                                     ^ punctuation.separator.arguments
+#                           ^ -variable.parameter
+#                        ^ punctuation.separator.arguments
+#                   ^ -variable.parameter
+#                 ^ punctuation.separator.arguments
+#   ^ variable.parameter
 for x <- [1, 2], y <- [2, 3], do: x * y
 #                                      ^ punctuation.section.arguments.end
 #                                 ^ variable.other
+#                ^ variable.parameter
 #   ^ variable.parameter
 for n <- [1, 2, 3, 4, 5, 6], rem(n, 2) == 0, do: n
 #                                                 ^ punctuation.section.arguments.end
