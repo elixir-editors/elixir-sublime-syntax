@@ -331,7 +331,7 @@ contexts:
     - match: |
         (?x)
         (?>((?=_)(?<!%>){{identifier}})|({{identifier}}))
-        (?=\s*(?>[,;)}\]=|\\]|\.\.|::|->|<-|<>|>>|(?>when|do){{no_id_key_suffix}}|$))
+        (?=\s*(?>[,;)}\]=|\\]|//|\.\.|::|->|<-|<>|>>|(?>when|do){{no_id_key_suffix}}|$))
       captures:
         1: variable.parameter.unused.elixir
         2: variable.parameter.elixir
@@ -2617,8 +2617,9 @@ contexts:
           pop: 1
         - include: elixir_keywords
         - include: invalid_comma_or_non_space_pop
-    - match: (?x) (?=[-+*/=!|;] | && | \\\\ | ~(?![a-zA-Z]) | <(?!<(?!<)) | >(?!>(?!>)) | \.\.(?!\.) | ::(?!:))
+    - match: (?x) (?=\\\n | <- | [-+*/=!|;] | && | \\\\ | ~(?![a-zA-Z]) | <(?!<(?!<)) | >(?!>(?!>)) | \.\.(?!\.) | ::(?!:))
       push:
+        - include: line_continuation
         - include: if_closing_token_pop
         - include: operator
         - include: invalid_comma_or_non_space_pop
@@ -2693,6 +2694,56 @@ contexts:
         6: keyword.control.exception.catch.elixir
         7: keyword.context.block.end.elixir
 
+  # Macro function call helpers:
+
+  if_argument_end_pop:
+    - match: (?=[,;]|{{atom_symbol}}:(?!:)|(?<=[^:]:)|(?>do|end){{no_id_key_suffix}})
+      pop: 1
+
+  one_arrow_clause_or_argument:
+    - match: (?=\S)
+      branch_point: non_arrow_clause
+      branch: [non_arrow_clause_pop, one_left_arrow_clause_pop]
+
+  fail_if_arrow_clause:
+    - match: (?=(?><-|->|=(?![>~=]))(?!:))
+      fail: non_arrow_clause
+
+  # Checks for an arrow clause inside a binary string expression.
+  fail_if_arrow_clause_in_binary_string:
+    - include: stray_binary_end
+    - match: <<(?![<~])
+      scope: string.other.binary.elixir punctuation.definition.string.begin.elixir
+      push:
+        - meta_scope: meta.string.binary.elixir
+        - include: fail_if_arrow_clause
+        - include: binary_string_body_pop
+        - include: core_syntax_or_if_closing_pop
+
+  non_arrow_clause_pop:
+    - include: fail_if_arrow_clause
+    - include: fail_if_arrow_clause_in_binary_string
+    - include: if_argument_end_pop
+    - include: arguments_ws_rest_pop
+
+  one_left_arrow_clause_pop:
+    - include: if_argument_end_pop
+    - match: =(?![>~=])(?!:)
+      scope: keyword.operator.match.elixir
+      branch_point: last_assignment_clause
+      branch: [last_assignment_clause_pop, if_empty_pop]
+    - match: (?=(?><-|->|=(?![>~=]))(?!:))
+      set:
+        - include: if_argument_end_pop
+        - include: arguments_ws_rest_pop
+    - include: parameters_or_if_closing_pop
+
+  last_assignment_clause_pop:
+    - match: (?=(?><-|->|=(?![>~=]))(?!:))
+      fail: last_assignment_clause
+    - include: if_argument_end_pop
+    - include: arguments_ws_rest_pop
+
   case_macro_call:
     - match: (case)(?!\(){{no_suffix_then_arguments}}(\s?)
       captures:
@@ -2707,16 +2758,6 @@ contexts:
             - include: arrow_clauses_body_pop
         - include: last_arg_block_end_pop
         - include: arguments_ws_rest_pop
-
-  one_left_arrow_clause:
-    - match: (?=\S)
-      push:
-        - match: (?=<-(?!:)|,|(?>when|do){{no_id_key_suffix}}|do:(?!:))
-          set:
-            - match: (?=,|do{{no_id_key_suffix}}|do:(?!:))
-              pop: 1
-            - include: arguments_ws_rest_pop
-        - include: parameters_or_if_closing_pop
 
   with_macro_call:
     - match: (with)(?!\(){{no_suffix_then_arguments}}(\s?)
@@ -2738,7 +2779,7 @@ contexts:
             - include: core_syntax
         - include: arguments_ws_closing_pop
         - include: arg_comma_and_skip_ws
-        - include: one_left_arrow_clause
+        - include: one_arrow_clause_or_argument
 
   for_macro_call:
     - match: (for)(?!\(){{no_suffix_then_arguments}}(\s?)
@@ -2747,22 +2788,26 @@ contexts:
         2: punctuation.section.arguments.begin.elixir
       push:
         - meta_scope: meta.function-call.arguments.elixir
-        - match: (?=reduce:(?!:))
-          set:
-            - match: do{{no_id_key_suffix}}
-              scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
-              set:
-                - meta_scope: meta.block.elixir
-                - include: last_arg_block_end_pop
-                - match: ''
-                  push: arrow_clauses_body_pop
-            - include: arg_comma_and_skip_ws
-            - include: arguments_ws_rest_pop
+        - include: for_macro_reduce_body_pop
         - match: (?={{atom_symbol}}:(?!:))|(?<=[^:]:)
           set: [arguments_ws_closing_pop, arguments_ws_rest_pop]
         - include: arguments_ws_closing_pop
         - include: arg_comma_and_skip_ws
-        - include: one_left_arrow_clause
+        - include: one_arrow_clause_or_argument
+
+  # Special treatment for `reduce:`. The body contains right-arrow clauses.
+  for_macro_reduce_body_pop:
+    - match: (?=reduce:(?!:))
+      set:
+        - match: do{{no_id_key_suffix}}
+          scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
+          set:
+            - meta_scope: meta.block.elixir
+            - include: last_arg_block_end_pop
+            - match: ''
+              push: arrow_clauses_body_pop
+        - include: arg_comma_and_skip_ws
+        - include: arguments_ws_rest_pop
 
   try_macro_call:
     - match: (try)(?!\(){{no_suffix_then_arguments}}(\s?)
