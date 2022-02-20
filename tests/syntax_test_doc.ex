@@ -2,9 +2,13 @@
 
 ## Documentation comments
 
+## NB: Markdown used to be highlighted inside doc comments,
+## but it had to be removed due to fundamental limitations
+## of the syntax highlighting engine (see issue #31).
+
 # NB: Check that `def` doesn't match past the newline and consumes the closing `"""`.
 @doc """
-Don't insert a comment between `x` and `"""`.
+Don't insert a comment between `x` and `\"""`.
     iex> def x do
 ##     ^ keyword.other.iex-angle.elixir punctuation.definition.iex.begin.elixir
 ##  ^^^^^^^^^^^ markup.raw.block.markdown
@@ -35,7 +39,7 @@ Don't insert a comment between `x` and `"""`.
 #^^^ support.attr.doc
     iex> def x
 ##  ^^^^^^^^^^^ markup.raw.block.elixir
-#^^^ source.markdown.embedded.elixir
+##^^^ source.markdown.embedded.elixir
  \' \""" #{interpolation}
 #          ^^^^^^^^^^^^^ variable.other
 #        ^^^^^^^^^^^^^^^^ meta.interpolation.elixir
@@ -46,7 +50,7 @@ Don't insert a comment between `x` and `"""`.
 
 # NB: Check that defmodule doesn't match past the newline and consumes the closing `"""`.
 @doc """
-Don't insert a comment between `X` and `"""`.
+Don't insert a comment between `X` and `\"""`.
    defmodule X
 #  ^^^^^^^^^ -keyword.declaration.module
     defmodule X do end
@@ -65,8 +69,8 @@ Don't insert a comment between `X` and `"""`.
   ```
 ##^^^^ punctuation.definition.code-block.end.markdown
   Text.
-# ^^^^^^ source.markdown.embedded.elixir
-# ^^^^^^ meta.string.elixir
+##^^^^^^ source.markdown.embedded.elixir
+##^^^^^^ meta.string.elixir
   """
 
 @doc ~S'''
@@ -88,7 +92,7 @@ Don't insert a comment between `X` and `"""`.
 
 @doc """
     defmodule X do end
-#^^^ source.markdown.embedded.elixir
+##^^^ source.markdown.embedded.elixir
 ##  ^^^^^^^^^^^^ markup.raw.block.elixir
  """m
 #   ^ -storage.type.string
@@ -98,7 +102,8 @@ Don't insert a comment between `X` and `"""`.
  \'\S\ \""" #{interpolation}
 #           ^^^^^^^^^^^^^^^^ -meta.interpolation.elixir
 #       ^^^ -punctuation.definition.string.end
-#^^^^^^^^ -constant.character.escape
+#      ^^ constant.character.escape
+#^^^^^^ -constant.character.escape
  """m
 #   ^ storage.type.string
 #^^^ punctuation.definition.string.end
@@ -107,11 +112,12 @@ Don't insert a comment between `X` and `"""`.
 #      ^^^ punctuation.definition.string.begin
 #    ^^ storage.type.string
  doc
-#^^^^ source.markdown.embedded.elixir
+##^^^^ source.markdown.embedded.elixir
  \'\S\ \""" #{interpolation}
 #           ^^^^^^^^^^^^^^^^ -meta.interpolation.elixir
 #       ^^^ -punctuation.definition.string.end
-#^^^^^^^^ -constant.character.escape
+#  ^^^^^^ -constant.character.escape
+#^^ constant.character.escape
 
     iex> use Bitwise, only_operators: true
 ##  ^^^ keyword.other.iex
@@ -148,31 +154,31 @@ Don't insert a comment between `X` and `"""`.
 #^ punctuation.section.group.begin
 
 @doc "doc"
-#         ^ punctuation.section.arguments.end
-#        ^ punctuation.definition.string.end
-#     ^^^ source.markdown.embedded.elixir
-#    ^ punctuation.definition.string.begin
-#   ^ punctuation.section.arguments.begin
+##         ^ punctuation.section.arguments.end
+##        ^ punctuation.definition.string.end
+##     ^^^ source.markdown.embedded.elixir
+##    ^ punctuation.definition.string.begin
+##   ^ punctuation.section.arguments.begin
 @doc("doc")
-#         ^ punctuation.section.arguments.end
-#        ^ punctuation.definition.string.end
-#     ^^^ source.markdown.embedded.elixir
-#    ^ punctuation.definition.string.begin
-#   ^ punctuation.section.arguments.begin
+##         ^ punctuation.section.arguments.end
+##        ^ punctuation.definition.string.end
+##     ^^^ source.markdown.embedded.elixir
+##    ^ punctuation.definition.string.begin
+##   ^ punctuation.section.arguments.begin
 (@doc "doc")
-#      ^^^ source.markdown.embedded.elixir
+##      ^^^ source.markdown.embedded.elixir
 [@doc "doc"]
-#          ^ punctuation.section.brackets.end
-#<- meta.brackets.elixir
+##          ^ punctuation.section.brackets.end
+##<- meta.brackets.elixir
 
 @doc "\n\"escapes\"\n"
-#                     ^ punctuation.section.arguments.end
-#                    ^ punctuation.definition.string.end
-#                  ^^ constant.character.escape.char
-#                ^^ constant.character.escape.char
-#         ^^^^^^^ source.markdown.embedded.elixir
-#       ^^ constant.character.escape.char
-#     ^^ constant.character.escape.char
+##                     ^ punctuation.section.arguments.end
+##                    ^ punctuation.definition.string.end
+##                  ^^ constant.character.escape.char
+##                ^^ constant.character.escape.char
+##         ^^^^^^^ source.markdown.embedded.elixir
+##       ^^ constant.character.escape.char
+##     ^^ constant.character.escape.char
 
 @doc since: 1.2
 #    ^^^^^^ constant.other.keyword
@@ -182,7 +188,7 @@ Don't insert a comment between `X` and `"""`.
 @doc deprecated: "Use Kernel.length/1 instead"
 #    ^^^^^^^^^^^ constant.other.keyword
 @doc since: "1.2.3", author: "Author"
-#                             ^^^^^^ source.markdown.embedded.elixir
+#                             ^^^^^^ meta.string.elixir
 #                  ^ punctuation.separator.arguments.elixir
 #           ^^^^^^^ meta.string.elixir
 #    ^^^^^^ constant.other.keyword

@@ -25,8 +25,13 @@
     },
     {
       "name": "Doc string",
-      "scope": "source.markdown.embedded.elixir",
+      "scope": "meta.doc.elixir meta.string.elixir string | meta.doc meta.string.elixir punctuation.definition.string | meta.doc.elixir storage.type.string.elixir",
       "foreground": "var(doc)"
+    },
+    {
+      "name": "Doc string escapes",
+      "scope": "meta.doc.elixir meta.string.elixir constant.character.escape.char.elixir",
+      "foreground": "color(var(doc) l(+ 15%))"
     },
     {
       "name": "Support attributes",
