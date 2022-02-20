@@ -59,22 +59,6 @@ variables:
   atom_symbol: (?>{{atom_id}}|<<>>|\.\.//|{{operator}}|%?{}|%)
   member: (?>{{identifier}}|{{operator}}|{})
 
-  # This regex is used to recognize Elixir inside Markdown comments.
-  # The rules have been commented out as the recognition wasn't reliable enough.
-  # It was incomplete, maybe distracting and speed may have been affected, too.
-  # It can be re-enabled by uncommenting all lines containing "{{is_markdown_elixir}}".
-  is_markdown_elixir: |
-    (?x)
-    ```\s*elixir\b
-    | (?<=\s{4})(?>
-        (?>iex|\.{3}).*?>
-      | (?>
-          def(?>module|impl|macro|guard|struct|delegate|protocol|p)?
-        | (?#if|for|)unless|case|cond|with|try|receive|quote|unquote(?:_splicing)?
-        ){{no_id_key_suffix}}
-        (?>\(|.+\bdo\b)
-      )
-
 contexts:
   main:
     - include: core_syntax
@@ -82,8 +66,6 @@ contexts:
   prototype:
     # NB: rules in the prototype context will always match before any other.
     - include: merge_conflict # Merge conflict markers can occur anywhere.
-    # Commented out: see "is_markdown_elixir" above.
-    # - include: iex_dots       # iex prompt continuation: ...>
 
   core_syntax:
     # The rules are approximately ordered by their likeliness of occurrence
@@ -1935,7 +1917,6 @@ contexts:
               push:
                 - include: if_closing_token_pop
                 - include: arg_comma_and_skip_ws
-                - include: markdown_comment
                 - include: core_syntax
         - match: \s?
           scope: punctuation.section.arguments.begin.elixir
@@ -1943,7 +1924,6 @@ contexts:
             - meta_scope: meta.doc.elixir
             - include: arguments_ws_closing_pop
             - include: arg_comma_and_skip_ws
-            - include: markdown_comment
             - include: core_syntax
 
     - match: (?>spec|(?:macro)?callback)(?={{no_suffix_then_arguments}}|\s*{{operator}})
@@ -2032,116 +2012,6 @@ contexts:
       set: spec_definition_pop
     - match: (?=\S)
       set: spec_op_definition_pop
-
-  ## Documentation in Markdown
-
-  markdown_comment:
-    # NB: no need to support `~s"""` which is basically `"""`.
-    - match: (""")(.*)(\n)
-      captures:
-        1: string.quoted.triple.double.elixir punctuation.definition.string.begin.elixir
-        2: invalid.illegal.opening-heredoc.elixir
-        3: string.quoted.triple.double.elixir
-      push:
-        - meta_scope: meta.string.elixir
-        - match: (?=^\s*""")
-          set:
-            - meta_scope: meta.string.elixir string.quoted.triple.double.elixir
-            - include: heredoc_string_closing_double_pop
-        - include: escaped_or_interpolated
-        # - include: elixir_in_markdown
-        - match: ''
-          embed: scope:text.html.markdown
-          embed_scope: source.markdown.embedded.elixir
-          # escape: (?=^\s*"""|\\|#{|{{is_markdown_elixir}})
-          escape: (?=^\s*"""|\\|#{)
-
-    - match: \"
-      scope: string.quoted.double.elixir punctuation.definition.string.begin.elixir
-      push:
-        - meta_scope: meta.string.elixir
-        - match: \"
-          scope: string.quoted.double.elixir punctuation.definition.string.end.elixir
-          pop: 1
-        - include: escaped_or_interpolated
-        - match: ''
-          embed: scope:text.html.markdown
-          embed_scope: source.markdown.embedded.elixir
-          escape: (?="|\\|#{)
-
-    - match: (~S)(""")(.*)(\n)
-      captures:
-        1: storage.type.string.elixir
-        2: string.quoted.triple.double.elixir punctuation.definition.string.begin.elixir
-        3: invalid.illegal.opening-heredoc.elixir
-        4: string.quoted.triple.double.elixir
-      push:
-        - meta_scope: meta.string.elixir
-        - match: (?<=""")
-          set: string_modifiers_and_pop
-        - match: (?=^\s*""")
-          push:
-            - meta_scope: string.quoted.triple.double.elixir
-            - include: heredoc_string_closing_double_pop
-        # - include: elixir_in_markdown
-        - match: ''
-          embed: scope:text.html.markdown
-          embed_scope: source.markdown.embedded.elixir
-          # escape: (?=^\s*"""|{{is_markdown_elixir}})
-          escape: (?=^\s*""")
-
-    - match: (~S)(''')(.*)(\n)
-      captures:
-        1: storage.type.string.elixir
-        2: string.quoted.triple.single.elixir punctuation.definition.string.begin.elixir
-        3: invalid.illegal.opening-heredoc.elixir
-        4: string.quoted.triple.single.elixir
-      push:
-        - meta_scope: meta.string.elixir
-        - match: (?<=''')
-          set: string_modifiers_and_pop
-        - match: (?=^\s*''')
-          push:
-            - meta_scope: string.quoted.triple.single.elixir
-            - include: heredoc_string_closing_single_pop
-        # - include: elixir_in_markdown
-        - match: ''
-          embed: scope:text.html.markdown
-          embed_scope: source.markdown.embedded.elixir
-          # escape: (?=^\s*'''|{{is_markdown_elixir}})
-          escape: (?=^\s*''')
-
-  elixir_in_markdown:
-    - match: (?<=\s{4})(iex)(?:\((.*?)\))?(>)
-      captures:
-        1: keyword.other.iex.elixir
-        2: constant.other.elixir
-        3: keyword.other.iex-angle.elixir punctuation.definition.iex.begin.elixir
-      push:
-        - clear_scopes: true
-        - meta_scope: meta.interpolation.elixir markup.raw.block.markdown markup.raw.block.elixir
-        - match: \n|$
-          scope: punctuation.definition.iex.end.elixir
-          pop: 1
-        - include: core_syntax
-
-    - match: (?={{is_markdown_elixir}})
-      push:
-        - clear_scopes: true
-        - meta_scope: meta.interpolation.elixir markup.raw.block.markdown markup.raw.block.elixir
-        - match: \n|$
-          scope: punctuation.section.arguments.end.elixir
-          pop: 1
-        - include: core_syntax
-
-  iex_dots:
-    - match: ^(\s*)(\.{3})(?:\((.*?)\))?(>)
-      comment: iex prompt continuation
-      captures:
-        1: meta.string.elixir
-        2: keyword.other.iex-dots.elixir
-        3: constant.other.elixir
-        4: keyword.other.iex-angle.elixir punctuation.definition.iex.begin.elixir
 
   comma_and_skip_ws:
     - include: invalid_comma
