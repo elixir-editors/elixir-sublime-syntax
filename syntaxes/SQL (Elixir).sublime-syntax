@@ -41,11 +41,10 @@ contexts:
         # Database identifier.
         | ((?!\d)\w+) (?=(?:\s*\.\s*(?!\d)\w+){2})
         # Table and member identifier.
-        | ((?!\d)\w+) (\s*\.\s*) (\s*(?!\d)\w+)
+        | ((?!\d)\w+) \s*(\.)\s* ((?!\d)\w+ | (?=["*]))
         # Accessor punctuation.
         | (\.(?!\d))
         | (,)
-        | (;)
       captures:
         1: support.function.scalar.sql
         2: keyword.other.sql
@@ -62,24 +61,30 @@ contexts:
         13: punctuation.accessor.dot.sql
         14: variable.other.member.sql
         15: punctuation.accessor.dot.sql
-        16: punctuation.comma.sql
-        17: punctuation.terminator.sql
+        16: punctuation.separator.comma.sql
 
     - include: nested-comment
     - include: scope:source.sql#comments
+
+    - match: |
+        (?x)(?:
+          \d+ (\.)? \d* (?: [eE] [-+]? \d+ )?
+        | (\.) \d+ (?: [eE] [-+]? \d+ )?
+        )
+      captures:
+        0: constant.numeric.sql
+        1: punctuation.separator.decimal.sql
+        2: punctuation.separator.decimal.sql
+
     - include: scope:source.sql
 
     - match: |
         (?x)
           ((?!\d)\w+)(?=\()
         | ((?!\d)\w+)
-        | (\d+ (\.)? (?:\d* (?:[eE][-+]? \d+)?)? | (\.) \d+ (?:[eE][-+]? \d+)?)
       captures:
         1: variable.function.sql
         2: variable.other.sql
-        3: constant.numeric.sql
-        4: punctuation.separator.decimal.sql
-        5: punctuation.separator.decimal.sql
 
   nested-comment:
     - match: /\*

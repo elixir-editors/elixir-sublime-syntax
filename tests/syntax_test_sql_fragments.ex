@@ -83,9 +83,9 @@ fragment(
 
 fragment("""
   jsonb_to_tsvector('simple', content, '["string", "numeric"]')
-#                                                ^ -punctuation.comma.sql
-#                                    ^ punctuation.comma.sql
-#                           ^ punctuation.comma.sql
+#                                                ^ -punctuation.separator.comma.sql
+#                                    ^ punctuation.separator.comma.sql
+#                           ^ punctuation.separator.comma.sql
 # ^^^^^^^^^^^^^^^^^ variable.function.sql
 """)
 
@@ -143,7 +143,7 @@ fragment(
 #                                    ^^^^ keyword.other.DML.sql
 #                          ^^^^^^ keyword.other.sql
 #             ^^^^^^^ variable.other.sql
-#           ^ punctuation.comma.sql
+#           ^ punctuation.separator.comma.sql
 #         ^^ variable.other.sql
   ^ids |> type({:array, :binary_id})
 )
@@ -183,6 +183,24 @@ fragment("t AT TIME ZONE")
 #                 ^ variable.other.sql
 #            ^^^^ keyword.other.DML.sql
 #     ^^^^^^ keyword.other.DML.sql
+
+# Note: should actually be a keyword but fixing the rules is too effortful for little gain.
+ sql("SELECT.field")
+#            ^^^^^ variable.other.member.sql
+#           ^ punctuation.accessor.dot.sql
+##    ^^^^^^ keyword.other.DML.sql
+##    ^^^^^^ -constant.other.table-name
+
+ sql("""
+ SELECT * FROM "table" AS t WHERE t."f i e l d"
+#                                   ^^^^^^^^^^^ string.quoted.double.sql
+#                                  ^ punctuation.accessor.dot.sql
+#                                 ^ constant.other.table-name.sql
+#                         ^ variable.other.sql
+#                      ^^ keyword.operator.assignment.alias.sql
+#              ^^^^^^^ string.quoted.double.sql
+#       ^ variable.language.wildcard.asterisk.sql
+ """)
 
  sql("""
 #    ^^^ punctuation.definition.string.begin
