@@ -34,26 +34,27 @@ variables:
   closing_keyword: (?>end|else|after|rescue|catch){{no_id_key_suffix}}
   closing_token: (?>[)}\];#]|>>(?!>)|%>|$|{{closing_keyword}})
 
-  binary_operator: |
-    (?x)(?>
+  binary_operator: |-
+    (?x:(?>
       (?<!\s)\[ | <?<~ | ~>>? | <~> | [*=/|\\>] | \.(?!\.\.) | <(?!<[^<~] | %=)
     | \^{3} | && | (?<!\s)[-+]\S | [-+][-+>\s] | ::(?!:) | $ | !=
     | (?>when|and|in|or|not\s+in){{no_id_key_suffix}}
-    )
+    ))
 
-  operator: |
-    (?x)(?>
+  operator: |-
+    (?x:(?>
       =~ | ={1,3} | @ | <?\|> | (?!<%=)[<-](?![~=] | < | --)[->]? | \|{1,3} | ::
     | &{1,3} | \+{1,3} | \\\\ | \^{3} | \^ | \.{1,3} | !={0,2} | [<>]= | \*\*?
     | >>> | >(?!>) | // | / | <<< | ~~~ | <~> | <?<~ | ~>>? | ---
-    )
+    ))
 
-  has_arguments: |
-    (?x)(?=
+  has_arguments: |-
+    (?x:(?=
       \(
     | \s* (?!\?:) (?>{{operator}}: {{no_colon_suffix}} | \\(?!\\))
     | (?! \s* (?>, | {{closing_token}} | {{binary_operator}}) )
-    )
+    ))
+
   no_suffix_then_arguments: '{{no_id_key_suffix}}{{has_arguments}}'
 
   atom_symbol: (?>{{atom_id}}|<<>>|\.\.//|{{operator}}|%?{}|%)
@@ -204,7 +205,7 @@ contexts:
       scope: entity.name.function.elixir
       set: function_free_form_header_pop
 
-    - match: '{{identifier}}(?=\s*([(),;]|do{{no_id_key_suffix}}|$))'
+    - match: '{{identifier}}(?=\s*(?:[(),;]|do{{no_id_key_suffix}}|$))'
       comment: e.g. "def func," OR "def func(a, b)" OR "def func do" OR "def func"
       scope: entity.name.function.elixir
       set: function_params_or_eol_pop
@@ -429,7 +430,7 @@ contexts:
       push:
         - meta_scope: meta.mapping.elixir
         - match: (?=unquote\()
-          set: [map_param_body_pop, arguments_pop, unquote_pop]
+          set: [map_param_unquote_meta_pop, arguments_pop, unquote_pop]
         - include: alias_names
         - match: ((?=_)(?<!%>){{identifier}})|({{identifier}})
           captures:
@@ -438,12 +439,20 @@ contexts:
           set: map_param_body_pop
         - include: map_param_body_pop
 
+  map_param_unquote_meta_pop:
+    - meta_scope: meta.mapping.elixir
+    - include: map_param_body_pop
+    - include: if_non_space_pop
+
   map_param_body_pop:
-    - match: \{
-      scope: punctuation.section.mapping.begin.elixir
+    - match: (?={)
       set:
-        - include: map_closing_pop
-        - include: parameters_or_if_closing_pop
+        - match: \{
+          scope: punctuation.section.mapping.begin.elixir
+          set:
+            - meta_scope: meta.mapping.elixir
+            - include: map_closing_pop
+            - include: parameters_or_if_closing_pop
     - include: if_closing_token_pop
     - include: if_non_space_or_eol_pop
 
@@ -679,20 +688,28 @@ contexts:
       push:
         - meta_scope: meta.mapping.elixir
         - match: (?=unquote\()
-          set: [map_type_body_pop, arguments_pop, unquote_pop]
+          set: [map_type_unquote_meta_pop, arguments_pop, unquote_pop]
         - include: alias_names
         - match: _(?>{{module_name}}|{{identifier}})?
           scope: variable.type.unused.elixir invalid.illegal.struct.elixir
           set: map_type_body_pop
         - include: map_type_body_pop
 
+  map_type_unquote_meta_pop:
+    - meta_scope: meta.mapping.elixir
+    - include: map_type_body_pop
+    - include: if_non_space_pop
+
   map_type_body_pop:
-    - match: \{
-      scope: punctuation.section.mapping.begin.elixir
+    - match: (?={)
       set:
-        - include: map_closing_pop
-        - include: named_type
-        - include: types_or_if_closing_pop
+        - match: \{
+          scope: punctuation.section.mapping.begin.elixir
+          set:
+            - meta_scope: meta.mapping.elixir
+            - include: map_closing_pop
+            - include: named_type
+            - include: types_or_if_closing_pop
     - include: if_closing_token_pop
     - include: if_non_space_or_eol_pop
 
@@ -792,19 +809,16 @@ contexts:
       scope: constant.character.escape.char.elixir
 
   interpolated_elixir:
-    - match: (?=#{)
+    - match: \#{
+      scope: punctuation.section.interpolation.begin.elixir
       push:
-        - clear_scopes: true
-        - match: '#{'
-          scope: punctuation.section.interpolation.begin.elixir
-          set:
-            - clear_scopes: true
-            - meta_content_scope: source.elixir.embedded
-            - meta_scope: source.elixir meta.string.elixir meta.interpolation.elixir
-            - match: \}
-              scope: punctuation.section.interpolation.end.elixir
-              pop: 1
-            - include: core_syntax
+        - clear_scopes: 1
+        - meta_content_scope: source.elixir.embedded
+        - meta_scope: meta.interpolation.elixir
+        - match: \}
+          scope: punctuation.section.interpolation.end.elixir
+          pop: 1
+        - include: core_syntax
 
   escaped_or_interpolated:
     - include: line_continuation
@@ -1003,7 +1017,7 @@ contexts:
             1: punctuation.definition.string.begin.elixir
             2: invalid.illegal.opening-heredoc.elixir
           set:
-            - meta_scope: meta.string.elixir
+            - meta_scope: meta.string.elixir text.html.eex
             - match: (?=""")
               set: [string_modifiers_and_pop, heredoc_string_closing_double_w_meta_pop]
             - match: \\"
@@ -1013,7 +1027,7 @@ contexts:
         - match: \"
           scope: punctuation.definition.string.begin.elixir
           set:
-            - meta_scope: meta.string.elixir
+            - meta_scope: meta.string.elixir text.html.eex
             - match: \\"
               scope: constant.character.escape.char.elixir
             - include: string_closing_dquote
@@ -1022,7 +1036,7 @@ contexts:
         - match: \'
           scope: punctuation.definition.string.begin.elixir
           set:
-            - meta_scope: meta.string.elixir
+            - meta_scope: meta.string.elixir text.html.eex
             - match: \\'
               scope: constant.character.escape.char.elixir
             - include: string_closing_squote
@@ -1038,7 +1052,7 @@ contexts:
             1: punctuation.definition.string.begin.elixir
             2: invalid.illegal.opening-heredoc.elixir
           set:
-            - meta_scope: meta.string.elixir
+            - meta_scope: meta.string.elixir text.html.heex
             - match: (?=""")
               set: [string_modifiers_and_pop, heredoc_string_closing_double_w_meta_pop]
             - match: \\"
@@ -1048,7 +1062,7 @@ contexts:
         - match: \"
           scope: punctuation.definition.string.begin.elixir
           set:
-            - meta_scope: meta.string.elixir
+            - meta_scope: meta.string.elixir text.html.heex
             - match: \\"
               scope: constant.character.escape.char.elixir
             - include: string_closing_dquote
@@ -1057,7 +1071,7 @@ contexts:
         - match: \'
           scope: punctuation.definition.string.begin.elixir
           set:
-            - meta_scope: meta.string.elixir
+            - meta_scope: meta.string.elixir text.html.heex
             - match: \\'
               scope: constant.character.escape.char.elixir
             - include: string_closing_squote
@@ -1073,7 +1087,7 @@ contexts:
             1: punctuation.definition.string.begin.elixir
             2: invalid.illegal.opening-heredoc.elixir
           set:
-            - meta_scope: meta.string.elixir
+            - meta_scope: meta.string.elixir text.html.surface
             - match: (?=""")
               set: [string_modifiers_and_pop, heredoc_string_closing_double_w_meta_pop]
             - match: \\"
@@ -1083,7 +1097,7 @@ contexts:
         - match: \"
           scope: punctuation.definition.string.begin.elixir
           set:
-            - meta_scope: meta.string.elixir
+            - meta_scope: meta.string.elixir text.html.surface
             - match: \\"
               scope: constant.character.escape.char.elixir
             - include: string_closing_dquote
@@ -1092,7 +1106,7 @@ contexts:
         - match: \'
           scope: punctuation.definition.string.begin.elixir
           set:
-            - meta_scope: meta.string.elixir
+            - meta_scope: meta.string.elixir text.html.surface
             - match: \\'
               scope: constant.character.escape.char.elixir
             - include: string_closing_squote
@@ -1472,20 +1486,45 @@ contexts:
             - match: (?<="""|''')
               set: string_modifiers_and_pop
             - include: heredoc_string_raw
-        - match: (?=[/|"'])
+        # The repetition can be simplified once a proper backref feature is implemented.
+        # See:
+        # * [Parameterized contexts](https://github.com/sublimehq/sublime_text/issues/2912)
+        # * [Error "invalid backref number/name in regex \\\1" ...](https://github.com/sublimehq/sublime_text/issues/5247)
+        - match: \"
+          scope: punctuation.definition.string.begin.elixir
           set:
-            - meta_scope: meta.string.elixir
-            # (?<=[A-Z]) avoids matching again after the closing delimiter. E.g.: ~S||//
-            - match: (?<=[A-Z])([/|"'])
-              captures:
-                1: string.quoted.other.literal.upper.elixir punctuation.definition.string.begin.elixir
-              push:
-                - meta_content_scope: string.quoted.other.literal.upper.elixir
-                - match: \\.
-                - match: \1
-                  scope: string.quoted.other.literal.upper.elixir punctuation.definition.string.end.elixir
-                  pop: 1
-            - match: ''
+            - meta_scope: meta.string.elixir string.quoted.other.literal.upper.elixir
+            - match: \\"
+              scope: constant.character.escape.char.elixir
+            - match: \"
+              scope: string.quoted.other.literal.upper.elixir punctuation.definition.string.end.elixir
+              set: string_modifiers_and_pop
+        - match: \'
+          scope: punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir string.quoted.other.literal.upper.elixir
+            - match: \\'
+              scope: constant.character.escape.char.elixir
+            - match: \'
+              scope: string.quoted.other.literal.upper.elixir punctuation.definition.string.end.elixir
+              set: string_modifiers_and_pop
+        - match: /
+          scope: punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir string.quoted.other.literal.upper.elixir
+            - match: \\/
+              scope: constant.character.escape.char.elixir
+            - match: /
+              scope: string.quoted.other.literal.upper.elixir punctuation.definition.string.end.elixir
+              set: string_modifiers_and_pop
+        - match: \|
+          scope: punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir string.quoted.other.literal.upper.elixir
+            - match: \\\|
+              scope: constant.character.escape.char.elixir
+            - match: \|
+              scope: string.quoted.other.literal.upper.elixir punctuation.definition.string.end.elixir
               set: string_modifiers_and_pop
         - match: \{
           scope: punctuation.definition.string.begin.elixir
@@ -1687,8 +1726,7 @@ contexts:
         - match: else{{no_id_key_suffix}}
           comment: the else-block contains arrow clauses only in error handling
           scope: keyword.control.conditional.else.elixir
-        - match: (?=%>)
-          pop: 1
+        - include: if_closing_eex_pop
         - include: error_handling_clauses
         - include: core_syntax_or_block_end_pop
 
@@ -1697,6 +1735,7 @@ contexts:
       scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
       set:
         - meta_scope: meta.block.elixir
+        - include: if_closing_eex_pop
         - include: error_handling_clauses
         - include: core_syntax_or_block_end_pop
 
@@ -2138,7 +2177,7 @@ contexts:
       push:
         - meta_scope: meta.mapping.elixir
         - match: (?=unquote\()
-          set: [map_body_pop, arguments_pop, unquote_pop]
+          set: [map_unquote_meta_pop, arguments_pop, unquote_pop]
         - include: alias_names
         - match: \^
           scope: keyword.operator.pin.elixir
@@ -2149,13 +2188,21 @@ contexts:
           set: map_body_pop
         - include: map_body_pop
 
+  map_unquote_meta_pop:
+    - meta_scope: meta.mapping.elixir
+    - include: map_body_pop
+    - include: if_non_space_pop
+
   map_body_pop:
-    - match: \{
-      scope: punctuation.section.mapping.begin.elixir
+    - match: (?={)
       set:
-        - include: map_closing_pop
-        - include: cons_operator
-        - include: core_syntax_or_if_closing_pop
+        - match: \{
+          scope: punctuation.section.mapping.begin.elixir
+          set:
+            - meta_scope: meta.mapping.elixir
+            - include: map_closing_pop
+            - include: cons_operator
+            - include: core_syntax_or_if_closing_pop
     - include: if_closing_token_pop
     - include: if_non_space_or_eol_pop
 
@@ -2492,7 +2539,7 @@ contexts:
 
   map_closing_pop:
     - match: \}
-      scope: meta.mapping.elixir punctuation.section.mapping.end.elixir
+      scope: punctuation.section.mapping.end.elixir
       pop: 1
 
   arguments_rest_pop:
@@ -2678,6 +2725,7 @@ contexts:
           scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
           push:
             - meta_scope: meta.block.elixir
+            - include: if_closing_eex_pop
             - include: arrow_clauses_body_pop
         - include: last_arg_block_end_pop
         - include: arguments_ws_rest_pop
@@ -2698,6 +2746,7 @@ contexts:
             - match: else{{no_id_key_suffix}}
               scope: keyword.control.conditional.else.elixir
               push: arrow_clauses_body_pop
+            - include: if_closing_eex_pop
             - include: last_arg_block_end_pop
             - include: core_syntax
         - include: arguments_ws_closing_pop
@@ -2726,6 +2775,7 @@ contexts:
           scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
           set:
             - meta_scope: meta.block.elixir
+            - include: if_closing_eex_pop
             - include: last_arg_block_end_pop
             - match: ''
               push: arrow_clauses_body_pop
@@ -2743,6 +2793,7 @@ contexts:
           scope: punctuation.section.block.begin.elixir keyword.context.block.do.elixir
           set:
             - meta_scope: meta.block.elixir
+            - include: if_closing_eex_pop
             - include: error_handling_clauses
             - include: last_arg_block_end_pop
             - include: core_syntax
@@ -2764,6 +2815,7 @@ contexts:
             - match: after{{no_id_key_suffix}}
               scope: keyword.control.exception.catch.elixir
               push: arrow_clauses_body_pop
+            - include: if_closing_eex_pop
             - include: last_arg_block_end_pop
             - match: ''
               push: arrow_clauses_body_pop
@@ -2844,6 +2896,10 @@ contexts:
   if_ws_closing_token_or_eol_pop:
     - include: if_ws_closing_token_pop
     - match: (?=\s*(?>#|$))
+      pop: 1
+
+  if_closing_eex_pop:
+    - match: (?=%>)
       pop: 1
 
   if_closing_paren_pop:

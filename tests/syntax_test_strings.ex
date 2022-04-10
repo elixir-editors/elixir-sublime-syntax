@@ -674,3 +674,20 @@ key: "#{value}\"""
 #  ^^^^ constant.other.symbol.atom
 # FIXME:
 ~w"some atoms #{"string"}"a
+
+@doc ~S"\\\""
+#         ^^ constant.character.escape.char
+~S"\\\""
+#    ^^ constant.character.escape.char
+@doc ~S'\\\''
+#         ^^ constant.character.escape.char
+~S'\\\''
+#    ^^ constant.character.escape.char
+@doc ~S/\\\//
+#         ^^ constant.character.escape.char
+~S/\\\//
+#    ^^ constant.character.escape.char
+@doc ~S|\\\||
+#         ^^ constant.character.escape.char
+~S|\\\||
+#    ^^ constant.character.escape.char

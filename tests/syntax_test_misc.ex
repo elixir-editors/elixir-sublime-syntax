@@ -48,14 +48,29 @@
 # ^^ punctuation.definition.constant.begin
 #^ punctuation.section.mapping.begin
 
-%module{}
-#^^^^^^ variable.other
-%^module{}
-#^ keyword.operator.pin
-%{map | a: :b}
-#            ^ punctuation.section.mapping.end
-#     ^ keyword.operator.cons
-# ^^^ variable.other
+ %module{}
+# ^^^^^^ variable.other
+ %^module{}
+# ^ keyword.operator.pin
+#^^^^^^^^^^ meta.mapping.elixir - meta.mapping meta.mapping
+ %{map | a: :b}
+#             ^ punctuation.section.mapping.end
+#      ^ keyword.operator.cons
+#  ^^^ variable.other
+#^^^^^^^^^^^^^^ meta.mapping.elixir - meta.mapping meta.mapping
+
+ %{ k: v }
+#^^^^^^^^^ meta.mapping.elixir - meta.mapping meta.mapping
+ %_{ k: v }
+#^^^^^^^^^^ meta.mapping.elixir - meta.mapping meta.mapping
+ %name{ k: v }
+#^^^^^^^^^^^^^ meta.mapping.elixir - meta.mapping meta.mapping
+ %_Name{ k: v }
+#^^^^^^^^^^^^^^ meta.mapping.elixir - meta.mapping meta.mapping
+ %A.B{ k: v }
+#^^^^^^^^^^^^ meta.mapping.elixir - meta.mapping meta.mapping
+ %unquote(sh){ k: v }
+#^^^^^^^^^^^^^^^^^^^^ meta.mapping.elixir - meta.mapping meta.mapping
 
  {} {{}} ({}) [{}]
 #              ^ punctuation.section.sequence.begin
