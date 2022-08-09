@@ -1,0 +1,78 @@
+# SYNTAX TEST "EEx.sublime-syntax"
+
+## EEx inside plain text
+
+ <%= if @html do %>
+#                ^^ punctuation.section.embedded.end.eex
+#               ^ meta.block.elixir
+#             ^^ meta.block.elixir punctuation.section.block.begin.elixir keyword.context.block.do.elixir
+#        ^^^^ variable.other.constant.elixir
+#       ^ keyword.operator.attribute.elixir
+#      ^ punctuation.section.arguments.begin.elixir
+#      ^^^^^^^^^ meta.function-call.arguments.elixir
+#    ^^ keyword.control.conditional.elixir
+#^^^ punctuation.section.embedded.begin.eex
+#^^^^^^^^^^^^^^^^^^ meta.embedded.eex
+  <div>Some text</div>
+#^^^^^^^^^^^^^^^^^^^^^^ text.eex
+ <%= else %>
+#         ^^ punctuation.section.embedded.end.eex
+#    ^^^^ keyword.control.conditional.else.elixir
+#^^^ punctuation.section.embedded.begin.eex
+#^^^^^^^^^^^ meta.embedded.eex
+  Some text
+# ^^^^^^^^^^ text.eex
+ <% end %>
+#       ^^ punctuation.section.embedded.end.eex
+#   ^^^ keyword.context.block.end.elixir
+#^^ punctuation.section.embedded.begin.eex
+#^^^^^^^^^ meta.embedded.eex
+
+
+## Comments
+
+ <% # Comment %>
+#             ^^ punctuation.section.embedded.end.eex
+#   ^ punctuation.definition.comment.elixir
+#   ^^^^^^^^^^ comment.line.number-sign.elixir
+#^^ punctuation.section.embedded.begin.eex
+#^^^^^^^^^^^^^^^ meta.embedded.eex
+ <% # Comment
+#   ^ punctuation.definition.comment.elixir
+#   ^^^^^^^^^^ comment.line.number-sign.elixir
+#^^ punctuation.section.embedded.begin.eex
+#^^^^^^^^^^^^^ meta.embedded.eex
+    x = 1
+#       ^ constant.numeric.integer.elixir
+#     ^ keyword.operator.match.elixir
+#   ^ variable.other.elixir
+#^^^^^^^^^ meta.embedded.eex
+    # Comment %>
+#             ^^ punctuation.section.embedded.end.eex
+#   ^ punctuation.definition.comment.elixir
+#   ^^^^^^^^^^ comment.line.number-sign.elixir
+#^^^^^^^^^^^^^^^ meta.embedded.eex
+
+
+ <%# Comment %>
+#            ^^ punctuation.section.embedded.end.eex
+#  ^ punctuation.definition.comment.begin.eex
+#^^ punctuation.section.embedded.begin.eex
+#^^^^^^^^^^^^^^ meta.embedded.eex comment.block.eex
+
+ <%# Comment
+#  ^ punctuation.definition.comment.begin.eex
+#^^ punctuation.section.embedded.begin.eex
+#^^^^^^^^^^^^ meta.embedded.eex comment.block.eex - text.html
+ %>
+#^^ punctuation.section.embedded.end.eex
+#^^ meta.embedded.eex comment.block.eex
+
+ <%!-- Comment
+#  ^^^ punctuation.definition.comment.begin.eex
+#^^ punctuation.section.embedded.begin.eex
+#^^^^^^^^^^^^^^ meta.embedded.eex comment.block.eex - text.html
+ --%>
+#  ^^ punctuation.section.embedded.end.eex
+#^^ punctuation.definition.comment.end.eex
+#^^^^ meta.embedded.eex comment.block.eex

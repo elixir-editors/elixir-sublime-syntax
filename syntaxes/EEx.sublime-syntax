@@ -1,0 +1,103 @@
+%YAML 1.2
+---
+version: 2
+name: EEx
+scope: text.eex
+
+file_extensions: [eex]
+authors: [Aziz Köksal <aziz.koeksal@gmail.com>]
+
+contexts:
+  # EEx:
+  main:
+    - include: eex-embedded
+
+  eex-interpolated-comment:
+    - match: (<%)(!--)
+      captures:
+        0: comment.block.eex
+        1: punctuation.section.embedded.begin.eex
+        2: punctuation.definition.comment.begin.eex
+      push:
+        - eex-interpolated-clear-scope-pop
+        - eex-embedded-block-comment-content-pop
+    - match: (<%)(#)
+      captures:
+        0: comment.block.eex
+        1: punctuation.section.embedded.begin.eex
+        2: punctuation.definition.comment.begin.eex
+      push:
+        - eex-interpolated-clear-scope-pop
+        - eex-embedded-comment-content-deprecated-pop
+
+  eex-interpolated-clear-scope-pop:
+    # Need to clear the string scope so that auto-completion works,
+    # which is disabled by default in strings and comments.
+    - clear_scopes: 1
+    - match: ''
+      pop: 1
+
+  eex-embedded-comment:
+    - match: (<%)(!--)
+      captures:
+        0: comment.block.eex
+        1: punctuation.section.embedded.begin.eex
+        2: punctuation.definition.comment.begin.eex
+      push: eex-embedded-block-comment-content-pop
+    - match: (<%)(#)
+      captures:
+        0: comment.block.eex
+        1: punctuation.section.embedded.begin.eex
+        2: punctuation.definition.comment.begin.eex
+      push: eex-embedded-comment-content-deprecated-pop
+
+  eex-embedded-block-comment-content-pop:
+    - meta_scope: meta.embedded.eex
+    - meta_content_scope: comment.block.eex
+    - include: eex-comment-end-pop
+
+  eex-embedded-comment-content-deprecated-pop:
+    - meta_scope: meta.embedded.eex meta.deprecated.eex
+    - meta_content_scope: comment.block.eex
+    - include: eex-comment-end-deprecated-pop
+
+  eex-embedded:
+    - include: eex-embedded-comment
+
+    # Tags <%/ and <%| are parsed but have no functionality in EEx yet.
+    - match: <%(?:%=?|[=/|]?)
+      scope: punctuation.section.embedded.begin.eex
+      push: eex-embedded-content-pop
+
+  eex-embedded-content-pop:
+    - meta_scope: meta.embedded.eex
+    - include: eex-tag-end-pop
+    - include: elixir-line-comment
+    - include: scope:source.elixir
+      apply_prototype: true
+
+  elixir-line-comment:
+    - match: \#
+      scope: punctuation.definition.comment.elixir
+      push:
+        - meta_scope: comment.line.number-sign.elixir
+        - match: \n|(?=%>)
+          pop: 1
+
+  eex-tag-end-pop:
+    - match: '%>'
+      scope: punctuation.section.embedded.end.eex
+      pop: 1
+
+  eex-comment-end-pop:
+    - match: (--)(%>)
+      captures:
+        0: comment.block.eex
+        1: punctuation.definition.comment.end.eex
+        2: punctuation.section.embedded.end.eex
+      pop: 1
+
+  eex-comment-end-deprecated-pop:
+    - match: '%>'
+      scope: comment.block.eex punctuation.section.embedded.end.eex
+      pop: 1
