@@ -121,6 +121,11 @@
       "foreground": "color(var(white) l(- 30%))"
     },
     {
+      "name": "Embedded comment punctuation",
+      "scope": "comment.block.eex & (punctuation.section.embedded.begin.eex | punctuation.section.embedded.end.eex)",
+      "foreground": "color(var(doc))"
+    },
+    {
       "name": "SQL boolean",
       "scope": "constant.boolean.sql",
       "foreground": "color(var(purple))"
