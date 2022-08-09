@@ -1,19 +1,49 @@
 # Changelog
 
+## [v3.0.0] – 2022-10-24
+
+- Elixir: removed Markdown highlighting from doc comments due to unfixable issues.
+- Elixir: properly highlight arrow clauses in `for`-statement arguments.
+- Elixir: match macro and record calls inside parameters and arrow clauses (`for module(module: module) <- all_modules`).
+- Elixir: fixed stepped ranges as parameters (`first..last//step`).
+- Elixir: fixed string interpolations clearing all scopes (`"2^8 = #{2 ** 8}"`).
+- Commands: added Python code to be able to call `mix test` in various ways.
+- Commands: added `mix_format_project` and `mix_format_file` commands with auto-format setting.
+- Palette: added `Mix Test: ...` and `Mix Format: ...` commands.
+- EEx: added syntax file for EEx in plain text files.
+- HTML (EEx), Elixir (EEx): added `<%!-- ... --%>` multi-line comments.
+- HTML (EEx): match EEx tags as tag and attribute names (`<tag <%= @attr %>="value"/>`).
+- HTML (HEEx): fixed matching function names in tags.
+- HTML (HEEx): match phx binding attributes.
+- Elixir (EEx): fixed matching comments (`<%# ... %>`).
+- SQL: fixed matching decimal numbers.
+- SQL: fixed matching quoted member ids (`a_table."a column"`).
+- Snippets: added `dbg` keyword for `|> dbg()`.
+- Snippets: added EEx tags.
+- Snippets: added Elixir `#{...}` string interpolation.
+- Snippets: added `require IEx; IEx.pry()` string interpolation.
+- Completions: added Phoenix LiveView attribute bindings.
+- Completions: added Surface tag attributes.
+- Preferences: added increase / decrease indentation settings (thanks to @timfjord).
+- Builds: added `elixirc` and `mix compile`.
+- Menus: added "ElixirSyntax" to "Preferences > Package Settings".
+
 ## [v2.3.0] – 2021-12-17
-  - Syntaxes: refactored Surface/HEEx/EEx with many improvements (thanks to @deathaxe).
-  - Themes: slightly darken the embed punctuation markers for Surface and (H)EEx tags.
-  - Elixir: allow digits in sigil string modifiers.
-  - Preferences: index Elixir `@attribute` definitions for "Goto Definition".
+
+- Syntaxes: refactored Surface/HEEx/EEx with many improvements (thanks to @deathaxe).
+- Themes: slightly darken the embed punctuation markers for Surface and (H)EEx tags.
+- Elixir: allow digits in sigil string modifiers.
+- Preferences: index Elixir `@attribute` definitions for "Goto Definition".
 
 ## [v2.2.0] – 2021-09-18
-  - Syntax: added support for the [HEEx](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.Helpers.html#sigil_H/2) template syntax inside the `~H` sigil.
-  - Syntax: added support for the [Surface](https://surface-ui.org/template_syntax) template syntax inside the `~F` sigil.
-  - Elixir: match the `**` power operator.
-  - HTML (EEx): switched to version 2 and removed usage of `with_prototype`.
-  - SQL: match the `;` token; fixed the `/**/` comment scope.
-  - Themes: highlight interpolated Elixir with a lighter background.
-  - Themes: don't italicize the sigil type.
+
+- Syntax: added support for the [HEEx](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.Helpers.html#sigil_H/2) template syntax inside the `~H` sigil.
+- Syntax: added support for the [Surface](https://surface-ui.org/template_syntax) template syntax inside the `~F` sigil.
+- Elixir: match the `**` power operator.
+- HTML (EEx): switched to version 2 and removed usage of `with_prototype`.
+- SQL: match the `;` token; fixed the `/**/` comment scope.
+- Themes: highlight interpolated Elixir with a lighter background.
+- Themes: don't italicize the sigil type.
 
 ## [v2.1.0] – 2021-07-25
 
