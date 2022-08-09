@@ -61,8 +61,6 @@ x.<%= :member %>()
 #     ^^^^^^^ constant.other.symbol
 # ^^^ punctuation.section.embedded.begin.eex
 #^ punctuation.accessor.dot
-                 ^ punctuation.section.arguments.end
-                ^ punctuation.section.arguments.begin
 
 @type <%= :t %> :: any
 #            ^^ punctuation.section.embedded.end.eex
@@ -86,3 +84,21 @@ x.<%= :member %>()
 # ^^^ punctuation.section.embedded.begin.eex
 #^^^^^^^^^^^^^^^^^^^^^^ comment.line.number-sign.elixir
 #<- comment.line.number-sign.elixir punctuation.definition.comment.elixir
+
+
+ <%# Comment
+#  ^ punctuation.definition.comment.begin.eex
+#^^ punctuation.section.embedded.begin.eex
+#^^^^^^^^^^^^ meta.embedded.eex comment.block.eex - text.html
+ %>
+#^^ punctuation.section.embedded.end.eex
+#^^ meta.embedded.eex comment.block.eex - text.html
+
+ <%!-- Comment
+#  ^^^ punctuation.definition.comment.begin.eex
+#^^ punctuation.section.embedded.begin.eex
+#^^^^^^^^^^^^^^ meta.embedded.eex comment.block.eex - text.html
+ --%>
+#  ^^ punctuation.section.embedded.end.eex
+#^^ punctuation.definition.comment.end.eex
+#^^^^ meta.embedded.eex comment.block.eex - text.html
