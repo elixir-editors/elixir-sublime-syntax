@@ -18,11 +18,7 @@ contexts:
     - include: eex_end_tag
 
   eex_begin_tag:
-    - match: (<%)(#)
-      captures:
-        1: punctuation.section.embedded.begin.eex
-        2: comment.block.eex punctuation.definition.comment.begin.eex
-      push: HTML (EEx).sublime-syntax#eex-interpolation-comment-content-pop
+    - include: scope:text.eex#eex-interpolated-comment
 
     - match: <%(?:%=?|[=/|]?)
       scope: punctuation.section.embedded.begin.eex
@@ -30,7 +26,7 @@ contexts:
       # push: core_syntax
       # with_prototype:
       #   - match: (?=%>|<%)
-      #     pop: true
+      #     pop: 1
 
   eex_end_tag:
     - match: \s*(%>)
