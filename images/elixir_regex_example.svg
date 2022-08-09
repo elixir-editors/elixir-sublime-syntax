@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 270 20">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 318 30">
 <style type="text/css"><![CDATA[
-  div { padding:0.1em;font-family:monospace;font-size:16px;white-space:pre;color:#eee!important;background-color:#282923;border-radius:4px; }
+  div { padding:0.05em;font-family:monospace;font-size:16px;white-space:pre;color:#eee!important;background-color:#282923;border-radius:4px; }
   .fnc { color:#67d8ef }
   .blu_i { color:#67d8ef;font-style:italic }
   .mod { color:#70a800 }

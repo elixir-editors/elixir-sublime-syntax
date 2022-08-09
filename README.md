@@ -6,11 +6,11 @@ ElixirSyntax was initially based on the [Elixir.tmbundle package](https://github
 
 * Working `Goto Definition` command.
 * HTML template highlighting:
-  - HEEx: <img src="images/elixir_heex_example.svg" width="260" align="top">
-  - Surface: <img src="images/elixir_surface_example.svg" width="215" align="top">
-  - LiveView: <img src="images/elixir_liveview_example.svg" width="230" align="top">
-* Full PCRE syntax highlighting: <img src="images/elixir_regex_example.svg" width="270" align="top">
-* Type highlighting: <img src="images/elixir_type_example.svg" width="620" align="top">
+  - HEEx: <img src="images/elixir_heex_example.svg" height="28" align="top">
+  - Surface: <img src="images/elixir_surface_example.svg" height="28" align="top">
+  - LiveView: <img src="images/elixir_liveview_example.svg" height="28" align="top">
+* Full PCRE syntax highlighting: <img src="images/elixir_regex_example.svg" height="28" align="top">
+* Type highlighting: <img src="images/elixir_type_example.svg" height="28" align="top">
 * Theme adaptations for Mariana and Monokai.
 * Build commands: `mix format`, `mix test`, `elixir $file`
 * Snippets for `IO.inspect`, `tap` and `then`.
@@ -31,7 +31,7 @@ Add an `sql` macro/function to your project to enjoy SQL highlighting anywhere i
 <img src="images/elixir_sql_example.svg" width="100%">
 </blockquote>
 
-### The JSON `~j` and `~J` sigils ([`Jason`](https://github.com/michalmuskala/jason/blob/ec2042e4e47442bf3d58410934b8e8f6ff850b3f/lib/sigil.ex))
+### The JSON `~j` and `~J` sigils ([`Jason`](https://github.com/michalmuskala/jason/blob/master/lib/sigil.ex))
 
 Embed JSON strings in your Elixir code. Notice the interpolated Elixir code is colored correctly.
 
@@ -47,7 +47,7 @@ Embed JSON strings in your Elixir code. Notice the interpolated Elixir code is c
 
 ## Recommended packages
 
-* [LSP](https://packagecontrol.io/packages/LSP) and [LSP-elixir](https://packagecontrol.io/packages/LSP-elixir) for intelligent code completion.
+* [LSP](https://packagecontrol.io/packages/LSP) and [LSP-elixir](https://packagecontrol.io/packages/LSP-elixir) for intelligent code completion and additional snippet suggestions.
 
 ## Changes
 
