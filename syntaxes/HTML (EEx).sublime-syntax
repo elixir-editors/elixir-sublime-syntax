@@ -28,25 +28,11 @@ contexts:
   # EEx:
 
   eex-interpolations:
-    - match: (<%)(#)
-      captures:
-        1: punctuation.section.embedded.begin.eex
-        2: comment.block.eex punctuation.definition.comment.begin.eex
-      push: eex-interpolation-comment-content-pop
-
+    - include: scope:text.eex#eex-interpolated-comment
     # Tags <%/ and <%| are parsed but have no functionality in EEx yet.
     - match: <%(?:%=?|[=/|]?)
       scope: punctuation.section.embedded.begin.eex
       push: eex-interpolation-tag-content-pop
-
-  eex-interpolation-comment-content-pop:
-    # Need to clear the string scope so that auto-completion works,
-    # which is disabled by default in strings and comments.
-    - clear_scopes: 1
-    - meta_include_prototype: false
-    - meta_scope: meta.embedded.eex
-    - meta_content_scope: comment.block.eex
-    - include: eex-comment-content-pop
 
   eex-interpolation-tag-content-pop:
     # Need to clear the string scope.
@@ -57,32 +43,17 @@ contexts:
     - include: eex-embedded-content-pop
 
   eex-embedded:
-    - match: (<%)(#)
-      captures:
-        1: punctuation.section.embedded.begin.eex
-        2: comment.block.eex punctuation.definition.comment.begin.eex
-      push: eex-comment-content-pop
-
+    - include: scope:text.eex#eex-embedded-comment
     # Tags <%/ and <%| are parsed but have no functionality in EEx yet.
     - match: <%(?:%=?|[=/|]?)
       scope: punctuation.section.embedded.begin.eex
       push: eex-embedded-content-pop
 
-  eex-comment-content-pop:
-    - meta_include_prototype: false
-    - meta_scope: meta.embedded.eex
-    - meta_content_scope: comment.block.eex
-    - include: eex-embedded-end-pop
-
   eex-embedded-content-pop:
     - meta_include_prototype: false
     - meta_scope: meta.embedded.eex
     - meta_content_scope: source.elixir.embedded.html
-    - include: eex-embedded-end-pop
+    - include: scope:text.eex#eex-tag-end-pop
+    - include: scope:text.eex#elixir-line-comment
     - include: scope:source.elixir
       apply_prototype: true
-
-  eex-embedded-end-pop:
-    - match: '%>'
-      scope: punctuation.section.embedded.end.eex
-      pop: 1
