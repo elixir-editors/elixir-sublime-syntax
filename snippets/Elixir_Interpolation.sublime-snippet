@@ -1,0 +1,6 @@
+<snippet>
+  <content><![CDATA[{$1}]]></content>
+  <tabTrigger>#</tabTrigger>
+  <scope>meta.string.elixir - string.quoted.other.literal</scope>
+  <description>Elixir code interpolation.</description>
+</snippet>

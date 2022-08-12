@@ -1,0 +1,6 @@
+<snippet>
+  <content><![CDATA[|> dbg($1)]]></content>
+  <tabTrigger>dbg</tabTrigger>
+  <scope>source.elixir</scope>
+  <description>Debugs the given `code`. Returns value unchanged.</description>
+</snippet>

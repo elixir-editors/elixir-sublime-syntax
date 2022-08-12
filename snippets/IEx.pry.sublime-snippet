@@ -1,0 +1,6 @@
+<snippet>
+  <content><![CDATA[require IEx; IEx.pry()]]></content>
+  <tabTrigger>pry</tabTrigger>
+  <scope>source.elixir</scope>
+  <description>Pries into the process environment for debugging.</description>
+</snippet>
