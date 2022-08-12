@@ -1,0 +1,6 @@
+<snippet>
+  <content><![CDATA[<%% $1 %>]]></content>
+  <tabTrigger>&lt;%%</tabTrigger>
+  <scope>text.eex | text.html.eex | text.html.heex | source.elixir.eex</scope>
+  <description>EEx raw &lt;%% ... %&gt;</description>
+</snippet>
