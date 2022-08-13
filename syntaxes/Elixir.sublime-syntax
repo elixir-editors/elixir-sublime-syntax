@@ -1077,6 +1077,41 @@ contexts:
             - include: scope:text.html.heex
               apply_prototype: true
 
+    - match: ~E(?=["'])(?!''')
+      comment: Elixir template
+      scope: meta.string.elixir storage.type.string.elixir
+      push:
+        - match: (""")(.*)\n
+          captures:
+            1: punctuation.definition.string.begin.elixir
+            2: invalid.illegal.opening-heredoc.elixir
+          set:
+            - meta_scope: meta.string.elixir
+            - match: (?=""")
+              set: [string_modifiers_and_pop, heredoc_string_closing_double_w_meta_pop]
+            - match: \\"
+              scope: constant.character.escape.char.elixir
+            - include: scope:source.elixir
+              apply_prototype: true
+        - match: \"
+          scope: punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir
+            - match: \\"
+              scope: constant.character.escape.char.elixir
+            - include: string_closing_dquote
+            - include: scope:source.elixir
+              apply_prototype: true
+        - match: \'
+          scope: punctuation.definition.string.begin.elixir
+          set:
+            - meta_scope: meta.string.elixir
+            - match: \\'
+              scope: constant.character.escape.char.elixir
+            - include: string_closing_squote
+            - include: scope:source.elixir
+              apply_prototype: true
+
     - match: ~F(?=["'])(?!''')
       comment: Surface template
       scope: meta.string.elixir storage.type.string.elixir
