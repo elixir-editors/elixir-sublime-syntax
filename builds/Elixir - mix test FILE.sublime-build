@@ -1,5 +1,5 @@
 {
-  "shell_cmd": "cd \"$folder\" && mix test $file",
+  "target": "mix_test_file",
   "working_dir": "${project_path}",
-  "selector": "source.elixir"
+  "file_patterns": ["*_test.exs"]
 }

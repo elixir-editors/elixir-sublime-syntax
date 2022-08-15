@@ -1,6 +1,6 @@
 # ElixirSyntax
 
-ElixirSyntax was initially based on the [Elixir.tmbundle package](https://github.com/elixir-editors/elixir-tmbundle) but has been rewritten since, providing more accurate syntax matching as well as better syntax highlighting.
+*ElixirSyntax* was initially based on the [Elixir.tmbundle package](https://github.com/elixir-editors/elixir-tmbundle) but has been rewritten since, providing more accurate syntax matching as well as better syntax highlighting.
 
 ## Features
 
@@ -44,6 +44,55 @@ Embed JSON strings in your Elixir code. Notice the interpolated Elixir code is c
 <blockquote>
 <img src="images/elixir_yaml_example.svg" width="100%">
 </blockquote>
+
+## Testing
+
+Build-files as well as commands are provided for calling `mix test`. The predefined shortcuts can be changed via `Preferences > Package Settings > ElixirSyntax > Key Bindings`.
+
+Tip: To run specific tests in the current file, mark them with multiple cursors and/or spanning selections and press `Alt+Shift+T` or choose `Mix Test: Selection(s)` from the palette.
+
+*ElixirSyntax* stores a per-project JSON settings file in the root folder that contains both the `mix.exs` file and the `_build/` folder. They override the general settings below.
+
+General settings example (via `Preferences > Package Settings > ElixirSyntax > Settings`):
+```json
+{
+  "mix_test": {
+    "output": "tab",
+    "output_mode": null,
+    "output_scroll_time": 2,
+    "args": ["--coverage"],
+    "seed": null
+  }
+}
+```
+
+When a `mix test` command is run the first time, a `mix_test.repeat.json` file is stored in the `_build/` folder to remember the command arguments. By pressing `Alt+Shift+R` or running `Mix Test: Repeat` from the palette you can repeat the previously executed tests.
+
+## Formatting
+
+Use the default shortcut `Alt+Shift+F` or the palette command `Mix Format: File` to format your Elixir code. Format the whole project via `Mix Format: Project / Folder`. Configure auto-formatting on save via the palette command `Mix Format: Toggle Auto-Formatting` or via the menu `Preferences > Package Settings > ElixirSyntax > Settings`. There is no per-project auto-format setting yet.
+
+```json
+{
+  "mix_format": {
+    "on_save": true
+  }
+}
+```
+
+## Palette commands
+
+- `ElixirSyntax: Settings`
+- `Mix Test: Settings`
+- `Mix Test: File`
+- `Mix Test: Selection(s)`
+- `Mix Test: Failed`
+- `Mix Test: Repeat`
+- `Mix Test: Set Seed`
+- `Mix Test: Toggle --stale Flag`
+- `Mix Format: File`
+- `Mix Format: Project / Folder`
+- `Mix Format: Toggle Auto-Formatting`
 
 ## Recommended packages
 
