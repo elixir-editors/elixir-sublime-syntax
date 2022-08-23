@@ -18,12 +18,19 @@
 <!--                  ^ - punctuation.section.embedded.begin.elixir - source -->
 <!--                  ^^^^^^^^^^^^^^^^^ - comment.block.html meta.embedded -->
 
+     <% # Comment %>
+<!--              ^^ punctuation.section.embedded.end.eex -->
+<!--    ^ punctuation.definition.comment.elixir -->
+<!--    ^^^^^^^^^^ comment.line.number-sign.elixir -->
+<!--   ^^^^^^^^^^^ source.elixir.embedded.html -->
+<!-- ^^ punctuation.section.embedded.begin.eex -->
+<!-- ^^^^^^^^^^^^^^^ meta.embedded.eex -->
+
      <%# Comment %>
-<!--             ^^ punctuation.section.embedded.end.eex - comment -->
-<!--   ^^^^^^^^^^ comment.block.eex - constant -->
+<!--             ^^ punctuation.section.embedded.end.eex -->
 <!--   ^ punctuation.definition.comment.begin.eex -->
-<!-- ^^ punctuation.section.embedded.begin.eex - comment -->
-<!-- ^^^^^^^^^^^^^^ text.html.heex meta.embedded.eex -->
+<!-- ^^ punctuation.section.embedded.begin.eex -->
+<!-- ^^^^^^^^^^^^^^ meta.embedded.eex comment -->
 
      <script>
        <%= @elixir %>
@@ -91,12 +98,32 @@
 <!--       ^ - entity -->
 <!--  ^^^^^ entity.name.tag.begin.heex -->
 <!-- ^ punctuation.definition.tag.begin.html -->
-<!-- ^^^^^^^^^^^^^^^^^^^^ meta.tag.other.heex - meta.tag meta.tag -->
+<!-- ^^^^^^^^^^^^^^^^^^^^ meta.tag.other.heex -->
+
+     <MyApp.func-tion? name={@name} />
+<!--                                ^^ punctuation.definition.tag.end.html -->
+<!--                       ^ punctuation.separator.key-value.html -->
+<!--                   ^^^^ entity.other.attribute-name.html -->
+<!--        ^^^^^^^^^^ variable.function.heex - entity -->
+<!--       ^ punctuation.accessor.dot.heex - entity -->
+<!--  ^^^^^ entity.name.tag.begin.heex -->
+<!-- ^ punctuation.definition.tag.begin.html -->
+<!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.tag.other.heex -->
+
+     <MyApp.+*?!name={@name} />
+<!--                         ^^ punctuation.definition.tag.end.html -->
+<!--                 ^^^^^^^ entity.other.attribute-name.html -->
+<!--                 ^^^^^^^^ meta.attribute-with-value.html -->
+<!--        ^^^^^^^^ variable.function.heex -->
+<!--       ^ punctuation.accessor.dot.heex -->
+<!--  ^^^^^ entity.name.tag.begin.heex -->
+<!-- ^ punctuation.definition.tag.begin.html -->
+<!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.tag.other.heex -->
+
 
      <MyApp.User.tag name={@name}>
 <!--                      ^^^^^^^ meta.attribute-with-value.html meta.embedded.heex -->
 <!--                 ^^^^^ meta.attribute-with-value.html - meta.embedded -->
-<!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.tag.other.heex - meta.tag meta.tag -->
 <!--                             ^ punctuation.definition.tag.end.html -->
 <!--                            ^ punctuation.section.embedded.end.elixir -->
 <!--                       ^^^^^ source.elixir.embedded.html -->
@@ -109,6 +136,8 @@
 <!--       ^ punctuation.accessor.dot.heex -->
 <!--  ^^^^^ entity.name.tag.begin.heex -->
 <!-- ^ punctuation.definition.tag.begin.html -->
+<!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.tag.other.heex -->
+
      </MyApp.User.tag>
 <!--                 ^ punctuation.definition.tag.end.html -->
 <!--              ^^^ variable.function.heex -->
@@ -117,7 +146,44 @@
 <!--        ^ punctuation.accessor.dot.heex -->
 <!--   ^^^^^ entity.name.tag.end.heex -->
 <!-- ^ punctuation.definition.tag.begin.html -->
-<!-- ^^^^^^^^^^^^^^^^^ meta.tag.other.heex - meta.tag meta.tag -->
+<!-- ^^^^^^^^^^^^^^^^^ meta.tag.other.heex -->
+
+     <button phx-click={JS.add_class("show", to: "#modal", transition: "fade-in")}>Show</button>
+<!--                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.attribute-with-value.html meta.embedded.heex -->
+<!--         ^^^^^^^^^ entity.other.attribute-name.heex -->
+
+     <phx phx-value-*="" phx-click="" phx-click-away=""/>
+<!--                                  ^^^^^^^^^^^^^^ entity.other.attribute-name.heex-->
+<!--                     ^^^^^^^^^ entity.other.attribute-name.heex-->
+<!--      ^^^^^^^^^^^ entity.other.attribute-name.heex-->
+     <phx phx-change="" phx-submit="" phx-feedback-for=""/>
+<!--                                  ^^^^^^^^^^^^^^^^ entity.other.attribute-name.heex-->
+<!--                    ^^^^^^^^^^ entity.other.attribute-name.heex-->
+<!--      ^^^^^^^^^^ entity.other.attribute-name.heex-->
+     <phx phx-disable-with="" phx-trigger-action="" phx-auto-recover=""/>
+<!--                                                ^^^^^^^^^^^^^^^^ entity.other.attribute-name.heex-->
+<!--                          ^^^^^^^^^^^^^^^^^^ entity.other.attribute-name.heex-->
+<!--      ^^^^^^^^^^^^^^^^ entity.other.attribute-name.heex-->
+     <phx phx-blur="" phx-focus="" phx-window-blur=""/>
+<!--                               ^^^^^^^^^^^^^^^ entity.other.attribute-name.heex-->
+<!--                  ^^^^^^^^^ entity.other.attribute-name.heex-->
+<!--      ^^^^^^^^ entity.other.attribute-name.heex-->
+     <phx phx-window-focus="" phx-keydown="" phx-keyup=""/>
+<!--                                         ^^^^^^^^^ entity.other.attribute-name.heex-->
+<!--                          ^^^^^^^^^^^ entity.other.attribute-name.heex-->
+<!--      ^^^^^^^^^^^^^^^^ entity.other.attribute-name.heex-->
+     <phx phx-window-keydown="" phx-window-keyup="" phx-key=""/>
+<!--                                                ^^^^^^^ entity.other.attribute-name.heex-->
+<!--                            ^^^^^^^^^^^^^^^^ entity.other.attribute-name.heex-->
+<!--      ^^^^^^^^^^^^^^^^^^ entity.other.attribute-name.heex-->
+     <phx phx-update="" phx-remove="" phx-hook=""/>
+<!--                                  ^^^^^^^^ entity.other.attribute-name.heex-->
+<!--                    ^^^^^^^^^^ entity.other.attribute-name.heex-->
+<!--      ^^^^^^^^^^ entity.other.attribute-name.heex-->
+     <phx phx-debounce="" phx-throttle="" phx-track-static=""/>
+<!--                                      ^^^^^^^^^^^^^^^^ entity.other.attribute-name.heex-->
+<!--                      ^^^^^^^^^^^^ entity.other.attribute-name.heex-->
+<!--      ^^^^^^^^^^^^ entity.other.attribute-name.heex-->
 
      <t{=@a}a />
 <!--  ^^^^^^^ entity.name.tag.other.html - meta.embedded - source -->
