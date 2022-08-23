@@ -19,6 +19,10 @@ variables:
 contexts:
   # HTML overrides:
 
+  tag-attributes:
+    - meta_prepend: true
+    - include: heex-phx-attributes
+
   tag-other:
     - meta_prepend: true
     - include: heex-tags
@@ -71,20 +75,36 @@ contexts:
   heex-begin-tag-name-pop:
     - match: '{{heex_tag_name}}|{{heex_slot_name}}'
       scope: entity.name.tag.begin.heex
-    - include: heex-tag-name-common-pop
+    - include: heex-tag-function-name-pop
 
   heex-end-tag-name-pop:
     - match: '{{heex_tag_name}}|{{heex_slot_name}}'
       scope: entity.name.tag.end.heex
-    - include: heex-tag-name-common-pop
+    - include: heex-tag-function-name-pop
 
-  heex-tag-name-common-pop:
-    - match: '[[:lower:]_]\w*[?!]?'
-      scope: variable.function.heex
-      pop: 1
-    - match: \.
-      scope: punctuation.accessor.dot.heex
+  heex-tag-function-name-pop:
+    - match: ({{heex_tag_char}}+)|(\.)
+      captures:
+        1: variable.function.heex
+        2: punctuation.accessor.dot.heex
     - include: immediately-pop
+
+  heex-phx-attributes:
+    # https://hexdocs.pm/phoenix_live_view/bindings.html
+    - match: |-
+        (?x) phx- (?>
+          value-.+?
+        | click(?:-away)?
+        | change | submit | feedback-for | disable-with | trigger-action | auto-recover
+        | blur | focus | window(?:-blur|-focus|-keydown|-keyup)
+        | key(?:down|up)?
+        | update | remove
+        | hook
+        | debounce | throttle
+        | track-static
+        ){{attribute_name_break}}
+      scope: entity.other.attribute-name.heex
+      push: [tag-generic-attribute-meta, tag-generic-attribute-assignment]
 
   # Elixir:
 
