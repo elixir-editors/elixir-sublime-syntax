@@ -14,63 +14,132 @@
 <!--        ^^^ punctuation.section.embedded.begin.eex -->
 <!--       ^ punctuation.definition.string.begin.html -->
 
+     <% # Comment %>
+<!--              ^^ punctuation.section.embedded.end.eex -->
+<!--    ^ punctuation.definition.comment.elixir -->
+<!--    ^^^^^^^^^^ comment.line.number-sign.elixir -->
+<!--   ^^^^^^^^^^^ source.elixir.embedded.html -->
+<!-- ^^ punctuation.section.embedded.begin.eex -->
+<!-- ^^^^^^^^^^^^^^^ meta.embedded.eex -->
+
      <%# Comment
-<!--   ^^^^^^^^^^ comment.block.eex - constant -->
 <!--   ^ punctuation.definition.comment.begin.eex -->
-<!-- ^^ punctuation.section.embedded.begin.eex - comment -->
-<!-- ^^^^^^^^^^^^^^ text.html.eex meta.embedded.eex -->
+<!-- ^^ punctuation.section.embedded.begin.eex -->
+<!-- ^^^^^^^^^^^^ meta.embedded.eex comment -->
          Block
-<!--^^^^^^^^^^^ comment.block.eex - constant -->
+<!--^^^^^^^^^^^ meta.embedded.eex comment - constant -->
      %>
-<!-- ^^ punctuation.section.embedded.end.eex - comment -->
-<!--^ comment.block.eex - constant -->
+<!-- ^^ punctuation.section.embedded.end.eex -->
+<!--^^^ meta.embedded.eex comment -->
 
      <br class="<%# Comment %>" />
-<!--                        ^^ punctuation.section.embedded.end.eex - comment -->
-<!--              ^^^^^^^^^^ comment.block.eex - constant -->
+<!--                        ^^ punctuation.section.embedded.end.eex -->
 <!--              ^ punctuation.definition.comment.begin.eex -->
-<!--            ^^ punctuation.section.embedded.begin.eex - comment -->
-<!--            ^^^^^^^^^^^^^^ text.html.eex meta.embedded.eex - string -->
+<!--            ^^ punctuation.section.embedded.begin.eex -->
+<!--            ^^^^^^^^^^^^^^ meta.embedded.eex comment - string -->
+
+     <!-- <%= x + 1 %> -->
+<!--              ^ constant.numeric.integer -->
+<!--          ^ variable.other -->
+<!--      ^^^^^^^^^^^^ meta.embedded -->
+<!-- ^^^^^^^^^^^^^^^^^^^^^ comment.block.html -->
+
+     <<%= @tag %> attr="" attr=<%= @value %> <%= @attr %>="" <%= @attr %>=<%= @value %>>
+<!--                                                                                   ^ punctuation.definition.tag.end -->
+<!--                                                                      ^^^^^^^^^^^^^ meta.embedded.eex -->
+<!--                                                                     ^ punctuation.separator.key-value -->
+<!--                                                         ^^^^^^^^^^^^ meta.embedded.eex -->
+<!--                                                      ^^ meta.string string.quoted.double -->
+<!--                                                     ^ punctuation.separator.key-value -->
+<!--                                         ^^^^^^^^^^^^ meta.embedded.eex -->
+<!--                           ^^^^^^^^^^^^^ meta.embedded.eex -->
+<!--                          ^ punctuation.separator.key-value -->
+<!--                   ^^ meta.string string.quoted.double -->
+<!--                  ^ punctuation.separator.key-value -->
+<!--              ^^^^ entity.other.attribute-name -->
+<!--           ^^ punctuation.section.embedded.end.eex -->
+<!--       ^^^ variable.other.constant.elixir -->
+<!--      ^ keyword.operator.attribute.elixir -->
+<!--     ^^^^^^ source.elixir.embedded -->
+<!--  ^^^ punctuation.section.embedded.begin.eex -->
+<!--  ^^^^^^^^^^^ meta.embedded.eex -->
+<!-- ^ punctuation.definition.tag.begin -->
+<!-- ^^^^^^^^^^^^^^^^^^^^^ meta.tag.other -->
+     </<%= @tag %>>
+<!--              ^ punctuation.definition.tag.end -->
+<!--            ^^ punctuation.section.embedded.end.eex -->
+<!--        ^^^ variable.other.constant.elixir -->
+<!--       ^ keyword.operator.attribute.elixir -->
+<!--      ^^^^^^ source.elixir.embedded -->
+<!--   ^^^ punctuation.section.embedded.begin.eex -->
+<!--   ^^^^^^^^^^^ meta.embedded.eex -->
+<!-- ^^ punctuation.definition.tag.begin -->
+<!-- ^^^^^^^^^^^^^^ meta.tag.other -->
+
+     < <%= @tag %> <%= @attr %>>
+<!--               ^^^^^^^^^^^^ meta.attribute-with-value -->
+<!--   ^^^^^^^^^^^ - meta.attribute-with-value -->
+     </ <%= @tag %>>
+<!--    ^^^^^^^^^^^ - meta.attribute-with-value -->
+
+     <tag-<%= @attr %>-name/>
+<!--                ^^ punctuation.section.embedded.end.eex -->
+<!--         ^^^^^^^ source.elixir.embedded.html -->
+<!--      ^^^ punctuation.section.embedded.begin.eex -->
+<!--      ^^^^^^^^^^^^ meta.embedded.eex -->
+<!--  ^^^^^^^^^^^^^^^^^^^^^ entity.name.tag.other -->
+<!-- ^^^^^^^^^^^^^^^^^^^^^^^^ meta.tag.other -->
+
+     <tag <%= @attr %>=""/>
+<!--                   ^^ meta.string string.quoted.double -->
+<!--                  ^ punctuation.separator.key-value -->
+<!--      ^^^^^^^^^^^^ meta.embedded.eex -->
+<!-- ^^^^^^^^^^^^^^^^^^^^^^ meta.tag.other -->
+     <tag attr=<%= @attr %>/>
+<!--           ^^^^^^^^^^^^ meta.embedded.eex -->
+<!--      ^^^^^^^^^^^^^^^^^ meta.attribute-with-value -->
+<!-- ^^^^^^^^^^^^^^^^^^^^^^^^ meta.tag.other -->
+
 
      <% func arg %>
-<!--             ^^ text.html.eex meta.embedded.eex - source -->
-<!--   ^^^^^^^^^^ text.html.eex meta.embedded.eex source.elixir.embedded.html -->
-<!-- ^^ text.html.eex meta.embedded.eex - source -->
+<!--             ^^ meta.embedded.eex - source -->
+<!--   ^^^^^^^^^^ meta.embedded.eex source.elixir.embedded.html -->
+<!-- ^^ meta.embedded.eex - source -->
 <!--             ^^ punctuation.section.embedded.end.eex -->
 <!--         ^^^ variable.other.elixir -->
 <!--    ^^^^ variable.function.elixir -->
 <!-- ^^ punctuation.section.embedded.begin.eex -->
 
      <%= if true? do %>
-<!--                 ^^ text.html.eex meta.embedded.eex - source -->
-<!--    ^^^^^^^^^^^^^ text.html.eex meta.embedded.eex source.elixir.embedded.html -->
-<!-- ^^^ text.html.eex meta.embedded.eex - source -->
+<!--                 ^^ meta.embedded.eex - source -->
+<!--    ^^^^^^^^^^^^^ meta.embedded.eex source.elixir.embedded.html -->
+<!-- ^^^ meta.embedded.eex - source -->
 <!--                 ^^ punctuation.section.embedded.end.eex -->
 <!--              ^^ keyword.context.block.do.elixir -->
 <!--        ^^^^^ variable.other.elixir -->
 <!--     ^^ keyword.control.conditional.elixir -->
 <!-- ^^^ punctuation.section.embedded.begin.eex -->
      <% end %>
-<!--        ^^ text.html.eex meta.embedded.eex - source -->
-<!--   ^^^^^ text.html.eex meta.embedded.eex source.elixir.embedded.html -->
-<!-- ^^ text.html.eex meta.embedded.eex - source -->
+<!--        ^^ meta.embedded.eex - source -->
+<!--   ^^^^^ meta.embedded.eex source.elixir.embedded.html -->
+<!-- ^^ meta.embedded.eex - source -->
 <!--        ^^ punctuation.section.embedded.end.eex -->
 <!--    ^^^ keyword.context.block.end.elixir -->
 <!-- ^^ punctuation.section.embedded.begin.eex -->
 
      <%% quoted :code %>
-<!--                  ^^ text.html.eex meta.embedded.eex - source -->
-<!--    ^^^^^^^^^^^^^^ text.html.eex meta.embedded.eex source.elixir.embedded.html -->
-<!-- ^^^ text.html.eex meta.embedded.eex - source -->
+<!--                  ^^ meta.embedded.eex - source -->
+<!--    ^^^^^^^^^^^^^^ meta.embedded.eex source.elixir.embedded.html -->
+<!-- ^^^ meta.embedded.eex - source -->
 <!--                  ^^ punctuation.section.embedded.end.eex -->
 <!--            ^^^^^ constant.other.symbol.elixir -->
 <!--     ^^^^^^ variable.function.elixir -->
 <!-- ^^^ punctuation.section.embedded.begin.eex -->
 
      <%%= quoted :result %>
-<!--                     ^^ text.html.eex meta.embedded.eex - source -->
-<!--     ^^^^^^^^^^^^^^^^ text.html.eex meta.embedded.eex source.elixir.embedded.html -->
-<!-- ^^^^ text.html.eex meta.embedded.eex - source -->
+<!--                     ^^ meta.embedded.eex - source -->
+<!--     ^^^^^^^^^^^^^^^^ meta.embedded.eex source.elixir.embedded.html -->
+<!-- ^^^^ meta.embedded.eex - source -->
 <!--                     ^^ punctuation.section.embedded.end.eex -->
 <!--             ^^^^^^^ constant.other.symbol.elixir -->
 <!--      ^^^^^^ variable.function.elixir -->
