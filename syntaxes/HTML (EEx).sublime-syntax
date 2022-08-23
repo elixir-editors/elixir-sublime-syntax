@@ -17,6 +17,14 @@ contexts:
     - meta_prepend: true
     - include: eex-embedded
 
+  tag-html:
+    - meta_append: true
+    - include: eex-embedded-tag-name
+
+  tag-attributes:
+    - meta_prepend: true
+    - include: eex-embedded-attribute-name
+
   tag-attribute-value-content:
     - meta_prepend: true
     - include: eex-interpolations
@@ -57,3 +65,19 @@ contexts:
     - include: scope:text.eex#elixir-line-comment
     - include: scope:source.elixir
       apply_prototype: true
+
+  eex-embedded-tag-name:
+    - match: (</?)\s*(<%(?:%?=?))
+      captures:
+        1: punctuation.definition.tag.begin.html
+        2: punctuation.section.embedded.begin.eex
+      push: [tag-other-content, eex-embedded-content-pop]
+
+  eex-embedded-attribute-name:
+    - match: \s*(<%(?:%?=?))
+      captures:
+        1: punctuation.section.embedded.begin.eex
+      push:
+        - tag-generic-attribute-meta
+        - tag-generic-attribute-assignment
+        - eex-embedded-content-pop
