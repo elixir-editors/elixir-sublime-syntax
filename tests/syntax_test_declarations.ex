@@ -656,6 +656,23 @@ def @attr do attr end
 #    ^^^^ variable.parameter
 #   ^ entity.name.function
 
+def inspect(var!(struct), var!(opts))
+#                                   ^ punctuation.definition.parameters.end
+#                                  ^ punctuation.section.arguments.end
+#                              ^^^^ variable.parameter
+#                             ^ punctuation.section.arguments.begin
+#                             ^^^^^^ meta.function-call.arguments
+#                         ^^^^ variable.function
+#                       ^ punctuation.separator.sequence
+#                      ^ punctuation.section.arguments.end
+#                ^^^^^^ variable.parameter
+#               ^ punctuation.section.arguments.begin
+#               ^^^^^^^^ meta.function-call.arguments
+#           ^^^^ variable.function
+#          ^ punctuation.definition.parameters.begin
+#          ^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.function.parameters
+
+
 def changeset(%__MODULE__{} = model \\ %__MODULE__{}, params)
 #                                       ^^^^^^^^^^ variable.language.special-form
 #                             ^^^^^ variable.parameter

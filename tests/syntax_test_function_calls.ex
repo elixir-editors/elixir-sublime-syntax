@@ -739,6 +739,45 @@ end
 #  ^ punctuation.section.arguments.end
 for x <- xs, x not in @list do end
 #                      ^^^^ variable.other.constant
+for CE.source(
+#            ^ punctuation.section.arguments.begin
+#      ^^^^^^ variable.function
+#     ^ punctuation.accessor.dot
+#   ^^ constant.other.module
+     source: source,
+#                  ^ punctuation.separator.sequence
+#            ^^^^^^ variable.parameter
+#    ^^^^^^^ constant.other.keyword
+     runtime_references: r,
+#                        ^ variable.parameter
+     compile_references: c,
+#                        ^ variable.parameter
+     export_references: e
+#                       ^ variable.parameter
+   ) <- sources,
+#              ^ punctuation.separator.arguments
+#       ^^^^^^^ variable.other
+#    ^^ keyword.operator.arrow
+#  ^ punctuation.section.arguments.end
+   module in r or module in c or module in e,
+   CE.module(sources: sources, module: dependent_module) <- modules,
+#                                                                  ^ punctuation.separator.arguments
+#                                                           ^^^^^^^ variable.other
+#                                                        ^^ keyword.operator.arrow
+#                                                      ^ punctuation.section.arguments.end
+#                                      ^^^^^^^^^^^^^^^^ variable.parameter
+#                            ^ punctuation.separator.sequence
+#                     ^^^^^^^ variable.parameter
+#           ^ punctuation.section.arguments.begin
+#           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.function-call.arguments
+   source in sources,
+#                   ^ punctuation.separator.arguments
+#            ^^^^^^^ variable.other
+#         ^^ keyword.operator.logical
+#  ^^^^^^ variable.other
+   do: dependent_module
+#      ^^^^^^^^^^^^^^^^ variable.other
+#  ^^^ constant.other.keyword
 
 
  receive do
