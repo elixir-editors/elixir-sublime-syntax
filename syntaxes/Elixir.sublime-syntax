@@ -347,11 +347,54 @@ contexts:
     - include: binary_string_param
     # Use last_id_argument here to avoid matching `@attr do` as an entity symbol.
     - include: last_id_argument
+    - include: function_call_param
     - include: core_syntax
 
   parameters_or_if_closing_pop:
     - include: if_closing_token_pop
     - include: parameters
+
+  id_or_operator_call_param_pop:
+    - match: ({{member}}){{no_key_suffix}}
+      scope: variable.function.elixir
+      set:
+        - include: arguments_paren_param_pop
+        - include: dot_accessor_param_pop
+        - match: '{{has_arguments}}'
+          set: parameters_or_if_closing_pop
+        - include: if_non_space_or_eol_pop
+
+  module_function_call_param_pop:
+    - match: ({{module_name}})(?=\s*\.(?!\.))
+      scope: constant.other.module.elixir
+      set: dot_accessor_param_pop
+
+  dot_accessor_param_pop:
+    - match: \.(?!\.)
+      scope: punctuation.accessor.dot.elixir
+      set:
+        - include: arguments_paren_param_pop
+        - include: atom_keyword
+        - include: module_function_call_param_pop
+        - include: unquote_call_pop
+        - include: id_or_operator_call_param_pop
+        - include: id_member_pop
+        - include: module_name_pop
+        - include: arguments_pop
+        - include: quoted_remote_call_pop
+        - include: quoted_member_pop
+        - include: tuple_call_pop
+        - include: if_non_space_or_eol_pop
+
+  function_call_param:
+    - match: (?=\.(?!\.))
+      push: dot_accessor_param_pop
+    - include: unquote_call
+    - match: (?={{module_name}}\s*\.(?!\.))
+      scope: constant.other.module.elixir
+      push: module_function_call_param_pop
+    - match: (?={{identifier}}{{no_key_suffix}}(?=\s*\.\s*\(|{{has_arguments}}))
+      push: id_or_operator_call_param_pop
 
   paren_param:
     - match: (?=\()
@@ -364,6 +407,16 @@ contexts:
         - meta_scope: meta.function.parameters.elixir
         - match: \)
           scope: punctuation.definition.parameters.end.elixir
+          pop: 1
+        - include: parameters_or_if_closing_pop
+
+  arguments_paren_param_pop:
+    - match: \(
+      scope: punctuation.section.arguments.begin.elixir
+      set:
+        - meta_scope: meta.function-call.arguments.elixir
+        - match: \)
+          scope: punctuation.section.arguments.end.elixir
           pop: 1
         - include: parameters_or_if_closing_pop
 
