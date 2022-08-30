@@ -1,0 +1,27 @@
+{
+  "mix_test": {
+    // Which command to execute.
+    "cmd": ["mix", "test"],
+    // Choose where to display the command's output.
+    // `{"values": ["tab", "panel", "file://..."]}`
+    "output": "panel",
+    // Output mode of the disk file to open/create.
+    // `{"values": "see `open()` modifiers"}`
+    "output_mode": "w",
+    // Automatically scroll the output view every t seconds. `null` disables scrolling.
+    // `{"values": [null, "non-negative float"]}`
+    "output_scroll_time": 2,
+    // Additional arguments to pass to `cmd`.
+    // `{"values": "see `mix help test`"}`
+    "args": [],
+    // The seed with which to randomize the tests.
+    // `{"values": [null, "non-negative integer"]}`
+    "seed": null
+  },
+  "mix_format": {
+    // Which command to execute.
+    "cmd": ["mix", "format"],
+    // Calls `mix format` automatically on saving the file if `true`.
+    "on_save": false
+  }
+}

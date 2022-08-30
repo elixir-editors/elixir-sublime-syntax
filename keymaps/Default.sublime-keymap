@@ -1,0 +1,14 @@
+[
+  // Runs the whole test-suite.
+  { "keys": ["ctrl+alt+shift+t"], "command": "mix_test" },
+  // Runs the current test file.
+  { "keys": ["ctrl+alt+t"], "command": "mix_test_file" },
+  // Runs the current test file but including only the tests marked by the selected lines.
+  { "keys": ["alt+shift+t"], "command": "mix_test_selection" },
+  // Runs the previously executed command.
+  { "keys": ["alt+shift+r"], "command": "mix_test_repeat" },
+  // Formats the source file.
+  { "keys": ["alt+shift+f"], "command": "mix_format_file",
+    "context": [ { "key": "selector", "operator": "equal", "operand": "source.elixir" } ]
+  },
+]
