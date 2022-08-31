@@ -1,0 +1,149 @@
+{
+  "scope": "text.html.heex meta.attribute-with-value",
+  "completions": [
+    {
+      "trigger": "phx-value-*",
+      "contents": "phx-value-${1:*}={$2}",
+      "kind": "snippet",
+      "details": "Params"
+    },
+    {
+      "trigger": "phx-click",
+      "contents": "phx-click={$1}",
+      "kind": "snippet",
+      "details": "Click Events"
+    },
+    {
+      "trigger": "phx-click-away",
+      "contents": "phx-click-away={$1}",
+      "kind": "snippet",
+      "details": "Click Events"
+    },
+    {
+      "trigger": "phx-change",
+      "contents": "phx-change={$1}",
+      "kind": "snippet",
+      "details": "Form Events"
+    },
+    {
+      "trigger": "phx-submit",
+      "contents": "phx-submit={$1}",
+      "kind": "snippet",
+      "details": "Form Events"
+    },
+    {
+      "trigger": "phx-feedback-for",
+      "contents": "phx-feedback-for={$1}",
+      "kind": "snippet",
+      "details": "Form Events"
+    },
+    {
+      "trigger": "phx-disable-with",
+      "contents": "phx-disable-with={$1}",
+      "kind": "snippet",
+      "details": "Form Events"
+    },
+    {
+      "trigger": "phx-trigger-action",
+      "contents": "phx-trigger-action={$1}",
+      "kind": "snippet",
+      "details": "Form Events"
+    },
+    {
+      "trigger": "phx-auto-recover",
+      "contents": "phx-auto-recover={$1}",
+      "kind": "snippet",
+      "details": "Form Events"
+    },
+    {
+      "trigger": "phx-blur",
+      "contents": "phx-blur={$1}",
+      "kind": "snippet",
+      "details": "Focus Events"
+    },
+    {
+      "trigger": "phx-focus",
+      "contents": "phx-focus={$1}",
+      "kind": "snippet",
+      "details": "Focus Events"
+    },
+    {
+      "trigger": "phx-window-blur",
+      "contents": "phx-window-blur={$1}",
+      "kind": "snippet",
+      "details": "Focus Events"
+    },
+    {
+      "trigger": "phx-window-focus",
+      "contents": "phx-window-focus={$1}",
+      "kind": "snippet",
+      "details": "Focus Events"
+    },
+    {
+      "trigger": "phx-keydown",
+      "contents": "phx-keydown={$1}",
+      "kind": "snippet",
+      "details": "Key Events"
+    },
+    {
+      "trigger": "phx-keyup",
+      "contents": "phx-keyup={$1}",
+      "kind": "snippet",
+      "details": "Key Events"
+    },
+    {
+      "trigger": "phx-window-keydown",
+      "contents": "phx-window-keydown={$1}",
+      "kind": "snippet",
+      "details": "Key Events"
+    },
+    {
+      "trigger": "phx-window-keyup",
+      "contents": "phx-window-keyup={$1}",
+      "kind": "snippet",
+      "details": "Key Events"
+    },
+    {
+      "trigger": "phx-key",
+      "contents": "phx-key={$1}",
+      "kind": "snippet",
+      "details": "Key Events"
+    },
+    {
+      "trigger": "phx-update",
+      "contents": "phx-update={$1}",
+      "kind": "snippet",
+      "details": "DOM Patching"
+    },
+    {
+      "trigger": "phx-remove",
+      "contents": "phx-remove={$1}",
+      "kind": "snippet",
+      "details": "DOM Patching"
+    },
+    {
+      "trigger": "phx-hook",
+      "contents": "phx-hook={$1}",
+      "kind": "snippet",
+      "details": "JS Interop"
+    },
+    {
+      "trigger": "phx-debounce",
+      "contents": "phx-debounce={$1}",
+      "kind": "snippet",
+      "details": "Rate Limiting"
+    },
+    {
+      "trigger": "phx-throttle",
+      "contents": "phx-throttle={$1}",
+      "kind": "snippet",
+      "details": "Rate Limiting"
+    },
+    {
+      "trigger": "phx-track-static",
+      "contents": "phx-track-static={$1}",
+      "kind": "snippet",
+      "details": "Static Tracking"
+    }
+  ]
+}
