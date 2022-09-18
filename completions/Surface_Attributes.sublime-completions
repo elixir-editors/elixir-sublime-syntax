@@ -1,0 +1,113 @@
+{
+  "scope": "text.html.surface meta.attribute-with-value",
+  "completions": [
+    {
+      "trigger": "if",
+      "contents": ":if={$1}",
+      "kind": "markup",
+      "details": ":if"
+    },
+    {
+      "trigger": "hook",
+      "contents": ":hook={$1}",
+      "kind": "markup",
+      "details": ":hook"
+    },
+    {
+      "trigger": "show",
+      "contents": ":show={$1}",
+      "kind": "markup",
+      "details": ":show"
+    },
+    {
+      "trigger": "let",
+      "contents": ":let={$1}",
+      "kind": "markup",
+      "details": ":let"
+    },
+    {
+      "trigger": "args",
+      "contents": ":args={$1}",
+      "kind": "markup",
+      "details": ":args"
+    },
+    {
+      "trigger": "values",
+      "contents": ":values={$1}",
+      "kind": "markup",
+      "details": ":values"
+    },
+    {
+      "trigger": "on-click",
+      "contents": ":on-click={$1}",
+      "kind": "markup",
+      "details": ":on-click"
+    },
+    {
+      "trigger": "on-capture-click",
+      "contents": ":on-capture-click={$1}",
+      "kind": "markup",
+      "details": ":on-capture-click"
+    },
+    {
+      "trigger": "on-blur",
+      "contents": ":on-blur={$1}",
+      "kind": "markup",
+      "details": ":on-blur"
+    },
+    {
+      "trigger": "on-focus",
+      "contents": ":on-focus={$1}",
+      "kind": "markup",
+      "details": ":on-focus"
+    },
+    {
+      "trigger": "on-change",
+      "contents": ":on-change={$1}",
+      "kind": "markup",
+      "details": ":on-change"
+    },
+    {
+      "trigger": "on-submit",
+      "contents": ":on-submit={$1}",
+      "kind": "markup",
+      "details": ":on-submit"
+    },
+    {
+      "trigger": "on-keydown",
+      "contents": ":on-keydown={$1}",
+      "kind": "markup",
+      "details": ":on-keydown"
+    },
+    {
+      "trigger": "on-keyup",
+      "contents": ":on-keyup={$1}",
+      "kind": "markup",
+      "details": ":on-keyup"
+    },
+    {
+      "trigger": "on-window-focus",
+      "contents": ":on-window-focus={$1}",
+      "kind": "markup",
+      "details": ":on-window-focus"
+    },
+    {
+      "trigger": "on-window-blur",
+      "contents": ":on-window-blur={$1}",
+      "kind": "markup",
+      "details": ":on-window-blur"
+    },
+    {
+      "trigger": "on-window-keydown",
+      "contents": ":on-window-keydown={$1}",
+      "kind": "markup",
+      "details": ":on-window-keydown"
+    },
+    {
+      "trigger": "on-window-keyup",
+      "contents": ":on-window-keyup={$1}",
+      "kind": "markup",
+      "details": ":on-window-keyup"
+    }
+  ]
+}
