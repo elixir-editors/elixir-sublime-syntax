@@ -4,11 +4,12 @@
     "default": "{\n  $0\n}\n"
   } },
   { "caption": "Mix Test: Settings", "command": "mix_test_settings" },
+  { "caption": "Mix Test: All", "command": "mix_test" },
   { "caption": "Mix Test: File", "command": "mix_test_file" },
   { "caption": "Mix Test: Selection(s)", "command": "mix_test_selection" },
   { "caption": "Mix Test: Failed", "command": "mix_test_failed" },
   { "caption": "Mix Test: Repeat", "command": "mix_test_repeat" },
-  { "caption": "Mix Test: Set Seed", "command": "mix_test_set_seed" },
+  { "caption": "Mix Test: Set --seed", "command": "mix_test_set_seed" },
   { "caption": "Mix Test: Toggle --stale Flag", "command": "mix_test_toggle_stale_flag" },
   { "caption": "Mix Format: File", "command": "mix_format_file" },
   { "caption": "Mix Format: Project / Folder", "command": "mix_format_project" },

@@ -22,14 +22,14 @@ class MixTestSettingsCommand(sublime_plugin.WindowCommand):
   def description(self):
     return 'Opens the `mix test` settings file for the current project.'
 
-  def run(self, **kwargs):
+  def run(self, **_kwargs):
     abs_file_path = self.window.active_view().file_name()
     window_vars = self.window.extract_variables()
     mix_settings_path = reverse_find_json_path(self.window, FILE_NAMES.SETTINGS_JSON)
 
     if mix_settings_path:
       if not path.exists(mix_settings_path):
-        save_json_settings(mix_settings_path, add_help_info({'args': []}))
+        save_json_file(mix_settings_path, add_help_info({'args': []}))
       sublime_NewFileFlags_NONE = 4
       self.window.open_file(mix_settings_path, flags=sublime_NewFileFlags_NONE)
     else:
@@ -42,14 +42,14 @@ class MixTestCommand(sublime_plugin.WindowCommand):
   def description(self):
     return 'Runs the full test-suite with `mix test`.'
 
-  def run(self, **kwargs):
+  def run(self, **_kwargs):
     call_mix_test_with_settings(self.window)
 
 class MixTestFileCommand(sublime_plugin.WindowCommand):
   def description(self):
     return 'Runs `mix test` on the current test file.'
 
-  def run(self, **kwargs):
+  def run(self, **_kwargs):
     abs_file_path = self.window.active_view().file_name()
     assert_is_test_file(abs_file_path)
     call_mix_test_with_settings(self.window, abs_file_path=abs_file_path)
@@ -156,18 +156,18 @@ class MixTestFailedCommand(sublime_plugin.WindowCommand):
   def description(self):
     return 'Repeats only tests that failed the last time.'
 
-  def run(self, **kwargs):
+  def run(self, **_kwargs):
     call_mix_test_with_settings(self.window, failed=True)
 
 class MixTestRepeatCommand(sublime_plugin.WindowCommand):
   def description(self):
     return 'Repeats `mix test` with the last used parameters.'
 
-  def run(self, **kwargs):
+  def run(self, **_kwargs):
     json_path = reverse_find_json_path(self.window, path.join('_build', FILE_NAMES.REPEAT_JSON))
 
     if json_path:
-      call_mix_test_with_settings(self.window, **load_json_settings(json_path))
+      call_mix_test_with_settings(self.window, **load_json_file(json_path))
     else:
       print_status_msg('Error: No tests to repeat.')
 
@@ -180,7 +180,7 @@ class MixTestSetSeedCommand(sublime_plugin.TextCommand):
     if not mix_settings_path:
       return
 
-    mix_params = load_json_settings(mix_settings_path)
+    mix_params = load_json_file(mix_settings_path)
     seed = self.view.substr(self.view.sel()[0]) if seed is None else seed
     seed = seed.strip() if type(seed) == str else seed
     msg = None
@@ -193,7 +193,7 @@ class MixTestSetSeedCommand(sublime_plugin.TextCommand):
         msg = 'Erased mix test seed.'
         'seed' in mix_params and mix_params.pop('seed')
 
-      save_json_settings(mix_settings_path, add_help_info(mix_params))
+      save_json_file(mix_settings_path, add_help_info(mix_params))
 
     print_status_msg(msg or 'Error: cannot set mix test seed to: %s' % repr(seed))
 
@@ -209,16 +209,16 @@ class MixTestToggleStaleFlagCommand(sublime_plugin.WindowCommand):
   def description(self):
     return 'Toggles the --stale flag.'
 
-  def run(self, **kwargs):
+  def run(self, **_kwargs):
     mix_settings_path = reverse_find_json_path(self.window, FILE_NAMES.SETTINGS_JSON)
     if not mix_settings_path:
       return
-    mix_params = load_json_settings(mix_settings_path)
+    mix_params = load_json_file(mix_settings_path)
     args = mix_params.get('args', [])
     has_stale_flag = '--stale' in args
     args = [a for a in args if a != '--stale'] if has_stale_flag else args + ['--stale']
     mix_params['args'] = args
-    save_json_settings(mix_settings_path, mix_params)
+    save_json_file(mix_settings_path, mix_params)
     print_status_msg('%s mix test --stale flag!' % ['Added', 'Removed'][has_stale_flag])
 
 
@@ -241,6 +241,8 @@ def get_test_block_regions(view, header_region, lookup_table):
   name_region = expand_scope_right(view, header_region.b, 'meta.string.elixir')
   point, view_size = name_region.b, view.size()
   begin_scopes_counter = 0
+
+  # TODO: use view.expand_to_scope() when available?
 
   while point < view_size:
     token_region = view.extract_scope(point)
@@ -390,9 +392,9 @@ def call_mix_test_with_settings(window, **params):
     params.setdefault('file_path', path.relpath(params['abs_file_path'], root_dir))
     del params['abs_file_path']
 
-  save_json_settings(path.join(build_dir, FILE_NAMES.REPEAT_JSON), params)
+  save_json_file(path.join(build_dir, FILE_NAMES.REPEAT_JSON), params)
 
-  mix_params = load_json_settings(mix_settings_path)
+  mix_params = load_json_file(mix_settings_path)
   mix_params = remove_help_info(mix_params)
   mix_params.update(params)
   mix_params.setdefault('cwd', root_dir)

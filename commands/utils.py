@@ -37,25 +37,25 @@ def reverse_find_root_folder(bottom_path):
 
   return None
 
-def save_json_settings(file_path, dict_data):
+def save_json_file(file_path, dict_data):
   try:
-    with open(file_path, 'w') as file:
+    with open(str(file_path), 'w') as file:
       try:
         return json.dump(dict_data, file, indent=2)
-      except:
-        print_status_msg('Error: could not save JSON to: %s' % file_path)
-  except:
-    print_status_msg('Error: could not open file: %s' % file_path)
+      except BaseException as e:
+        print_status_msg('Error: could not save JSON to: %r\nException: %s' % (file_path, e))
+  except BaseException as e:
+    print_status_msg('Error: could not open file: %r\nException: %s' % (file_path, e))
 
-def load_json_settings(file_path):
+def load_json_file(file_path):
   try:
-    with open(file_path, 'r') as file:
+    with open(str(file_path), 'r') as file:
       try:
         return json.load(file)
-      except:
-        print_status_msg('Error: could not load JSON from: %s' % file_path)
-  except:
+      except BaseException as e:
+        print_status_msg('Error: could not load JSON from: %r\nException: %s' % (file_path, e))
+  except BaseException as e:
     exists = Path(file_path).exists()
-    exists and print_status_msg('Error: could not open file: %s' % file_path)
+    exists and print_status_msg('Error: could not open file: %r\nException: %s' % (file_path, e))
 
   return {}
