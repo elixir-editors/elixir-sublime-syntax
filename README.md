@@ -91,6 +91,7 @@ Use the default shortcut `Alt+Shift+F` or the palette command `Mix Format: File`
 - `Mix Test: Repeat`
 - `Mix Test: Set --seed`
 - `Mix Test: Toggle --stale Flag`
+- `Mix Test: Show Panel`
 - `Mix Format: File`
 - `Mix Format: Project / Folder`
 - `Mix Format: Toggle Auto-Formatting`

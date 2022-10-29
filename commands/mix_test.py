@@ -14,6 +14,8 @@ __status__ = 'Production'
 
 # TODO: create a plugin test-suite: https://github.com/SublimeText/UnitTesting/
 
+PANEL_NAME = 'output.mix_test'
+
 class FILE_NAMES:
   SETTINGS_JSON = 'mix_test.settings.json'
   REPEAT_JSON = 'mix_test.repeat.json'
@@ -220,6 +222,16 @@ class MixTestToggleStaleFlagCommand(sublime_plugin.WindowCommand):
     mix_params['args'] = args
     save_json_file(mix_settings_path, mix_params)
     print_status_msg('%s mix test --stale flag!' % ['Added', 'Removed'][has_stale_flag])
+
+class MixTestShowPanelCommand(sublime_plugin.WindowCommand):
+  def description(self):
+    return 'Shows the output panel if existent and hidden.'
+
+  def run(self, **_kwargs):
+    self.window.run_command('show_panel', {'panel': PANEL_NAME})
+
+  def is_enabled(self):
+    return PANEL_NAME in self.window.panels()
 
 
 # Helper functions:
@@ -450,7 +462,7 @@ def write_to_output(window, cmd_args, params, cwd, get_setting):
     output_view.set_scratch(True)
   elif mix_test_output == 'panel':
     output_view = window.create_output_panel('mix_test')
-    window.run_command('show_panel', {'panel': 'output.mix_test'})
+    window.run_command('show_panel', {'panel': PANEL_NAME})
   elif mix_test_output.startswith('file://'):
     mode = get_setting('output_mode') or 'w'
     output_path = mix_test_output[7:]
