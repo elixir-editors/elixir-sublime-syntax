@@ -84,11 +84,12 @@ Use the default shortcut `Alt+Shift+F` or the palette command `Mix Format: File`
 
 - `ElixirSyntax: Settings`
 - `Mix Test: Settings`
+- `Mix Test: All`
 - `Mix Test: File`
 - `Mix Test: Selection(s)`
 - `Mix Test: Failed`
 - `Mix Test: Repeat`
-- `Mix Test: Set Seed`
+- `Mix Test: Set --seed`
 - `Mix Test: Toggle --stale Flag`
 - `Mix Format: File`
 - `Mix Format: Project / Folder`

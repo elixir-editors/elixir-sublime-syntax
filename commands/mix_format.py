@@ -12,7 +12,7 @@ class MixFormatProjectCommand(sublime_plugin.WindowCommand):
   def description(self):
     return 'Runs `mix format` on the project path or the opened folder.'
 
-  def run(self, **kwargs):
+  def run(self, **_kwargs):
     call_mix_format(self.window)
 
 class MixFormatFileCommand(sublime_plugin.TextCommand):
@@ -32,7 +32,7 @@ class MixFormatToggleAutoFormatCommand(sublime_plugin.TextCommand):
   def description(self):
     return 'Enables or disables auto-formatting on save.'
 
-  def run(self, _edit, **kwargs):
+  def run(self, _edit, **_kwargs):
     package_settings, mix_format_settings = load_mix_format_settings()
     on_save = mix_format_settings['on_save'] = not mix_format_settings.get('on_save', False)
     package_settings.set('mix_format', mix_format_settings)
