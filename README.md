@@ -83,6 +83,8 @@ Use the default shortcut `Alt+Shift+F` or the palette command `Mix Format: File`
 ## Palette commands
 
 - `ElixirSyntax: Settings`
+- `ElixirSyntax: Open Hex Docs`
+- `ElixirSyntax: Search Hex Packages`
 - `Mix Test: Settings`
 - `Mix Test: All`
 - `Mix Test: File`
