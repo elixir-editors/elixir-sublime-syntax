@@ -11,6 +11,7 @@
   { "caption": "Mix Test: Repeat", "command": "mix_test_repeat" },
   { "caption": "Mix Test: Set --seed", "command": "mix_test_set_seed" },
   { "caption": "Mix Test: Toggle --stale Flag", "command": "mix_test_toggle_stale_flag" },
+  { "caption": "Mix Test: Switch to Code or Test", "command": "mix_test_switch_to_code_or_test" },
   { "caption": "Mix Test: Show Panel", "command": "mix_test_show_panel" },
   { "caption": "Mix Format: File", "command": "mix_format_file" },
   { "caption": "Mix Format: Project / Folder", "command": "mix_format_project" },

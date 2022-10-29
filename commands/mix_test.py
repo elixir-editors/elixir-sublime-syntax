@@ -4,6 +4,7 @@ import subprocess
 import shlex
 import re
 from os import path, fstat
+from pathlib import Path
 from time import time as now
 from datetime import datetime
 from .utils import *
@@ -222,6 +223,47 @@ class MixTestToggleStaleFlagCommand(sublime_plugin.WindowCommand):
     mix_params['args'] = args
     save_json_file(mix_settings_path, mix_params)
     print_status_msg('%s mix test --stale flag!' % ['Added', 'Removed'][has_stale_flag])
+
+class MixTestSwitchToCodeOrTestCommand(sublime_plugin.TextCommand):
+  def description(self):
+    return 'Finds the corresponding source file of the test and vice versa if possible.'
+
+  def run(self, _edit):
+    window = self.view.window()
+    file_path = Path(self.view.file_name())
+    parts = file_path.name.rsplit('_test.exs', 1)
+    is_test = parts[1:] == ['']
+    search_names = \
+      [parts[0] + ext for ext in ('.ex', '.exs')] if is_test else [file_path.stem + '_test.exs']
+
+    counterpart_paths = [
+        (folder, p)
+        for folder in window.folders()
+        for p in Path(folder).rglob("*.ex*")
+        if p.name in search_names
+      ]
+
+    if len(counterpart_paths) > 1:
+      on_select = lambda i: i >= 0 and window.open_file(str(counterpart_paths[i][1]))
+
+      file_path_items = [
+          sublime.QuickPanelItem(
+              trigger=str(path.relative_to(folder)),
+              details='Folder: %s' % folder,
+              kind=sublime.KIND_NAVIGATION
+            )
+          for folder, path in counterpart_paths
+        ]
+
+      window.show_quick_panel(file_path_items, on_select)
+    elif counterpart_paths:
+      window.open_file(str(counterpart_paths[0][1]))
+    else:
+      test_or_code = ['test', 'code'][is_test]
+      print_status_msg('Error: could not find the counterpart %s file.' % test_or_code)
+
+  def is_enabled(self):
+    return is_elixir_syntax(self.view)
 
 class MixTestShowPanelCommand(sublime_plugin.WindowCommand):
   def description(self):
