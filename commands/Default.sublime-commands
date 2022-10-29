@@ -3,6 +3,8 @@
     "base_file": "${packages}/ElixirSyntax/settings/ElixirSyntax.sublime-settings",
     "default": "{\n  $0\n}\n"
   } },
+  { "caption": "ElixirSyntax: Open Hex Docs", "command": "open_hex_docs" },
+  { "caption": "ElixirSyntax: Search Hex Packages", "command": "search_hex_packages" },
   { "caption": "Mix Test: Settings", "command": "mix_test_settings" },
   { "caption": "Mix Test: All", "command": "mix_test" },
   { "caption": "Mix Test: File", "command": "mix_test_file" },
