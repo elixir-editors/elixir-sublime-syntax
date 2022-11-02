@@ -1,5 +1,15 @@
 # Changelog
 
+## [v3.1.0] – 2022-11-03
+
+- Commands: added `mix_test_show_panel`, `mix_test_switch_to_code_or_test`, `search_hex_packages` and `open_hex_docs`.
+  + `Mix Test: Show Panel` reopens the test output panel if closed.
+  + `Mix Test: Switch to Code or Test` jumps to the corresponding code file of a test and vice versa.
+  + `ElixirSyntax: Open Hex Docs` displays a filterable list of all available projects on hexdocs.pm.
+  + `ElixirSyntax: Search Hex Packages` searches for packages on hex.pm and displays the results in a list.
+- Palette: added `Mix Test: All`.
+- Palette: renamed caption `Mix Test: Set Seed` to `Mix Test: Set --seed`.
+
 ## [v3.0.0] – 2022-10-24
 
 - Elixir: removed Markdown highlighting from doc comments due to unfixable issues.
