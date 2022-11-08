@@ -1,5 +1,11 @@
 # Changelog
 
+## [v3.1.1] – 2022-11-08
+
+- Commands: fixed `mix format` and `mix test` in non-project windows.
+- Commands: fixed finding counterpart of a test/code file in non-project windows.
+- Commands: ignore `.elixir_ls`, `_build` and `deps` folders when searching for the counterpart of a test/code file.
+
 ## [v3.1.0] – 2022-11-03
 
 - Commands: added `mix_test_show_panel`, `mix_test_switch_to_code_or_test`, `search_hex_packages` and `open_hex_docs`.
