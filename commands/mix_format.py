@@ -65,8 +65,7 @@ def call_mix_format(window, **kwargs):
   _, cmd_setting = load_mix_format_settings()
   cmd = (cmd_setting.get('cmd') or ['mix', 'format']) + file_path_list
 
-  window_vars = window.extract_variables()
-  paths = file_path_list + [window_vars['project_path'], window_vars['folder']]
+  paths = file_path_list + window.folders()
   cwd = next((reverse_find_root_folder(p) for p in paths if p), None)
 
   if not (cwd or file_path):
