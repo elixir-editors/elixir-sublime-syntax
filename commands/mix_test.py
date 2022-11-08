@@ -234,11 +234,19 @@ class MixTestSwitchToCodeOrTestCommand(sublime_plugin.TextCommand):
     is_test = parts[1:] == ['']
     search_names = \
       [parts[0] + ext for ext in ('.ex', '.exs')] if is_test else [file_path.stem + '_test.exs']
+    ignored_folders = ['.elixir_ls', '_build', 'deps']
+
+    subpaths = [
+        p
+        for folder in (window.folders() or [reverse_find_root_folder(file_path)]) if folder
+        for p in Path(folder).iterdir()
+        if p.is_file() or p.name not in ignored_folders
+      ]
 
     counterpart_paths = [
-        (folder, p)
-        for folder in window.folders()
-        for p in Path(folder).rglob("*.ex*")
+        (subpath, p)
+        for subpath in subpaths
+        for p in (subpath.rglob("*.ex*") if subpath.is_dir() else [subpath])
         if p.name in search_names
       ]
 
