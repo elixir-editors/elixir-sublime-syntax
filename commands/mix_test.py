@@ -27,7 +27,6 @@ class MixTestSettingsCommand(sublime_plugin.WindowCommand):
 
   def run(self, **_kwargs):
     abs_file_path = self.window.active_view().file_name()
-    window_vars = self.window.extract_variables()
     mix_settings_path = reverse_find_json_path(self.window, FILE_NAMES.SETTINGS_JSON)
 
     if mix_settings_path:
@@ -198,7 +197,7 @@ class MixTestSetSeedCommand(sublime_plugin.TextCommand):
 
       save_json_file(mix_settings_path, add_help_info(mix_params))
 
-    print_status_msg(msg or 'Error: cannot set mix test seed to: %s' % repr(seed))
+    print_status_msg(msg or 'Error: cannot set mix test seed to: %r' % seed)
 
   def input(self, _args):
     class SeedInputHandler(sublime_plugin.TextInputHandler):
@@ -421,8 +420,7 @@ def find_lines_using_test_names(file_path, test_names):
 def reverse_find_json_path(window, json_file_path):
   """ Tries to find the given JSON file by going up the folder tree
       and trying different starting locations. """
-  window_vars = window.extract_variables()
-  paths = [window.active_view().file_name(), window_vars['project_path'], window_vars['folder']]
+  paths = [window.active_view().file_name()] + window.folders()
   root_dir = next((reverse_find_root_folder(p) for p in paths if p), None)
 
   root_dir or print_status_msg(
@@ -497,8 +495,8 @@ def write_to_output(window, cmd_args, params, cwd, get_setting):
   output_view = output_file = None
 
   if type(mix_test_output) != str:
-    msg = 'Error: "mix_test_output" setting is not of type string, but: %s'
-    print_status_msg(msg % repr(type(mix_test_output)))
+    msg = 'Error: "output" setting is not of type string, but: %r'
+    print_status_msg(msg % type(mix_test_output))
   elif mix_test_output == 'tab':
     output_view = window.new_file()
     output_view.set_scratch(True)
@@ -507,20 +505,21 @@ def write_to_output(window, cmd_args, params, cwd, get_setting):
     window.run_command('show_panel', {'panel': PANEL_NAME})
   elif mix_test_output.startswith('file://'):
     mode = get_setting('output_mode') or 'w'
-    output_path = mix_test_output[7:]
-    if not path.isabs(output_path):
-      window_vars = window.extract_variables()
-      output_dir = window_vars['project_path'] or window_vars['folder']
-      output_path = path.join(output_dir, output_path)
+    output_path = Path(mix_test_output[len('file://'):])
+    output_path = str(
+        output_path.is_absolute() and output_path
+        or (window.folders() + [cwd])[0] / output_path
+      )
+
     try:
       output_file = open(output_path, mode)
     except (PermissionError, FileNotFoundError, IsADirectoryError) as e:
-      msg = 'Error: could not open output file %s with mode %s (%s)'
-      print_status_msg(msg % (repr(output_path), repr(mode), e))
+      msg = 'Error: could not open output file %r with mode %r (%s)'
+      print_status_msg(msg % (output_path, mode, e))
 
   if not (output_view or output_file):
-    msg = 'Error: cannot run `mix test`. No valid output setting ("mix_test_output": %s).'
-    print_status_msg(msg % repr(mix_test_output))
+    msg = 'Error: cannot run `mix test`. No valid output setting ("output": %r).'
+    print_status_msg(msg % mix_test_output)
     return
 
   if output_view:
