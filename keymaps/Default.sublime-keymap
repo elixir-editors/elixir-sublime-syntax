@@ -9,6 +9,6 @@
   { "keys": ["alt+shift+r"], "command": "mix_test_repeat" },
   // Formats the source file.
   { "keys": ["alt+shift+f"], "command": "mix_format_file",
-    "context": [ { "key": "selector", "operator": "equal", "operand": "source.elixir" } ]
+    "context": [ { "key": "selector", "operator": "equal", "operand": "source.elixir | source.elixir.eex | text.eex | text.html.eex | text.html.heex | text.html.surface" } ]
   },
 ]

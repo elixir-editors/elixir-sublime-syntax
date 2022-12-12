@@ -21,8 +21,16 @@ def expand_scope_right(view, begin_point, scope):
   )
   return sublime.Region(begin_point, end_point)
 
+def is_one_of_syntaxes(view, syntaxes):
+  view_syntax_path = view.settings().get('syntax')
+  return any(basename + '.sublime-syntax' in view_syntax_path for basename in syntaxes)
+
 def is_elixir_syntax(view):
-  return 'Elixir.sublime-syntax' in view.settings().get('syntax')
+  return is_one_of_syntaxes(view, ['Elixir'])
+
+def is_formattable_syntax(view):
+  syntaxes = ['Elixir', 'EEx', 'Elixir (EEx)', 'HTML (EEx)', 'HTML (HEEx)', 'HTML (Surface)']
+  return is_one_of_syntaxes(view, syntaxes)
 
 def reverse_find_root_folder(bottom_path):
   bottom_path = Path(bottom_path)

@@ -26,7 +26,7 @@ class MixFormatFileCommand(sublime_plugin.TextCommand):
     call_mix_format(window, file_path=file_path)
 
   def is_enabled(self):
-    return is_elixir_syntax(self.view)
+    return is_formattable_syntax(self.view)
 
 class MixFormatToggleAutoFormatCommand(sublime_plugin.TextCommand):
   def description(self):
@@ -40,11 +40,11 @@ class MixFormatToggleAutoFormatCommand(sublime_plugin.TextCommand):
     print_status_msg('%s auto-formatting!' % ['Disabled', 'Enabled'][on_save])
 
   def is_enabled(self):
-    return is_elixir_syntax(self.view)
+    return is_formattable_syntax(self.view)
 
 class MixFormatOnSaveListener(sublime_plugin.EventListener):
   def is_elixir_file(self, view):
-    return is_elixir_syntax(view)
+    return is_formattable_syntax(view)
 
   def on_post_save(self, view):
     if not self.is_elixir_file(view):
