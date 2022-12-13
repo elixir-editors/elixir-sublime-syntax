@@ -12,10 +12,11 @@
 * Full PCRE syntax highlighting: <img src="images/elixir_regex_example.svg" height="28" align="top">
 * Type highlighting: <img src="images/elixir_type_example.svg" height="28" align="top">
 * Theme adaptations for Mariana and Monokai.
+* Palette commands: `ElixirSyntax: ...`, `Mix Test: ...`, `Mix Format: ...`
 * Build commands: `mix format`, `mix test`, `elixir $file`
 * Snippets for `IO.inspect`, `tap` and `then`.
 
-Some highlighting features are not immediately evident. Among them are:
+Some syntax highlighting features are not immediately evident. Among them are:
 
 ### The `fragment` and `sql` functions
 
