@@ -556,7 +556,9 @@ def write_to_output(window, cmd_args, params, cwd, get_setting):
           for i, (d, t, name) in enumerate(params.get('unlocated_tests'))
         )
         + 'File: %s\n\n' % path.join(cwd, params.get('file_path'))
-        + 'This error occurs when a test\'s name has been changed.\n'
+        + 'This error occurs when:\n'
+        + '* a test\'s name has been changed, or\n'
+        + '* the test file has unsaved changes.\n\n'
         + 'Reselect the tests to be run or edit _build/%s to fix the name(s).\n'
           % FILE_NAMES.REPEAT_JSON
       )
