@@ -1,5 +1,10 @@
 # Changelog
 
+## [v3.1.2] – 2022-12-13
+
+- Commands: recognize more file types to allow running `mix format` on.
+- Commands: mention possibly unsaved changes when a test wasn't found.
+
 ## [v3.1.1] – 2022-11-08
 
 - Commands: fixed `mix format` and `mix test` in non-project windows.
