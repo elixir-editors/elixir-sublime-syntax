@@ -1,5 +1,9 @@
 # Changelog
 
+## [v3.1.3] – 2022-12-15
+
+- Package: fix: added `dependencies.json` to require the `pathlib` library (#53).
+
 ## [v3.1.2] – 2022-12-13
 
 - Commands: recognize more file types to allow running `mix format` on.
