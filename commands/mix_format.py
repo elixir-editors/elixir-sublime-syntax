@@ -76,7 +76,7 @@ def call_mix_format(window, **kwargs):
   if not (cwd or file_path):
     print_status_msg(
         'Error: could not find a mix.exs file and the _build/ directory! '
-        + 'Make sure that you are in a mix project and that `mix deps.get` was run.'
+        + 'Make sure that you are in a mix project and that `mix do deps.get + compile` was run.'
       )
     return
 
