@@ -13,7 +13,7 @@ class MixFormatProjectCommand(sublime_plugin.WindowCommand):
     return 'Runs `mix format` on the project path or the opened folder.'
 
   def run(self, **_kwargs):
-    call_mix_format(self.window)
+    call_mix_format_async(self.window)
 
 class MixFormatFileCommand(sublime_plugin.TextCommand):
   def description(self):
@@ -23,7 +23,7 @@ class MixFormatFileCommand(sublime_plugin.TextCommand):
     window = self.view.window()
     file_path = self.view.file_name()
     kwargs.get('save', True) and window.run_command('save')
-    call_mix_format(window, file_path=file_path)
+    call_mix_format_async(window, file_path=file_path)
 
   def is_enabled(self):
     return is_formattable_syntax(self.view)
@@ -58,6 +58,11 @@ class MixFormatOnSaveListener(sublime_plugin.EventListener):
 def load_mix_format_settings():
   package_settings = sublime.load_settings(SETTINGS_FILE_NAME)
   return (package_settings, package_settings.get('mix_format', {}))
+
+def call_mix_format_async(window, **kwargs):
+  file_path = kwargs.get('file_path')
+  print_status_msg('Formatting %s!' % (file_path and repr(file_path) or 'project'))
+  sublime.set_timeout_async(lambda: call_mix_format(window, **kwargs))
 
 def call_mix_format(window, **kwargs):
   file_path = kwargs.get('file_path')
