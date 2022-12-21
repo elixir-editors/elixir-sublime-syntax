@@ -1,5 +1,9 @@
 # Changelog
 
+## [v3.1.4] – 2022-12-21
+
+- Commands: fix: call `mix format` asynchronously to avoid locking up the view.
+
 ## [v3.1.3] – 2022-12-15
 
 - Package: fix: added `dependencies.json` to require the `pathlib` library (#53).
