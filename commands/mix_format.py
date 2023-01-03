@@ -80,26 +80,32 @@ def call_mix_format(window, **kwargs):
       )
     return
 
-  proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd)
-  stderr_data = proc.communicate()[1]
+  proc = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
   panel_name = 'mix_format'
   panel_params = {'panel': 'output.%s' % panel_name}
   window.run_command('erase_view', panel_params)
+  output_view = None
 
-  if stderr_data.strip():
-    first_lines = '$ %s\n\n' % ' '.join(map(shlex.quote, cmd))
-    output_view = window.create_output_panel(panel_name)
-    ov_settings = output_view.settings()
-    ov_settings.set('result_file_regex', r'/([^/]+):(\d+):(\d+)')
-    output_view.set_read_only(False)
-    output_view.run_command('append', {'characters': first_lines})
-    output_view.run_command('append', {'characters': stderr_data.decode()})
+  while proc.poll() is None:
+    stderr_line = proc.stderr.readline().decode(encoding='UTF-8')
+
+    if stderr_line:
+      if not output_view:
+        first_lines = '$ cd %s && %s\n\n' % (shlex.quote(cwd), ' '.join(map(shlex.quote, cmd)))
+        output_view = window.create_output_panel(panel_name)
+        output_view.settings().set('result_file_regex', r'/([^/]+):(\d+):(\d+)')
+        output_view.set_read_only(False)
+        output_view.run_command('append', {'characters': first_lines})
+        window.run_command('show_panel', panel_params)
+
+      output_view.run_command('append', {'characters': stderr_line})
+
+  if output_view:
     output_view.set_read_only(True)
-    window.run_command('show_panel', panel_params)
   else:
-    # FIXME: closes any panel...
-    # window.run_command('hide_panel', panel_params)
-    print_status_msg(
-        'Formatted %s %s!' % (file_path and 'file' or 'directory', repr(file_path or cwd))
-      )
+    if window.active_panel() == panel_params['panel']:
+      window.run_command('hide_panel', panel_params)
+
+    msg = 'Formatted %s %s!' % (file_path and 'file' or 'directory', repr(file_path or cwd))
+    print_status_msg(msg)
