@@ -691,3 +691,16 @@ key: "#{value}\"""
 #         ^^ constant.character.escape.char
 ~S|\\\||
 #    ^^ constant.character.escape.char
+
+ ~sql""
+#     ^ punctuation.definition.string.end
+#    ^ punctuation.definition.string.begin
+#    ^^ string.quoted.double
+# ^^^ meta.string.elixir storage.type.string.elixir invalid.illegal.sigil.elixir
+
+ ~SQL'SELECT * FROM table'
+#                        ^ string.quoted.other.literal.upper punctuation.definition.string.end
+#    ^ punctuation.definition.string.begin
+#    ^^^^^^^^^^^^^^^^^^^^^ string.quoted.other.literal.upper
+#^^^^ storage.type.string
+#^^^^^^^^^^^^^^^^^^^^^^^^^ meta.string

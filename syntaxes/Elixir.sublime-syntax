@@ -978,12 +978,11 @@ contexts:
     - include: simple_string
     - include: binary_string
 
-    - match: (?x) (~[a-zA-Z])\n | ~[a-zA-Z]([^{\[<(/|"'])
+    - match: (?x) ~ ([a-zA-Z]++ [^{\[<(/|"'] | [a-z]{2,})
       comment: catch invalid sigils first
       scope: meta.string.elixir storage.type.string.elixir
       captures:
-        1: invalid.illegal.sigil-string.elixir
-        2: invalid.illegal.string-delimiter.elixir
+        1: invalid.illegal.sigil.elixir
 
     # Look for 'a' behind the closing delimiter.
     # Bracket delimiters are not matched yet: <>, {}, [] and ()
@@ -1132,7 +1131,7 @@ contexts:
                 - match: (?=""")
                   pop: 1
 
-    - match: ~Y(?=""")
+    - match: ~Y(?:AML)?(?=""")
       comment: YAML raw
       scope: meta.string.elixir storage.type.string.elixir
       push:
@@ -1182,7 +1181,7 @@ contexts:
                 - match: (?=")
                   pop: 1
 
-    - match: ~J(?=")
+    - match: ~J(?:SON)?(?=")
       comment: JSON raw
       scope: meta.string.elixir storage.type.string.elixir
       push:
@@ -1477,7 +1476,7 @@ contexts:
             - include: string_closing_round
             - include: escaped_or_interpolated
 
-    - match: ~[A-Z]
+    - match: ~[A-Z]+
       comment: with sigil and without interpolation
       scope: meta.string.elixir storage.type.string.elixir
       push:
