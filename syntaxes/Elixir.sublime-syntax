@@ -1666,6 +1666,7 @@ contexts:
         - include: dot_operator
         - include: if_non_space_or_eol_pop
     - include: arg_comma_and_skip_ws
+    - include: last_id_argument
     - include: core_syntax_or_if_closing_pop
 
   defrecord:
