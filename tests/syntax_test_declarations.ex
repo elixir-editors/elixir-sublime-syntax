@@ -85,8 +85,9 @@ defmodule __MODULE__.Nested do end
 #                   ^ punctuation.accessor
 #         ^^^^^^^^^^ variable.language.special-form
 
-defmodule nil end; defmodule raise do end
-#                            ^^^^^ keyword.control
+defmodule nil end; defmodule raise do end; defmodule name do end
+#                                                    ^^^^ variable -keyword.control
+#                            ^^^^^ variable -keyword.control
 #         ^^^ constant.language
 defmodule fn end; defmodule do end
 #                              ^^^ punctuation.section.block.end
