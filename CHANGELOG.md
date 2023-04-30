@@ -1,5 +1,11 @@
 # Changelog
 
+## [v3.1.5] – 2023-04-30
+
+- Elixir: recognize `name` in `defmodule name do end`.
+- Commands: fix: print `mix format` error output asynchronously.
+- Commands: fix: hide the `mix format` error panel when the command is successful again.
+
 ## [v3.1.4] – 2022-12-21
 
 - Commands: fix: call `mix format` asynchronously to avoid locking up the view.
