@@ -3,6 +3,8 @@ import sublime_plugin
 import subprocess
 import shlex
 from .utils import *
+from time import time as now
+from datetime import datetime
 
 __author__ = 'Aziz Köksal'
 __email__ = 'aziz.koeksal@gmail.com'
@@ -87,25 +89,40 @@ def call_mix_format(window, **kwargs):
   window.run_command('erase_view', panel_params)
   output_view = None
 
+  past_timestamp = now()
+  panel_update_interval = 2
+
   while proc.poll() is None:
     stderr_line = proc.stderr.readline().decode(encoding='UTF-8')
 
     if stderr_line:
       if not output_view:
-        first_lines = '$ cd %s && %s\n\n' % (shlex.quote(cwd), ' '.join(map(shlex.quote, cmd)))
-        output_view = window.create_output_panel(panel_name)
-        output_view.settings().set('result_file_regex', r'/([^/]+):(\d+):(\d+)')
-        output_view.set_read_only(False)
-        output_view.run_command('append', {'characters': first_lines})
+        output_view = create_mix_format_panel(window, panel_name, cmd, cwd)
         window.run_command('show_panel', panel_params)
 
       output_view.run_command('append', {'characters': stderr_line})
+
+      if now() - past_timestamp > panel_update_interval:
+        output_view.show(output_view.size())
+        past_timestamp = now()
 
   if output_view:
     output_view.set_read_only(True)
   else:
     if window.active_panel() == panel_params['panel']:
       window.run_command('hide_panel', panel_params)
+      window.destroy_output_panel(panel_name)
 
     msg = 'Formatted %s %s!' % (file_path and 'file' or 'directory', repr(file_path or cwd))
     print_status_msg(msg)
+
+def create_mix_format_panel(window, panel_name, cmd_args, cwd):
+  first_lines = '$ cd %s && %s' % (shlex.quote(cwd), ' '.join(map(shlex.quote, cmd_args)))
+  first_lines += '\n# Timestamp: %s\n\n' % datetime.now().replace(microsecond=0)
+
+  output_view = window.create_output_panel(panel_name)
+  output_view.settings().set('result_file_regex', r'/([^/]+):(\d+):(\d+)')
+  output_view.set_read_only(False)
+  output_view.run_command('append', {'characters': first_lines})
+
+  return output_view
