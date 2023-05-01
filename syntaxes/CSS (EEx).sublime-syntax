@@ -1,0 +1,40 @@
+%YAML 1.2
+---
+version: 2
+name: CSS (EEx)
+scope: source.css.eex
+extends: Packages/CSS/CSS.sublime-syntax
+# hidden: true
+
+file_extensions: [css.eex]
+authors: [Aziz Köksal <aziz.koeksal@gmail.com>]
+
+contexts:
+  main:
+    - import: rule-list-body
+
+  prototype:
+    - meta_prepend: true
+    - include: eex-begin-tag
+    - include: eex-end-tag
+
+  rule-list-body:
+    # - meta_prepend: true
+    # - include: eex-begin-tag
+    # - include: eex-end-tag
+    - include: comments
+    - include: property-identifiers
+    - include: property-values
+    - include: rule-terminators
+    - include: illegal-blocks
+    - include: illegal-groups
+
+  eex-begin-tag:
+    - include: scope:text.eex#eex-interpolated-comment
+    - match: <%(?:%=?|[=/|]?)
+      scope: punctuation.section.embedded.begin.eex
+
+  eex-end-tag:
+    - match: \s*(%>)
+      captures:
+        1: punctuation.section.embedded.end.eex

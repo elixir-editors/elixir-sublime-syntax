@@ -1,0 +1,25 @@
+%YAML 1.2
+---
+version: 2
+name: JavaScript (EEx)
+scope: source.js.eex
+extends: Packages/JavaScript/JavaScript.sublime-syntax
+
+file_extensions: [js.eex, ts.eex]
+authors: [Aziz Köksal <aziz.koeksal@gmail.com>]
+
+contexts:
+  prototype:
+    - meta_prepend: true
+    - include: eex-begin-tag
+    - include: eex-end-tag
+
+  eex-begin-tag:
+    - include: scope:text.eex#eex-interpolated-comment
+    - match: <%(?:%=?|[=/|]?)
+      scope: punctuation.section.embedded.begin.eex
+
+  eex-end-tag:
+    - match: \s*(%>)
+      captures:
+        1: punctuation.section.embedded.end.eex

@@ -32,6 +32,19 @@
 <!-- ^^ punctuation.section.embedded.end.eex -->
 <!--^^^ meta.embedded.eex comment -->
 
+
+     <script>
+          var x = "<%= %>";
+     </script>
+
+     <hr class="<%# Comment %>" />
+     <hr onclick="<%# Comment %>" />
+     <hr style="<%# Comment %>; border: 1px solid; margin-block: '<%= :asd %>';" />
+<!--                        ^^ punctuation.section.embedded.end.eex -->
+<!--              ^ punctuation.definition.comment.begin.eex -->
+<!--            ^^ punctuation.section.embedded.begin.eex -->
+<!--            ^^^^^^^^^^^^^^ meta.embedded.eex comment - string -->
+
      <br class="<%# Comment %>" />
 <!--                        ^^ punctuation.section.embedded.end.eex -->
 <!--              ^ punctuation.definition.comment.begin.eex -->

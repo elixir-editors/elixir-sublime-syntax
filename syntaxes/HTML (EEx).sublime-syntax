@@ -25,6 +25,77 @@ contexts:
     - meta_prepend: true
     - include: eex-embedded-attribute-name
 
+  # tag-event-attribute-value:
+  #   - meta_prepend: true
+  #   - match: \"
+  #     scope: meta.string.html string.quoted.double.html punctuation.definition.string.begin.html
+  #     embed: scope:source.js.eex
+  #     embed_scope: meta.string.html meta.interpolation.html source.js.embedded.html
+  #     escape: \"
+  #     escape_captures:
+  #       0: meta.string.html string.quoted.double.html punctuation.definition.string.end.html
+  #   - match: \'
+  #     scope: meta.string.html string.quoted.single.html punctuation.definition.string.begin.html
+  #     embed: scope:source.js.eex
+  #     embed_scope: meta.string.html meta.interpolation.html source.js.embedded.html
+  #     escape: \'
+  #     escape_captures:
+  #       0: meta.string.html string.quoted.single.html punctuation.definition.string.end.html
+  #   - include: else-pop
+
+  script-javascript-content:
+    - match: \s*((<!\[)(CDATA)(\[))
+      captures:
+        1: meta.tag.sgml.cdata.html
+        2: punctuation.definition.tag.begin.html
+        3: keyword.declaration.cdata.html
+        4: punctuation.definition.tag.begin.html
+      pop: 1  # make sure to match only once
+      embed: scope:source.js.eex
+      embed_scope: meta.tag.sgml.cdata.html source.js.embedded.html
+      escape: \]\]>
+      escape_captures:
+        0: meta.tag.sgml.cdata.html punctuation.definition.tag.end.html
+    - match: '{{script_content_begin}}'
+      captures:
+        1: comment.block.html punctuation.definition.comment.begin.html
+      pop: 1  # make sure to match only once
+      embed: scope:source.js.eex
+      embed_scope: source.js.embedded.html
+      escape: '{{script_content_end}}'
+      escape_captures:
+        1: source.js.embedded.html
+        2: comment.block.html punctuation.definition.comment.end.html
+        3: source.js.embedded.html
+        4: comment.block.html punctuation.definition.comment.end.html
+
+  # Needs special handling
+  tag-style-attribute-value:
+    - meta_prepend: true
+    - match: \"
+      scope: meta.string.html string.quoted.double.html punctuation.definition.string.begin.html
+      embed: scope:source.css.eex
+      embed_scope: meta.string.html meta.interpolation.html source.css.embedded.html
+      escape: \"
+      escape_captures:
+        0: meta.string.html string.quoted.double.html punctuation.definition.string.end.html
+    - match: \'
+      scope: meta.string.html string.quoted.single.html punctuation.definition.string.begin.html
+      embed: scope:source.css.eex
+      embed_scope: meta.string.html meta.interpolation.html source.css.embedded.html
+      escape: \'
+      escape_captures:
+        0: meta.string.html string.quoted.single.html punctuation.definition.string.end.html
+    - include: else-pop
+    # - match: \"(?=<%(?:%=?|[=/|]?))
+    #   scope: meta.string.html string.quoted.double.html punctuation.definition.string.begin.html
+    #   push:
+    #     - match: \"
+    #       scope: meta.string.html string.quoted.double.html punctuation.definition.string.end.html
+    #       pop: 1
+    #     - include: eex-interpolations
+    #     - include: else-pop
+
   tag-attribute-value-content:
     - meta_prepend: true
     - include: eex-interpolations
