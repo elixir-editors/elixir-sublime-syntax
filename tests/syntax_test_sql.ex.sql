@@ -18,6 +18,17 @@
 --                        ^ punctuation.accessor.dot
 --                   ^^^^^ constant.other.table-name
 
+  SELECT array_agg(vote) FILTER (WHERE vote IS NOT NULL) FROM posts
+--                                                            ^^^^^ variable.other
+--                                                       ^^^^ keyword.other.DML
+--                                                 ^^^^ constant.language.null
+--                                             ^^^ keyword.other
+--                                          ^^ keyword.other
+--                                     ^^^^ variable.other
+--                               ^^^^^ keyword.other.DML
+--                       ^^^^^^ keyword.other
+--                 ^^^^ variable.other
+--       ^^^^^^^^^ variable.function
 
 -- Numbers
 

@@ -21,7 +21,7 @@ contexts:
             all|any|array|analy[sz]e|a?symmetric|authorization|at(?=\s+time\s+zone\b)|binary|both|by
           | (?<=\bat\s)time(?=\s+zone\b) | (?<=\btime\s)zone | (?<=\bdo\s)nothing | (?<=\bon\s)conflict | (?<=\bwith\s)ordinality
           | cast|cross|column|concurrently|collat(?:e|ion)|create|distinct|(?<!\bas\s)do
-          | except|excluded(?=\s*\.)|fetch|for(?:eign)?|freeze|full|group|intersect|into|inner|isnull
+          | except|excluded(?=\s*\.)|fetch|filter(?=\s+\()|for(?:eign)?|freeze|full|group|intersect|into|inner|isnull
           | i[sn]|ilike|lateral|leading|left|natural|not(?:null)?|nullif|on(?:ly)?|offset|order|outer
           | over(?:laps)?|primary|recursive|returning|right|similar|some|table(?:sample)?|to|trailing
           | unnest|unique|user|variadic|verbose|window
