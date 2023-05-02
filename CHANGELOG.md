@@ -1,5 +1,12 @@
 # Changelog
 
+## [v3.2.0] – 2023-05-02
+
+- Commands: improved/generalized syntax detection for enabling/disabling commands.
+- Commands: fix: output both stdout/stderr when running `mix format`/`mix test`.
+- Commands: auto-scroll `mix format` output when it's compiling.
+- SQL: recognize `FILTER` in `array_agg(x) FILTER (...)`.
+
 ## [v3.1.5] – 2023-04-30
 
 - Elixir: recognize `name` in `defmodule name do end`.
