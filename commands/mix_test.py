@@ -564,7 +564,7 @@ def write_to_output(window, cmd_args, params, cwd, get_setting):
       )
     return
 
-  proc = subprocess.Popen(cmd_args, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  proc = subprocess.Popen(cmd_args, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
   if output_view:
     output_view.settings().set('view_id', output_view.id())
