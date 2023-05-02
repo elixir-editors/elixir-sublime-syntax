@@ -82,7 +82,7 @@ def call_mix_format(window, **kwargs):
       )
     return
 
-  proc = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  proc = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
   panel_name = 'mix_format'
   panel_params = {'panel': 'output.%s' % panel_name}
@@ -93,14 +93,14 @@ def call_mix_format(window, **kwargs):
   panel_update_interval = 2
 
   while proc.poll() is None:
-    stderr_line = proc.stderr.readline().decode(encoding='UTF-8')
+    line = proc.stdout.readline().decode(encoding='UTF-8')
 
-    if stderr_line:
+    if line:
       if not output_view:
         output_view = create_mix_format_panel(window, panel_name, cmd, cwd)
         window.run_command('show_panel', panel_params)
 
-      output_view.run_command('append', {'characters': stderr_line})
+      output_view.run_command('append', {'characters': line})
 
       if now() - past_timestamp > panel_update_interval:
         output_view.show(output_view.size())
