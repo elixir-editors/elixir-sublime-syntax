@@ -21,16 +21,15 @@ def expand_scope_right(view, begin_point, scope):
   )
   return sublime.Region(begin_point, end_point)
 
-def is_one_of_syntaxes(view, syntaxes):
-  view_syntax_path = view.settings().get('syntax')
-  return any(basename + '.sublime-syntax' in view_syntax_path for basename in syntaxes)
+def has_one_of_scope_suffixes(view, scope_suffixes):
+  view_scope_suffixes = view.scope_name(0).split(' ')[0].split('.')[1:]
+  return any(suffix in view_scope_suffixes for suffix in scope_suffixes)
 
 def is_elixir_syntax(view):
-  return is_one_of_syntaxes(view, ['Elixir'])
+  return has_one_of_scope_suffixes(view, ['elixir'])
 
 def is_formattable_syntax(view):
-  syntaxes = ['Elixir', 'EEx', 'Elixir (EEx)', 'HTML (EEx)', 'HTML (HEEx)', 'HTML (Surface)']
-  return is_one_of_syntaxes(view, syntaxes)
+  return has_one_of_scope_suffixes(view, ['elixir', 'eex', 'heex', 'surface'])
 
 def reverse_find_root_folder(bottom_path):
   bottom_path = Path(bottom_path)
