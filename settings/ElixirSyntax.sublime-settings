@@ -21,6 +21,8 @@
   "mix_format": {
     // Which command to execute.
     "cmd": ["mix", "format"],
+    // Environment variables. `PATH` can be overridden which affects the search for the executable.
+    "env": null,
     // Calls `mix format` automatically on saving the file if `true`.
     "on_save": false
   }

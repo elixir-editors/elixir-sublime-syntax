@@ -82,7 +82,9 @@ def call_mix_format(window, **kwargs):
       )
     return
 
-  proc = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  env = cmd_setting.get('env')
+
+  proc = subprocess.Popen(cmd, cwd=cwd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
   panel_name = 'mix_format'
   panel_params = {'panel': 'output.%s' % panel_name}
