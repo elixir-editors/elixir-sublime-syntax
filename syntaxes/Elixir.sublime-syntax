@@ -357,17 +357,9 @@ contexts:
       scope: punctuation.accessor.dot.elixir
       set:
         - include: arguments_paren_param_pop
-        - include: atom_keyword
         - include: module_function_call_param_pop
-        - include: unquote_call_pop
         - include: id_or_operator_call_param_pop
-        - include: id_member_pop
-        - include: module_name_pop
-        - include: arguments_pop
-        - include: quoted_remote_call_pop
-        - include: quoted_member_pop
-        - include: tuple_call_pop
-        - include: if_non_space_or_eol_pop
+        - include: member_or_call_pop
 
   function_call_param:
     - match: (?=\.(?!\.))
@@ -1786,38 +1778,31 @@ contexts:
   module_name:
     - match: '{{module_name}}{{no_key_suffix}}'
       scope: constant.other.module.elixir
-    - match: (?x)(:(["'])) ((?>\\\\|\\\2|(?!\2).)*?) (\2) (?=\s*\.(?!\.))
-      captures:
-        1: punctuation.definition.constant.begin.elixir
-        3: constant.other.module.elixir
-        4: punctuation.definition.constant.end.elixir
-    - match: (:)({{atom_symbol}})(?=\s*\.(?!\.))
-      captures:
-        1: punctuation.definition.constant.begin.elixir
-        2: constant.other.module.elixir
+    - include: atom_module_name
+
   module_name_pop:
     - match: '{{module_name}}{{no_key_suffix}}'
       scope: constant.other.module.elixir
       pop: 1
 
   module_function_call_pop:
-    - match: ({{module_name}})\s*(\.(?!\.))
+    - match: ({{module_name}})(?=\s*\.(?!\.))
       comment: always a function call after a module
-      captures:
-        1: constant.other.module.elixir
-        2: punctuation.accessor.dot.elixir
-      set: member_call_pop
+      scope: constant.other.module.elixir
+      set: module_member_pop
 
-  member_call_pop:
-    # - include: sql_or_fragment
-    - include: quoted_remote_call_pop
-    - include: quoted_member_pop
-    - include: unquote_call_pop
-    - match: '{{member}}'
-      scope: variable.function.elixir
-      set: arguments_or_pop
-    - include: tuple_call_pop
-    - include: if_non_space_or_eol_pop
+  module_member_pop:
+    - match: \.(?!\.)
+      scope: punctuation.accessor.dot.elixir
+      set:
+        - match: '{{member}}'
+          comment: always a function after module name
+          scope: variable.function.elixir
+          set: arguments_or_pop
+        - match: (?=\()
+          comment: no ".()" style arguments after module name
+          pop: 1
+        - include: member_or_call_pop
 
   id_or_operator_call_pop:
     - match: ({{member}})(?=\s*\.\s*\(|{{has_arguments}})
@@ -1872,19 +1857,32 @@ contexts:
           captures:
             1: constant.character.escape.char.elixir
 
-  modules_or_ids_or_calls:
+  atom_module_name:
     - match: (?x)(:(["'])) ((?>\\\\|\\\2|(?!\2).)*?) (\2) (?=\s*\.(?!\.))
       captures:
         1: punctuation.definition.constant.begin.elixir
         3: constant.other.module.elixir
         4: punctuation.definition.constant.end.elixir
-      push: member_call_pop
-    - match: (:)({{atom_symbol}})\s*(\.(?!\.))
+    - match: (:)({{atom_symbol}})(?=\s*\.(?!\.))
       captures:
         1: punctuation.definition.constant.begin.elixir
         2: constant.other.module.elixir
-        3: punctuation.accessor.dot.elixir
-      push: member_call_pop
+
+  atom_module_name_call:
+    - match: (?x)(:(["'])) ((?>\\\\|\\\2|(?!\2).)*?) (\2) (?=\s*\.(?!\.))
+      captures:
+        1: punctuation.definition.constant.begin.elixir
+        3: constant.other.module.elixir
+        4: punctuation.definition.constant.end.elixir
+      push: module_member_pop
+    - match: (:)({{atom_symbol}})(?=\s*\.(?!\.))
+      captures:
+        1: punctuation.definition.constant.begin.elixir
+        2: constant.other.module.elixir
+      push: module_member_pop
+
+  modules_or_ids_or_calls:
+    - include: atom_module_name_call
     - match: (?={{module_name}}|{{identifier}})
       push:
         - include: module_function_call_pop
@@ -1916,18 +1914,19 @@ contexts:
   dot_accessor:
     - match: \.(?!\.)
       scope: punctuation.accessor.dot.elixir
-      push:
-        - include: atom_keyword
-        - include: module_function_call_pop
-        - include: unquote_call_pop
-        - include: id_or_operator_call_pop
-        - include: id_member_pop
-        - include: module_name_pop
-        - include: arguments_pop
-        - include: quoted_remote_call_pop
-        - include: quoted_member_pop
-        - include: tuple_call_pop
-        - include: if_non_space_or_eol_pop
+      push: member_or_call_pop
+
+  member_or_call_pop:
+    - include: module_function_call_pop
+    - include: unquote_call_pop
+    - include: id_or_operator_call_pop
+    - include: id_member_pop
+    - include: module_name_pop
+    - include: arguments_pop
+    - include: quoted_remote_call_pop
+    - include: quoted_member_pop
+    - include: tuple_call_pop
+    - include: if_non_space_or_eol_pop
 
   ## Module attributes
 
@@ -2339,16 +2338,11 @@ contexts:
         - match: (?=\.(?!\.))
           set:
             - include: dot_operator
-            - include: arguments_pop
             - include: capture_name_pop
-            - include: id_or_operator_call_pop
-            - include: quoted_remote_call_pop
-            - include: quoted_member_pop
             - match: (?={{member}}{{no_id_key_suffix}})
               push: id_member_pop
-            - include: tuple_call_pop
             - include: if_closing_token_pop
-            - include: if_non_space_or_eol_pop
+            - include: member_or_call_pop
         - include: capture_name_pop
         - include: special_form
         - match: (?={{identifier}}\s*\.(?!\.|\s*\())
