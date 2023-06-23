@@ -344,6 +344,15 @@ raise"msg"
 #            ^ punctuation.section.arguments.begin
 #        ^^^ variable.function
 
+ :"Elixir.Kernel".in 1, [1, 2, 3]
+#                 ^^ variable.function
+#                ^ punctuation.accessor.dot
+#  ^^^^^^^^^^^^^ constant.other.module
+ :"Elixir.Kernel"."@" expr
+#                    ^^^^^ meta.function-call.arguments
+#                  ^ variable.function
+#                 ^^^ meta.function-call
+
 %{} |> Kernel.|> Map.put(:key, :value)
 #                                     ^ punctuation.section.arguments.end
 #               ^ punctuation.section.arguments.begin
