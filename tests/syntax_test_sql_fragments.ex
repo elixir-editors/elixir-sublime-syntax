@@ -191,6 +191,11 @@ fragment("t AT TIME ZONE")
 ##    ^^^^^^ keyword.other.DML.sql
 ##    ^^^^^^ -constant.other.table-name
 
+ sql("CREATE TYPE t AS ENUM")
+#                 ^ variable.other
+#            ^^^^ keyword.other
+#           ^ -keyword.other
+
  sql("""
  SELECT * FROM "table" AS t WHERE t."f i e l d"
 #                                   ^^^^^^^^^^^ string.quoted.double.sql
