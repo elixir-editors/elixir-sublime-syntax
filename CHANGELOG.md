@@ -1,5 +1,10 @@
 # Changelog
 
+## [v3.2.1] – 2023-06-24
+
+- Elixir: fixed quoted module name function calls such as `:"Elixir.Kernel".in(1, [1])`
+- SQL: recognize `CREATE TYPE`
+
 ## [v3.2.0] – 2023-05-02
 
 - Commands: improved/generalized syntax detection for enabling/disabling commands.
