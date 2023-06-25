@@ -280,7 +280,17 @@ class MixTestShowPanelCommand(sublime_plugin.WindowCommand):
     self.window.run_command('show_panel', {'panel': PANEL_NAME})
 
   def is_enabled(self):
-    return PANEL_NAME in self.window.panels()
+    return PANEL_NAME != self.window.active_panel() and PANEL_NAME in self.window.panels()
+
+class MixTestHidePanelCommand(sublime_plugin.WindowCommand):
+  def description(self):
+    return 'Hides the output panel if visible.'
+
+  def run(self, **_kwargs):
+    self.window.run_command('hide_panel', {'panel': PANEL_NAME})
+
+  def is_enabled(self):
+    return PANEL_NAME == self.window.active_panel()
 
 
 # Helper functions:
