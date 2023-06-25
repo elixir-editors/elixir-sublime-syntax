@@ -403,6 +403,10 @@ def .. a do a end
 def ..(a) do a end
 #     ^ punctuation.section.group.begin
 #   ^^ keyword.operator.range
+defmacro (..) do range(__CALLER__.context, 0, -1, 1) end
+#           ^ punctuation.section.group.end
+#         ^^ entity.name.function
+#        ^ punctuation.section.group.begin
 def ... a do a end
 #   ^^^ entity.name.function
 def ...(a) do a end
