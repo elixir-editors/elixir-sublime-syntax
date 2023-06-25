@@ -196,6 +196,13 @@ contexts:
       scope: entity.name.function.elixir
       set: function_free_form_header_pop
 
+    - match: (\()\s*(\.\.)\s*(\))
+      captures:
+        1: punctuation.section.group.begin.elixr
+        2: entity.name.function.elixir
+        3: punctuation.section.group.end.elixr
+      set: function_free_form_header_pop
+
     - include: atom_keyword
     - include: func_do_block_pop
     - include: block_or_keyword
