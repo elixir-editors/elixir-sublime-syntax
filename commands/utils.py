@@ -10,6 +10,10 @@ SETTINGS_FILE_NAME = 'ElixirSyntax.sublime-settings'
 
 PRINT_PREFIX = 'ElixirSyntax:'
 
+COULDNT_FIND_MIX_EXS = \
+  'Error: could not find a mix.exs file and the _build/ directory!\n' + \
+    'Make sure that you are in a mix project and that `mix \'do\' deps.get, compile` has been run.'
+
 def print_status_msg(msg):
   print(PRINT_PREFIX, msg)
   sublime.status_message(PRINT_PREFIX + ' ' + msg)

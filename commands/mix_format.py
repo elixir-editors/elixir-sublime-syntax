@@ -76,10 +76,7 @@ def call_mix_format(window, **kwargs):
   cwd = next((reverse_find_root_folder(p) for p in paths if p), None)
 
   if not (cwd or file_path):
-    print_status_msg(
-        'Error: could not find a mix.exs file and the _build/ directory! '
-        + 'Make sure that you are in a mix project and that `mix do deps.get + compile` was run.'
-      )
+    print_status_msg(COULDNT_FIND_MIX_EXS)
     return
 
   proc = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
