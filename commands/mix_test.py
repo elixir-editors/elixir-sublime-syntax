@@ -35,10 +35,7 @@ class MixTestSettingsCommand(sublime_plugin.WindowCommand):
       sublime_NewFileFlags_NONE = 4
       self.window.open_file(mix_settings_path, flags=sublime_NewFileFlags_NONE)
     else:
-      sublime.message_dialog(
-        'Error: could not find a mix.exs file and the _build/ directory!\n' +
-        'Make sure that you are in a mix project and that `mix do deps.get + compile` has been run.'
-      )
+      sublime.message_dialog(COULDNT_FIND_MIX_EXS)
 
 class MixTestCommand(sublime_plugin.WindowCommand):
   def description(self):
@@ -441,10 +438,7 @@ def reverse_find_json_path(window, json_file_path):
   paths = [window.active_view().file_name()] + window.folders()
   root_dir = next((reverse_find_root_folder(p) for p in paths if p), None)
 
-  root_dir or print_status_msg(
-      'Error: could not find a mix.exs file and the _build/ directory! '
-      + 'Make sure that you are in a mix project and that `mix do deps.get + compile` was run.'
-    )
+  root_dir or print_status_msg(COULDNT_FIND_MIX_EXS)
 
   return root_dir and path.join(root_dir, json_file_path) or None
 
