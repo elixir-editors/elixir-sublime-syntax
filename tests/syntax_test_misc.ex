@@ -887,6 +887,12 @@ end[]
 #             ^^^ variable.other.capture
 # ^^^^^^^ variable.other.capture
 
+ &Module.func(&1)
+#               ^ punctuation.section.arguments.end
+#            ^ punctuation.section.arguments.begin
+#        ^^^^ variable.function
+#       ^ punctuation.accessor.dot
+
  &Module |> func(&1)
 #           ^^^^ variable.function
 #        ^^ keyword.operator.pipe -punctuation.accessor.arity
