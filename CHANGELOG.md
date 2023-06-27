@@ -1,9 +1,15 @@
 # Changelog
 
+## [v3.2.2] – 2023-06-28
+
+- Elixir: fixed module function call regression in captures (`&Map.take(&1, @fields)`).
+- Elixir: recognize special macro `defmacro (..) do end`.
+- Commands: added `mix_test_hide_panel` command.
+
 ## [v3.2.1] – 2023-06-24
 
-- Elixir: fixed quoted module name function calls such as `:"Elixir.Kernel".in(1, [1])`
-- SQL: recognize `CREATE TYPE`
+- Elixir: fixed quoted module name function calls such as `:"Elixir.Kernel".in(1, [1])`.
+- SQL: recognize `CREATE TYPE`.
 
 ## [v3.2.0] – 2023-05-02
 
