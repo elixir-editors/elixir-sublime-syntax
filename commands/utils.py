@@ -18,6 +18,16 @@ def print_status_msg(msg):
   print(PRINT_PREFIX, msg)
   sublime.status_message(PRINT_PREFIX + ' ' + msg)
 
+def unique_items(items):
+  unique_items, seen_items = [], set()
+
+  for item in items:
+    if item not in seen_items:
+      unique_items.append(item)
+      seen_items.add(item)
+
+  return unique_items
+
 def expand_scope_right(view, begin_point, scope):
   end_point = next(
     (pt for pt in range(begin_point, view.size()) if not view.match_selector(pt, scope)),

@@ -85,14 +85,20 @@ class MixTestSelectionCommand(sublime_plugin.TextCommand):
 
     all_test_block_regions = [r for r in all_test_block_regions if r]
 
-    grouped_by_describe_dict, _ = group_by_describe_block_regions(all_test_block_regions)
-
     intersecting_test_regions = [
         regions
         for selected_lines_region in map(self.view.line, self.view.sel())
         for regions in all_test_block_regions
         if regions[-1].intersects(selected_lines_region)
       ]
+
+    unique_intersecting_test_tuples = \
+      unique_items([tuple(r.to_tuple() for r in regions) for regions in intersecting_test_regions])
+
+    intersecting_test_regions = \
+      [tuple(sublime.Region(*t) for t in tuples) for tuples in unique_intersecting_test_tuples]
+
+    grouped_by_describe_dict, _ = group_by_describe_block_regions(all_test_block_regions)
 
     grouped_isecting_by_describe_dict, test_to_describe_dict = \
       group_by_describe_block_regions(intersecting_test_regions)
