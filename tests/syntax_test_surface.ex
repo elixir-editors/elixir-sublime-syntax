@@ -6,6 +6,11 @@
 #^^ meta.string.elixir storage.type.string.elixir
 #  ^^^ meta.string.elixir punctuation.definition.string.begin.elixir
 
+  {!-- Comment --}
+#              ^^^ punctuation.definition.comment.end.surface
+# ^^^^ punctuation.definition.comment.begin.surface
+# ^^^^^^^^^^^^^^^^ meta.embedded.surface comment.block.surface
+
   <Some.App.Component x={y}>
 #                         ^ punctuation.section.embedded.end.elixir - source.elixir.embedded
 #                        ^ source.elixir.embedded.html
