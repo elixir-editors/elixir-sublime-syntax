@@ -1,5 +1,11 @@
 # Changelog
 
+## [v3.2.3] – 2023-08-13
+
+- EEx, HEEx: use `<%!-- ... --%>` when toggling comments.
+- EEx, HEEx, Surface: highlight begin and end punctuation marks of comments.
+- Commands: fix: filter out already selected tests when using multi-cursor selections.
+
 ## [v3.2.2] – 2023-06-28
 
 - Elixir: fixed module function call regression in captures (`&Map.take(&1, @fields)`).
