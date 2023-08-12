@@ -153,19 +153,27 @@ heredoc text
 ~s"\""m ~s'\''m ~s/\//m ~s|\||m ~s<<\>>m ~s{{\}}m ~s[[\]]m ~s((\))m
 
 
-## LiveView
+## HEEx
 
-~L""''a
+~H""''a
 #     ^ -string.quoted.modifiers
-~L"""
+~H"""
 ^^^^^ meta.string.elixir text.html.eex text.html.basic
  \"""<sd>
 #^^ constant.character.escape.char.elixir
   """''a
 #      ^ -string.quoted.modifiers
 
-~L"""
-  <div class="">
+~H"""
+  <%!-- Comment --%>
+#                 ^^ punctuation.section.embedded.end
+#               ^^ punctuation.definition.comment.end
+#   ^^^ punctuation.definition.comment.begin
+# ^^ punctuation.section.embedded.begin
+# ^^^^^^^^^^^^^^^^^^ meta.embedded comment.block
+  <div class={@classes}>
+#             ^^^^^^^^ source.elixir.embedded.html
+#            ^^^^^^^^^^ meta.attribute-with-value.class.html meta.embedded
     <div>
       <%= @deploy_step %>
 #          ^^^^^^^^^^^ variable.other.constant
@@ -175,7 +183,7 @@ heredoc text
  ^^text.html.basic
   """
 
-~L"""
+~H"""
 <div><%= @var %></div>
 #         ^^^ variable.other.constant.elixir
 #   ^ -string
@@ -191,16 +199,16 @@ heredoc text
 #   ^ storage.type.string
 #^^^ punctuation.definition.string.end
 #^^^^ meta.string.elixir
-~L"<div>\"</div>"m
+~H"<div>\"</div>"m
 #               ^ punctuation.definition.string.end
 #       ^^ constant.character.escape.char.elixir
 #   ^^^ entity.name.tag.block.any.html
-~L'<div>\'</div>'m
+~H'<div>\'</div>'m
 #               ^ punctuation.definition.string.end
 #       ^^ constant.character.escape.char.elixir
 #   ^^^ entity.name.tag.block.any.html
 
- ~L/\//m ~L|\||m ~L{\}}m ~L[\]]m ~L<\>>m ~L(\))m
+ ~H/\//m ~H|\||m ~H{\}}m ~H[\]]m ~H<\>>m ~H(\))m
 #                                              ^ string.quoted.modifiers
 #                                      ^ string.quoted.modifiers
 #                              ^ string.quoted.modifiers
@@ -208,7 +216,7 @@ heredoc text
 #              ^ string.quoted.modifiers
 #      ^ string.quoted.modifiers
 
-~L'''
+~H'''
  \
  ^^ text.html.basic -punctuation.separator.continuation
  '''m
