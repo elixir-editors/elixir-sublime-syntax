@@ -119,8 +119,8 @@
       "foreground": "color(var(white) l(- 30%))"
     },
     {
-      "name": "Embedded comment punctuation",
-      "scope": "comment.block.eex & (punctuation.section.embedded.begin.eex | punctuation.section.embedded.end.eex)",
+      "name": "Surface comment punctuation",
+      "scope": "punctuation.definition.comment.begin.surface | punctuation.definition.comment.end.surface",
       "foreground": "color(var(white) l(- 30%))"
     },
     {
