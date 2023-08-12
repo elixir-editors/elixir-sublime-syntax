@@ -2,7 +2,7 @@
 <plist version="1.0">
 <dict>
 	<key>name</key>
-	<string>Comments</string>
+	<string>Elixir Comments</string>
 	<key>scope</key>
 	<string>source.elixir</string>
 	<key>settings</key>
@@ -19,4 +19,3 @@
 	</dict>
 </dict>
 </plist>
-
