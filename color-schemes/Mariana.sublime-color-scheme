@@ -61,7 +61,8 @@
     {
       "name": "Capture name",
       "scope": "variable.other.capture.elixir",
-      "foreground": "color(var(blue))"
+      "foreground": "color(var(blue))",
+      "font_style": "italic"
     },
     {
       "name": "Capture arity",
