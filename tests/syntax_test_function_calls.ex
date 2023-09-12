@@ -788,6 +788,27 @@ for CE.source(
 #      ^^^^^^^^^^^^^^^^ variable.other
 #  ^^^ constant.other.keyword
 
+case variable do
+  a..b -> identifier
+#         ^^^^^^^^^^ -variable.parameter
+#    ^ variable.parameter
+#  ^^ keyword.operator.range
+# ^ variable.parameter
+  %module{} -> identifier
+#              ^^^^^^^^^^ -variable.parameter
+#        ^^ punctuation.section.mapping
+#  ^^^^^^ variable.parameter
+  %^module{} -> identifier
+#               ^^^^^^^^^^ -variable.parameter
+#         ^^ punctuation.section.mapping
+#   ^^^^^^ -variable.parameter
+#  ^ keyword.operator.pin
+# FIXME: `y` should not be a function call
+  x.y -> identifier
+#        ^^^^^^^^^^ -variable.parameter
+#  ^ punctuation.accessor.dot
+# ^ variable.other
+  end
 
  receive do
 #        ^^ keyword.context.block.do
