@@ -314,7 +314,7 @@ contexts:
   parameters:
     - include: block_or_keyword
     - include: special_form
-    - match: (?=\^\s*{{identifier}}{{no_key_suffix}}(?!\s*\.(?!\.))(?!{{has_arguments}}))
+    - match: (?x)(?=\^ \s* {{identifier}}{{no_key_suffix}} (?!\s*\.(?!\.)) (?!{{has_arguments}}))
       push:
         - include: operator
         - include: identifier_pop
@@ -375,7 +375,7 @@ contexts:
     - match: (?={{module_name}}\s*\.(?!\.))
       scope: constant.other.module.elixir
       push: module_function_call_param_pop
-    - match: (?={{identifier}}{{no_key_suffix}}(?=\s*\.\s*\(|{{has_arguments}}))
+    - match: (?={{identifier}}{{no_key_suffix}}\s*\.?\s*\()
       push: id_or_operator_call_param_pop
 
   paren_param:
@@ -430,8 +430,8 @@ contexts:
         - meta_scope: meta.mapping.elixir
         - match: (?=unquote\()
           set: [map_param_unquote_meta_pop, arguments_pop, unquote_pop]
-        - include: alias_names
-        - match: ((?=_)(?<!%>){{identifier}})|({{identifier}})
+        - include: special_form
+        - match: (?>((?=_)(?<!%>){{identifier}})|({{identifier}}))(?![(.])
           captures:
             1: variable.parameter.unused.elixir
             2: variable.parameter.elixir
@@ -444,15 +444,20 @@ contexts:
     - include: if_non_space_pop
 
   map_param_body_pop:
-    - match: (?={)
+    - match: \{
+      scope: punctuation.section.mapping.begin.elixir
       set:
-        - match: \{
-          scope: punctuation.section.mapping.begin.elixir
-          set:
-            - meta_scope: meta.mapping.elixir
-            - include: map_closing_pop
-            - include: parameters_or_if_closing_pop
-    - include: if_closing_token_pop
+        - meta_scope: meta.mapping.elixir
+        - include: map_closing_pop
+        - include: parameters_or_if_closing_pop
+    - match: (?=\^)
+      push:
+        - match: (?={)
+          pop: true
+        - include: special_form
+        - include: modules_or_ids_or_paren_calls
+        - include: core_syntax_or_if_closing_pop
+    - include: parameters_or_if_closing_pop
     - include: if_non_space_or_eol_pop
 
   binary_string_param:
@@ -1816,6 +1821,15 @@ contexts:
       scope: variable.function.elixir
       set: arguments_paren_or_ws_pop
 
+  id_or_operator_paren_call_pop:
+    - match: ({{member}})(?=\s*\.?\s*\()
+      scope: variable.function.elixir
+      set: id_or_operator_paren_call_arguments_pop
+
+  id_or_operator_paren_call_arguments_pop:
+    - include: dot_operator
+    - include: arguments_pop
+
   quoted_remote_call_pop:
     - match: \"(?=(?>\\[\\"]|.)*?"{{has_arguments}})
       scope: punctuation.definition.constant.begin.elixir
@@ -1894,6 +1908,15 @@ contexts:
       push:
         - include: module_function_call_pop
         - include: id_or_operator_call_pop
+        - include: module_name_pop
+        - include: identifier_pop
+
+  modules_or_ids_or_paren_calls:
+    - include: atom_module_name_call
+    - match: (?={{module_name}}|{{identifier}})
+      push:
+        - include: unquote_call_pop
+        - include: id_or_operator_paren_call_pop
         - include: module_name_pop
         - include: identifier_pop
 
@@ -2354,6 +2377,8 @@ contexts:
         - include: if_non_space_or_eol_pop
 
   capture_name_pop:
+    - match: (?={{module_name}}\s*\.\s*{{identifier}}\s*+(?!/(?!/)))
+      set: module_function_call_pop
     - match: |
         (?x)(?=
           (?>
