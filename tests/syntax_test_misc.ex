@@ -955,6 +955,13 @@ end[]
  &unquote(:erlang).apply/2
 #                       ^ punctuation.accessor.arity
 
+ &Module.func -&1
+#                ^ punctuation.section.arguments.end
+#              ^^ constant.other.capture
+#             ^ keyword.operator.arithmetic
+#            ^ punctuation.section.arguments.begin
+#        ^^^^ variable.function -variable.other.capture
+
 # Semantically invalid, but it complicates the rules to do it correctly:
  &./2
    ^ variable.other.member -punctuation.accessor.arity
