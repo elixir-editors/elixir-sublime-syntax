@@ -1,5 +1,22 @@
 # Changelog
 
+## [v4.0.0] – 2024-09-01
+
+- Elixir: improved matching of right-arrow clauses.
+- Elixir: recognize SQL strings inside `query("...")`, `query(Repo, "...")`, `query_many("...")`, `query_many(Repo, "...")` (including bang versions).
+- Elixir: fixed expressions in struct headers, e.g.: `%^module{}` and `%@module{}`.
+- Elixir: recognize all variants of atom word strings, e.g.: `~w"one two three"a`
+- Elixir: fixes to capture expressions: `& 1` is a capture with an integer, not the capture argument `&1`. `& &1.func/2`, `&var.member.func/3` and `&@module.func/1` are captured remote functions.
+- HEEx: recognize special attributes `:let`, `:for` and `:if`.
+- HEEx: fixed matching dynamic attributes, e.g.: `<div {@dynamic_attrs} />`.
+- Commands: `mix_test` is better at finding the root `mix.exs` file and runs when the project hasn't been built yet.
+- Commands: `mix test` and `mix format` error locations can be double-clicked and jumped to.
+- Commands: read `mix` output unbuffered for immediate display in the output panel.
+- Commands: removed the `output_scroll_time` setting. The output will scroll automatically without delay.
+- Commands: run `mix test` with selected lines if no standard `test` blocks were found, allowing to run tests defined by macros such as `property/2`.
+- Commands: prevent executing `mix test` again if it's already running.
+- Completions: use double quotes instead of curly braces for `phx` attributes.
+
 ## [v3.2.3] – 2023-08-13
 
 - EEx, HEEx: use `<%!-- ... --%>` when toggling comments.
