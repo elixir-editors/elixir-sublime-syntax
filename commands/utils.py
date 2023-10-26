@@ -10,6 +10,9 @@ SETTINGS_FILE_NAME = 'ElixirSyntax.sublime-settings'
 
 PRINT_PREFIX = 'ElixirSyntax:'
 
+# The regex is used by Sublime to find and jump to error locations shown in output panels.
+MIX_RESULT_FILE_REGEX = r'(\S+?[/\\]\S+?\.[a-zA-Z]+):(\d+)(?::(\d+))?'
+
 COULDNT_FIND_MIX_EXS = \
   'Error: could not find a mix.exs file and the _build/ directory!\n' + \
     'Make sure that you are in a mix project and that `mix \'do\' deps.get, compile` has been run.'
@@ -57,6 +60,15 @@ def reverse_find_root_folder(bottom_path):
       break
 
   return None
+
+def read_proc_text_output(proc, size=1024):
+  while proc.poll() is None:
+    # TODO: the subprocess should be opened with an encoding to avoid the decode call,
+    # but the option is not supported in Sublime's Python yet.
+    text = proc.stdout.read(size).decode(encoding='UTF-8')
+    if not text: continue
+    yield text
+  return ''
 
 def save_json_file(file_path, dict_data):
   try:

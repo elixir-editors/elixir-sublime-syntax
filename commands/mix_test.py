@@ -132,7 +132,14 @@ class MixTestSelectionCommand(sublime_plugin.TextCommand):
         for header_and_name_regions, describe_tuple in selected_test_regions
       ]
 
-    params = {'abs_file_path': abs_file_path, 'names': selected_tests}
+    # Use the selected lines if no tests were found.
+    if selected_tests:
+      params = {'names': selected_tests}
+    else:
+      params = {'lines': list(self.view.rowcol(min(sel.a, sel.b))[0] + 1 for sel in self.view.sel())}
+
+    params.setdefault('abs_file_path', abs_file_path)
+
     call_mix_test_with_settings(self.view.window(), **params)
 
   # This function is unused but kept to have a fallback in case
@@ -450,6 +457,10 @@ def reverse_find_json_path(window, json_file_path):
 
 def call_mix_test_with_settings(window, **params):
   """ Calls `mix test` with the settings JSON merged with the given params. """
+  try_run_mix_test(window, params)
+
+def merge_mix_settings_and_params(window, params):
+  """ Merges the settings JSON with the given params. """
   mix_settings_path = reverse_find_json_path(window, FILE_NAMES.SETTINGS_JSON)
 
   if not mix_settings_path:
@@ -469,12 +480,12 @@ def call_mix_test_with_settings(window, **params):
   mix_params.update(params)
   mix_params.setdefault('cwd', root_dir)
 
-  call_mix_test(window, mix_params, root_dir)
+  return (mix_params, root_dir)
 
-def call_mix_test(window, mix_params, cwd):
+def get_mix_test_arguments(window, mix_params, cwd):
   """ Calls `mix test` in an asynchronous thread. """
-  cmd, file_path, names, seed, failed, args = \
-    list(map(mix_params.get, ('cmd', 'file_path', 'names', 'seed', 'failed', 'args')))
+  cmd, file_path, names, lines, seed, failed, args = \
+    list(map(mix_params.get, ('cmd', 'file_path', 'names', 'lines', 'seed', 'failed', 'args')))
 
   located_tests, unlocated_tests = \
     names and find_lines_using_test_names(path.join(cwd, file_path), names) or (None, None)
@@ -484,6 +495,9 @@ def call_mix_test(window, mix_params, cwd):
 
   if file_path and located_tests:
     file_path += ''.join(':%s' % l for (_t, _n, l) in located_tests)
+
+  if file_path and lines:
+    file_path += ''.join(':%s' % l for l in lines)
 
   mix_test_pckg_settings = sublime.load_settings(SETTINGS_FILE_NAME).get('mix_test', {})
 
@@ -499,13 +513,33 @@ def call_mix_test(window, mix_params, cwd):
   cmd_arg = cmd or ['mix', 'test']
   failed_arg = failed and ['--failed'] or []
   mix_command = cmd_arg + seed_arg + file_path_arg + (args or []) + failed_arg
-  print(PRINT_PREFIX, '`%s` parameters:' % ' '.join(cmd_arg), mix_params)
 
-  sublime.set_timeout_async(
-      lambda: write_to_output(window, mix_command, mix_params, cwd, get_setting)
-    )
+  return (cmd_arg, mix_command, get_setting)
 
-def write_to_output(window, cmd_args, params, cwd, get_setting):
+IS_MIX_TEST_RUNNING = False
+
+def try_run_mix_test_async(window, params):
+  global IS_MIX_TEST_RUNNING
+
+  try:
+    IS_MIX_TEST_RUNNING = True
+    (mix_params, cwd) = merge_mix_settings_and_params(window, params)
+    (cmd_arg, mix_command, get_setting) = get_mix_test_arguments(window, mix_params, cwd)
+    print('%s `%s` parameters: %s' % (PRINT_PREFIX, ' '.join(cmd_arg), repr(mix_params)))
+    run_mix_test(window, mix_command, mix_params, cwd, get_setting)
+  finally:
+    IS_MIX_TEST_RUNNING = False
+
+def try_run_mix_test(window, params):
+  if IS_MIX_TEST_RUNNING:
+    # NB: showing a blocking dialog here stops the reading of the subprocess output somehow.
+    sublime.set_timeout_async(lambda: sublime.message_dialog('The `mix test` process is still running!'))
+    print_status_msg('mix test is already running!')
+    return
+
+  sublime.set_timeout_async(lambda: try_run_mix_test_async(window, params))
+
+def run_mix_test(window, cmd_args, params, cwd, get_setting):
   """ Creates the output view/file and runs the `mix test` process. """
   mix_test_output = get_setting('output') or 'panel'
   output_scroll_time = get_setting('output_scroll_time')
@@ -548,8 +582,7 @@ def write_to_output(window, cmd_args, params, cwd, get_setting):
     output_view.set_name('mix test' + (file_path and ' ' + file_path or ''))
     ov_settings = output_view.settings()
     ov_settings.set('word_wrap', active_view_settings.get('word_wrap'))
-    ov_settings.set('result_file_regex', r'^\s+(.+?):(\d+)$')
-    # ov_settings.set('result_line_regex', r'^:(\d+)')
+    ov_settings.set('result_file_regex', MIX_RESULT_FILE_REGEX)
     ov_settings.set('result_base_dir', cwd)
     output_view.set_read_only(False)
 
@@ -574,13 +607,14 @@ def write_to_output(window, cmd_args, params, cwd, get_setting):
       )
     return
 
-  proc = subprocess.Popen(cmd_args, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  proc = subprocess.Popen(cmd_args, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=0)
 
   if output_view:
     output_view.settings().set('view_id', output_view.id())
 
   cmd = ' '.join(params.get('cmd') or ['mix test'])
-  first_lines = '$ cd %s && %s' % (shlex.quote(cwd), ' '.join(map(shlex.quote, cmd_args)))
+  cmd_string = ' '.join(map(shlex.quote, cmd_args))
+  first_lines = '$ cd %s && %s' % (shlex.quote(cwd), cmd_string)
   first_lines += '\n# `%s` pid: %s' % (cmd, proc.pid)
   first_lines += '\n# Timestamp: %s' % datetime.now().replace(microsecond=0)
   if params.get('names'):
@@ -591,17 +625,21 @@ def write_to_output(window, cmd_args, params, cwd, get_setting):
 
   print(PRINT_PREFIX + ''.join('\n' + (line and '  ' + line) for line in first_lines.split('\n')))
   write_output(first_lines + '\n\n')
+  output_view and output_view.run_command('move_to', {'to': 'eof'})
 
   past_time = now()
+  continue_hidden = False
 
-  while proc.poll() is None:
-    if output_file and fstat(output_file.fileno()).st_nlink == 0 \
-       or output_view and not output_view.window():
-      on_output_close(proc, cmd)
-      break
+  try:
+    for text in read_proc_text_output(proc):
+      if not continue_hidden \
+         and (output_file and fstat(output_file.fileno()).st_nlink == 0 \
+              or output_view and not output_view.window()):
+        continue_hidden = continue_on_output_close(proc, cmd)
+        if not continue_hidden:
+          break
 
-    try:
-      write_output(proc.stdout.readline().decode(encoding='UTF-8'))
+      write_output(text)
 
       if output_scroll_time != None and now() - past_time > output_scroll_time:
         if output_file:
@@ -609,8 +647,8 @@ def write_to_output(window, cmd_args, params, cwd, get_setting):
         else:
           output_view.show(output_view.size())
         past_time = now()
-    except:
-      break
+  except BaseException as e:
+    write_output(PRINT_PREFIX + "Exception: %s" % repr(e))
 
   if output_file:
     output_file.close()
@@ -618,16 +656,19 @@ def write_to_output(window, cmd_args, params, cwd, get_setting):
     output_view.set_read_only(True)
     output_scroll_time != None and output_view.show(output_view.size())
 
-def on_output_close(proc, cmd):
-  if proc.poll() is None:
-    can_stop = sublime.ok_cancel_dialog(
-        'The `%s` process is still running. Stop the process?' % cmd,
-        ok_title='Yes', title='Stop running `%s`' % cmd
-      )
+  print_status_msg('Finished `%s`!' % cmd_string)
 
-    if can_stop:
-      print_status_msg('Stopping `%s` (pid=%s).' % (cmd, proc.pid))
-      proc.send_signal(subprocess.signal.SIGQUIT)
+def continue_on_output_close(proc, cmd):
+  can_continue = sublime.ok_cancel_dialog(
+      'The `%s` process is still running. Continue in the background?' % cmd,
+      ok_title='Yes', title='Continue running `%s`' % cmd
+    )
+
+  if not can_continue:
+    print_status_msg('Stopping `%s` (pid=%s).' % (cmd, proc.pid))
+    proc.send_signal(subprocess.signal.SIGQUIT)
+
+  return can_continue
 
 def add_help_info(dict_data):
   dict_data['help'] = {
