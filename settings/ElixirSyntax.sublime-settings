@@ -8,9 +8,6 @@
     // Output mode of the disk file to open/create.
     // `{"values": "see `open()` modifiers"}`
     "output_mode": "w",
-    // Automatically scroll the output view every t seconds. `null` disables scrolling.
-    // `{"values": [null, "non-negative float"]}`
-    "output_scroll_time": 2,
     // Additional arguments to pass to `cmd`.
     // `{"values": "see `mix help test`"}`
     "args": [],

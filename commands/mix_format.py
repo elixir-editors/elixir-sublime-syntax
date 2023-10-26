@@ -70,7 +70,7 @@ def call_mix_format(window, **kwargs):
   file_path = kwargs.get('file_path')
   file_path_list = file_path and [file_path] or []
   _, cmd_setting = load_mix_format_settings()
-  cmd = (cmd_setting.get('cmd') or ['mix', 'format']) + file_path_list
+  cmd_args = (cmd_setting.get('cmd') or ['mix', 'format']) + file_path_list
 
   paths = file_path_list + window.folders()
   cwd = next((reverse_find_root_folder(p) for p in paths if p), None)
@@ -79,33 +79,32 @@ def call_mix_format(window, **kwargs):
     print_status_msg(COULDNT_FIND_MIX_EXS)
     return
 
-  proc = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  proc = subprocess.Popen(cmd_args, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=0)
 
   panel_name = 'mix_format'
   panel_params = {'panel': 'output.%s' % panel_name}
   window.run_command('erase_view', panel_params)
   output_view = None
+  failed_msg_region = None
 
-  past_timestamp = now()
-  panel_update_interval = 2
-
-  while proc.poll() is None:
-    line = proc.stdout.readline().decode(encoding='UTF-8')
-
-    if line:
+  try:
+    for text in read_proc_text_output(proc):
       if not output_view:
-        output_view = create_mix_format_panel(window, panel_name, cmd, cwd)
+        # Only open the panel when mix is compiling or there is an error.
+        output_view = create_mix_format_panel(window, panel_name, cmd_args, cwd)
         window.run_command('show_panel', panel_params)
 
-      output_view.run_command('append', {'characters': line})
-
-      if now() - past_timestamp > panel_update_interval:
-        output_view.show(output_view.size())
-        past_timestamp = now()
+      output_view.run_command('append', {'characters': text, 'disable_tab_translation': True})
+  except BaseException as e:
+    write_output(PRINT_PREFIX + " Exception: %s" % repr(e))
 
   if output_view:
     output_view.set_read_only(True)
-  else:
+    failed_msg_region = output_view.find("mix format failed", 0, sublime.IGNORECASE)
+    failed_msg_region and output_view.show_at_center(failed_msg_region)
+
+  # Either there was no output or there was but without an error.
+  if not output_view or not failed_msg_region:
     if window.active_panel() == panel_params['panel']:
       window.run_command('hide_panel', panel_params)
       window.destroy_output_panel(panel_name)
@@ -118,8 +117,10 @@ def create_mix_format_panel(window, panel_name, cmd_args, cwd):
   first_lines += '\n# Timestamp: %s\n\n' % datetime.now().replace(microsecond=0)
 
   output_view = window.create_output_panel(panel_name)
-  output_view.settings().set('result_file_regex', r'/([^/]+):(\d+):(\d+)')
+  output_view.settings().set('result_file_regex', MIX_RESULT_FILE_REGEX)
+  output_view.settings().set('result_base_dir', cwd)
   output_view.set_read_only(False)
   output_view.run_command('append', {'characters': first_lines})
+  output_view.run_command('move_to', {'to': 'eof'})
 
   return output_view

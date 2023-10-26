@@ -60,7 +60,6 @@ General settings example (via `Preferences > Package Settings > ElixirSyntax > S
   "mix_test": {
     "output": "tab",
     "output_mode": null,
-    "output_scroll_time": 2,
     "args": ["--coverage"],
     "seed": null
   }
