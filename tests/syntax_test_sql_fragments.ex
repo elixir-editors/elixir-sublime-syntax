@@ -285,7 +285,7 @@ fragment("t AT TIME ZONE")
 #                                                          ^^^^^^^ keyword.other.sql
 #                                                     ^^^ keyword.other.sql
 #                                              ^^^^^ keyword.other.sql
-#                                       ^^^^^ constant.language.boolean.sql
+#                                       ^^^^^ constant.language.boolean.false.sql
 #                               ^^^^^^ keyword.other.sql
 #                          ^^^ keyword.other.DML.sql
 #                    ^^^^ keyword.other.DML.sql
@@ -328,7 +328,7 @@ fragment("t AT TIME ZONE")
   SOME; SYMMETRIC; TABLE; TABLESAMPLE; THEN; TO; TRAILING; TRUE; UNION; UNIQUE;
 #                                                                       ^^^^^^ keyword.other.sql
 #                                                                ^^^^^ keyword.other.DML.sql
-#                                                          ^^^^ constant.language.boolean.sql
+#                                                          ^^^^ constant.language.boolean.true.sql
 #                                                ^^^^^^^^ keyword.other.sql
 #                                            ^^ keyword.other.sql
 #                                      ^^^^ keyword.other.DML.sql
