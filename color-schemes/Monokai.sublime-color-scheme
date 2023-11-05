@@ -2,6 +2,7 @@
   "name": "Monokai for Elixir",
   "variables":
   {
+    "white3": "#ddd",
     "entity": "var(yellow2)",
     "doc": "var(yellow5)"
   },
