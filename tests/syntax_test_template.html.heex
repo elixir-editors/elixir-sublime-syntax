@@ -48,6 +48,14 @@
 <!--        ^^^^^^ variable.annotation.js - source.elixir -->
      </script>
 
+     <div {attr: :value} {@dynamic_attrs} {:invalid}={:attr} />
+<!--                                                 ^^^^^^^ meta.tag.block.any.html meta.embedded.heex -->
+<!--                                                ^ invalid.attribute -->
+<!--                                      ^^^^^^^^^ meta.tag.block.any.html meta.embedded.heex -->
+<!--                     ^^^^^^^^^^^^^^^^ meta.tag.block.any.html meta.embedded.heex -->
+<!--      ^^^^^^^^^^^^^^ meta.tag.block.any.html meta.embedded.heex -->
+
+
      <br class="<%# Comment %>" />
 <!--           ^^^^^^^^^^^^^^^^ meta.string.html string.quoted.double.html - comment -->
 
@@ -58,12 +66,12 @@
 <!--             ^^^^^^^ source.elixir.embedded.html meta.string.elixir string.quoted.double.elixir -->
 <!--            ^ punctuation.section.embedded.begin.elixir - source -->
 <!--            ^^^^^^^^^ meta.tag meta.attribute-with-value.html meta.embedded.heex -->
-<!--           ^ punctuation.separator.key-value.html -->
-<!--          ^ - punctuation.section.embedded.end.elixir string -->
-<!--     ^^^^^ - source.elixir.embedded.html meta.string.elixir string.quoted.double.elixir -->
+<!--           ^ invalid.attribute punctuation.separator.key-value.html -->
+<!--          ^ punctuation.section.embedded.end.elixir -->
+<!--     ^^^^^ source.elixir.embedded.html meta.string.elixir string.quoted.double.elixir -->
 <!--           ^ meta.tag meta.attribute-with-value.html - meta.embedded -->
-<!--    ^ - punctuation.section.embedded.begin.elixir - source -->
-<!--    ^^^^^^^ meta.tag meta.attribute-with-value.html -->
+<!--    ^ punctuation.section.embedded.begin.elixir - source -->
+<!--    ^^^^^^^ meta.tag.block.any.html meta.embedded.heex -->
 <!-- ^^^ meta.tag.block.any.html - meta.attribute-with-value -->
 
      <.table rows={@users}>
@@ -123,8 +131,8 @@
 
      <MyApp.+*?!name={@name} />
 <!--                         ^^ punctuation.definition.tag.end.html -->
-<!--                 ^^^^^^^ entity.other.attribute-name.html -->
-<!--                 ^^^^^^^^ meta.attribute-with-value.html -->
+<!--                 ^^^^^^^ meta.attribute-with-value.html -->
+<!--                ^^^^^^^^ -entity.other.attribute-name.html -->
 <!--        ^^^^^^^^ variable.function.heex -->
 <!--       ^ punctuation.accessor.dot.heex -->
 <!--  ^^^^^ entity.name.tag.begin.heex -->

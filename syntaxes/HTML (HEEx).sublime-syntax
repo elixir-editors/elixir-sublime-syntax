@@ -22,6 +22,10 @@ contexts:
   tag-attributes:
     - meta_prepend: true
     - include: heex-phx-attributes
+    - include: elixir-embedded
+    - match: =
+      scope: invalid.attribute.heex punctuation.separator.key-value.html
+      push: [tag-generic-attribute-meta, tag-generic-attribute-value]
 
   tag-other:
     - meta_prepend: true
