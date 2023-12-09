@@ -22,6 +22,11 @@ contexts:
   tag-attributes:
     - meta_prepend: true
     - include: heex-phx-attributes
+    - include: heex-special-attributes
+    - include: elixir-embedded
+    - match: =
+      scope: invalid.attribute.heex punctuation.separator.key-value.html
+      push: [tag-generic-attribute-meta, tag-generic-attribute-value]
 
   tag-other:
     - meta_prepend: true
@@ -105,6 +110,30 @@ contexts:
         ){{attribute_name_break}}
       scope: entity.other.attribute-name.heex
       push: [tag-generic-attribute-meta, tag-generic-attribute-assignment]
+
+  heex-special-attributes:
+    - match: (:)(if|let)(?=={)
+      captures:
+        2: entity.other.attribute-name.heex
+      push: [tag-generic-attribute-meta, tag-generic-attribute-assignment]
+    - match: (:)(for)(?=={)
+      captures:
+        2: entity.other.attribute-name.heex
+      push: [tag-generic-attribute-meta, heex-for-attribute-pop]
+
+  heex-for-attribute-pop:
+    - match: (=)(\{)
+      captures:
+        1: punctuation.separator.key-value.html
+        2: punctuation.section.embedded.begin.elixir
+      set:
+        - meta_scope: meta.embedded.heex
+        - meta_content_scope: source.elixir.embedded.html
+        - match: \}
+          scope: punctuation.section.embedded.end.elixir
+          pop: 1
+        - include: scope:source.elixir#one_arrow_clause_or_argument
+          apply_prototype: true
 
   # Elixir:
 
