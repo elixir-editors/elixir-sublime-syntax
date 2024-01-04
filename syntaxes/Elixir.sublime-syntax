@@ -2414,6 +2414,16 @@ contexts:
   ## SQL
 
   sql_or_fragment:
+    - match: (?=(?:(?>Repo|SQL)\s*\.\s*)?query!\()
+      push:
+        - include: module_name
+        - include: dot_operator
+        - match: (query!)(\()
+          captures:
+            1: variable.function.elixir
+            2: punctuation.section.arguments.begin.elixir
+          set: [sql_or_fragment_args_pop, sql_maybe_skip_non_string_arg_pop]
+
     - match: (?>(fragment)|(sql))(\()
       captures:
         1: support.function.elixir
@@ -2424,6 +2434,11 @@ contexts:
         - match: (?=unquote\()
           set: [arguments_rest_pop, sql_unquote_pop, unquote_pop]
         - include: sql_or_fragment_args_pop
+
+  sql_maybe_skip_non_string_arg_pop:
+    - match: (?=[",])
+      pop: 1
+    - include: core_syntax_or_if_closing_pop
 
   sql_unquote_pop:
     - match: \(
