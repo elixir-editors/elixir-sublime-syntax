@@ -1947,6 +1947,7 @@ contexts:
       push: member_or_call_pop
 
   member_or_call_pop:
+    - include: query_function_call
     - include: module_function_call_pop
     - include: unquote_call_pop
     - include: id_or_operator_call_pop
@@ -2413,6 +2414,8 @@ contexts:
   ## SQL
 
   sql_or_fragment:
+    - include: query_function_call
+
     - match: (?>(fragment)|(sql))(\()
       captures:
         1: support.function.elixir
@@ -2423,6 +2426,25 @@ contexts:
         - match: (?=unquote\()
           set: [arguments_rest_pop, sql_unquote_pop, unquote_pop]
         - include: sql_or_fragment_args_pop
+
+  query_function_call:
+    - match: (?=(?:(?>Repo|SQL)\s*\.\s*)?query(?:_many)?!?\()
+      push:
+        - include: module_name
+        - include: dot_operator
+        - match: (query(?:_many)?!?)(\()
+          captures:
+            1: variable.function.elixir
+            2: punctuation.section.arguments.begin.elixir
+          set: [sql_or_fragment_args_pop, sql_maybe_skip_non_string_arg_pop]
+
+  sql_maybe_skip_non_string_arg_pop:
+    - match: \,
+      scope: punctuation.separator.arguments.elixir
+      pop: 1
+    - match: (?=")
+      pop: 1
+    - include: core_syntax_or_if_closing_pop
 
   sql_unquote_pop:
     - match: \(

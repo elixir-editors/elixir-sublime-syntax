@@ -153,6 +153,53 @@ fragment("t AT TIME ZONE")
 #              ^^^^ keyword.other.sql
 #           ^^ keyword.other.sql
 
+## SQL queries in `query` and `query_many`
+
+ query("SELECT * FROM users", [])
+#       ^^^^^^ keyword.other.DML
+#^^^^^ variable.function
+ query!("SELECT * FROM users", [])
+#        ^^^^^^ keyword.other.DML
+#^^^^^^ variable.function
+ query_many("SELECT * FROM users", [])
+#            ^^^^^^ keyword.other.DML
+#^^^^^^^^^^ variable.function
+ query_many!("SELECT * FROM users", [])
+#             ^^^^^^ keyword.other.DML
+#^^^^^^^^^^^ variable.function
+ Repo.query("SELECT * FROM users", [])
+#            ^^^^^^ keyword.other.DML
+#     ^^^^^ variable.function
+#^^^^ constant.other.module
+ Repo.query!("SELECT * FROM users", [])
+#             ^^^^^^ keyword.other.DML
+#     ^^^^^^ variable.function
+#^^^^ constant.other.module
+ SQL.query(MyRepo, "SELECT * FROM users", [])
+#                   ^^^^^^ keyword.other.DML
+#    ^^^^^ variable.function
+#^^^ constant.other.module
+ SQL.query!(MyRepo, "SELECT * FROM users", [])
+#                    ^^^^^^ keyword.other.DML
+#    ^^^^^^ variable.function
+#^^^ constant.other.module
+ MyApp.Repo.query("SELECT * FROM users", [])
+#                  ^^^^^^ keyword.other.DML
+#           ^^^^^ variable.function
+#      ^^^^ constant.other.module
+ MyApp.Repo.query!("SELECT * FROM users", [])
+#                   ^^^^^^ keyword.other.DML
+#           ^^^^^^ variable.function
+#      ^^^^ constant.other.module
+ MyApp.SQL.query(MyRepo, "SELECT * FROM users", [])
+#                         ^^^^^^ keyword.other.DML
+#          ^^^^^ variable.function
+#      ^^^ constant.other.module
+ MyApp.SQL.query!(MyRepo, "SELECT * FROM users", [])
+#                          ^^^^^^ keyword.other.DML
+#          ^^^^^^ variable.function
+#      ^^^ constant.other.module
+
 ## Raw SQL queries
 
  sql("SELECT * FROM posts ORDER BY title GROUP BY user_id")
