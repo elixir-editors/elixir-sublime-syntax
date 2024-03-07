@@ -127,13 +127,13 @@ contexts:
       set:
         - match: (?=end{{no_id_key_suffix}})
           pop: 1
+        - include: if_closing_eex_pop
         - include: core_syntax
     - include: if_non_space_or_eol_pop
 
   fn_block_end_pop:
     - include: block_end_pop
-    - include: if_closing_token_pop
-    - include: core_syntax
+    - include: core_syntax_or_if_closing_pop
 
   arrow_clauses_body_pop:
     - match: (?=\S)
