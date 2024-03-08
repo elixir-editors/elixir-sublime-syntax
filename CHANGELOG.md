@@ -1,5 +1,15 @@
 # Changelog
 
+## [v3.3.0] – 2024-03-xx
+
+- Elixir: fixed expressions in struct headers, e.g.: `%^module{}`.
+- Elixir: recognize SQL strings inside `Repo.query!("...")` and `SQL.query!(Repo, "...")`.
+- HEEx: fixed matching dynamic attributes, e.g.: `<div {@dynamic_attrs} />`.
+- Commands: `mix test` and `mix format` error locations can be double-clicked and jumped to.
+- Commands: read `mix` output unbuffered for immediate display in the output panel.
+- Commands: run `mix test` with selected lines if no standard `test` blocks were found.
+- Commands: prevent executing `mix test` again if it's already running.
+
 ## [v3.2.3] – 2023-08-13
 
 - EEx, HEEx: use `<%!-- ... --%>` when toggling comments.

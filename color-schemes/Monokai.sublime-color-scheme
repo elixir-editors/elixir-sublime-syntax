@@ -2,6 +2,7 @@
   "name": "Monokai for Elixir",
   "variables":
   {
+    "white3": "#ddd",
     "entity": "var(yellow2)",
     "doc": "var(yellow5)"
   },
@@ -68,7 +69,8 @@
     {
       "name": "Capture name",
       "scope": "variable.other.capture.elixir",
-      "foreground": "color(var(blue))"
+      "foreground": "color(var(blue))",
+      "font_style": "italic"
     },
     {
       "name": "Capture arity",
