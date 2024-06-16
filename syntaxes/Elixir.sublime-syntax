@@ -2280,6 +2280,11 @@ contexts:
         - match: (?=unquote\()
           set: [map_unquote_meta_pop, arguments_pop, unquote_pop]
         - include: alias_names
+        - match: (@)({{identifier}}(?=\s*{))
+          captures:
+            1: keyword.operator.attribute.elixir
+            2: variable.other.constant.elixir
+          set: map_body_pop
         - match: \^
           scope: keyword.operator.pin.elixir
         - match: ((?=_)(?<!%>){{identifier}})|({{identifier}})
