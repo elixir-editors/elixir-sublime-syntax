@@ -683,6 +683,15 @@ end[]
 #    ^ punctuation.accessor.dot
 # ^^^ variable.other
 
+ &@module.func/1
+#              ^ constant.numeric.arity
+#             ^ punctuation.accessor.arity
+#         ^^^^ variable.other.capture
+#        ^ punctuation.accessor.dot
+#  ^^^^^^ variable.other.constant
+# ^ keyword.operator.attribute
+#^ keyword.operator.capture.elixir
+
  &x."a func"
 #   ^^^^^^^^ meta.member
 #  ^ punctuation.accessor.dot

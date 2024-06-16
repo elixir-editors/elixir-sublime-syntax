@@ -2468,6 +2468,9 @@ contexts:
         )
       comment: exit if module/atom is not followed by `.` or `.(`
       pop: 1
+    - match: '@(?!/)'
+      scope: keyword.operator.attribute.elixir
+      push: module_attribute_pop
     - include: atom_symbol
     - include: atom_keyword
     - include: module_name
