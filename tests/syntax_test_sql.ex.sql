@@ -3,18 +3,18 @@
 -- Identifiers
 
   SELECT * FROM posts;
---       ^ variable.language.wildcard.asterisk
+--       ^ constant.other.wildcard.asterisk
 
   SELECT posts."column";
 --              ^^^^^^ string
 --       ^^^^^ constant.other.table-name
 
   SELECT posts.*;
---             ^ variable.language.wildcard.asterisk
+--             ^ constant.other.wildcard.asterisk
 --            ^ punctuation.accessor.dot
 --       ^^^^^ constant.other.table-name
   SELECT json_object(posts.*);
---                         ^ variable.language.wildcard.asterisk
+--                         ^ constant.other.wildcard.asterisk
 --                        ^ punctuation.accessor.dot
 --                   ^^^^^ constant.other.table-name
 
