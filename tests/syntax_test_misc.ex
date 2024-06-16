@@ -12,6 +12,19 @@
 #   ^ punctuation.section.mapping.end
 # ^ variable.other.unused
 #^ punctuation.section.mapping.begin
+ %@module{}
+#         ^ punctuation.section.mapping.end
+#        ^ punctuation.section.mapping.begin
+#  ^^^^^^ variable.other.constant
+# ^ keyword.operator.attribute.elixir
+#^ punctuation.section.mapping.begin
+ %^@module{}
+#          ^ punctuation.section.mapping.end
+#         ^ punctuation.section.mapping.begin
+#   ^^^^^^ variable.other.constant
+#  ^ keyword.operator.attribute.elixir
+# ^ keyword.operator.pin.elixir
+#^ punctuation.section.mapping.begin
  %{%{}: :%{}}."%{}"
 #              ^^^ variable.other.member
 #       ^^^^ constant.other.symbol
