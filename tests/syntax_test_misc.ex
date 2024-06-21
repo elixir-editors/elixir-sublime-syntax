@@ -595,12 +595,12 @@ end[]
 #^^^ constant.other.capture
 
  & 1/&1
-#     ^ -punctuation.definition.capture constant.other.capture
-#    ^ punctuation.definition.capture constant.other.capture
+#    ^^ constant.other.capture
+#    ^ punctuation.definition.capture
 #   ^ keyword.operator.arithmetic
-#  ^ -punctuation.definition.capture constant.other.capture
-# ^ -punctuation.definition.capture -constant.other.capture
-#^ punctuation.definition.capture constant.other.capture
+#  ^ constant.numeric.integer
+# ^^^ -punctuation.definition.capture -constant.other.capture
+#^ keyword.operator.capture
 
  & &1..&2; & &1 .. &2
 #                  ^^ constant.other.capture
@@ -622,8 +622,8 @@ end[]
 #  ^^^^^ constant.other.module
  &:"\"Quoted\"\.Module\\".t()
 #                         ^ variable.function
+#                        ^ punctuation.accessor.dot
 #   ^^^^^^^^^^^^^^^^^^^^ constant.other.module
-# FIXME:                 ^ punctuation.accessor.dot
  &:erlang.apply/2
 #              ^ punctuation.accessor.arity
 #         ^^^^^ variable.other.capture
@@ -651,6 +651,39 @@ end[]
 #     ^^^^ variable.other.member
 #    ^ punctuation.accessor.dot
 #  ^^ constant.other.capture
+ & &1.func/2
+#          ^ constant.numeric.arity
+#         ^ punctuation.accessor.arity
+#     ^^^^ variable.other.capture
+#    ^ punctuation.accessor.dot
+#  ^^ constant.other.capture
+#  ^ punctuation.definition.capture
+ & &1.prop.func/1
+#               ^ constant.numeric.arity
+#              ^ punctuation.accessor.arity
+#          ^^^^ variable.other.capture
+#         ^ punctuation.accessor.dot
+#     ^^^^ variable.other.member
+#    ^ punctuation.accessor.dot
+#  ^^ constant.other.capture
+#  ^ punctuation.definition.capture
+
+ &some.thing/1
+#            ^ constant.numeric.arity
+#           ^ punctuation.accessor.arity
+#      ^^^^^ variable.other.capture
+#     ^ punctuation.accessor.dot
+# ^^^^ variable.other
+#^ keyword.operator.capture
+ &some.thing.good/1
+#                 ^ constant.numeric.arity
+#                ^ punctuation.accessor.arity
+#            ^^^^ variable.other.capture
+#           ^ punctuation.accessor.dot
+#      ^^^^^ variable.other.member
+#     ^ punctuation.accessor.dot
+# ^^^^ variable.other
+#^ keyword.operator.capture
 
  &<%= num %>
 #          ^ keyword.operator.comparison
@@ -672,8 +705,8 @@ end[]
 #       ^^^ keyword.operator.logical
 #     ^^ constant.other.capture
 #   ^^ keyword.operator.comparison
-#  ^ constant.other.capture -constant.numeric
-#^ constant.other.capture
+#  ^ constant.numeric.integer
+#^ keyword.operator.capture
 
  &mod.&/1; &Mod.&/1
 #               ^ variable.other.capture

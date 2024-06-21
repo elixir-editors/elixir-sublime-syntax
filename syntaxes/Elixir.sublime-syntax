@@ -2432,10 +2432,16 @@ contexts:
   ## Captures
 
   capture:
-    - match: (&)\s*(\d+)(?!\.(?![.\D]))
+    - include: capture_arg_number
+    - include: capture_remote_func
+
+  capture_arg_number:
+    - match: (&)(\d+)(?!\.(?![.\D]))
       captures:
         1: punctuation.definition.capture.elixir constant.other.capture.elixir
         2: constant.other.capture.elixir
+
+  capture_remote_func:
     - match: \&
       scope: keyword.operator.capture.elixir
       push:
@@ -2443,10 +2449,14 @@ contexts:
           pop: 1
         - include: if_closing_token_pop
         - match: (?=\.(?!\.))
-          set:
+          push:
             - include: dot_operator
             - include: capture_name_pop
             - include: member_or_call_pop
+        - match: (?=&\d+\s*\.(?!\.))
+          push:
+            - include: capture_arg_number
+            - include: if_empty_pop
         - include: capture_name_pop
         - include: special_form
         - match: (?={{identifier}}\s*\.(?!\.|\s*\())
