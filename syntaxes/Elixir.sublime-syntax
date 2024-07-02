@@ -1740,9 +1740,10 @@ contexts:
         - include: unquote_call
         - include: dot_operator
         - include: if_non_space_or_eol_pop
-    - include: arg_comma_and_skip_ws
+    - match: (?=,)
+      push: arguments_ws_rest_pop
     - include: last_id_argument
-    - include: core_syntax_or_if_closing_pop
+    - include: core_syntax
 
   defrecord:
     - match: (?:(Record)\s*(\.)\s*)?(defrecordp?){{no_suffix_then_arguments}}
