@@ -58,6 +58,18 @@ defmodule :App.:Module
 #             ^ punctuation.accessor
 #          ^^^ constant.other.module
 #         ^ punctuation.definition.constant.begin
+defmodule Module, NotAModule
+#                 ^^^^^^^^^^^^^^ -entity.name.namespace
+#               ^ punctuation.separator.arguments
+defmodule(Module, NotAModule)
+#                 ^^^^^^^^^^^^^^ -entity.name.namespace
+#               ^ punctuation.separator.arguments
+defmodule Module, compile? do end
+#                 ^^^^^^^^ variable.other
+#               ^ punctuation.separator.arguments
+defmodule(Module, compile? do end)
+#                 ^^^^^^^^ variable.other
+#               ^ punctuation.separator.arguments
 defmodule :<<>>
 #          ^^^^ entity.name.namespace
 defmodule :&&, do: def(a &&& b, do: a && b); :&&.&&&(:&, :&)
