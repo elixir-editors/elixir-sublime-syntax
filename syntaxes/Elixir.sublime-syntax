@@ -345,7 +345,7 @@ contexts:
     - include: parameters
 
   id_or_operator_call_param_pop:
-    - match: ({{member}}){{no_key_suffix}}
+    - match: ({{member}}){{no_suffix_then_arguments}}
       scope: variable.function.elixir
       set:
         - include: arguments_paren_param_pop
@@ -2847,6 +2847,10 @@ contexts:
     - match: (?=(?><-|->|=(?![>~=]))(?!:))
       fail: last_assignment_clause
     - include: if_argument_end_pop
+    - match: \s*\n
+      push:
+        - include: comments
+        - include: if_non_space_pop
     - include: arguments_ws_rest_pop
 
   case_macro_call:
