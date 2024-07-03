@@ -788,6 +788,38 @@ for CE.source(
 #      ^^^^^^^^^^^^^^^^ variable.other
 #  ^^^ constant.other.keyword
 
+with {:ok, user} <- fetch_user(id),
+     get_account(user.name, user.email),
+#                                ^^^^^ variable.other.member
+#                           ^^^^ variable.other
+#                     ^^^^ variable.other.member
+#                ^^^^ variable.other
+#               ^^^^^^^^^^^^^^^^^^^^^^^ meta.function-call.arguments
+#    ^^^^^^^^^^^ variable.function
+     account = get_account(user.name),
+     name =
+#         ^ keyword.operator.match
+#    ^^^^ variable.parameter
+       user.name,
+     account =
+#            ^ keyword.operator.match
+#    ^^^^^^^ variable.parameter
+       get_account(user.name, user.email),
+#                                  ^^^^^ variable.other.member
+#                             ^^^^ variable.other
+#                           ^ punctuation.separator.arguments
+#                       ^^^^ variable.other.member
+#                  ^^^^ variable.other
+#      ^^^^^^^^^^^ variable.function
+     email =
+#          ^ keyword.operator.match
+#    ^^^^^ variable.parameter
+       user.email do
+#           ^^^^^ variable.other.member
+#          ^ punctuation.accessor.dot
+#      ^^^^ variable.other
+end
+
 case variable do
   a..b -> identifier
 #         ^^^^^^^^^^ -variable.parameter
