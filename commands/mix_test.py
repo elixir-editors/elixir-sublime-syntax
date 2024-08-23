@@ -451,7 +451,9 @@ def reverse_find_json_path(window, json_file_path):
   paths = [window.active_view().file_name()] + window.folders()
   root_dir = next((reverse_find_root_folder(p) for p in paths if p), None)
 
-  root_dir or print_status_msg(COULDNT_FIND_MIX_EXS)
+  if not root_dir:
+    sublime.message_dialog(COULDNT_FIND_MIX_EXS)
+    print_status_msg(COULDNT_FIND_MIX_EXS)
 
   return root_dir and path.join(root_dir, json_file_path) or None
 
@@ -467,13 +469,14 @@ def merge_mix_settings_and_params(window, params):
     return
 
   root_dir = path.dirname(mix_settings_path)
-  build_dir = path.join(root_dir, '_build')
 
   if 'abs_file_path' in params:
     params.setdefault('file_path', path.relpath(params['abs_file_path'], root_dir))
     del params['abs_file_path']
 
-  save_json_file(path.join(build_dir, FILE_NAMES.REPEAT_JSON), params)
+  build_dir = Path(root_dir) / '_build'
+  build_dir.exists() or build_dir.mkdir()
+  save_json_file(str(build_dir / FILE_NAMES.REPEAT_JSON), params)
 
   mix_params = load_json_file(mix_settings_path)
   mix_params = remove_help_info(mix_params)

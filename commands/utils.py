@@ -14,8 +14,8 @@ PRINT_PREFIX = 'ElixirSyntax:'
 MIX_RESULT_FILE_REGEX = r'(\S+?[/\\]\S+?\.[a-zA-Z]+):(\d+)(?::(\d+))?'
 
 COULDNT_FIND_MIX_EXS = \
-  'Error: could not find a mix.exs file and the _build/ directory!\n' + \
-    'Make sure that you are in a mix project and that `mix \'do\' deps.get, compile` has been run.'
+  'Error: could not find a mix.exs file!\n' + \
+    'Make sure that you are in a mix project.'
 
 def print_status_msg(msg):
   print(PRINT_PREFIX, msg)
@@ -53,9 +53,17 @@ def reverse_find_root_folder(bottom_path):
   parent_path = bottom_path.parent if bottom_path.is_file() else bottom_path
 
   while True:
-    if all((parent_path / p).exists() for p in ['mix.exs', '_build']):
+    # We have to check for the root mix.exs, ignoring possible sub-app mix files.
+    if (parent_path / 'mix.exs').exists() \
+       and (
+         (parent_path / 'mix.lock').exists()
+         or (parent_path / '_build').exists()
+         or parent_path.name != 'apps' and not (parent_path.parent / 'mix.exs').exists()
+       ):
       return str(parent_path)
+
     old_path, parent_path = parent_path, parent_path.parent
+
     if old_path == parent_path:
       break
 
