@@ -118,7 +118,7 @@
 #^ invalid.illegal.stray-closing-brace
 
  (fn -> ) end)
-#       ^ invalid.illegal.stray-closing-parenthesis
+#            ^ invalid.illegal.stray-closing-parenthesis
  fn -> end
 #      ^^^ punctuation.section.block.end keyword.context.block.end
 #   ^^ keyword.operator.arrow
@@ -162,8 +162,17 @@
 #          ^ variable.other -variable.parameter
 #   ^ variable.parameter
 
+ fn x when
+#     ^^^^ keyword.operator.when
+#   ^ variable.parameter
+    x -> x end
+#          ^^^ keyword.context.block.end
+#        ^ variable.other
+#   ^ variable.other
+
 fn
-   [], acc -> acc
+   [], acc \\ [] -> acc
+#          ^^ keyword.operator.default invalid.illegal.default-operator
 #    ^ punctuation.separator.sequence
    x, acc -> [x | acc]
 #   ^ punctuation.separator.sequence
@@ -215,14 +224,14 @@ y -> y
   z -> z
   #    ^ variable.other -variable.parameter
   # ^^ keyword.operator.arrow
-  #<- variable.other -variable.parameter
+  #<- variable.parameter
 end
 #^^ punctuation.section.block.end
 fn -> x; y -> z end
 #               ^^^ punctuation.section.block.end
 #             ^ variable.other
 #          ^^ keyword.operator.arrow
-#        ^ -variable.parameter
+#        ^ variable.parameter
 #     ^ variable.other
 #  ^^ keyword.operator.arrow
 fn x -> x; y -> y end
@@ -282,7 +291,7 @@ end
      -> var -> var
     #          ^^^ variable.other
     #       ^^ keyword.operator.arrow
-    #   ^^^ variable.other
+    #   ^^^ variable.parameter
     #^^ keyword.operator.arrow
     expr
     #^^^ variable.other
@@ -1252,8 +1261,8 @@ fn a,,b -> end
 #          ^ punctuation.section.group.end
 #    ^ invalid.illegal.stray-closing-parenthesis
 ( fn -> ) end )
-#             ^ punctuation.section.group.end
-#       ^ invalid.illegal.stray-closing-parenthesis
+#             ^ invalid.illegal.stray-closing-parenthesis
+#       ^ punctuation.section.group.end
 
 [ ( ] )
 #     ^ invalid.illegal.stray-closing-parenthesis
@@ -1274,8 +1283,8 @@ fn a,,b -> end
 #          ^ punctuation.section.brackets.end
 #    ^ invalid.illegal.stray-closing-bracket
 [ fn -> ] end ]
-#             ^ punctuation.section.brackets.end
-#       ^ invalid.illegal.stray-closing-bracket
+#             ^ invalid.illegal.stray-closing-bracket
+#       ^ punctuation.section.brackets.end
 
 { ( } )
 #     ^ invalid.illegal.stray-closing-parenthesis
@@ -1296,8 +1305,8 @@ fn a,,b -> end
 #          ^ punctuation.section.sequence.end
 #    ^ invalid.illegal.stray-closing-brace
 { fn -> } end }
-#             ^ punctuation.section.sequence.end
-#       ^ invalid.illegal.stray-closing-brace
+#             ^ invalid.illegal.stray-closing-brace
+#       ^ punctuation.section.sequence.end
 
 %{ ( } )
 #      ^ invalid.illegal.stray-closing-parenthesis
@@ -1318,8 +1327,8 @@ fn a,,b -> end
 #           ^ punctuation.section.mapping.end
 #     ^ invalid.illegal.stray-closing-brace
 %{ fn -> } end }
-#              ^ punctuation.section.mapping.end
-#        ^ invalid.illegal.stray-closing-brace
+#              ^ invalid.illegal.stray-closing-brace
+#        ^ punctuation.section.mapping.end
 
 << ( >> )
 #       ^ invalid.illegal.stray-closing-parenthesis
@@ -1340,8 +1349,8 @@ fn a,,b -> end
 #            ^^ punctuation.definition.string.end
 #     ^^ invalid.illegal.stray-closing-binary
 << fn -> >> end >>
-#               ^^ punctuation.definition.string.end
-#        ^^ invalid.illegal.stray-closing-binary
+#               ^^ invalid.illegal.stray-closing-binary
+#        ^^ punctuation.definition.string.end
 
 do ( end )
 #        ^ invalid.illegal.stray-closing-parenthesis
