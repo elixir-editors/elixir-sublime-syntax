@@ -20,11 +20,14 @@
 # ^^^^ constant.other.symbol
 #^ keyword.operator.pin
 
-# NB: this can only fixed by using ST4's branch look-ahead feature.
 ["abc #{"def"} ghi": :"abc #{"def"} ghi"]
+#                                  ^^^^^ constant.other.symbol
 #                          ^^^^^^^^ meta.interpolation.elixir
+#                    ^^^^^^ constant.other.symbol
+#                   ^ -constant.other
+#             ^^^^^^ constant.other.keyword
 #     ^^^^^^^^ meta.interpolation.elixir
-#^^^^^
+#^^^^^ constant.other.keyword
 
 [a@?: :a@?]
 #     ^^^^ constant.other.symbol

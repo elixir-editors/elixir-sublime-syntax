@@ -2398,18 +2398,38 @@ contexts:
       scope: constant.other.keyword.elixir
       captures:
         1: punctuation.definition.constant.end.elixir
-    # Look for ':' behind the closing double/single quote.
-    - match: (?x)(?=(["']) (?>\\. | (?!\1).)* \1:{{no_colon_suffix}})
-      comment: keyword string
-      push:
-        - match: (.)
-          scope: punctuation.definition.constant.begin.elixir
-          set:
-            - meta_scope: meta.string.elixir constant.other.keyword.elixir
-            - include: escaped_or_interpolated
-            - match: '\1:'
-              scope: punctuation.definition.constant.end.elixir
-              pop: 1
+    # FIXME: this doesn't quite work. It shouldn't be necessary to have two branches...
+    - match: (?=(["'])(?!\1\1))
+      branch_point: string_atom_keyword_branch
+      branch: [string_atom_keyword_pop, fail_string_atom_keyword_branch]
+
+  fail_string_atom_keyword_branch:
+    # - include: string
+    # - include: if_empty_pop
+    - match: ''
+      fail: string_atom_keyword_branch
+
+  string_atom_keyword_pop:
+    - match: \"
+      scope: punctuation.definition.constant.begin.elixir
+      set:
+        - meta_scope: meta.string.elixir constant.other.keyword.elixir
+        - include: escaped_or_interpolated
+        - match: \":{{no_colon_suffix}}
+          scope: punctuation.definition.constant.end.elixir
+          pop: 1
+        - match: \"
+          fail: string_atom_keyword_branch
+    - match: \'
+      scope: punctuation.definition.constant.begin.elixir
+      set:
+        - meta_scope: meta.string.elixir constant.other.keyword.elixir
+        - include: escaped_or_interpolated
+        - match: \':{{no_colon_suffix}}
+          scope: punctuation.definition.constant.end.elixir
+          pop: 1
+        - match: \'
+          fail: string_atom_keyword_branch
 
   atom_symbol:
     - match: :(?!:(?!:))
