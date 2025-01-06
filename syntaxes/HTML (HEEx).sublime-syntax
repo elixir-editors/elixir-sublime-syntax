@@ -66,6 +66,7 @@ contexts:
     - match: </{{is_heex_tag_name}}
       scope: punctuation.definition.tag.begin.html
       push: [heex-end-tag-content-pop, heex-end-tag-name-pop]
+    - include: elixir-embedded
 
   heex-begin-tag-content-pop:
     - meta_scope: meta.tag.other.heex
