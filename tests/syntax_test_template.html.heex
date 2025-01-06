@@ -46,7 +46,18 @@
      <script>
        <%= @elixir %>
 <!--        ^^^^^^ variable.annotation.js - source.elixir -->
+       { "1" <> "2" }
+<!--   ^^^^^^^^^^^^^^ -meta.embedded.heex -->
      </script>
+
+     {"1" <> "2"}
+<!--            ^ punctuation.section.embedded.end.elixir -->
+<!--         ^^^ meta.string.elixir string.quoted.double.elixir -->
+<!--      ^^ keyword.operator.binary-concat.elixir -->
+<!--  ^^^ meta.string.elixir string.quoted.double.elixir -->
+<!--  ^^^^^^^^^^ source.elixir.embedded.html -->
+<!-- ^ punctuation.section.embedded.begin.elixir -->
+<!-- ^^^^^^^^^^^^ meta.embedded.heex -->
 
      <table :for={user <- @users} :if={assigns[:users]}><:col :let={user}><%= user.id %></:col></table>
 <!--                                                               ^^^^^^ meta.embedded.heex -->
